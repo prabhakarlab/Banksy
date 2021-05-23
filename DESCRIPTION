@@ -1,0 +1,32 @@
+Package: Banksy
+Title: Spatial transcriptomic clustering
+Version: 0.99.0
+Authors@R: c(
+    person(given = "Vipul",
+           family = "Singhal",
+           role = c("aut")),
+    person(given = "Joseph",
+           family = "Lee",
+           role = c("aut", "cre"),
+           email = "joseph.lee@u.nus.edu"))
+Description: Banksy is an R packaged that incorporates spatial information to 
+    cluster cells in a feature space (e.g. gene expression). Spatial information
+    is incorporated by averaging the features of the k nearest neighbours to 
+    generate new 'neighbour' features for a given cell. This is concatenated to
+    the cell's own features to generate a combined block matrix which is used
+    for constructing a nearest neighbour network and Leiden clustering.
+Imports:
+    data.table,
+    dbscan,
+    dplyr,
+    Giotto,
+    ggplot2,
+    Matrix,
+    pracma,
+    stats,
+    tictoc,
+    utils
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.0.2

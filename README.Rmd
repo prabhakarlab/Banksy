@@ -1,0 +1,231 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+# Banksy
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+Banksy is an R packaged that incorporates spatial information to cluster cells 
+in a feature space (e.g. gene expression). Spatial information is incorporated 
+by averaging the features of the k nearest neighbours to generate new 
+'neighbour' features for a given cell. This is concatenated to the cell's own 
+features to generate a combined feature matrix which is used for constructing a 
+nearest neighbour network. Leiden clustering is used to obtain spatially-informed
+clusters.
+
+## Installation
+
+```{r, eval=F}
+remotes::install_github("jleechung/Banksy")
+```
+
+Load the package:
+```{r}
+library(Banksy)
+```
+
+## Dataset
+
+Data is a gene-cell matrix (gcm) with spatial locations appended:
+```{r read-data}
+## Generate the raw counts matrix - 7250 cells
+all_data1 <- read.csv(system.file('extdata/cellmtx.csv', package = 'Banksy'), 
+                     row.names = 'geneName')
+``` 
+ 
+Dimensions:
+```{r dimensions}
+dim(all_data1)
+``` 
+
+```{r head}
+head(all_data1[,1:5])
+``` 
+
+```{r tail}
+tail(all_data1[,1:5])
+``` 
+
+Pre-processing:
+```{r pre-process}
+## Clean colnames
+cellNames1 <- colnames(all_data1)
+cellNames <- gsub(pattern = 'cellID_', replacement = 'cell_', cellNames1)
+colnames(all_data1) = cellNames
+
+## Remove spatial location data
+raw_expr1 <- all_data1[1:(nrow(all_data1)-3),]
+
+hist(colSums(raw_expr1), breaks = 500)
+``` 
+
+Filter cells with total expression less than 20:
+```{r filter}
+## 6725 cells after filtering
+filtered_cells <- colSums(raw_expr1)>=20
+all_data <- all_data1[,filtered_cells]
+
+## we must always filter out cells with zero expression. otherwise the normalization gives NaNs
+raw_expr <- all_data[1:(nrow(all_data)-3),]
+```
+
+Spatial information:
+```{r spatial}
+cell_locs <- all_data[c('CentroidX', 'CentroidY'), ]
+rownames(cell_locs) <- c('sdimx', 'sdimy')
+cell_locs <- t(cell_locs)
+cell_area <- all_data['CellArea',]
+head(cell_locs)
+``` 
+
+## Run
+
+Define parameters (change as required): 
+```{r parameters}
+## Normalization
+normalizeColumns <- TRUE
+scaleFactor <- 100
+
+## Zscaling
+zScaleRows <- TRUE
+zScaleBeforeAveraging <- FALSE
+zScaleOwnAfterAveraging <- TRUE
+zScaleNbrAfterAveraging <- TRUE
+
+## Number of clustering iterations 
+## Negative: run until no improvementis reached
+lieden_iters <- -1
+
+## Python path
+my_python_path <- "/usr/bin/python3"
+
+## Use these lines to subset the data spatially.
+## -100000 to 100000 in both x and y for example basically means no subsetting
+xlower <- 0
+ylower <- 0
+xupper <- 60000
+yupper <- 60000
+
+## Parameters for clustering
+sigma <- 1.5
+lambda <- 0   ## Mixing parameter
+alpha <- 0.05
+pcs <- 15     ## Number of PCs
+ki <- 30  
+res <- 1.2    ## Resolution
+KNN_k <- 7    ## Number of neighbours
+use_docker <- TRUE
+
+## Parameters for sweeping
+colparam <- 'lam'
+rowparam <- 'res'
+rowvalues <- c(0.5, 0.75)
+colvalues <- c(0, 0.25, 0.5)
+
+## Parameters for connecting
+rootNode <- c(1,3)
+```
+
+Create Giotto object:
+```{r giotto}
+instrs = createGiottoInstructions(python_path = my_python_path,
+                                show_plot = FALSE,
+                                return_plot = TRUE,
+                                save_plot = TRUE,
+                                save_dir = '/data',
+                                plot_format = 'png',
+                                dpi = 300,
+                                height = 9, width = 9,
+                                is_docker = use_docker)
+
+go_testx <- createGiottoObject(raw_exprs = raw_expr,
+                             spatial_locs = cell_locs,
+                             instructions = instrs)
+
+go_testx <- normalizeGiotto(gobject = go_testx,
+                          scalefactor = scaleFactor,  library_size_norm = FALSE,
+                          verbose = F, log_norm = FALSE, scale_cells = FALSE, scale_genes = FALSE)
+
+go_exprs1 <- go_testx@raw_exprs #go_testx@norm_scaled_expr #
+
+celllocations1 = go_testx@spatial_locs
+celllocations = celllocations1[celllocations1$sdimx<xupper & celllocations1$sdimx>xlower
+                             &celllocations1$sdimy>ylower & celllocations1$sdimy<yupper,]
+
+cellID_2use <- intersect(colnames(go_exprs1), celllocations$cell_ID)
+go_locs_all_cols = celllocations[celllocations$cell_ID %in% cellID_2use,]
+go_exprs_counts = go_exprs1[rownames(go_exprs1), colnames(go_exprs1)[colnames(go_exprs1) %in% cellID_2use]]
+```
+
+Inputs:  
+
+- gene-cell matrix (sparse matrix)    
+- cell locations (data.table)  
+```{r inputs}
+go_locs_all_cols
+```
+
+Call to `RunBanksy`:
+```{r RunBanksy}
+clustresults <- RunBanksy(gcm = go_exprs_counts,
+                          locs = go_locs_all_cols,
+                          normalizeColumns = normalizeColumns,
+                          normalizeColumnsTo = scaleFactor,
+                          lieden_iters = lieden_iters,
+                          sigma = sigma, lambda = lambda, alpha = alpha,
+                          zScaleRows = zScaleRows,
+                          zScaleBeforeAveraging = zScaleBeforeAveraging,
+                          zScaleOwnAfterAveraging = zScaleOwnAfterAveraging,
+                          zScaleNbrAfterAveraging = zScaleNbrAfterAveraging,
+                          pcs = pcs, k_expr = ki, res = res, kspatial=1000,
+                          spatialMode = 'kNN_r', k_geom = KNN_k,
+                          instructions = instrs)
+```
+
+Call to `SweepBanksy`:
+```{r SweepBanksy, message=FALSE}
+sweepresults = SweepBanksy(gcm = go_exprs_counts, locs = go_locs_all_cols, lieden_iters=lieden_iters,
+                            zScaleBeforeAveraging = zScaleBeforeAveraging,
+                            zScaleOwnAfterAveraging = zScaleOwnAfterAveraging,
+                            zScaleNbrAfterAveraging = zScaleNbrAfterAveraging,
+                            rowparam = rowparam , rowvalues = rowvalues,
+                            colparam = colparam, colvalues = colvalues,
+                            sigma = sigma, lambda = lambda, alpha = alpha, pcs = pcs,
+                            k_expr = ki, res = res, kspatial=1000,
+                            normalizeColumns = normalizeColumns,
+                            normalizeColumnsTo = scaleFactor, zScaleRows = zScaleRows,
+                            spatialMode = 'kNN_r', k_geom = KNN_k,
+                            instructions = instrs)
+``` 
+
+Pair outputs and update clustering:
+```{r pair-output}
+pairConnectedOutput <- gridConnect(sweepresults, rootnode=rootNode)
+gobject = copy(clustresults$gobject)
+gobject <- updateGobjectUmapClust(gobject, sweepresults, pairConnectedOutput)
+```
+
+Get marker genes for clusters:
+```{r markers, message=FALSE}
+markerList <- getMarkerGenes(gobject, sweepresults, pairConnectedOutput, #expression_values = 'scaled',
+                            numMarkers = 5,  markerMethod ='scran')
+head(markerList[[1]])
+head(markerList[[2]])
+```
+
+## Session information
+```{r session}
+sessionInfo()
+``` 
