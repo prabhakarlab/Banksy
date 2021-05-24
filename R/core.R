@@ -214,7 +214,8 @@ RunBanksy <- function(gcm, locs,
     bo_jointly <- runPCA(gobject = bo_jointly,
                          expression_values = exprs,
                          name = 'pca_joint_genes',
-                         scale_unit = F, # this is required for J to run irlba on local
+                         genes_to_use = NULL,
+                         scale_unit = FALSE, # this is required for J to run irlba on local
                          ncp = ncp)
     toc()
 
@@ -225,11 +226,15 @@ RunBanksy <- function(gcm, locs,
       bo_jointly <- runPCA(gobject = bo_jointly,
                            expression_values = exprs,
                            genes_to_use = own_genes,
-                           name = 'pca_own_genes', ncp = ncp)
+                           name = 'pca_own_genes',
+                           scale_unit = FALSE,
+                           ncp = ncp)
       bo_jointly <- runPCA(gobject = bo_jointly,
                            expression_values = exprs,
                            genes_to_use = nbr_genes,
-                           name = 'pca_nbr_genes', ncp = ncp)
+                           name = 'pca_nbr_genes',
+                           scale_unit = FALSE,
+                           ncp = ncp)
     }
 
     ##############################
