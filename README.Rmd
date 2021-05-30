@@ -177,8 +177,12 @@ Inputs:
 go_locs_all_cols
 ```
 
+```{r, include=FALSE}
+load("/data/tmp.Rda")
+```
+
 Call to `RunBanksy`:
-```{r RunBanksy}
+```{r RunBanksy, eval=FALSE}
 clustresults <- RunBanksy(gcm = go_exprs_counts,
                           locs = go_locs_all_cols,
                           normalizeColumns = normalizeColumns,
@@ -195,7 +199,7 @@ clustresults <- RunBanksy(gcm = go_exprs_counts,
 ```
 
 Call to `SweepBanksy`:
-```{r SweepBanksy, message=FALSE}
+```{r SweepBanksy, message=FALSE, eval=FALSE}
 sweepresults = SweepBanksy(gcm = go_exprs_counts, locs = go_locs_all_cols, lieden_iters=lieden_iters,
                             zScaleBeforeAveraging = zScaleBeforeAveraging,
                             zScaleOwnAfterAveraging = zScaleOwnAfterAveraging,
@@ -223,6 +227,11 @@ markerList <- getMarkerGenes(gobject, sweepresults, pairConnectedOutput, #expres
                             numMarkers = 5,  markerMethod ='scran')
 head(markerList[[1]])
 head(markerList[[2]])
+```
+
+Visualize spatial plots for different resolutions and lambdas:
+```{r, fig.height=4, fig.width=8}
+plotSpatDimPlots(gobject, sweepresults, pairConnectedOutput)
 ```
 
 ## Session information

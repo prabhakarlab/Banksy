@@ -16,13 +16,17 @@ Description: Banksy is an R packaged that incorporates spatial information to
     the cell's own features to generate a combined block matrix which is used
     for constructing a nearest neighbour network and Leiden clustering.
 Imports:
+    cowplot,
     data.table,
     dbscan,
     dplyr,
     Giotto,
     ggplot2,
+    ggrepel,
     Matrix,
     pracma,
+    reshape2,
+    scales,
     stats,
     tictoc,
     utils

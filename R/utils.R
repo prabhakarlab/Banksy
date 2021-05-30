@@ -2,6 +2,19 @@
 # zScaleDatasets
 # splitByDataset
 # addClippedZCustomExpr
+# dfunction
+# all_plots_save_function
+# createHeatmap_DT
+
+# Temporary - bad practice
+all_plots_save_function <- Giotto:::all_plots_save_function
+createHeatmap_DT <- Giotto:::createHeatmap_DT
+
+
+#' @importFrom data.table dcast.data.table
+dfunction <- function(d, col_name1, col_name2, value.var) {
+  dcast.data.table(d, paste(col_name1, "~", col_name2), value.var = value.var)
+}
 
 #' @importFrom data.table as.data.table setDT `:=`
 #' @importFrom dbscan kNN
