@@ -12,7 +12,7 @@
 gridConnect <- function(sweepresults, rootnode=c(5,2)){
   # !TODO: check what happens if the root node is at either edge / corner. seems like c(2, 1) does not work.
 
-  clusteringsDF = clusteringsAsDF(sweepresults)
+  clusteringsDF = clusteringsAsDF(sweepresults) ## clustering with cell ID as rowname
   gridSize = dim(sweepresults$clusteringNames)
   rootColumn = rootnode[2]
   rootRow = rootnode[1]

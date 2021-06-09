@@ -46,6 +46,8 @@ plotSpatDimPlots(
 
 \item{additional_string}{additional string for name}
 
+\item{show_plot}{show plot or not}
+
 \item{plot_spatial_dim_plots}{whether to plot or not}
 }
 \value{

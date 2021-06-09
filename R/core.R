@@ -1,5 +1,348 @@
 # RunBanksy
 # SweepBanksy
+# SubsetBanksy
+# ComputeBanksy
+# ClusterBanksy
+# ConnectClusters
+
+#' Subset a BanksyObject
+#' @param x a BanksyObject
+#' @param cells cells to filter by
+#' @param dimx dimx to filter by - must be valid column
+#' @param dimy dimy to filter by - must be valid column
+#' @param dimz dimz to filter by - must be valid column
+#' @param features genes to filter by
+#' @param metadata metadata to filter by - must be valid colulmn
+#'
+#' @importFrom rlang enquo quo_get_expr
+#'
+#' @return Subset BanksyObject
+#'
+#' @export
+SubsetBanksy <- function(
+  x,
+  cells=TRUE,
+  dimx=TRUE,
+  dimy=TRUE,
+  dimz=TRUE,
+  features=NULL,
+  metadata=TRUE) {
+
+  nfeaturesBef <- nrow(x@own.expr)
+  ncellsBef <- ncol(x@own.expr)
+
+  ## Filter cells by dimension and cells
+  dimx <- rlang::enquo(dimx)
+  x@cell.locs <- subset(data.frame(x@cell.locs), subset = eval(rlang::quo_get_expr(dimx)))
+
+  dimy <- rlang::enquo(dimy)
+  x@cell.locs <- subset(data.frame(x@cell.locs), subset = eval(rlang::quo_get_expr(dimy)))
+
+  dimz <- rlang::enquo(dimz)
+  x@cell.locs <- subset(data.frame(x@cell.locs), subset = eval(rlang::quo_get_expr(dimz)))
+
+  cells <- rlang::enquo(cells)
+  x@own.expr <- subset(data.frame(x@own.expr), select = eval(rlang::quo_get_expr(cells)))
+
+  ## Filter metadata
+  metadata <- rlang::enquo(metadata)
+  x@meta.data <- subset(x@meta.data, subset = eval(rlang::quo_get_expr(metadata)))
+
+  ## Filter features
+  if(!(is.null(features))) {
+    x@own.expr <- x@own.expr[rownames(x@own.expr)%in%features,,drop=FALSE]
+    x@nbr.expr <- x@nbr.expr[rownames(x@nbr.expr)%in%paste0(features,'.nbr'),,drop=FALSE]
+    x@own.norm.scaled.expr <- x@own.norm.scaled.expr[rownames(x@own.norm.scaled.expr)%in%features,,drop=FALSE]
+    x@nbr.norm.scaled.expr <- x@nbr.norm.scaled.expr[rownames(x@nbr.norm.scaled.expr)%in%paste0(features,'.nbr'),,drop=FALSE]
+    x@custom.expr <- x@custom.expr[rownames(x@custom.expr)%in%features,,drop=FALSE]
+  }
+
+  ## Consistent Cell filtering
+  surviving_cells <- intersect(x@meta.data$cell_ID,
+                               intersect(colnames(x@own.expr), rownames(x@cell.locs)))
+  x@own.expr <- x@own.expr[,surviving_cells,drop=FALSE]
+  x@nbr.expr <- x@nbr.expr[,surviving_cells,drop=FALSE]
+  x@own.norm.scaled.expr <- x@own.norm.scaled.expr[,surviving_cells,drop=FALSE]
+  x@nbr.norm.scaled.expr <- x@nbr.norm.scaled.expr[,surviving_cells,drop=FALSE]
+  x@custom.expr <- x@custom.expr[,surviving_cells,drop=FALSE]
+  x@cell.locs <- x@cell.locs[surviving_cells,,drop=FALSE]
+  x@meta.data <- x@meta.data[x@meta.data$cell_ID %in% surviving_cells,,drop=FALSE]
+  x@dim.reduction <- lapply(x@dim.reduction, function(dim.red) {
+    dim.red <- dim.red[rownames(dim.red)%in%surviving_cells,,drop=FALSE]
+    dim.red
+  })
+
+  ## Report metrics
+  nfeaturesAft <- nrow(x@own.expr)
+  ncellsAft <- ncol(x@own.expr)
+  message('Before filtering: ', ncellsBef, ' cells and ', nfeaturesBef, ' genes.')
+  message('After filtering: ', ncellsAft, ' cells and ', nfeaturesAft, ' genes.')
+  message('Filtered ', ncellsBef - ncellsAft, ' cells and ', nfeaturesBef - nfeaturesAft, ' genes.')
+
+  return(x)
+}
+
+#' Compute Banksy Matrices
+#' @param bank BanksyObject
+#' @param normalizeColumns to normalize columns
+#' @param normalizeColumnsTo a scale factor
+#' @param zScaleRows to zscale rows
+#' @param zScaleBeforeAveraging to zscale before avg
+#' @param zScaleOwnAfterAveraging to zscale own after avg
+#' @param zScaleNbrAfterAveraging to zscale nbr after avg
+#' @param sigma sigma
+#' @param alpha alpha
+#' @param kspatial kspatial
+#' @param dimensions dims
+#' @param spatialMode spatialMode
+#' @param k_geom k_geom
+#'
+#' @importFrom Matrix t
+#' @importFrom data.table data.table setnames
+#'
+#' @return Banksy Object
+#'
+#' @export
+ComputeBanksy <- function(bank,
+                                  ## Normalization
+                                  normalizeColumns = TRUE,
+                                  normalizeColumnsTo = 100,
+                                  ## Scaling
+                                  zScaleRows = TRUE,
+                                  zScaleBeforeAveraging = FALSE,
+                                  zScaleOwnAfterAveraging = TRUE,
+                                  zScaleNbrAfterAveraging = TRUE,
+                                  ## For computing nbr matrix
+                                  sigma = 1.5,
+                                  alpha = 0.05,
+                                  kspatial = 1000,
+                                  dimensions = 'all',
+                                  spatialMode = 'kNN_r',
+                                  k_geom = 10) {
+
+
+  gcm <- .sparsify(bank@own.expr)
+
+  message('Performing normalization...')
+  if (normalizeColumns) {
+    gcm <- t(t(gcm)/colSums(gcm))*normalizeColumnsTo
+    bank@own.norm.scaled.expr <- gcm
+  }
+
+  if (zScaleRows & zScaleBeforeAveraging) {
+    gcm <- t(scale(t(gcm)))
+    bank@own.norm.scaled.expr <- gcm
+  }
+
+  locs <- data.table(bank@cell.locs, keep.rownames = TRUE)
+  setnames(locs, 'rn', 'cell_ID')
+
+  message('Computing Banksy matrices...')
+  banksyMatrices = compute.banksyMatrices(gcm, locs,
+                                          sigma=sigma,
+                                          alpha=alpha,
+                                          kspatial=kspatial,
+                                          dimensions = dimensions,
+                                          spatialMode = spatialMode ,
+                                          k_geom = k_geom)
+
+  bank@nbr.expr <- .framify(banksyMatrices$nbrMatrix)     ## called nbr_concat
+
+  if (zScaleRows){
+    if (zScaleOwnAfterAveraging) bank@own.norm.scaled.expr <- .framify(zScaleDatasets(banksyMatrices$cellMatrix))     ## called cell_expr_matrix_s
+    if (zScaleNbrAfterAveraging) bank@nbr.norm.scaled.expr <- .framify(zScaleDatasets(banksyMatrices$nbrMatrix))       ## called nbr_expr_matrix_s
+  }
+
+  return(bank)
+}
+
+#' Cluster based on joint expression matrix
+#'
+#' @param bank BanksyObject
+#' @param lambda lambda mixing
+#' @param resolution resolution
+#' @param kneighbours kneighbours (sNN)
+#' @param npcs num princ. comp.
+#' @param leiden_iters leiden iters
+#' @param pypath pypath
+#' @param use_docker use docker
+#' @param verbose messages
+#'
+#' @importFrom Giotto createGiottoInstructions createGiottoObject runPCA runUMAP
+#'   createNearestNetwork doLeidenCluster
+#'
+#' @return BanksyObject with cluster labels in meta.data
+#'
+#' @export
+ClusterBanksy <- function(bank,
+                          lambda = 0.5,
+                          resolution = 1.2,
+                          kneighbours = 30,
+                          npcs = 50,
+                          leiden_iters = -1,
+                          pypath = '/usr/bin/python3',
+                          use_docker = TRUE,
+                          verbose = FALSE) {
+
+  tic()
+  max_iters <- prod(length(lambda), length(resolution), length(kneighbours))
+  instrs = createGiottoInstructions(python_path = pypath,
+                                    show_plot = FALSE,
+                                    return_plot = TRUE,
+                                    save_plot = TRUE,
+                                    save_dir = '/data',
+                                    plot_format = 'png',
+                                    dpi = 300, height = 9, width = 9,
+                                    is_docker = use_docker)
+  iter = 1
+  message(paste0('Iteration ', iter, ' out of ', max_iters) )
+
+  for (lam in lambda) {
+
+    joint <- rbind(sqrt(1-lam)*bank@own.norm.scaled.expr,
+                   sqrt(lam)*bank@nbr.norm.scaled.expr)
+    giotto <- createGiottoObject(raw_exprs = joint,
+                                 norm_expr = joint,
+                                 norm_scaled_expr = joint,
+                                 spatial_locs = bank@cell.locs,
+                                 instructions = instrs)
+    if (verbose) message(paste0('Dimensionality reduction for Lambda=',lam))
+    giotto <- runPCA(giotto,
+                     expression_values = 'normalized',
+                     scale_unit = FALSE,
+                     ncp = npcs)
+    giotto <- runUMAP(giotto,
+                      expression_values = 'normalized',
+                      dimensions_to_use = 1:npcs)
+    bank@dim.reduction[[paste0('umap_', lam)]] <- giotto@dimension_reduction$cells$umap$umap$coordinates
+
+    for (res in resolution) {
+      for (k in kneighbours) {
+
+        if (verbose) message(paste0('Create Nearest Neighbour Network and perform Leiden clustering
+                                              for Lambda=',lam, ', Resolution=', res, ', K Neighbours=', k))
+        giotto <- createNearestNetwork(giotto,
+                                       dimensions_to_use = 1:npcs,
+                                       k = k)
+        giotto <- doLeidenCluster(giotto,
+                                  resolution = res,
+                                  n_iterations = leiden_iters,
+                                  name = paste0('res', res, '_lam', lam, '_k', k))
+        message(paste0('Finished clustering for Lambda=', lam, ', Resolution=', res, ', K Neighbours=', k))
+        iter <- iter + 1
+        if (iter <= max_iters) message(paste0('Iteration ', iter, ' out of ', max_iters) )
+
+      }
+    }
+
+    bank@meta.data <- cbind(bank@meta.data, giotto@cell_metadata[,-1])
+
+  }
+  toc()
+  return(bank)
+
+}
+
+
+#' Harmonise cluster labels among parameter runs
+#'
+#' @param bank Banksy Object
+#' @param verbose verbose or not
+#' @param optim optimise or not (KS-test)
+#'
+#' @importFrom Giotto getDistinctColors
+#' @importFrom stats median ks.test
+#' @importFrom plyr mapvalues
+#'
+#' @return BanksyObject with harmonised cluster labels
+#'
+#' @export
+ConnectClusters <- function(bank, verbose=FALSE, optim=TRUE) {
+
+  d <- bank@meta.data
+  clust <- d[,grep('^res', colnames(d)),drop=FALSE]
+  clustNames <- names(clust)
+
+  if (length(clustNames) == 1) {
+    message("Only one cluster.")
+    return(bank)
+  }
+
+  ## Init the new clustering output
+  newClust <- copy(clust)
+  ## Use median clusters as seed
+  numClust <- apply(clust, 2, function(x) length(unique(x)))
+  medClust <- median(numClust)
+  ## Get the clusters for each parameter run
+  allClust <- apply(clust, 2, unique)
+  ## Settle the parent cluster labels
+  parent <- max(which(numClust == medClust))
+  parentClusters <- allClust[[parent]]
+  newClust[,parent] <- plyr::mapvalues(clust[,parent],
+                                       from = parentClusters,
+                                       to = seq_len(medClust),
+                                       warn_missing = FALSE)
+  parentDist <- as.numeric(table(newClust[,parent]))
+  message(paste0('Mapping clusterings to ', clustNames[parent]))
+  ## The rest will be children
+  children <- setdiff(seq_len(ncol(clust)), parent)
+  child<-children[3]
+  ## Iterate over the clusters of the parent
+  for (child in children) {
+
+    message(paste0('Processing ', clustNames[child]))
+    ## Child-centered mapping approach
+    childClust <- sort(allClust[[child]], decreasing = FALSE)
+    childDist <- rep(0, medClust)
+
+    for (i in childClust) {
+
+      map <- factor(newClust[,parent][clust[,child]==i])
+      tab <- tabulate(map)
+      hit <- as.numeric(levels(map)[tab == max(tab)])
+
+      ## Optimize
+      if (optim & i > length(childClust) / 2 & length(tab) > 1) {
+        topn <- sort(tab, decreasing = TRUE)[seq_len(2)]
+        ambig <- min(topn)/max(topn) > 0.9
+        if (ambig) {
+          if (verbose) message(paste0('Ambiguous mapping for cluster ', i, ' - using KS-test'))
+          hits <- as.numeric(levels(map)[tab %in% topn])
+          test1 <- childDist + .init(medClust, hits[1],
+                                     tab[which(levels(map)==hits[1])])
+          test2 <- childDist + .init(medClust, hits[2],
+                                     tab[which(levels(map)==hits[2])])
+          stat1 <- ks.test(parentDist, jitter(test1), exact=FALSE)$stat
+          stat2 <- ks.test(parentDist, jitter(test2), exact=FALSE)$stat
+          hit <- ifelse(stat1 < stat2, hits[1], hits[2])
+        }
+      } else {
+        hit <- max(hit)
+      }
+      newClust[,child][clust[,child]==i] <- hit
+      childDist[hit] <- childDist[hit] + tab[hit]
+      childDist[is.na(childDist)] <- 0
+      if(verbose) message(paste0('Mapping child cluster ',
+                                 i , ' to parent cluster ', hit))
+    }
+  }
+  maxClust <- max(apply(newClust, 2, max))
+  fromMap <- seq_len(maxClust)
+  toMap <- Giotto::getDistinctColors(maxClust)
+  ## Define a color mapping
+  for (i in seq_len(ncol(newClust))) {
+    clustName <- names(newClust)[i]
+    colName <- paste0('col_', clustName)
+    plotCols <- plyr::mapvalues(newClust[,i],
+                                from = fromMap,
+                                to = toMap,
+                                warn_missing = FALSE)
+    newClust[,colName] <- plotCols
+  }
+  bank@meta.data <- cbind(cell_ID = bank@meta.data$cell_ID, newClust)
+  return(bank)
+}
+
 
 #' This function takes the gene-cell matrix and cell locations, and runs banksy.
 #'
@@ -16,7 +359,7 @@
 #' @param lambda lambda
 #' @param alpha alpha
 #' @param pcs pcs
-#' @param k_expr k_expr
+#' @param k_expr k_expr for shared neighbourhood clustering
 #' @param res res
 #' @param kspatial kspatial
 #' @param normalizeColumns norm

@@ -5,11 +5,28 @@
 # dfunction
 # all_plots_save_function
 # createHeatmap_DT
+# .sparsify
+# .framify
+# .init
 
 # Temporary - bad practice
 all_plots_save_function <- Giotto:::all_plots_save_function
 createHeatmap_DT <- Giotto:::createHeatmap_DT
 
+#' @importFrom Matrix Matrix
+.sparsify <- function(df) {
+  return(Matrix(as.matrix(df),sparse=TRUE))
+}
+
+.framify <- function(mat) {
+  return(as.data.frame(as.matrix(mat)))
+}
+
+.init <- function(n, idx, val) {
+  x <- rep(0, n)
+  x[idx] <- val
+  x
+}
 
 #' @importFrom data.table dcast.data.table
 dfunction <- function(d, col_name1, col_name2, value.var) {

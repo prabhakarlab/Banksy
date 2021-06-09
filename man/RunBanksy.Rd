@@ -56,7 +56,7 @@ sdimx     sdimy  sdimz    cell_ID}
 
 \item{pcs}{pcs}
 
-\item{k_expr}{k_expr}
+\item{k_expr}{k_expr for shared neighbourhood clustering}
 
 \item{res}{res}
 
