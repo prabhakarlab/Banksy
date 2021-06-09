@@ -4,7 +4,7 @@
 \alias{plotSpatialDims}
 \title{Plot Spatial dims}
 \usage{
-plotSpatialDims(bank, params, col = NULL, main = NULL, size = 1)
+plotSpatialDims(bank, params, col = NULL, main = NULL, pt.size = 1, main.size)
 }
 \arguments{
 \item{bank}{BanksyObject}
@@ -15,7 +15,9 @@ plotSpatialDims(bank, params, col = NULL, main = NULL, size = 1)
 
 \item{main}{title}
 
-\item{size}{size of points}
+\item{pt.size}{size of points}
+
+\item{main.size}{size of title}
 }
 \description{
 Plot Spatial dims

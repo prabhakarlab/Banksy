@@ -280,6 +280,8 @@ setMethod('show', signature(object = 'BanksyObject'),
             cat('dimension reductions:', names(object@dim.reduction), '\n')
           })
 
+#' @exportMethod head
+setGeneric('head', function(x) standardGeneric('head'))
 setMethod('head', signature(x = 'BanksyObject'),
           function(x, n=5) {
             cat('own expression:\n')

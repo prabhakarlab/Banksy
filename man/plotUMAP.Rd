@@ -4,7 +4,15 @@
 \alias{plotUMAP}
 \title{Plot UMAP}
 \usage{
-plotUMAP(bank, params, col = NULL, legend = TRUE, main = NULL, size = 1)
+plotUMAP(
+  bank,
+  params,
+  col = NULL,
+  legend = TRUE,
+  main = NULL,
+  pt.size = 1,
+  main.size = 1
+)
 }
 \arguments{
 \item{bank}{BanksyObject}
@@ -17,7 +25,9 @@ plotUMAP(bank, params, col = NULL, legend = TRUE, main = NULL, size = 1)
 
 \item{main}{title}
 
-\item{size}{size of points}
+\item{pt.size}{size of points}
+
+\item{main.size}{size of title}
 }
 \description{
 Plot UMAP

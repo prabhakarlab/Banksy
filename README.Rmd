@@ -19,13 +19,13 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-Banksy is an R packaged that incorporates spatial information to cluster cells 
+Banksy is an R package that incorporates spatial information to cluster cells 
 in a feature space (e.g. gene expression). Spatial information is incorporated 
 by averaging the features of the k nearest neighbours to generate new 
 'neighbour' features for a given cell. This is concatenated to the cell's own 
 features to generate a combined feature matrix which is used for constructing a 
-nearest neighbour network. Leiden clustering is used to obtain spatially-informed
-clusters.
+nearest neighbour network. Leiden clustering is used to obtain 
+spatially-informed clusters.
 
 ## Installation
 
@@ -42,13 +42,15 @@ library(Banksy)
 
 ### Input data
 
-Inputs consist of an expression matrix and cell locations. Sample data provided with the package:
+Inputs consist of an expression matrix and cell locations. Sample data provided
+with the package:
 ```{r}
 expr <- readRDS(system.file('/extdata/expression.rds', package = 'Banksy'))
 locs <- readRDS(system.file('/extdata/locations.rds', package = 'Banksy'))
 ```
 
-The gene expression matrix for cells should either be a `data.frame` or sparse matrix of class `dgCMatrix`:
+The gene expression matrix for cells should either be a `data.frame` or sparse 
+matrix of class `dgCMatrix`:
 ```{r}
 head(expr[,1:5])
 ```
@@ -66,7 +68,8 @@ bank <- BanksyObject(own.expr = expr,
                      cell.locs = locs)
 ```
 
-Compute the neighbour matrix, and scale and normalize matrix. The options below are defaults and listed for clarity.
+Compute the neighbour matrix, and scale and normalize matrix. The options below
+are defaults and listed for clarity.
 ```{r}
 bank <- ComputeBanksy(bank,
                       normalizeColumns = TRUE,
@@ -79,7 +82,8 @@ bank <- ComputeBanksy(bank,
 
 Obtain clusters for selected parameters.
 
-- `lambda` $\in[0,1]$. A mixing parameter which determines how much spatial information is incorporated.  
+- `lambda`. A mixing parameter from 0 to 1 which determines how much spatial 
+   information is incorporated.  
 - `resolution`. Leiden clustering resolution.  
 - `kneighbours`. Number of k neighbours to use for constructing sNN.
 ```{r}

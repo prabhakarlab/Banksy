@@ -11,10 +11,11 @@
 #' @param col cluster colours
 #' @param legend cluster legend
 #' @param main title
-#' @param size size of points
+#' @param pt.size size of points
+#' @param main.size size of title
 #'
 #' @importFrom ggplot2 ggplot geom_point aes xlab ylab theme_minimal ggtitle
-#'   scale_color_manual
+#'   scale_color_manual theme element_text
 #' @importFrom plyr mapvalues
 #'
 #' @return NULL
@@ -22,7 +23,7 @@
 #' @export
 plotUMAP <- function(bank, params,
                      col = NULL, legend = TRUE,
-                     main = NULL, size = 1) {
+                     main = NULL, pt.size = 1, main.size = 1) {
 
   clustnames <- names(bank@meta.data)
   clustnames <- clustnames[grep('^res', clustnames)]
@@ -41,7 +42,7 @@ plotUMAP <- function(bank, params,
     plotCols <- bank@meta.data[[paste0('col_', params)]]
     if (is.null(plotCols)) plotCols <- Giotto::getDistinctColors(n)
     else {
-      colMap <- bank@meta.data[!duplicated(bank@meta.data[[params]])]
+      colMap <- bank@meta.data[!duplicated(bank@meta.data[[params]]),]
       plotCols <- colMap[[paste0('col_', params)]][order(colMap[[params]])]
     }
   } else {
@@ -55,13 +56,12 @@ plotUMAP <- function(bank, params,
   names(plotData)[seq_len(2)] <- c('umap_1', 'umap_2')
 
   p <- ggplot(plotData, aes(x=umap_1, y=umap_2, col=Clust)) +
-    xlab('umap 1') + ylab('umap 2') + theme_minimal() + geom_point(size=size) +
+    xlab('umap 1') + ylab('umap 2') + theme_minimal() + geom_point(size=pt.size) +
     scale_color_manual(values=plotCols)
 
-  if (is.null(main)) {
-    p <- p + ggtitle(gsub('_', ' ', params))
-  }
-
+  if (!legend) p <- p + theme(legend.position = 'none')
+  if (is.null(main)) p <- p + ggtitle(gsub('_', ' ', params)) +
+    theme(plot.title = element_text(size = main.size))
   return(p)
 }
 
@@ -71,7 +71,8 @@ plotUMAP <- function(bank, params,
 #' @param params clustering run to plot by
 #' @param col colours
 #' @param main title
-#' @param size size of points
+#' @param pt.size size of points
+#' @param main.size size of title
 #'
 #' @importFrom ggplot2 ggplot geom_point aes xlab ylab theme_minimal ggtitle
 #' @importFrom plyr mapvalues
@@ -80,7 +81,8 @@ plotUMAP <- function(bank, params,
 #'
 #' @export
 plotSpatialDims <- function(bank, params,
-                            col = NULL, main = NULL, size = 1) {
+                            col = NULL, main = NULL,
+                            pt.size = 1, main.size) {
 
   clustnames <- names(bank@meta.data)
   clustnames <- clustnames[grep('^res', clustnames)]
@@ -109,11 +111,10 @@ plotSpatialDims <- function(bank, params,
   dimx <- dimy <- NULL
   plotData <- cbind(bank@cell.locs, plotCols)
   names(plotData)[seq_len(2)] <- c('dimx','dimy')
-  p <- ggplot(plotData, aes(x=dimx, y=dimy)) + geom_point(color=plotCols, size=size) +
+  p <- ggplot(plotData, aes(x=dimx, y=dimy)) + geom_point(color=plotCols, size=pt.size) +
     xlab('x coordinates') + ylab('y coordinates') + theme_minimal()
-  if (is.null(main)) {
-    p <- p + ggtitle(gsub('_', ' ', params))
-  }
+  if (is.null(main)) p <- p + ggtitle(gsub('_', ' ', params)) +
+    theme(plot.title = element_text(size = main.size))
 
   return(p)
 }

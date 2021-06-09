@@ -15,6 +15,8 @@ Description: Banksy is an R packaged that incorporates spatial information to
     generate new 'neighbour' features for a given cell. This is concatenated to
     the cell's own features to generate a combined block matrix which is used
     for constructing a nearest neighbour network and Leiden clustering.
+Depends:
+     R (>= 3.5.0)
 Imports:
     cowplot,
     data.table,
@@ -37,3 +39,8 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.0.2
+Suggests: 
+    knitr,
+    rmarkdown,
+    gridExtra
+VignetteBuilder: knitr
