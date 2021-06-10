@@ -82,7 +82,7 @@ plotUMAP <- function(bank, params,
 #' @export
 plotSpatialDims <- function(bank, params,
                             col = NULL, main = NULL,
-                            pt.size = 1, main.size) {
+                            pt.size = 1, main.size=1) {
 
   clustnames <- names(bank@meta.data)
   clustnames <- clustnames[grep('^res', clustnames)]

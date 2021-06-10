@@ -34,7 +34,7 @@ The joint matrix used for clustering is the (row) concatenation of
 $\sqrt{1-\lambda}\;G_O$ and $\sqrt{\lambda}\;G_N$.
 
 We demonstrate how a grid search of the parameter space can be performed.
-```{r setup}
+```{r setup, eval=T}
 library(Banksy)
 expr <- readRDS(system.file('/extdata/expression.rds', package = 'Banksy'))
 locs <- readRDS(system.file('/extdata/locations.rds', package = 'Banksy'))
@@ -47,7 +47,7 @@ bank <- ComputeBanksy(bank)
 
 Define a parameter space. We explore different combinations of `lambda` and 
 `resolution`, fixing `kneighbours`.
-```{r params}
+```{r params, eval=T}
 lambda <- seq(0, 0.75, by = 0.25)
 resolution <- seq(0.8, 1.2, by = 0.2)
 kneighbours <- 30
@@ -60,7 +60,7 @@ bank <- ClusterBanksy(bank,
 
 This populates the `meta.data` slot of the *BanksyObject* with cluster labels
 for each combination of parameters.
-```{r mdata}
+```{r mdata, eval=T}
 head(meta.data(bank)[,1:5])
 ```
 
@@ -70,7 +70,7 @@ To compare between clusters obtained with different combination of parameters
 (a parameter run), the *Banksy* package implements *ConnectClusters* which
 performs a mapping to harmonise cluster labels between different parameter runs.
 
-```{r connect}
+```{r connect, eval=T}
 bank <- ConnectClusters(bank)
 ```
 
@@ -78,22 +78,20 @@ This updates the `meta.data` slot with new cluster labels and colours that can
 be used for visualisation. We can visualise connected output as follows.
 
 First, obtain cluster names:
-```{r clustnames}
+```{r clustnames, eval=T}
 mdnames <- names(meta.data(bank))
 clustnames <- mdnames[grep("^res.*lam0\\.", mdnames)]
 clustnames
 ```
 
 Generate UMAPs and Spatial Dimension plots for the above clusters:
-```{r visual, fig.width=8, fig.height=8.5, fig.align='center'}
+```{r visual, fig.width=8, fig.height=8.5, fig.align='center', eval=T}
 umaps <- lapply(clustnames, function(param) plotUMAP(bank, param, 
                                                      legend = FALSE, 
                                                      pt.size = 0.01, main.size = 3))
 spatdims <- lapply(clustnames, function(param) plotSpatialDims(bank, param, 
                                                                pt.size = 0.01, main.size = 3))
 
-library(gridExtra)
-
-do.call("grid.arrange", c(umaps, ncol=3))
-do.call("grid.arrange", c(spatdims, ncol=3))
+#do.call("grid.arrange", c(umaps, ncol=3))
+#do.call("grid.arrange", c(spatdims, ncol=3))
 ```

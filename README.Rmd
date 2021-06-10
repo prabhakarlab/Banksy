@@ -96,12 +96,12 @@ bank <- ClusterBanksy(bank, lambda = 0.25,
 
 UMAP visualization:
 ```{r}
-plotUMAP(bank, params = 'res1.2_lam0.25_k30', size = 0.02)
+plotUMAP(bank, params = 'res1.2_lam0.25_k30', pt.size = 0.02)
 ```
 
 Spatial plot:
 ```{r}
-plotSpatialDims(bank, params = 'res1.2_lam0.25_k30', size = 0.02)
+plotSpatialDims(bank, params = 'res1.2_lam0.25_k30', pt.size = 0.5)
 ```
 
 ## Session information

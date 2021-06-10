@@ -1,0 +1,11 @@
+pandoc: 2.3.1
+pkgdown: 1.6.1
+pkgdown_sha: ~
+articles:
+  banksy-object: banksy-object.html
+  grid-search: grid-search.html
+last_built: 2021-06-10T17:02Z
+urls:
+  reference: https://jleechung.github.io/Banksy/reference
+  article: https://jleechung.github.io/Banksy/articles
+

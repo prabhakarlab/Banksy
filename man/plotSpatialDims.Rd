@@ -4,7 +4,14 @@
 \alias{plotSpatialDims}
 \title{Plot Spatial dims}
 \usage{
-plotSpatialDims(bank, params, col = NULL, main = NULL, pt.size = 1, main.size)
+plotSpatialDims(
+  bank,
+  params,
+  col = NULL,
+  main = NULL,
+  pt.size = 1,
+  main.size = 1
+)
 }
 \arguments{
 \item{bank}{BanksyObject}

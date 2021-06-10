@@ -1,0 +1,32 @@
+destination: docs
+
+url: https://jleechung.github.io/Banksy
+
+template:
+  bootstrap: 4
+  bootswatch: simplex
+
+reference:
+  - title: Main functions
+    contents:
+      - ComputeBanksy
+      - ClusterBanksy
+      - ConnectClusters
+      - SubsetBanksy
+  - title: Visualisation
+    contents:
+      - plotUMAP
+      - plotSpatialDims
+
+navbar:
+  title: ~
+  type: default
+  left:
+    - text: Functions
+      href: reference/index.html
+    - text: Articles
+      menu:
+      - text: Working with BanksyObjects
+        href: articles/banksy-object.html
+      - text: Finding optimal clustering parameters
+        href: articles/grid-search.html

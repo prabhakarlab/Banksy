@@ -7,7 +7,7 @@
 
 <!-- badges: end -->
 
-Banksy is an R packaged that incorporates spatial information to cluster
+Banksy is an R package that incorporates spatial information to cluster
 cells in a feature space (e.g. gene expression). Spatial information is
 incorporated by averaging the features of the k nearest neighbours to
 generate new ‘neighbour’ features for a given cell. This is concatenated
@@ -91,12 +91,12 @@ bank <- ComputeBanksy(bank,
 #> Performing normalization...
 #> Computing Banksy matrices...
 #> Spatial mode is kNN_r, k_geom = 10
-#> Banksy matrix: 75.37 sec elapsed
+#> Banksy matrix: 71.479 sec elapsed
 ```
 
 Obtain clusters for selected parameters.
 
-  - `lambda` \(\in[0,1]\). A mixing parameter which determines how much
+  - `lambda`. A mixing parameter from 0 to 1 which determines how much
     spatial information is incorporated.  
   - `resolution`. Leiden clustering resolution.  
   - `kneighbours`. Number of k neighbours to use for constructing sNN.
@@ -113,7 +113,7 @@ bank <- ClusterBanksy(bank, lambda = 0.25,
 #> Consider to install these (optional) packages to run all possible Giotto commands:  RTriangle FactoMiner
 #>  Giotto does not automatically install all these packages as they are not absolutely required and this reduces the number of dependencieshvg  was not found in the gene metadata information, all genes will be used
 #> Finished clustering for Lambda=0.25, Resolution=1.2, K Neighbours=30
-#> 35.895 sec elapsed
+#> 38.15 sec elapsed
 ```
 
 ### Visualization
@@ -121,7 +121,7 @@ bank <- ClusterBanksy(bank, lambda = 0.25,
 UMAP visualization:
 
 ``` r
-plotUMAP(bank, params = 'res1.2_lam0.25_k30', size = 0.02)
+plotUMAP(bank, params = 'res1.2_lam0.25_k30', pt.size = 0.02)
 ```
 
 <img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
@@ -129,7 +129,7 @@ plotUMAP(bank, params = 'res1.2_lam0.25_k30', size = 0.02)
 Spatial plot:
 
 ``` r
-plotSpatialDims(bank, params = 'res1.2_lam0.25_k30', size = 0.02)
+plotSpatialDims(bank, params = 'res1.2_lam0.25_k30', pt.size = 0.5)
 ```
 
 <img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
@@ -164,10 +164,10 @@ sessionInfo()
 #> [21] munsell_0.5.0      gtable_0.3.0       codetools_0.2-16   evaluate_0.14     
 #> [25] labeling_0.3       knitr_1.27         irlba_2.3.3        parallel_3.6.0    
 #> [29] Rcpp_1.0.5         scales_1.1.0       dbscan_1.1-5       RcppParallel_4.4.4
-#> [33] jsonlite_1.6       farver_2.0.3       RSpectra_0.16-0    ggplot2_3.3.2     
-#> [37] digest_0.6.19      stringi_1.4.5      dplyr_0.8.4        ggrepel_0.8.1     
-#> [41] cowplot_1.0.0      grid_3.6.0         tools_3.6.0        magrittr_1.5      
-#> [45] RcppAnnoy_0.0.14   tibble_2.1.3       crayon_1.3.4       pkgconfig_2.0.2   
-#> [49] Matrix_1.2-17      data.table_1.12.8  assertthat_0.2.1   rmarkdown_2.1     
-#> [53] R6_2.4.0           igraph_1.2.4.2     compiler_3.6.0
+#> [33] jsonlite_1.6       farver_2.0.3       RSpectra_0.16-0    gridExtra_2.3     
+#> [37] ggplot2_3.3.2      digest_0.6.19      stringi_1.4.5      dplyr_0.8.4       
+#> [41] ggrepel_0.8.1      cowplot_1.0.0      grid_3.6.0         tools_3.6.0       
+#> [45] magrittr_1.5       RcppAnnoy_0.0.14   tibble_2.1.3       crayon_1.3.4      
+#> [49] pkgconfig_2.0.2    Matrix_1.2-17      data.table_1.12.8  assertthat_0.2.1  
+#> [53] rmarkdown_2.1      R6_2.4.0           igraph_1.2.4.2     compiler_3.6.0
 ```
