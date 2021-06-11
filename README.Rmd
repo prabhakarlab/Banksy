@@ -92,6 +92,15 @@ bank <- ClusterBanksy(bank, lambda = 0.25,
                             kneighbours = 30)
 ```
 
+To explore the parameter space, one can provide sequences for the parameters:
+```{r, eval=F}
+## Not run
+bank <- ClusterBanksy(bank, 
+                      lambda = seq(0, 0.75, by = 0.25),
+                      resolution = seq(0.8, 1.2, by = 0.2),
+                      kneighbours = seq(30, 40, by = 10))
+```
+
 ### Visualization
 
 UMAP visualization:
@@ -102,6 +111,24 @@ plotUMAP(bank, params = 'res1.2_lam0.25_k30', pt.size = 0.02)
 Spatial plot:
 ```{r}
 plotSpatialDims(bank, params = 'res1.2_lam0.25_k30', pt.size = 0.5)
+```
+
+### Subsetting
+
+The *BanksyObject* can be subset by cells, features or metadata columns.
+```{r}
+bankSubset1 <- SubsetBanksy(bank,
+                              dimx = sdimx > 1000 & sdimx < 4000,
+                              dimy = sdimy > 2000 & sdimy < 3000,
+                              cells = c(cell_364, cell_367, cell_384,cell_389),
+                              features = sample(rownames(own.expr(bank)), 10))
+head(bankSubset1)
+```
+
+```{r}
+bankSubset2 <- SubsetBanksy(bank,
+                            metadata = res1.2_lam0.25_k30 %in% 1:4)
+plotSpatialDims(bankSubset2, params = 'res1.2_lam0.25_k30', pt.size = 0.5)
 ```
 
 ## Session information
