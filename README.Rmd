@@ -80,6 +80,11 @@ bank <- ComputeBanksy(bank,
                       zScaleNbrAfterAveraging = TRUE)
 ```
 
+At this point, the joint expression matrix (gene-cell matrix and neighbour feature-cell matrix) can be extracted with *getBanksyMatrix*:
+```{r}
+joint <- getBanksyMatrix(bank, lambda = 0.25)
+```
+
 Obtain clusters for selected parameters.
 
 - `lambda`. A mixing parameter from 0 to 1 which determines how much spatial 

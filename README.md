@@ -91,7 +91,14 @@ bank <- ComputeBanksy(bank,
 #> Performing normalization...
 #> Computing Banksy matrices...
 #> Spatial mode is kNN_r, k_geom = 10
-#> Banksy matrix: 72.075 sec elapsed
+#> Banksy matrix: 62.397 sec elapsed
+```
+
+At this point, the joint expression matrix (gene-cell matrix and
+neighbour feature-cell matrix) can be extracted with *getBanksyMatrix*:
+
+``` r
+joint <- getBanksyMatrix(bank, lambda = 0.25)
 ```
 
 Obtain clusters for selected parameters.
@@ -113,7 +120,7 @@ bank <- ClusterBanksy(bank, lambda = 0.25,
 #> Consider to install these (optional) packages to run all possible Giotto commands:  RTriangle FactoMiner
 #>  Giotto does not automatically install all these packages as they are not absolutely required and this reduces the number of dependencieshvg  was not found in the gene metadata information, all genes will be used
 #> Finished clustering for Lambda=0.25, Resolution=1.2, K Neighbours=30
-#> 31.61 sec elapsed
+#> 29.666 sec elapsed
 ```
 
 To explore the parameter space, one can provide sequences for the
@@ -135,7 +142,7 @@ UMAP visualization:
 plotUMAP(bank, params = 'res1.2_lam0.25_k30', pt.size = 0.02)
 ```
 
-<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
 
 Spatial plot:
 
@@ -143,7 +150,7 @@ Spatial plot:
 plotSpatialDims(bank, params = 'res1.2_lam0.25_k30', pt.size = 0.5)
 ```
 
-<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
 
 ### Subsetting
 
@@ -160,36 +167,36 @@ bankSubset1 <- SubsetBanksy(bank,
 #> Filtered 6721 cells and 130 genes.
 head(bankSubset1)
 #> own expression:
-#>       cell_364 cell_367 cell_384 cell_389
-#> Kcnk2        1        0        2        0
-#> Smad3        0        0        0        1
-#> Mbnl2        0        0        1        0
-#> Kcnb1        0        1        0        0
-#> Kcnh2        0        0        0        0
+#>         cell_364 cell_367 cell_384 cell_389
+#> Slc1a2         6        5       33        6
+#> Grm4           0        0        0        0
+#> Flt1           0        0        1        0
+#> Cacna1e        0        0        0        1
+#> Adamts2        0        0        0        0
 #> 
 #> neighbour expression:
-#>            cell_364   cell_367  cell_384  cell_389
-#> Kcnk2.nbr 0.5977260 1.45190090 0.3930451 0.5736008
-#> Smad3.nbr 0.8655534 0.76569545 0.6244239 0.7265251
-#> Mbnl2.nbr 0.9754141 0.80577407 0.7001038 1.2127452
-#> Kcnb1.nbr 1.1693191 0.43543322 0.7040063 0.5017471
-#> Kcnh2.nbr 0.1545952 0.08871605 0.0000000 0.1141272
+#>               cell_364   cell_367   cell_384   cell_389
+#> Slc1a2.nbr  11.3054557 14.9663042 12.9835741 11.3417701
+#> Grm4.nbr     0.9118782  0.9519174  0.7268138  0.4679934
+#> Flt1.nbr     0.3687012  1.0479533  1.3290719  0.7870465
+#> Cacna1e.nbr  0.9909432  0.9872081  0.9295227  0.3704704
+#> Adamts2.nbr  0.1261979  0.1027164  0.1666704  0.1786234
 #> 
 #> own normalized scaled expression:
-#>         cell_364   cell_367   cell_384   cell_389
-#> Kcnk2  2.6167077 -0.7374520  0.9565680 -0.7374520
-#> Smad3 -0.6349799 -0.6349799 -0.6349799  1.2142839
-#> Mbnl2 -0.7711258 -0.7711258 -0.2542574 -0.7711258
-#> Kcnb1 -0.6481804  2.4259716 -0.6481804 -0.6481804
-#> Kcnh2 -0.4112872 -0.4112872 -0.4112872 -0.4112872
+#>           cell_364   cell_367   cell_384   cell_389
+#> Slc1a2   1.1603457  0.2510181  2.0340135 -0.1501558
+#> Grm4    -0.6799992 -0.6799992 -0.6799992 -0.6799992
+#> Flt1    -0.3653916 -0.3653916  0.0225537 -0.3653916
+#> Cacna1e -0.6094535 -0.6094535 -0.6094535  1.0911288
+#> Adamts2 -0.4211489 -0.4211489 -0.4211489 -0.4211489
 #> 
 #> neighbour normalized scaled expression:
-#>             cell_364   cell_367   cell_384   cell_389
-#> Kcnk2.nbr -0.5032300  1.0233397 -0.8690328 -0.5463461
-#> Smad3.nbr  0.8297271  0.5464924  0.1457932  0.4353906
-#> Mbnl2.nbr -0.5451935 -0.7235306 -0.8346183 -0.2956952
-#> Kcnb1.nbr  1.2422130 -0.3770391  0.2155428 -0.2307235
-#> Kcnh2.nbr -0.4022933 -0.4564292 -0.5293313 -0.4355477
+#>                cell_364    cell_367    cell_384    cell_389
+#> Slc1a2.nbr  -0.04780222  0.55959368  0.23062565 -0.04177705
+#> Grm4.nbr     0.30465882  0.37637906 -0.02683804 -0.49045043
+#> Flt1.nbr    -0.56636798  0.08228811  0.35074399 -0.16686647
+#> Cacna1e.nbr  0.75835950  0.75109842  0.63895757 -0.44784377
+#> Adamts2.nbr -0.49191500 -0.60608629 -0.29512972 -0.23701190
 #> 
 #> cell locations:
 #>             sdimx    sdimy
@@ -215,7 +222,7 @@ bankSubset2 <- SubsetBanksy(bank,
 plotSpatialDims(bankSubset2, params = 'res1.2_lam0.25_k30', pt.size = 0.5)
 ```
 
-<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
 
 ## Session information
 
