@@ -276,7 +276,8 @@ ConnectClusters <- function(bank, verbose=FALSE, optim=TRUE) {
   ## Get the clusters for each parameter run
   allClust <- apply(clust, 2, unique)
   ## Settle the parent cluster labels
-  parent <- max(which(numClust == medClust))
+  #parent <- max(which(numClust == medClust))
+  parent <- which.min(abs(numClust - medClust))
   parentClusters <- allClust[[parent]]
   newClust[,parent] <- plyr::mapvalues(clust[,parent],
                                        from = parentClusters,
