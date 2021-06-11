@@ -281,7 +281,7 @@ ConnectClusters <- function(bank, verbose=FALSE, optim=TRUE) {
   parentClusters <- allClust[[parent]]
   newClust[,parent] <- plyr::mapvalues(clust[,parent],
                                        from = parentClusters,
-                                       to = seq_len(medClust),
+                                       to = seq_len(length(unique(parentClusters))),
                                        warn_missing = FALSE)
   parentDist <- as.numeric(table(newClust[,parent]))
   message(paste0('Mapping clusterings to ', clustNames[parent]))
