@@ -14,6 +14,3 @@ Giotto::normalizeGiotto
 #' @export
 data.table::copy
 
-#' @importFrom gridExtra grid.arrange
-#' @export
-gridExtra::grid.arrange

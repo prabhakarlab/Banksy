@@ -7,7 +7,6 @@
 \alias{createGiottoObject}
 \alias{normalizeGiotto}
 \alias{copy}
-\alias{grid.arrange}
 \title{Objects exported from other packages}
 \keyword{internal}
 \description{
@@ -18,7 +17,5 @@ below to see their documentation.
   \item{Giotto}{\code{\link[Giotto]{createGiottoInstructions}}, \code{\link[Giotto]{createGiottoObject}}, \code{\link[Giotto]{normalizeGiotto}}}
 
   \item{data.table}{\code{\link[data.table]{copy}}}
-
-  \item{gridExtra}{\code{\link[gridExtra]{grid.arrange}}}
 }}
 

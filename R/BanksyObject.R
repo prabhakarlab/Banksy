@@ -280,7 +280,10 @@ setMethod('show', signature(object = 'BanksyObject'),
             cat('dimension reductions:', names(object@dim.reduction), '\n')
           })
 
+#' @param x BanksyObject
+#' @aliases head,BanksyObject-class
 #' @exportMethod head
+#' @describeIn BanksyObject-class head for banksy object
 setGeneric('head', function(x) standardGeneric('head'))
 setMethod('head', signature(x = 'BanksyObject'),
           function(x, n=5) {

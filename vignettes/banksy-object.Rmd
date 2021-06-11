@@ -21,13 +21,13 @@ with it.
 
 An object of the *BanksyObject* class can be constructed as follows:
 
-```{r setup, eval=T}
+```{r setup, eval=F}
 library(Banksy)
 bank <- BanksyObject()
 ```
 
 *BanksyObject* has the following slots:
-```{r slotnm, eval=T}
+```{r slotnm, eval=F}
 slotNames(bank)
 ```
 
@@ -45,14 +45,14 @@ slotNames(bank)
 
 Getter and setter methods are defined for each of these slots.
 To illustrate these functionalities, we use the data attached with the package.
-```{r rdata, eval=T}
+```{r rdata, eval=F}
 expr <- readRDS(system.file('/extdata/expression.rds', package = 'Banksy'))
 locs <- readRDS(system.file('/extdata/locations.rds', package = 'Banksy'))
 ```
 
 The *BanksyObject* can be constructed by supplying the gene-cell expression 
 matrix and cell locations. 
-```{r construct, eval=T}
+```{r construct, eval=F}
 bank <- BanksyObject(own.expr = expr,
                      cell.locs = locs)
 
@@ -62,7 +62,7 @@ The dataset consists of 6725 cells, 140 genes, with 2 spatial dimensions.
 
 Calling *ComputeBanksy* computes the neighbour feature-cell expression matrix, 
 and the normalized / scaled matrices (if applicable). 
-```{r compute, eval=T}
+```{r compute, eval=F}
 bank <- ComputeBanksy(bank)
 head(bank)
 ```
@@ -72,7 +72,7 @@ This function populates the `nbr.expr`, `own.norm.scaled.expr` and
 
 We compute cluster information based on the gene-cell and neighbour feature-cell 
 matrix.
-```{r cluster, eval=T}
+```{r cluster, eval=F}
 bank <- ClusterBanksy(bank)
 ```
 
@@ -82,7 +82,7 @@ bank <- ClusterBanksy(bank)
 cells, and metadata columns. The *BanksyObject* can be subset by dimensions with
 logical unquoted conditions. The variables here (e.g. `sdimx`) must correspond
 to the columns names of the `cell.locs(bank)`. 
-```{r subset1, eval=T}
+```{r subset1, eval=F}
 bankSubsetDim <- SubsetBanksy(bank,
                               dimx = sdimx > 1000 & sdimx < 4000,
                               dimy = sdimy > 2000 & sdimy < 3000)
@@ -90,7 +90,7 @@ head(bankSubsetDim)
 ```
 
 The object can also be subset by cells with logical unquoted conditions:
-```{r subset2, eval=T}
+```{r subset2, eval=F}
 bankSubsetCells <- SubsetBanksy(bank,
                                 cells = c(cell_364, cell_367, cell_384, cell_389))
 ```
@@ -98,14 +98,14 @@ bankSubsetCells <- SubsetBanksy(bank,
 Similarly, the object can also be subset by any metadata column with logical 
 unquoted conditions. Here, we select cells in clusters 4 to 6 based on the 
 clustering with `res=1.2`, `lam=0.5`, `k=30`. 
-```{r subset3, eval=T}
+```{r subset3, eval=F}
 bankSubsetMeta <- SubsetBanksy(bank,
                                metadata = res1.2_lam0.5_k30 %in% 4:6)
 ```
 
 Subsetting by genes can be achieved by supplying a character vector of genes
 to the `features` argument.
-```{r subset4, eval=T}
+```{r subset4, eval=F}
 set.seed(42)
 genes <- sample(rownames(own.expr(bank)), 10)
 bankSubsetFeatures <- SubsetBanksy(bank,

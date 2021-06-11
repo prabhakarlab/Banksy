@@ -184,6 +184,9 @@ ClusterBanksy <- function(bank,
                           use_docker = TRUE,
                           verbose = FALSE) {
 
+  message(paste0("Change python path pypath if necessary: ", pypath))
+  message(paste0("Change docker use use_docker if necessary: ", use_docker))
+
   tic()
   max_iters <- prod(length(lambda), length(resolution), length(kneighbours))
   instrs = createGiottoInstructions(python_path = pypath,
@@ -344,6 +347,26 @@ ConnectClusters <- function(bank, verbose=FALSE, optim=TRUE) {
   return(bank)
 }
 
+#' Returns the Banksy matrix (own + nbr)
+#'
+#' @param bank Banksy Object
+#' @param lambda lambda
+#' @param transformed return the normalized scaled matrix
+#'
+#' @return BanksyMatrix
+#'
+#' @export
+getBanksyMatrix <- function(bank, lambda = 0.25, transformed = TRUE) {
+
+  if (transformed) {
+    joint <- rbind(sqrt(1-lambda)*bank@own.norm.scaled.expr,
+                 sqrt(lambda)*bank@nbr.norm.scaled.expr)
+  } else {
+    joint <- rbind(sqrt(1-lambda)*bank@own.expr,
+                   sqrt(lambda)*bank@nbr.expr)
+  }
+  return(joint)
+}
 
 #' This function takes the gene-cell matrix and cell locations, and runs banksy.
 #'

@@ -36,6 +36,8 @@
 \alias{meta.data<-,BanksyObject,data.frame-method}
 \alias{dim.reduction<-}
 \alias{dim.reduction<-,BanksyObject,list-method}
+\alias{head}
+\alias{head,BanksyObject-class}
 \title{S4 class BanksyObject}
 \usage{
 BanksyObject(
@@ -112,6 +114,8 @@ meta.data(object) <- value
 dim.reduction(object) <- value
 
 \S4method{dim.reduction}{BanksyObject,list}(object) <- value
+
+head(x, ...)
 }
 \arguments{
 \item{own.expr}{own expression}
@@ -133,6 +137,8 @@ dim.reduction(object) <- value
 \item{object}{BanksyObject}
 
 \item{value}{to be assigned}
+
+\item{x}{BanksyObject}
 }
 \value{
 BanksyObject
@@ -205,6 +211,8 @@ S4 class BanksyObject
 \item \code{dim.reduction<-}: setter for dim.reduction
 
 \item \code{dim.reduction<-,BanksyObject,list-method}: setter for dim.reduction
+
+\item \code{head}: head for banksy object
 }}
 
 \section{Slots}{
