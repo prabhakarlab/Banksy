@@ -1,0 +1,31 @@
+---
+title: "Integrating Banksy with other packages"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Integrating Banksy with other packages}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This article describes integration of *Banksy* with two other packages used for
+single-cell and spatial transcriptomic analyses, *Seurat* and *Giotto*. 
+
+```{r setup, eval=F}
+library(Banksy)
+
+expr <- as.matrix(readRDS(system.file('/extdata/expression.rds', package = 'Banksy')))
+locs <- readRDS(system.file('/extdata/locations.rds', package = 'Banksy'))
+bank <- BanksyObject(own.expr = expr,
+                     cell.locs = locs)
+bank <- NormalizeBanksy(bank)
+bank <- ComputeBanksy(bank)
+bank <- ScaleBanksy(bank)
+joint <- getBanksyMatrix(bank)
+```
