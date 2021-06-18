@@ -1,41 +1,77 @@
-# compute.banksyMatrices
-# zScaleDatasets
-# splitByDataset
-# addClippedZCustomExpr
-# dfunction
-# all_plots_save_function
-# createHeatmap_DT
-# .sparsify
-# .framify
-# .init
+# normalizer in NormalizeBanksy
+# scaler in ScaleBanksy
+# geneFilter in BanksyObject
+# .init in ConnectClusters
+# compute.banksyMatrices in ComputeBanksy
 
-# Temporary - bad practice
-all_plots_save_function <- Giotto:::all_plots_save_function
-createHeatmap_DT <- Giotto:::createHeatmap_DT
 
-#' @importFrom Matrix Matrix
-.sparsify <- function(df) {
-  return(Matrix(as.matrix(df),sparse=TRUE))
+#' @importFrom collapse `%c/%`
+normalizer <- function(x, normFactor) {
+    x <- t(t(x) %c/% colSums(x)) * normFactor
+    return(x)
 }
 
-.framify <- function(mat) {
-  return(as.data.frame(as.matrix(mat)))
+#' @importFrom collapse fscale
+scaler <- function(x) {
+    x <- t(collapse::fscale(t(x)))
+    x[is.nan(x)] <- 0
+    return(x)
 }
 
-.init <- function(n, idx, val) {
+geneFilter <- function(x, genes.filter, min.cells.expressed) {
+
+    ngenesBef <- sapply(x, function(x) dim(x)[1])
+
+    if (genes.filter == 'union') {
+        all.genes <- Reduce(union, lapply(x, rownames))
+        x <- lapply(x, function(x) {
+        genes <- setdiff(all.genes, rownames(x))
+          if (length(genes) == 0) {
+              return(x)
+          } else {
+          append <- matrix(0, nrow = length(genes), ncol = ncol(x))
+          colnames(append) <- colnames(x)
+          rownames(append) <- genes
+          x <- rbind(x, append)
+          return(x)
+          }
+        })
+    } else if (genes.filter == 'intersect') {
+        common.genes <- Reduce(intersect, lapply(x, rownames))
+        x <- lapply(x, function(x) x[rownames(x) %in% common.genes,])
+    }
+
+    if (min.cells.expressed > 0) {
+        message(paste0('Filering genes expressed in less than ', min.cells.expressed, ' cells'))
+        pass.genes <- lapply(x, function(x) rownames(x)[rowSums(x > 0) >= min.cells.expressed])
+        pass.genes <- Reduce(intersect, pass.genes)
+        x <- lapply(x, function(x) x[rownames(x) %in% pass.genes,])
+        ngenesAft <- sapply(x, function(x) dim(x)[1])
+        filt <- ngenesBef - ngenesAft
+        for (i in seq_len(length(x))) {
+            message(paste0('Filtered ', filt[i], ' genes from dataset ',
+                     names(x)[i]))
+        }
+
+    }
+
+    ## Harmonise gene name orderings
+    gene.names <- sort(rownames(x[[1]]))
+    x <- lapply(x, function(x) {
+      x[match(gene.names, rownames(x)),]
+    })
+
+    return(x)
+}
+
+init <- function(n, idx, val) {
   x <- rep(0, n)
   x[idx] <- val
   x
 }
 
-#' @importFrom data.table dcast.data.table
-dfunction <- function(d, col_name1, col_name2, value.var) {
-  dcast.data.table(d, paste(col_name1, "~", col_name2), value.var = value.var)
-}
-
 #' @importFrom data.table as.data.table setDT `:=`
 #' @importFrom dbscan kNN
-#' @importFrom Matrix t
 #' @importFrom stats median dnorm
 #' @importFrom tictoc tic toc
 compute.banksyMatrices <- function(gcm, locs,
@@ -56,7 +92,7 @@ compute.banksyMatrices <- function(gcm, locs,
     spatial_locations =
       spatial_locations[, grepl("sdim",
                                 colnames(spatial_locations)),
-                        with = F]
+                        with = FALSE]
     if (dimensions != "all") {
       spatial_locations = spatial_locations[, dimensions]
     }
@@ -200,108 +236,13 @@ compute.banksyMatrices <- function(gcm, locs,
     banksyMatrices = list(cellMatrix = cell_expr_matrix, nbrMatrix = nbr_expr_matrix)
 
     toc()
-    return(banksyMatrices)
+    return(nbr_expr_matrix)
 }
 
-#' @importFrom Matrix t
-zScaleDatasets <- function(dataArray, multiple_datasets = FALSE,
-                           zScaleDatasetsIndividually = TRUE,
-                           cells_split_by_dataset=NULL){
-    # dataArray is a matrix of genes (rows) by cells (columns). The cells are labelled as
-    # <datasetID>__cell_1234
-    # we use this to subset the matrices for the individual zScaling.
-    # Actually, in this initial version, we do not do this, and instead use the
-    # cells_split_by_dataset array to subset out the cells.
-    zScaledDataArray=NULL
-
-    if (multiple_datasets){
-        # print('1')
-        # str(zScaledDataArray)
-        # str(dataArray)
-        if (zScaleDatasetsIndividually){
-            # print('2')
-            # str(zScaledDataArray)
-            # str(dataArray)
-            splittedData = splitByDataset(dataArray=dataArray,locsArray = NULL,
-                                      cells_split_by_dataset=cells_split_by_dataset)
-
-            datasetNames = names(splittedData$expressionList)
-            # print('2.5')
-            # str(splittedData)
-            # str(datasetNames)
-            numDatasets = length(datasetNames)
-            for (dataset_name in datasetNames){
-                current_dataset = splittedData$expressionList[[dataset_name]] #dataArray[,current_cell_IDs]
-                current_dataset = t(scale(t(current_dataset)))
-                zScaledDataArray = cbind(zScaledDataArray, current_dataset)
-                # print('3')
-                # str(zScaledDataArray)
-            }
-      } else { # zScale all the datasets as one.
-            # Not a good idea if the datasets represent different batches, like in the brain organoid data.
-            # Possibly a good idea if they simply represent non-adjacent FOVs, like in the MIBI-TOF dataset.
-            zScaledDataArray = t(scale(t(dataArray)))
-      }
-    } else { #if there is only one dataset, then we just zscale it.
-          zScaledDataArray = t(scale(t(dataArray)))
-    }
-    # print('4')
-    # str(zScaledDataArray)
-    # str(dataArray)
-    return(zScaledDataArray)
-}
-
-splitByDataset <- function(dataArray=NULL, locsArray=NULL, cells_split_by_dataset=NULL){
-    datasetNames = names(cells_split_by_dataset)
-    numDatasets = length(datasetNames)
-    dataArrayList = vector(mode = "list", length = 0) # very important to not initialize lists with NULL. does not work.
-    locsArrayList = vector(mode = "list", length = 0)
-    for (dataset_name in datasetNames){
-        current_cell_IDs = cells_split_by_dataset[[dataset_name]]
-        if (!is.null(dataArray)){
-            dataArrayList[[dataset_name]] = dataArray[,current_cell_IDs]
-        }
-        if (!is.null(locsArray)){
-            locsArrayList[[dataset_name]] = locsArray[current_cell_IDs,]
-        }
-    }
-    outputList = list(expressionList = NULL, locsList = NULL)
-    if (!is.null(dataArray)){
-        outputList$expressionList = dataArrayList
-    }
-    if (!is.null(locsArray)){
-        outputList$locsList = locsArrayList
-    }
-    return(outputList)
-}
-
-addClippedZCustomExpr <- function(gobject,
-                                  pairConnectedOutput,
-                                  sweepresults,
-                                  sweepNum = 1,
-                                  upper_clip = 2,
-                                  lower_clip = -2){
-  i = sweepNum
-  gridSize = dim(sweepresults$clusteringNames)
-  currName = names(pairConnectedOutput$clusterings)[i]
-  current_row_in_grid = floor((i-1)/gridSize[2]+1) # i is counting row wise.
-  current_col_in_grid = i - gridSize[2]*(floor((i-1)/gridSize[2]))
-  name_from_grid = sweepresults$clusteringNames[[current_row_in_grid, current_col_in_grid]]
-  name_from_clusteringDF = currName
-  if (name_from_grid != name_from_clusteringDF){
-    stop("The clustering being referred to in the grid and the clusteringDF should be the same. Probably a row wise vs col wise indexing issue.")
-  }
-
-  own_expr_s = sweepresults$ownExpScaledMatrix
-  nbr_expr_s = sweepresults$nbrExpScaledMatrix
-
-  currlam = sweepresults$banksyParamsList[[current_row_in_grid, current_col_in_grid]]$lambda
-  gobject@norm_scaled_expr = rbind(sqrt(1-currlam)*own_expr_s, sqrt(currlam)*nbr_expr_s)
-
-
-  currGexp = gobject@norm_scaled_expr
-  currGexp[currGexp > upper_clip] = upper_clip
-  currGexp[currGexp < lower_clip] = lower_clip
-  gobject@custom_expr = currGexp
-  return(gobject)
+#' @importFrom pals kelly glasbey polychrome
+getPalette <- function(n) {
+  all.cols <- as.character(pals::kelly()[-c(1,3)],
+                           pals::glasbey(),
+                           pals::polychrome())
+  return(all.cols[seq_len(n)])
 }

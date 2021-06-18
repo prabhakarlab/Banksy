@@ -2,41 +2,37 @@
 #'
 #' @slot own.expr own expression
 #' @slot nbr.expr neighbour expression
-#' @slot own.norm.scaled.expr own norm/scaled expression
-#' @slot nbr.norm.scaled.expr neighbour norm/scaled expression
 #' @slot custom.expr custom expression
 #' @slot cell.locs cell locations
 #' @slot meta.data metadata
 #' @slot dim.reduction dimension reductions
 #'
-#' @importClassesFrom Matrix dgCMatrix
+# #' @importClassesFrom Matrix dgCMatrix
 #'
 #' @name BanksyObject-class
 #' @rdname BanksyObject-class
 #'
 #' @exportClass BanksyObject
-setClassUnion('assay', c('data.frame', 'dgCMatrix', 'NULL'))
-setClassUnion('listN', c('list', 'NULL'))
+setClassUnion('assay', c('data.frame', 'matrix', 'list', 'NULL'))
 setClass('BanksyObject',
          slots = list(own.expr = 'assay',
                       nbr.expr = 'assay',
-                      own.norm.scaled.expr = 'assay',
-                      nbr.norm.scaled.expr = 'assay',
                       custom.expr = 'assay',
                       cell.locs = 'assay',
                       meta.data = 'data.frame',
-                      dim.reduction = 'listN'
+                      dim.reduction = 'assay'
          ))
 
 ## Constructor -----------------------------------------------------------------
 #' @param own.expr own expression
 #' @param nbr.expr neighbour expression
-#' @param own.norm.scaled.expr own norm/scaled expression
-#' @param nbr.norm.scaled.expr neighbour norm/scaled expression
 #' @param custom.expr custom expression
 #' @param cell.locs cell locations
 #' @param meta.data metadata
 #' @param dim.reduction dimension reductions
+#' @param genes.filter intersect or union
+#' @param min.cells.expressed min number of cells a gene is expressed in
+#'   (to be used with intersect)
 #'
 #' @name BanksyObject
 #' @rdname BanksyObject-class
@@ -49,24 +45,84 @@ setClass('BanksyObject',
 BanksyObject <-
   function(own.expr = NULL,
            nbr.expr = NULL,
-           own.norm.scaled.expr = NULL,
-           nbr.norm.scaled.expr = NULL,
            custom.expr = NULL,
            cell.locs = NULL,
            meta.data = data.frame(),
-           dim.reduction = NULL) {
-    object <- new('BanksyObject',
-                  own.expr = own.expr,
-                  nbr.expr = nbr.expr,
-                  own.norm.scaled.expr = own.norm.scaled.expr,
-                  nbr.norm.scaled.expr = nbr.norm.scaled.expr,
-                  custom.expr = custom.expr,
-                  cell.locs = cell.locs,
-                  meta.data = meta.data,
-                  dim.reduction = dim.reduction)
-    if (!is.null(own.expr)) {
-      meta.data(object) <- data.frame(cell_ID = colnames(own.expr))
+           dim.reduction = NULL,
+           genes.filter = 'intersect',
+           min.cells.expressed = -1) {
+
+    dimnames <- paste0('sdim', c('x', 'y','z'))
+    object <- new('BanksyObject')
+
+    # Multiple dataset case
+    if (is.list(own.expr)) {
+
+      if (length(own.expr) != length(cell.locs)) {
+        stop('Require equal number of expression and location assays')
+      }
+
+      # Names
+      nassays <- length(own.expr)
+      if (is.null(names(own.expr))) {
+        names(own.expr) <- paste0('d', seq_len(nassays))
+        names(cell.locs) <- paste0('d', seq_len(nassays))
+
+      }
+
+      # Filter genes
+      own.expr <- geneFilter(own.expr,
+                             genes.filter,
+                             min.cells.expressed)
+
+      for (i in seq_len(nassays)) {
+        gcm <- own.expr[[i]]
+        locs <- cell.locs[[i]]
+        locs <- locs[match(colnames(gcm), rownames(locs)), ]
+        if (!identical(colnames(gcm), rownames(locs))) {
+          stop(paste0('Ensure cell locations correspond to gene-cell matrix for ', names(own.expr)[i]))
+        }
+        gcm <- as.matrix(gcm)
+        colnames(gcm) <- paste0(names(own.expr)[i], '_', colnames(gcm))
+        names(locs) <- dimnames[seq_len(ncol(locs))]
+        rownames(locs) <- colnames(gcm)
+        own.expr[[i]] <- gcm
+        cell.locs[[i]] <- locs
+      }
+
+      # Metadata
+      cells <- unlist(lapply(own.expr, colnames))
+      ncells <- sapply(own.expr, ncol)
+      dnames <- rep(names(own.expr), ncells)
+      nfeatures = unlist(lapply(own.expr, colSums))
+      mdata <- data.frame(cell_ID = cells,
+                          dataset = dnames,
+                          n_features = nfeatures)
+    } else if (!is.null(own.expr)) {
+
+      if (is.null(cell.locs)) {
+        stop('Provide cell location assay')
+      }
+
+      own.expr <- as.matrix(own.expr)
+      own.expr <- own.expr[rowSums(own.expr > 0) >= min.cells.expressed, ]
+
+      names(cell.locs) <- dimnames[seq_len(ncol(cell.locs))]
+      cell.locs <- cell.locs[match(colnames(own.expr), rownames(cell.locs)), ]
+
+      if (!identical(colnames(own.expr), rownames(locs))) {
+        stop('Ensure cell locations correspond to gene-cell matrix.')
+      }
+      mdata <- data.frame(cell_ID = colnames(own.expr),
+                          n_features = colSums(own.expr))
+
+    } else {
+      return(object)
     }
+
+    object@own.expr <- own.expr
+    object@meta.data <- mdata
+    object@cell.locs <- cell.locs
     return(object)
   }
 
@@ -75,12 +131,10 @@ setValidity('BanksyObject', function(object) {
   check <- TRUE
   if (!is(object@own.expr, 'assay')) check <- FALSE
   if (!is(object@nbr.expr, 'assay')) check <- FALSE
-  if (!is(object@own.norm.scaled.expr, 'assay')) check <- FALSE
-  if (!is(object@nbr.norm.scaled.expr, 'assay')) check <- FALSE
   if (!is(object@custom.expr, 'assay')) check <- FALSE
   if (!is(object@cell.locs, 'assay')) check <- FALSE
   if (!is(object@meta.data, 'data.frame')) check <- FALSE
-  if (!is(object@dim.reduction, 'listN')) check <- FALSE
+  if (!is(object@dim.reduction, 'assay')) check <- FALSE
   return(check)
 })
 
@@ -101,20 +155,6 @@ setGeneric('nbr.expr', function(object) standardGeneric('nbr.expr'))
 #' @describeIn BanksyObject-class getter nbr.expr
 setMethod('nbr.expr', signature(object = 'BanksyObject'),
           function(object) return(object@nbr.expr))
-
-#' @describeIn BanksyObject-class getter own.norm.scaled.expr
-#' @exportMethod own.norm.scaled.expr
-setGeneric('own.norm.scaled.expr', function(object) standardGeneric('own.norm.scaled.expr'))
-#' @describeIn BanksyObject-class getter own.norm.scaled.expr
-setMethod('own.norm.scaled.expr', signature(object = 'BanksyObject'),
-          function(object) return(object@own.norm.scaled.expr))
-
-#' @describeIn BanksyObject-class getter nbr.norm.scaled.expr
-#' @exportMethod nbr.norm.scaled.expr
-setGeneric('nbr.norm.scaled.expr', function(object) standardGeneric('nbr.norm.scaled.expr'))
-#' @describeIn BanksyObject-class getter nbr.norm.scaled.expr
-setMethod('nbr.norm.scaled.expr', signature(object = 'BanksyObject'),
-          function(object) return(object@nbr.norm.scaled.expr))
 
 #' @describeIn BanksyObject-class getter custom.expr
 #' @exportMethod custom.expr
@@ -176,32 +216,6 @@ setReplaceMethod('nbr.expr', signature(object = 'BanksyObject', value = 'assay')
                  })
 
 #' @importFrom methods validObject
-#' @describeIn BanksyObject-class setter for own.norm.scaled.expr
-#' @exportMethod own.norm.scaled.expr<-
-setGeneric('own.norm.scaled.expr<-',
-           function(object, value) standardGeneric('own.norm.scaled.expr<-'))
-#' @describeIn BanksyObject-class setter for own.norm.scaled.expr
-setReplaceMethod('own.norm.scaled.expr', signature(object = 'BanksyObject', value = 'assay'),
-                 function(object, value) {
-                   object@own.norm.scaled.expr <- value
-                   validObject(object)
-                   return(object)
-                 })
-
-#' @importFrom methods validObject
-#' @describeIn BanksyObject-class setter for nbr.norm.scaled.expr
-#' @exportMethod nbr.norm.scaled.expr<-
-setGeneric('nbr.norm.scaled.expr<-',
-           function(object, value) standardGeneric('nbr.norm.scaled.expr<-'))
-#' @describeIn BanksyObject-class setter for nbr.norm.scaled.expr
-setReplaceMethod('nbr.norm.scaled.expr', signature(object = 'BanksyObject', value = 'assay'),
-                 function(object, value) {
-                   object@nbr.norm.scaled.expr <- value
-                   validObject(object)
-                   return(object)
-                 })
-
-#' @importFrom methods validObject
 #' @describeIn BanksyObject-class setter for custom.expr
 #' @exportMethod custom.expr<-
 setGeneric('custom.expr<-',
@@ -257,27 +271,43 @@ setReplaceMethod('dim.reduction', signature(object = 'BanksyObject', value = 'li
 
 setMethod('show', signature(object = 'BanksyObject'),
           function(object){
-            cat('class:', class(object), '\n')
+
+            cat('Object of class', class(object), '\n')
+            nassays <- length(object@own.expr)
 
             ## Raw expression
-            if (is.null(object@own.expr)) cat('own expression: NULL\n')
-            else cat('own expression:', ncol(object@own.expr), 'cells', nrow(object@own.expr), 'features\n')
+            if (is.null(object@own.expr)) {
+              cat('Assays: NULL\n')
+            } else {
+              if (is.list(object@own.expr)) {
+                cat('Number of assays: ', nassays, '\n', sep='')
+                dnames <- names(object@own.expr)
+                for (i in seq_len(nassays)) {
+                  cat(dnames[i], ': ',
+                      ncol(object@own.expr[[i]]), ' cells ',
+                      nrow(object@own.expr[[i]]), ' features\n',
+                      sep='')
+                }
+              } else {
+                cat('Assay with', ncol(object@own.expr), 'cells',
+                    nrow(object@own.expr), 'features\n')
+              }
+            }
 
-            if (is.null(object@nbr.expr)) cat('neighbour expression: NULL\n')
-            else cat('neighbour expression:', ncol(object@nbr.expr), 'cells', nrow(object@nbr.expr), 'features\n')
+            if (is.null(object@cell.locs)) {
+              cat('Spatial dimensions: NULL\n')
+            } else if (is.list(object@own.expr)) {
+              cat('Spatial dims:',
+                  paste(unlist(lapply(object@cell.locs, colnames)),
+                        collapse=' '), '\n')
+            } else {
+              cat('Spatial dims:', names(object@cell.locs), '\n')
+            }
 
-            if (is.null(object@own.norm.scaled.expr)) cat('own norm. scaled expression: NULL\n')
-            else cat('own norm. scaled expression:', ncol(object@own.norm.scaled.expr), 'cells', nrow(object@own.norm.scaled.expr), 'features\n')
+            cat('Metadata names:', colnames(object@meta.data), '\n')
 
-            if (is.null(object@nbr.norm.scaled.expr)) cat('neighbour norm. scaled expression: NULL\n')
-            else cat('neighbour norm. scaled expression:', ncol(object@nbr.norm.scaled.expr), 'cells', nrow(object@nbr.norm.scaled.expr), 'features\n')
+            cat('Dimension reductions:', names(object@dim.reduction), '\n')
 
-            if (is.null(object@cell.locs)) cat('dimensions: NULL\n')
-            else cat('spatial dimensions:', colnames(object@cell.locs), '\n')
-
-            cat('metadata names:', colnames(object@meta.data), '\n')
-
-            cat('dimension reductions:', names(object@dim.reduction), '\n')
           })
 
 #' @param x BanksyObject
@@ -287,35 +317,47 @@ setMethod('show', signature(object = 'BanksyObject'),
 setGeneric('head', function(x) standardGeneric('head'))
 setMethod('head', signature(x = 'BanksyObject'),
           function(x, n=5) {
-            cat('own expression:\n')
-            rd <- min(nrow(x@own.expr), n)
-            cd <- min(ncol(x@own.expr), n)
-            print(x@own.expr[seq_len(rd),seq_len(cd),drop=FALSE])
 
-            cat('\nneighbour expression:\n')
-            rd <- min(nrow(x@nbr.expr), n)
-            cd <- min(ncol(x@nbr.expr), n)
-            print(x@nbr.expr[seq_len(rd),seq_len(cd),drop=FALSE])
+            if (is.list(x@own.expr)) {
+              cat('own expression:\n')
+              rd <- min(nrow(x@own.expr[[1]]), n)
+              cd <- min(ncol(x@own.expr[[1]]), n)
+              print(x@own.expr[[1]][seq_len(rd),seq_len(cd),drop=FALSE])
 
-            cat('\nown normalized scaled expression:\n')
-            rd <- min(nrow(x@own.norm.scaled.expr), n)
-            cd <- min(ncol(x@own.norm.scaled.expr), n)
-            print(x@own.norm.scaled.expr[seq_len(rd),seq_len(cd),drop=FALSE])
+              cat('\nneighbour expression:\n')
+              rd <- min(nrow(x@nbr.expr[[1]]), n)
+              cd <- min(ncol(x@nbr.expr[[1]]), n)
+              print(x@nbr.expr[[1]][seq_len(rd),seq_len(cd),drop=FALSE])
 
-            cat('\nneighbour normalized scaled expression:\n')
-            rd <- min(nrow(x@nbr.norm.scaled.expr), n)
-            cd <- min(ncol(x@nbr.norm.scaled.expr), n)
-            print(x@nbr.norm.scaled.expr[seq_len(rd),seq_len(cd),drop=FALSE])
+              cat('\ncell locations:\n')
+              rd <- min(nrow(x@cell.locs[[1]]), n)
+              cd <- min(ncol(x@cell.locs[[1]]), n)
+              print(x@cell.locs[[1]][seq_len(rd),seq_len(cd),drop=FALSE])
 
-            cat('\ncell locations:\n')
-            rd <- min(nrow(x@cell.locs), n)
-            cd <- min(ncol(x@cell.locs), n)
-            print(x@cell.locs[seq_len(rd),seq_len(cd),drop=FALSE])
+              cat('\nmetadata:\n')
+              rd <- min(nrow(x@meta.data), n)
+              cd <- min(ncol(x@meta.data), n)
+              print(x@meta.data[seq_len(rd),seq_len(cd),drop=FALSE])
+            } else {
+              cat('own expression:\n')
+              rd <- min(nrow(x@own.expr), n)
+              cd <- min(ncol(x@own.expr), n)
+              print(x@own.expr[seq_len(rd),seq_len(cd),drop=FALSE])
 
-            cat('\nmetadata:\n')
-            rd <- min(nrow(x@meta.data), n)
-            cd <- min(ncol(x@meta.data), n)
-            print(x@meta.data[seq_len(rd),seq_len(cd),drop=FALSE])
+              cat('\nneighbour expression:\n')
+              rd <- min(nrow(x@nbr.expr), n)
+              cd <- min(ncol(x@nbr.expr), n)
+              print(x@nbr.expr[seq_len(rd),seq_len(cd),drop=FALSE])
 
+              cat('\ncell locations:\n')
+              rd <- min(nrow(x@cell.locs), n)
+              cd <- min(ncol(x@cell.locs), n)
+              print(x@cell.locs[seq_len(rd),seq_len(cd),drop=FALSE])
+
+              cat('\nmetadata:\n')
+              rd <- min(nrow(x@meta.data), n)
+              cd <- min(ncol(x@meta.data), n)
+              print(x@meta.data[seq_len(rd),seq_len(cd),drop=FALSE])
+            }
           })
 
