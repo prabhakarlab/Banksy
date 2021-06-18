@@ -110,7 +110,7 @@ BanksyObject <-
       names(cell.locs) <- dimnames[seq_len(ncol(cell.locs))]
       cell.locs <- cell.locs[match(colnames(own.expr), rownames(cell.locs)), ]
 
-      if (!identical(colnames(own.expr), rownames(locs))) {
+      if (!identical(colnames(own.expr), rownames(cell.locs))) {
         stop('Ensure cell locations correspond to gene-cell matrix.')
       }
       mdata <- data.frame(cell_ID = colnames(own.expr),

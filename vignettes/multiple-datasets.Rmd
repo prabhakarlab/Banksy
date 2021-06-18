@@ -35,14 +35,14 @@ loc2 <- readRDS(system.file('/extdata/20200627-B4-40-SCT-loc.rds', package = 'Ba
 loc3 <- readRDS(system.file('/extdata/20200309-B4-220-SCT-loc.rds', package = 'Banksy'))
 ```
 
-Each dataset comprises 1200 cells, and all have been pre-normalized and scaled 
-to reduce batch effects.
+Each dataset comprises 1200 cells, and all have been pre-normalized to reduce 
+batch effects.
 
 ## Constructing *BanksyObject* for multiple datasets
 
 Here we construct the *BanksyObject*. For ease of reference, names can be 
 provided to each dataset. For consistency across datasets, the gene set for 
-analysis can either be set as the intersection or union of genes across all 
+analysis can either be the intersection or union of genes across all 
 datasets, controlled by the `genes.filter` argument. If set to `union`, 
 missing genes in datasets will be imputed with zeroes. Additionally, genes can 
 be filtered by the minimum number of cells expressing those genes, controlled
