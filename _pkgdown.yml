@@ -3,8 +3,8 @@ destination: docs
 url: https://jleechung.github.io/Banksy
 
 template:
-  bootstrap: 4
-  bootswatch: simplex
+  params:
+    bootswatch: spacelab
 
 reference:
   - title: Main functions
@@ -12,7 +12,10 @@ reference:
       - ComputeBanksy
       - ClusterBanksy
       - ConnectClusters
+      - NormalizeBanksy
+      - ScaleBanksy
       - SubsetBanksy
+      - getBanksyMatrix
   - title: Visualisation
     contents:
       - plotUMAP
@@ -22,11 +25,13 @@ navbar:
   title: ~
   type: default
   left:
-    - text: Functions
+    - text: Documentation
       href: reference/index.html
-    - text: Articles
+    - text: Vignettes
       menu:
       - text: Working with BanksyObjects
         href: articles/banksy-object.html
       - text: Finding optimal clustering parameters
         href: articles/grid-search.html
+      - text: Analysing multiple datasets
+        href: articles/multiple-datasets.html

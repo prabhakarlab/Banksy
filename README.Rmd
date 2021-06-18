@@ -1,7 +1,6 @@
 ---
 output: 
-    github_document:
-        toc: true
+    github_document
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -27,98 +26,112 @@ features to generate a combined feature matrix which is used for constructing a
 nearest neighbour network. Leiden clustering is used to obtain 
 spatially-informed clusters.
 
-## Installation
+# Installation
 
 ```{r, eval=F}
+# Install from GitHub
 remotes::install_github("jleechung/Banksy")
+
+# Install from Bioconductor (sooon)
 ```
 
-Load the package:
+# Documentation
+
+*Banksy* comes installed with [documentation](https://jleechung.github.io/Banksy/reference/index.html) 
+of main functions and their usage, along with several vignettes which detail 
+different use cases:
+
+* [Working with Banksy objects](https://jleechung.github.io/Banksy/articles/banksy-object.html):
+  Introduction to the *BanksyObject* class which serves as a container for *Banksy*.  
+  
+* [Finding optimal clustering parameters](https://jleechung.github.io/Banksy/articles/grid-search.html):
+  Illustrates a grid search of parameters which best cluster cells.  
+
+* [Analysing multiple datasets](https://jleechung.github.io/Banksy/articles/multiple-datasets.html):
+  Illustrates analysis of multiple spatial transcriptomic datasets.
+
+* [Integrating *Banksy* with other packages](https://jleechung.github.io/Banksy/articles/integrating-pkgs.html):
+  Illustrates how users can integrate *Banksy* with packages like *Seurat* and *Giotto*.
+
+# Basic Usage
+
+## Input data
+
+Inputs consist of an expression matrix and cell locations. Sample data is 
+provided with the package:
 ```{r}
 library(Banksy)
-```
 
-## Quick Start
-
-### Input data
-
-Inputs consist of an expression matrix and cell locations. Sample data provided
-with the package:
-```{r}
-expr <- readRDS(system.file('/extdata/expression.rds', package = 'Banksy'))
+expr <- as.matrix(readRDS(system.file('/extdata/expression.rds', package = 'Banksy')))
 locs <- readRDS(system.file('/extdata/locations.rds', package = 'Banksy'))
 ```
 
-The gene expression matrix for cells should either be a `data.frame` or sparse 
-matrix of class `dgCMatrix`:
+The gene expression matrix for cells should be a `matrix`:
 ```{r}
 head(expr[,1:5])
 ```
 
-The locations of each cell as a `data.frame`:
+while cell locations should be supplied as a `data.frame`:
 ```{r}
 head(locs)
 ```
 
-### Spatial clustering
+## Spatial clustering
 
 First, create a *BanksyObject* with the expression matrix and cell locations.
+
 ```{r}
 bank <- BanksyObject(own.expr = expr,
                      cell.locs = locs)
 ```
 
-Compute the neighbour matrix, and scale and normalize matrix. The options below
-are defaults and listed for clarity.
+Next, normalize the expression matrix, compute the neighbour matrix, and scale 
+the resulting gene-cell and neighbour feature-cell matrix.
+
 ```{r}
-bank <- ComputeBanksy(bank,
-                      normalizeColumns = TRUE,
-                      normalizeColumnsTo = 100,
-                      zScaleRows = TRUE,
-                      zScaleBeforeAveraging = FALSE,
-                      zScaleOwnAfterAveraging = TRUE,
-                      zScaleNbrAfterAveraging = TRUE)
+bank <- NormalizeBanksy(bank, normFactor = 100)
+bank <- ComputeBanksy(bank)
+bank <- ScaleBanksy(bank)
 ```
 
-At this point, the joint expression matrix (gene-cell matrix and neighbour feature-cell matrix) can be extracted with *getBanksyMatrix*:
+At this point, the joint expression matrix (gene-cell matrix and neighbour 
+feature-cell matrix) can be extracted with *getBanksyMatrix*, which returns
+the joint matrix and cell locations:
+
 ```{r}
 joint <- getBanksyMatrix(bank, lambda = 0.25)
+
+joint$expr[1:5,1:5]
+joint$locs[1:5,]
 ```
 
-Obtain clusters for selected parameters.
+Next, we obtain cluster assignments for the following parameters:
 
-- `lambda`. A mixing parameter from 0 to 1 which determines how much spatial 
+* `lambda`. A mixing parameter from 0 to 1 which determines how much spatial 
    information is incorporated.  
-- `resolution`. Leiden clustering resolution.  
-- `kneighbours`. Number of k neighbours to use for constructing sNN.
+* `resolution`. Leiden clustering resolution.  
+* `kneighbours`. Number of k neighbours to use for constructing sNN.
+
 ```{r}
-bank <- ClusterBanksy(bank, lambda = 0.25,
-                            resolution = 1.2,
-                            kneighbours = 30)
+set.seed(1234)
+bank <- ClusterBanksy(bank, lambda = 0.5,
+                            resolution = 0.8,
+                            kneighbours = 40)
 ```
 
-To explore the parameter space, one can provide sequences for the parameters:
-```{r, eval=F}
-## Not run
-bank <- ClusterBanksy(bank, 
-                      lambda = seq(0, 0.75, by = 0.25),
-                      resolution = seq(0.8, 1.2, by = 0.2),
-                      kneighbours = seq(30, 40, by = 10))
-```
-
-### Visualization
+## Visualization
 
 UMAP visualization:
 ```{r}
-plotUMAP(bank, params = 'res1.2_lam0.25_k30', pt.size = 0.02)
+plotUMAP(bank, params = 'res0.8_lam0.5_k40', pt.size = 0.02, main.size = 10)
 ```
 
 Spatial plot:
 ```{r}
-plotSpatialDims(bank, params = 'res1.2_lam0.25_k30', pt.size = 0.5)
+plotSpatialDims(bank, params = 'res0.8_lam0.5_k40', pt.size = 0.8, main.size = 10)
 ```
 
-### Subsetting
+## Subsetting
 
 The *BanksyObject* can be subset by cells, features or metadata columns.
 ```{r}
@@ -132,12 +145,21 @@ head(bankSubset1)
 
 ```{r}
 bankSubset2 <- SubsetBanksy(bank,
-                            metadata = res1.2_lam0.25_k30 %in% 1:4)
-plotSpatialDims(bankSubset2, params = 'res1.2_lam0.25_k30', pt.size = 0.5)
+                            metadata = res0.8_lam0.5_k40 %in% c(3,6))
+plotSpatialDims(bankSubset2, params = 'res0.8_lam0.5_k40', 
+                pt.size = 0.5, main.size = 10)
 ```
 
-## Session information
+# Session information
 ```{r}
 sessionInfo()
 ```
 
+## To-dos
+
+* Pass devtools::check: S3/4 documentation
+* Normalization methods for multiple datasets
+* Clustering methods
+* Optimization for handling large matrices (Rcpp)
+* Subsetting and Connecting clusters for multiple datasets
+* Unit tests

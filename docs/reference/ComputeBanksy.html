@@ -8,11 +8,13 @@
 
 <title>Compute Banksy Matrices — ComputeBanksy • Banksy</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
 <!-- bootstrap-toc -->
@@ -36,10 +38,9 @@
 
 
 
+
 <meta property="og:title" content="Compute Banksy Matrices — ComputeBanksy" />
-
 <meta property="og:description" content="Compute Banksy Matrices" />
-
 
 
 
@@ -78,11 +79,11 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../reference/index.html">Functions</a>
+  <a href="../reference/index.html">Documentation</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
+    Vignettes
      
     <span class="caret"></span>
   </a>
@@ -93,10 +94,12 @@
     <li>
       <a href="../articles/grid-search.html">Finding optimal clustering parameters</a>
     </li>
+    <li>
+      <a href="../articles/multiple-datasets.html">Analysing multiple datasets</a>
+    </li>
   </ul>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         
       </ul>
@@ -118,19 +121,11 @@
     </div>
 
     <div class="ref-description">
-    
     <p>Compute Banksy Matrices</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>ComputeBanksy</span><span class='op'>(</span>
   <span class='va'>bank</span>,
-  normalizeColumns <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  normalizeColumnsTo <span class='op'>=</span> <span class='fl'>100</span>,
-  zScaleRows <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  zScaleBeforeAveraging <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  zScaleOwnAfterAveraging <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  zScaleNbrAfterAveraging <span class='op'>=</span> <span class='cn'>TRUE</span>,
   sigma <span class='op'>=</span> <span class='fl'>1.5</span>,
   alpha <span class='op'>=</span> <span class='fl'>0.05</span>,
   kspatial <span class='op'>=</span> <span class='fl'>1000</span>,
@@ -138,37 +133,13 @@
   spatialMode <span class='op'>=</span> <span class='st'>"kNN_r"</span>,
   k_geom <span class='op'>=</span> <span class='fl'>10</span>
 <span class='op'>)</span></pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>bank</th>
       <td><p>BanksyObject</p></td>
-    </tr>
-    <tr>
-      <th>normalizeColumns</th>
-      <td><p>to normalize columns</p></td>
-    </tr>
-    <tr>
-      <th>normalizeColumnsTo</th>
-      <td><p>a scale factor</p></td>
-    </tr>
-    <tr>
-      <th>zScaleRows</th>
-      <td><p>to zscale rows</p></td>
-    </tr>
-    <tr>
-      <th>zScaleBeforeAveraging</th>
-      <td><p>to zscale before avg</p></td>
-    </tr>
-    <tr>
-      <th>zScaleOwnAfterAveraging</th>
-      <td><p>to zscale own after avg</p></td>
-    </tr>
-    <tr>
-      <th>zScaleNbrAfterAveraging</th>
-      <td><p>to zscale nbr after avg</p></td>
     </tr>
     <tr>
       <th>sigma</th>
@@ -195,11 +166,10 @@
       <td><p>k_geom</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Banksy Object</p>
-    
+    <p>BanksyObject</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

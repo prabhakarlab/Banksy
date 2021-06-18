@@ -11,7 +11,7 @@ plotUMAP(
   legend = TRUE,
   main = NULL,
   pt.size = 1,
-  main.size = 1
+  main.size = 5
 )
 }
 \arguments{

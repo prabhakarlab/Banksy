@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Finding optimal clustering parameters • Banksy</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -38,11 +38,11 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../reference/index.html">Functions</a>
+  <a href="../reference/index.html">Documentation</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
+    Vignettes
      
     <span class="caret"></span>
   </a>
@@ -52,6 +52,9 @@
     </li>
     <li>
       <a href="../articles/grid-search.html">Finding optimal clustering parameters</a>
+    </li>
+    <li>
+      <a href="../articles/multiple-datasets.html">Analysing multiple datasets</a>
     </li>
   </ul>
 </li>
@@ -66,7 +69,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="grid-search_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Finding optimal clustering parameters</h1>
@@ -79,100 +82,78 @@
 
     
     
-<p>In this article describes finding optimal clustering parameters. The <em>ClusterBanksy</em> function performs a grid search of parameters <code>lambda</code>, <code>resolution</code>, and <code>kneighbours</code>.</p>
+<p>This article describes finding optimal clustering parameters. The <em>ClusterBanksy</em> function performs a grid search of parameters <code>lambda</code>, <code>resolution</code>, and <code>kneighbours</code>.</p>
 <div id="parameters" class="section level2">
 <h2 class="hasAnchor">
 <a href="#parameters" class="anchor"></a>Parameters</h2>
 <p><code>kneighbours</code> is the number of k neighbours used to construct the shared Nearest Neighbour (sNN) network. <code>resolution</code> is the resolution used in Leiden clustering. Higher resolutions yield more clusters.</p>
-<p>The <code>lambda</code> parameter is a mixing parameter <span class="math inline">\(\in[0,1]\)</span> which determines how much spatial information is incorporated for clustering. Larger values incorporate more spatial information.</p>
-<p>Details: Let the gene-cell matrix be <span class="math inline">\(G_O\)</span> and the neighbour feature-cell matrix be <span class="math inline">\(G_N\)</span>. The joint matrix used for clustering is the (row) concatenation of <span class="math inline">\(\sqrt{1-\lambda}\;G_O\)</span> and <span class="math inline">\(\sqrt{\lambda}\;G_N\)</span>.</p>
+<p>The <code>lambda</code> parameter is a mixing parameter <span class="math inline">\(\in[0,1]\)</span> which determines how much spatial information is incorporated for clustering. Larger values incorporate more spatial information. Let the gene-cell matrix be <span class="math inline">\(G_O\)</span> and the neighbour feature-cell matrix be <span class="math inline">\(G_N\)</span>. The joint matrix used for clustering is the (row) concatenation of <span class="math inline">\(\sqrt{1-\lambda}\;G_O\)</span> and <span class="math inline">\(\sqrt{\lambda}\;G_N\)</span>.</p>
 <p>We demonstrate how a grid search of the parameter space can be performed.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">Banksy</span><span class="op">)</span>
-<span class="va">expr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">'/extdata/expression.rds'</span>, package <span class="op">=</span> <span class="st">'Banksy'</span><span class="op">)</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">gridExtra</span><span class="op">)</span>
+
+<span class="va">expr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">'/extdata/expression.rds'</span>, package <span class="op">=</span> <span class="st">'Banksy'</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="va">locs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">'/extdata/locations.rds'</span>, package <span class="op">=</span> <span class="st">'Banksy'</span><span class="op">)</span><span class="op">)</span>
 <span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">expr</span>,
                      cell.locs <span class="op">=</span> <span class="va">locs</span><span class="op">)</span>
+<span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NormalizeBanksy.html">NormalizeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span>
 <span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ComputeBanksy.html">ComputeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span>
-<span class="co">#&gt; Performing normalization...</span>
 <span class="co">#&gt; Computing Banksy matrices...</span>
 <span class="co">#&gt; Spatial mode is kNN_r, k_geom = 10</span>
-<span class="co">#&gt; Banksy matrix: 83.379 sec elapsed</span></code></pre></div>
+<span class="co">#&gt; Banksy matrix: 27.1 sec elapsed</span>
+<span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ScaleBanksy.html">ScaleBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="grid-search" class="section level2">
 <h2 class="hasAnchor">
 <a href="#grid-search" class="anchor"></a>Grid search</h2>
 <p>Define a parameter space. We explore different combinations of <code>lambda</code> and <code>resolution</code>, fixing <code>kneighbours</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">lambda</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.75</span>, by <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span>
-<span class="va">resolution</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">1.2</span>, by <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span>
-<span class="va">kneighbours</span> <span class="op">&lt;-</span> <span class="fl">30</span>
+<code class="sourceCode R"><span class="va">lambda</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0.25</span>, <span class="fl">0.75</span>, by <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span>
+<span class="va">resolution</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1.5</span>, by <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>
+<span class="va">kneighbours</span> <span class="op">&lt;-</span> <span class="fl">40</span>
 
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span>
 <span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ClusterBanksy.html">ClusterBanksy</a></span><span class="op">(</span><span class="va">bank</span>, 
-                           lambda <span class="op">=</span> <span class="va">lambda</span>,
-                           resolution <span class="op">=</span> <span class="va">resolution</span>,
-                           kneighbours <span class="op">=</span> <span class="va">kneighbours</span><span class="op">)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;  external python path provided and will be used</span>
-<span class="co">#&gt; Iteration 1 out of 12</span>
-<span class="co">#&gt; Consider to install these (optional) packages to run all possible Giotto commands:  RTriangle FactoMiner</span>
-<span class="co">#&gt;  Giotto does not automatically install all these packages as they are not absolutely required and this reduces the number of dependencieshvg  was not found in the gene metadata information, all genes will be used</span>
-<span class="co">#&gt; Finished clustering for Lambda=0, Resolution=0.8, K Neighbours=30</span>
-<span class="co">#&gt; Iteration 2 out of 12</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;   sNN.pca  has already been used, will be overwritten</span>
-<span class="co">#&gt; Finished clustering for Lambda=0, Resolution=1, K Neighbours=30</span>
-<span class="co">#&gt; Iteration 3 out of 12</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;   sNN.pca  has already been used, will be overwritten</span>
-<span class="co">#&gt; Finished clustering for Lambda=0, Resolution=1.2, K Neighbours=30</span>
-<span class="co">#&gt; Iteration 4 out of 12</span>
-<span class="co">#&gt; Consider to install these (optional) packages to run all possible Giotto commands:  RTriangle FactoMiner</span>
-<span class="co">#&gt;  Giotto does not automatically install all these packages as they are not absolutely required and this reduces the number of dependencieshvg  was not found in the gene metadata information, all genes will be used</span>
-<span class="co">#&gt; Finished clustering for Lambda=0.25, Resolution=0.8, K Neighbours=30</span>
-<span class="co">#&gt; Iteration 5 out of 12</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;   sNN.pca  has already been used, will be overwritten</span>
-<span class="co">#&gt; Finished clustering for Lambda=0.25, Resolution=1, K Neighbours=30</span>
-<span class="co">#&gt; Iteration 6 out of 12</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;   sNN.pca  has already been used, will be overwritten</span>
-<span class="co">#&gt; Finished clustering for Lambda=0.25, Resolution=1.2, K Neighbours=30</span>
-<span class="co">#&gt; Iteration 7 out of 12</span>
-<span class="co">#&gt; Consider to install these (optional) packages to run all possible Giotto commands:  RTriangle FactoMiner</span>
-<span class="co">#&gt;  Giotto does not automatically install all these packages as they are not absolutely required and this reduces the number of dependencieshvg  was not found in the gene metadata information, all genes will be used</span>
-<span class="co">#&gt; Finished clustering for Lambda=0.5, Resolution=0.8, K Neighbours=30</span>
-<span class="co">#&gt; Iteration 8 out of 12</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;   sNN.pca  has already been used, will be overwritten</span>
-<span class="co">#&gt; Finished clustering for Lambda=0.5, Resolution=1, K Neighbours=30</span>
-<span class="co">#&gt; Iteration 9 out of 12</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;   sNN.pca  has already been used, will be overwritten</span>
-<span class="co">#&gt; Finished clustering for Lambda=0.5, Resolution=1.2, K Neighbours=30</span>
-<span class="co">#&gt; Iteration 10 out of 12</span>
-<span class="co">#&gt; Consider to install these (optional) packages to run all possible Giotto commands:  RTriangle FactoMiner</span>
-<span class="co">#&gt;  Giotto does not automatically install all these packages as they are not absolutely required and this reduces the number of dependencieshvg  was not found in the gene metadata information, all genes will be used</span>
-<span class="co">#&gt; Finished clustering for Lambda=0.75, Resolution=0.8, K Neighbours=30</span>
-<span class="co">#&gt; Iteration 11 out of 12</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;   sNN.pca  has already been used, will be overwritten</span>
-<span class="co">#&gt; Finished clustering for Lambda=0.75, Resolution=1, K Neighbours=30</span>
-<span class="co">#&gt; Iteration 12 out of 12</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;   sNN.pca  has already been used, will be overwritten</span>
-<span class="co">#&gt; Finished clustering for Lambda=0.75, Resolution=1.2, K Neighbours=30</span>
-<span class="co">#&gt; 200.771 sec elapsed</span></code></pre></div>
+                      lambda <span class="op">=</span> <span class="va">lambda</span>,
+                      resolution <span class="op">=</span> <span class="va">resolution</span>,
+                      kneighbours <span class="op">=</span> <span class="va">kneighbours</span><span class="op">)</span>
+<span class="co">#&gt; Iteration 1 out of 9</span>
+<span class="co">#&gt; Finished clustering for Lambda=0.25, Resolution=0.5, K Neighbours=40</span>
+<span class="co">#&gt; Iteration 2 out of 9</span>
+<span class="co">#&gt; Finished clustering for Lambda=0.25, Resolution=1, K Neighbours=40</span>
+<span class="co">#&gt; Iteration 3 out of 9</span>
+<span class="co">#&gt; Finished clustering for Lambda=0.25, Resolution=1.5, K Neighbours=40</span>
+<span class="co">#&gt; Iteration 4 out of 9</span>
+<span class="co">#&gt; Finished clustering for Lambda=0.5, Resolution=0.5, K Neighbours=40</span>
+<span class="co">#&gt; Iteration 5 out of 9</span>
+<span class="co">#&gt; Finished clustering for Lambda=0.5, Resolution=1, K Neighbours=40</span>
+<span class="co">#&gt; Iteration 6 out of 9</span>
+<span class="co">#&gt; Finished clustering for Lambda=0.5, Resolution=1.5, K Neighbours=40</span>
+<span class="co">#&gt; Iteration 7 out of 9</span>
+<span class="co">#&gt; Finished clustering for Lambda=0.75, Resolution=0.5, K Neighbours=40</span>
+<span class="co">#&gt; Iteration 8 out of 9</span>
+<span class="co">#&gt; Finished clustering for Lambda=0.75, Resolution=1, K Neighbours=40</span>
+<span class="co">#&gt; Iteration 9 out of 9</span>
+<span class="co">#&gt; Finished clustering for Lambda=0.75, Resolution=1.5, K Neighbours=40</span>
+<span class="co">#&gt; 110 sec elapsed</span></code></pre></div>
 <p>This populates the <code>meta.data</code> slot of the <em>BanksyObject</em> with cluster labels for each combination of parameters.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/BanksyObject-class.html">meta.data</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span>
-<span class="co">#&gt;   cell_ID res0.8_lam0_k30 res1_lam0_k30 res1.2_lam0_k30 res0.8_lam0.25_k30</span>
-<span class="co">#&gt; 1  cell_4               5             5               6                  2</span>
-<span class="co">#&gt; 2  cell_5              10            10              10                  1</span>
-<span class="co">#&gt; 3  cell_6               1             1               1                  4</span>
-<span class="co">#&gt; 4  cell_7               2             2               4                  3</span>
-<span class="co">#&gt; 5  cell_8               3             3               3                  5</span>
-<span class="co">#&gt; 6  cell_9               6             6               7                  7</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="../reference/BanksyObject-class.html">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/BanksyObject-class.html">meta.data</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span>
+<span class="co">#&gt;        cell_ID n_features res0.5_lam0.25_k40 res1_lam0.25_k40</span>
+<span class="co">#&gt; cell_4  cell_4         24                  2                2</span>
+<span class="co">#&gt; cell_5  cell_5         28                  1                1</span>
+<span class="co">#&gt; cell_6  cell_6        209                  1                4</span>
+<span class="co">#&gt; cell_7  cell_7        117                  3                3</span>
+<span class="co">#&gt; cell_8  cell_8         38                  4                5</span>
+<span class="co">#&gt; cell_9  cell_9         51                  2                7</span>
+<span class="co">#&gt;        res1.5_lam0.25_k40</span>
+<span class="co">#&gt; cell_4                  7</span>
+<span class="co">#&gt; cell_5                  1</span>
+<span class="co">#&gt; cell_6                  3</span>
+<span class="co">#&gt; cell_7                  4</span>
+<span class="co">#&gt; cell_8                 11</span>
+<span class="co">#&gt; cell_9                  8</span></code></pre></div>
 </div>
 <div id="connecting-clusters" class="section level2">
 <h2 class="hasAnchor">
@@ -180,41 +161,44 @@
 <p>To compare between clusters obtained with different combination of parameters (a parameter run), the <em>Banksy</em> package implements <em>ConnectClusters</em> which performs a mapping to harmonise cluster labels between different parameter runs.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ConnectClusters.html">ConnectClusters</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span>
-<span class="co">#&gt; Mapping clusterings to res1_lam0.75_k30</span>
-<span class="co">#&gt; Processing res0.8_lam0_k30</span>
-<span class="co">#&gt; Processing res1_lam0_k30</span>
-<span class="co">#&gt; Processing res1.2_lam0_k30</span>
-<span class="co">#&gt; Processing res0.8_lam0.25_k30</span>
-<span class="co">#&gt; Processing res1_lam0.25_k30</span>
-<span class="co">#&gt; Processing res1.2_lam0.25_k30</span>
-<span class="co">#&gt; Processing res0.8_lam0.5_k30</span>
-<span class="co">#&gt; Processing res1_lam0.5_k30</span>
-<span class="co">#&gt; Processing res1.2_lam0.5_k30</span>
-<span class="co">#&gt; Processing res0.8_lam0.75_k30</span>
-<span class="co">#&gt; Processing res1.2_lam0.75_k30</span></code></pre></div>
+<span class="co">#&gt; Mapping clusterings to res1_lam0.25_k40</span>
+<span class="co">#&gt; Processing res0.5_lam0.25_k40</span>
+<span class="co">#&gt; Processing res1.5_lam0.25_k40</span>
+<span class="co">#&gt; Processing res0.5_lam0.5_k40</span>
+<span class="co">#&gt; Processing res1_lam0.5_k40</span>
+<span class="co">#&gt; Processing res1.5_lam0.5_k40</span>
+<span class="co">#&gt; Processing res0.5_lam0.75_k40</span>
+<span class="co">#&gt; Processing res1_lam0.75_k40</span>
+<span class="co">#&gt; Processing res1.5_lam0.75_k40</span></code></pre></div>
 <p>This updates the <code>meta.data</code> slot with new cluster labels and colours that can be used for visualisation. We can visualise connected output as follows.</p>
 <p>First, obtain cluster names:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mdnames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="fu"><a href="../reference/BanksyObject-class.html">meta.data</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">)</span>
-<span class="va">clustnames</span> <span class="op">&lt;-</span> <span class="va">mdnames</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html">grep</a></span><span class="op">(</span><span class="st">"^res.*lam0\\."</span>, <span class="va">mdnames</span><span class="op">)</span><span class="op">]</span>
+<span class="va">clustnames</span> <span class="op">&lt;-</span> <span class="va">mdnames</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html">grep</a></span><span class="op">(</span><span class="st">"^res"</span>, <span class="va">mdnames</span><span class="op">)</span><span class="op">]</span>
 <span class="va">clustnames</span>
-<span class="co">#&gt; [1] "res0.8_lam0.25_k30" "res1_lam0.25_k30"   "res1.2_lam0.25_k30"</span>
-<span class="co">#&gt; [4] "res0.8_lam0.5_k30"  "res1_lam0.5_k30"    "res1.2_lam0.5_k30" </span>
-<span class="co">#&gt; [7] "res0.8_lam0.75_k30" "res1_lam0.75_k30"   "res1.2_lam0.75_k30"</span></code></pre></div>
+<span class="co">#&gt; [1] "res0.5_lam0.25_k40" "res1_lam0.25_k40"   "res1.5_lam0.25_k40"</span>
+<span class="co">#&gt; [4] "res0.5_lam0.5_k40"  "res1_lam0.5_k40"    "res1.5_lam0.5_k40" </span>
+<span class="co">#&gt; [7] "res0.5_lam0.75_k40" "res1_lam0.75_k40"   "res1.5_lam0.75_k40"</span></code></pre></div>
 <p>Generate UMAPs and Spatial Dimension plots for the above clusters:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">umaps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">clustnames</span>, <span class="kw">function</span><span class="op">(</span><span class="va">param</span><span class="op">)</span> <span class="fu"><a href="../reference/plotUMAP.html">plotUMAP</a></span><span class="op">(</span><span class="va">bank</span>, <span class="va">param</span>, 
-                                                     legend <span class="op">=</span> <span class="cn">FALSE</span>, 
-                                                     pt.size <span class="op">=</span> <span class="fl">0.01</span>, main.size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span>
-<span class="va">spatdims</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">clustnames</span>, <span class="kw">function</span><span class="op">(</span><span class="va">param</span><span class="op">)</span> <span class="fu"><a href="../reference/plotSpatialDims.html">plotSpatialDims</a></span><span class="op">(</span><span class="va">bank</span>, <span class="va">param</span>, 
-                                                               pt.size <span class="op">=</span> <span class="fl">0.01</span>, main.size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span>
-
-<span class="co">#do.call("grid.arrange", c(umaps, ncol=3))</span>
-<span class="co">#do.call("grid.arrange", c(spatdims, ncol=3))</span></code></pre></div>
+<code class="sourceCode R"><span class="va">umaps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">clustnames</span>, 
+                <span class="kw">function</span><span class="op">(</span><span class="va">param</span><span class="op">)</span> <span class="fu"><a href="../reference/plotUMAP.html">plotUMAP</a></span><span class="op">(</span><span class="va">bank</span>, <span class="va">param</span>, legend <span class="op">=</span> <span class="cn">FALSE</span>, 
+                                         pt.size <span class="op">=</span> <span class="fl">0.01</span>, main.size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
+<span class="va">spatdims</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">clustnames</span>, 
+                   <span class="kw">function</span><span class="op">(</span><span class="va">param</span><span class="op">)</span> <span class="fu"><a href="../reference/plotSpatialDims.html">plotSpatialDims</a></span><span class="op">(</span><span class="va">bank</span>, <span class="va">param</span>, 
+                                                   pt.size <span class="op">=</span> <span class="fl">0.01</span>, main.size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>One can use the <em>grid.arrange</em> function from <em>gridExtra</em> to conveniently layout all plots for comparison:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op">(</span><span class="st">"grid.arrange"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">umaps</span>, ncol<span class="op">=</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p><img src="grid-search_files/figure-html/visual-1.png" width="816" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op">(</span><span class="st">"grid.arrange"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">spatdims</span>, ncol<span class="op">=</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p><img src="grid-search_files/figure-html/visual-2.png" width="816" style="display: block; margin: auto;"></p>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+
         <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
     </nav>
 </div>

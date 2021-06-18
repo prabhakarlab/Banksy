@@ -8,11 +8,13 @@
 
 <title>Harmonise cluster labels among parameter runs — ConnectClusters • Banksy</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
 <!-- bootstrap-toc -->
@@ -36,10 +38,9 @@
 
 
 
+
 <meta property="og:title" content="Harmonise cluster labels among parameter runs — ConnectClusters" />
-
 <meta property="og:description" content="Harmonise cluster labels among parameter runs" />
-
 
 
 
@@ -78,11 +79,11 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../reference/index.html">Functions</a>
+  <a href="../reference/index.html">Documentation</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
+    Vignettes
      
     <span class="caret"></span>
   </a>
@@ -93,10 +94,12 @@
     <li>
       <a href="../articles/grid-search.html">Finding optimal clustering parameters</a>
     </li>
+    <li>
+      <a href="../articles/multiple-datasets.html">Analysing multiple datasets</a>
+    </li>
   </ul>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         
       </ul>
@@ -118,13 +121,11 @@
     </div>
 
     <div class="ref-description">
-    
     <p>Harmonise cluster labels among parameter runs</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>ConnectClusters</span><span class='op'>(</span><span class='va'>bank</span>, verbose <span class='op'>=</span> <span class='cn'>FALSE</span>, optim <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -141,11 +142,10 @@
       <td><p>optimise or not (KS-test)</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>BanksyObject with harmonised cluster labels</p>
-    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

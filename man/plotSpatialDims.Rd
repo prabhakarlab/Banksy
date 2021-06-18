@@ -7,16 +7,19 @@
 plotSpatialDims(
   bank,
   params,
+  dataset = NULL,
   col = NULL,
   main = NULL,
   pt.size = 1,
-  main.size = 1
+  main.size = 5
 )
 }
 \arguments{
 \item{bank}{BanksyObject}
 
 \item{params}{clustering run to plot by}
+
+\item{dataset}{if multiple dataset are run}
 
 \item{col}{colours}
 

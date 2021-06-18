@@ -8,10 +8,6 @@
 \alias{own.expr,BanksyObject-method}
 \alias{nbr.expr}
 \alias{nbr.expr,BanksyObject-method}
-\alias{own.norm.scaled.expr}
-\alias{own.norm.scaled.expr,BanksyObject-method}
-\alias{nbr.norm.scaled.expr}
-\alias{nbr.norm.scaled.expr,BanksyObject-method}
 \alias{custom.expr}
 \alias{custom.expr,BanksyObject-method}
 \alias{cell.locs}
@@ -24,10 +20,6 @@
 \alias{own.expr<-,BanksyObject,assay-method}
 \alias{nbr.expr<-}
 \alias{nbr.expr<-,BanksyObject,assay-method}
-\alias{own.norm.scaled.expr<-}
-\alias{own.norm.scaled.expr<-,BanksyObject,assay-method}
-\alias{nbr.norm.scaled.expr<-}
-\alias{nbr.norm.scaled.expr<-,BanksyObject,assay-method}
 \alias{custom.expr<-}
 \alias{custom.expr<-,BanksyObject,assay-method}
 \alias{cell.locs<-}
@@ -43,12 +35,12 @@
 BanksyObject(
   own.expr = NULL,
   nbr.expr = NULL,
-  own.norm.scaled.expr = NULL,
-  nbr.norm.scaled.expr = NULL,
   custom.expr = NULL,
   cell.locs = NULL,
   meta.data = data.frame(),
-  dim.reduction = NULL
+  dim.reduction = NULL,
+  genes.filter = "intersect",
+  min.cells.expressed = -1
 )
 
 own.expr(object)
@@ -58,14 +50,6 @@ own.expr(object)
 nbr.expr(object)
 
 \S4method{nbr.expr}{BanksyObject}(object)
-
-own.norm.scaled.expr(object)
-
-\S4method{own.norm.scaled.expr}{BanksyObject}(object)
-
-nbr.norm.scaled.expr(object)
-
-\S4method{nbr.norm.scaled.expr}{BanksyObject}(object)
 
 custom.expr(object)
 
@@ -91,14 +75,6 @@ nbr.expr(object) <- value
 
 \S4method{nbr.expr}{BanksyObject,assay}(object) <- value
 
-own.norm.scaled.expr(object) <- value
-
-\S4method{own.norm.scaled.expr}{BanksyObject,assay}(object) <- value
-
-nbr.norm.scaled.expr(object) <- value
-
-\S4method{nbr.norm.scaled.expr}{BanksyObject,assay}(object) <- value
-
 custom.expr(object) <- value
 
 \S4method{custom.expr}{BanksyObject,assay}(object) <- value
@@ -122,10 +98,6 @@ head(x, ...)
 
 \item{nbr.expr}{neighbour expression}
 
-\item{own.norm.scaled.expr}{own norm/scaled expression}
-
-\item{nbr.norm.scaled.expr}{neighbour norm/scaled expression}
-
 \item{custom.expr}{custom expression}
 
 \item{cell.locs}{cell locations}
@@ -133,6 +105,11 @@ head(x, ...)
 \item{meta.data}{metadata}
 
 \item{dim.reduction}{dimension reductions}
+
+\item{genes.filter}{intersect or union}
+
+\item{min.cells.expressed}{min number of cells a gene is expressed in
+(to be used with intersect)}
 
 \item{object}{BanksyObject}
 
@@ -155,14 +132,6 @@ S4 class BanksyObject
 \item \code{nbr.expr}: getter nbr.expr
 
 \item \code{nbr.expr,BanksyObject-method}: getter nbr.expr
-
-\item \code{own.norm.scaled.expr}: getter own.norm.scaled.expr
-
-\item \code{own.norm.scaled.expr,BanksyObject-method}: getter own.norm.scaled.expr
-
-\item \code{nbr.norm.scaled.expr}: getter nbr.norm.scaled.expr
-
-\item \code{nbr.norm.scaled.expr,BanksyObject-method}: getter nbr.norm.scaled.expr
 
 \item \code{custom.expr}: getter custom.expr
 
@@ -187,14 +156,6 @@ S4 class BanksyObject
 \item \code{nbr.expr<-}: setter for nbr.expr
 
 \item \code{nbr.expr<-,BanksyObject,assay-method}: setter for nbr.expr
-
-\item \code{own.norm.scaled.expr<-}: setter for own.norm.scaled.expr
-
-\item \code{own.norm.scaled.expr<-,BanksyObject,assay-method}: setter for own.norm.scaled.expr
-
-\item \code{nbr.norm.scaled.expr<-}: setter for nbr.norm.scaled.expr
-
-\item \code{nbr.norm.scaled.expr<-,BanksyObject,assay-method}: setter for nbr.norm.scaled.expr
 
 \item \code{custom.expr<-}: setter for custom.expr
 
@@ -221,10 +182,6 @@ S4 class BanksyObject
 \item{\code{own.expr}}{own expression}
 
 \item{\code{nbr.expr}}{neighbour expression}
-
-\item{\code{own.norm.scaled.expr}}{own norm/scaled expression}
-
-\item{\code{nbr.norm.scaled.expr}}{neighbour norm/scaled expression}
 
 \item{\code{custom.expr}}{custom expression}
 

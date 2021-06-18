@@ -1,10 +1,12 @@
-pandoc: 2.3.1
+pandoc: 2.7.3
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   banksy-object: banksy-object.html
   grid-search: grid-search.html
-last_built: 2021-06-10T17:02Z
+  integrating-pkgs: integrating-pkgs.html
+  multiple-datasets: multiple-datasets.html
+last_built: 2021-06-18T01:17Z
 urls:
   reference: https://jleechung.github.io/Banksy/reference
   article: https://jleechung.github.io/Banksy/articles

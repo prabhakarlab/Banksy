@@ -16,28 +16,10 @@
     <loc>https://jleechung.github.io/Banksy/reference/ConnectClusters.html</loc>
   </url>
   <url>
-    <loc>https://jleechung.github.io/Banksy/reference/RunBanksy.html</loc>
+    <loc>https://jleechung.github.io/Banksy/reference/getBanksyMatrix.html</loc>
   </url>
   <url>
-    <loc>https://jleechung.github.io/Banksy/reference/SubsetBanksy.html</loc>
-  </url>
-  <url>
-    <loc>https://jleechung.github.io/Banksy/reference/SweepBanksy.html</loc>
-  </url>
-  <url>
-    <loc>https://jleechung.github.io/Banksy/reference/getMarkerGenes.html</loc>
-  </url>
-  <url>
-    <loc>https://jleechung.github.io/Banksy/reference/gridConnect.html</loc>
-  </url>
-  <url>
-    <loc>https://jleechung.github.io/Banksy/reference/plotHeatmap_banksy.html</loc>
-  </url>
-  <url>
-    <loc>https://jleechung.github.io/Banksy/reference/plotMetaDataHeatmap_vs.html</loc>
-  </url>
-  <url>
-    <loc>https://jleechung.github.io/Banksy/reference/plotSpatDimPlots.html</loc>
+    <loc>https://jleechung.github.io/Banksy/reference/NormalizeBanksy.html</loc>
   </url>
   <url>
     <loc>https://jleechung.github.io/Banksy/reference/plotSpatialDims.html</loc>
@@ -46,15 +28,21 @@
     <loc>https://jleechung.github.io/Banksy/reference/plotUMAP.html</loc>
   </url>
   <url>
-    <loc>https://jleechung.github.io/Banksy/reference/reexports.html</loc>
+    <loc>https://jleechung.github.io/Banksy/reference/ScaleBanksy.html</loc>
   </url>
   <url>
-    <loc>https://jleechung.github.io/Banksy/reference/updateGobjectUmapClust.html</loc>
+    <loc>https://jleechung.github.io/Banksy/reference/SubsetBanksy.html</loc>
   </url>
   <url>
     <loc>https://jleechung.github.io/Banksy/articles/banksy-object.html</loc>
   </url>
   <url>
     <loc>https://jleechung.github.io/Banksy/articles/grid-search.html</loc>
+  </url>
+  <url>
+    <loc>https://jleechung.github.io/Banksy/articles/integrating-pkgs.html</loc>
+  </url>
+  <url>
+    <loc>https://jleechung.github.io/Banksy/articles/multiple-datasets.html</loc>
   </url>
 </urlset>

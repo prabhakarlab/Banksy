@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Spatial transcriptomic clustering • Banksy</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -43,11 +43,11 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="reference/index.html">Functions</a>
+  <a href="reference/index.html">Documentation</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
+    Vignettes
      
     <span class="caret"></span>
   </a>
@@ -57,6 +57,9 @@
     </li>
     <li>
       <a href="articles/grid-search.html">Finding optimal clustering parameters</a>
+    </li>
+    <li>
+      <a href="articles/multiple-datasets.html">Analysing multiple datasets</a>
     </li>
   </ul>
 </li>
@@ -73,34 +76,49 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
+
 <div id="banksy" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#banksy" class="anchor"></a>Banksy</h1></div>
 <!-- badges: start -->
 <!-- badges: end -->
 <p>Banksy is an R package that incorporates spatial information to cluster cells in a feature space (e.g. gene expression). Spatial information is incorporated by averaging the features of the k nearest neighbours to generate new ‘neighbour’ features for a given cell. This is concatenated to the cell’s own features to generate a combined feature matrix which is used for constructing a nearest neighbour network. Leiden clustering is used to obtain spatially-informed clusters.</p>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/remotes/man/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"jleechung/Banksy"</span><span class="op">)</span></code></pre></div>
-<p>Load the package:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">Banksy</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="quick-start" class="section level2">
+<div id="installation" class="section level1">
+<h1 class="hasAnchor">
+<a href="#installation" class="anchor"></a>Installation</h1>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Install from GitHub</span>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"jleechung/Banksy"</span><span class="op">)</span>
+
+<span class="co"># Install from Bioconductor (sooon)</span></code></pre></div>
+</div>
+<div id="documentation" class="section level1">
+<h1 class="hasAnchor">
+<a href="#documentation" class="anchor"></a>Documentation</h1>
+<p><em>Banksy</em> comes installed with <a href="https://jleechung.github.io/Banksy/reference/index.html">documentation</a> of main functions and their usage, along with several vignettes which detail different use cases:</p>
+<ul>
+<li><p><a href="https://jleechung.github.io/Banksy/articles/banksy-object.html">Working with Banksy objects</a>: Introduction to the <em>BanksyObject</em> class which serves as a container for <em>Banksy</em>.</p></li>
+<li><p><a href="https://jleechung.github.io/Banksy/articles/grid-search.html">Finding optimal clustering parameters</a>: Illustrates a grid search of parameters which best cluster cells.</p></li>
+<li><p><a href="https://jleechung.github.io/Banksy/articles/multiple-datasets.html">Analysing multiple datasets</a>: Illustrates analysis of multiple spatial transcriptomic datasets.</p></li>
+<li><p><a href="https://jleechung.github.io/Banksy/articles/integrating-pkgs.html">Integrating <em>Banksy</em> with other packages</a>: Illustrates how users can integrate <em>Banksy</em> with packages like <em>Seurat</em> and <em>Giotto</em>.</p></li>
+</ul>
+</div>
+<div id="basic-usage" class="section level1">
+<h1 class="hasAnchor">
+<a href="#basic-usage" class="anchor"></a>Basic Usage</h1>
+<div id="input-data" class="section level2">
 <h2 class="hasAnchor">
-<a href="#quick-start" class="anchor"></a>Quick Start</h2>
-<div id="input-data" class="section level3">
-<h3 class="hasAnchor">
-<a href="#input-data" class="anchor"></a>Input data</h3>
-<p>Inputs consist of an expression matrix and cell locations. Sample data provided with the package:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">expr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">'/extdata/expression.rds'</span>, package <span class="op">=</span> <span class="st">'Banksy'</span><span class="op">)</span><span class="op">)</span>
+<a href="#input-data" class="anchor"></a>Input data</h2>
+<p>Inputs consist of an expression matrix and cell locations. Sample data is provided with the package:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">Banksy</span><span class="op">)</span>
+
+<span class="va">expr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">'/extdata/expression.rds'</span>, package <span class="op">=</span> <span class="st">'Banksy'</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="va">locs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">'/extdata/locations.rds'</span>, package <span class="op">=</span> <span class="st">'Banksy'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>The gene expression matrix for cells should either be a <code>data.frame</code> or sparse matrix of class <code>dgCMatrix</code>:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">expr</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span>
+<p>The gene expression matrix for cells should be a <code>matrix</code>:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="reference/BanksyObject-class.html">head</a></span><span class="op">(</span><span class="va">expr</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span>
 <span class="co">#&gt;          cell_4 cell_5 cell_6 cell_7 cell_8</span>
 <span class="co">#&gt; Slc1a2        4      2     13     26      6</span>
 <span class="co">#&gt; Scn4b         3      6     17      0      1</span>
@@ -108,9 +126,9 @@
 <span class="co">#&gt; Slc25a23      3      0      5      3      1</span>
 <span class="co">#&gt; Slc1a3        1      1      0     31      2</span>
 <span class="co">#&gt; Nfib          1      1      1      4      0</span></code></pre></div>
-<p>The locations of each cell as a <code>data.frame</code>:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">locs</span><span class="op">)</span>
+<p>while cell locations should be supplied as a <code>data.frame</code>:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="reference/BanksyObject-class.html">head</a></span><span class="op">(</span><span class="va">locs</span><span class="op">)</span>
 <span class="co">#&gt;            sdimx     sdimy</span>
 <span class="co">#&gt; cell_4  68.49701 13951.186</span>
 <span class="co">#&gt; cell_5  73.80242 18085.385</span>
@@ -119,27 +137,40 @@
 <span class="co">#&gt; cell_8  96.64224  4806.681</span>
 <span class="co">#&gt; cell_9 110.59598 14124.008</span></code></pre></div>
 </div>
-<div id="spatial-clustering" class="section level3">
-<h3 class="hasAnchor">
-<a href="#spatial-clustering" class="anchor"></a>Spatial clustering</h3>
+<div id="spatial-clustering" class="section level2">
+<h2 class="hasAnchor">
+<a href="#spatial-clustering" class="anchor"></a>Spatial clustering</h2>
 <p>First, create a <em>BanksyObject</em> with the expression matrix and cell locations.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">expr</span>,
                      cell.locs <span class="op">=</span> <span class="va">locs</span><span class="op">)</span></code></pre></div>
-<p>Compute the neighbour matrix, and scale and normalize matrix. The options below are defaults and listed for clarity.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ComputeBanksy.html">ComputeBanksy</a></span><span class="op">(</span><span class="va">bank</span>,
-                      normalizeColumns <span class="op">=</span> <span class="cn">TRUE</span>,
-                      normalizeColumnsTo <span class="op">=</span> <span class="fl">100</span>,
-                      zScaleRows <span class="op">=</span> <span class="cn">TRUE</span>,
-                      zScaleBeforeAveraging <span class="op">=</span> <span class="cn">FALSE</span>,
-                      zScaleOwnAfterAveraging <span class="op">=</span> <span class="cn">TRUE</span>,
-                      zScaleNbrAfterAveraging <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="co">#&gt; Performing normalization...</span>
+<p>Next, normalize the expression matrix, compute the neighbour matrix, and scale the resulting gene-cell and neighbour feature-cell matrix.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/NormalizeBanksy.html">NormalizeBanksy</a></span><span class="op">(</span><span class="va">bank</span>, normFactor <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+<span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ComputeBanksy.html">ComputeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span>
 <span class="co">#&gt; Computing Banksy matrices...</span>
 <span class="co">#&gt; Spatial mode is kNN_r, k_geom = 10</span>
-<span class="co">#&gt; Banksy matrix: 71.479 sec elapsed</span></code></pre></div>
-<p>Obtain clusters for selected parameters.</p>
+<span class="co">#&gt; Banksy matrix: 27.77 sec elapsed</span>
+<span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ScaleBanksy.html">ScaleBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></code></pre></div>
+<p>At this point, the joint expression matrix (gene-cell matrix and neighbour feature-cell matrix) can be extracted with <em>getBanksyMatrix</em>, which returns the joint matrix and cell locations:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">joint</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/getBanksyMatrix.html">getBanksyMatrix</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span>
+
+<span class="va">joint</span><span class="op">$</span><span class="va">expr</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span>
+<span class="co">#&gt;              cell_4      cell_5     cell_6     cell_7     cell_8</span>
+<span class="co">#&gt; Slc1a2   0.41040297 -0.36165667 -0.4364615  0.8607711  0.3392922</span>
+<span class="co">#&gt; Scn4b    0.85950683  2.02739671  0.2884143 -0.7755390 -0.4313188</span>
+<span class="co">#&gt; Itpr1    0.77398900 -1.00281439  0.0173598 -0.7598327  0.1193772</span>
+<span class="co">#&gt; Slc25a23 2.51032763 -1.15087647 -0.4501676 -0.3998602 -0.3800967</span>
+<span class="co">#&gt; Slc1a3   0.07620877 -0.01765429 -0.5808326  3.5972767  0.2491144</span>
+<span class="va">joint</span><span class="op">$</span><span class="va">locs</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>
+<span class="co">#&gt;            sdimx     sdimy</span>
+<span class="co">#&gt; cell_4  68.49701 13951.186</span>
+<span class="co">#&gt; cell_5  73.80242 18085.385</span>
+<span class="co">#&gt; cell_6 119.55364  3143.897</span>
+<span class="co">#&gt; cell_7 105.25295  2191.132</span>
+<span class="co">#&gt; cell_8  96.64224  4806.681</span></code></pre></div>
+<p>Next, we obtain cluster assignments for the following parameters:</p>
 <ul>
 <li>
 <code>lambda</code>. A mixing parameter from 0 to 1 which determines how much spatial information is incorporated.<br>
@@ -151,45 +182,95 @@
 <code>kneighbours</code>. Number of k neighbours to use for constructing sNN.</li>
 </ul>
 <!-- end list --><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ClusterBanksy.html">ClusterBanksy</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.25</span>,
-                            resolution <span class="op">=</span> <span class="fl">1.2</span>,
-                            kneighbours <span class="op">=</span> <span class="fl">30</span><span class="op">)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;  external python path provided and will be used</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span>
+<span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ClusterBanksy.html">ClusterBanksy</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.5</span>,
+                            resolution <span class="op">=</span> <span class="fl">0.8</span>,
+                            kneighbours <span class="op">=</span> <span class="fl">40</span><span class="op">)</span>
 <span class="co">#&gt; Iteration 1 out of 1</span>
-<span class="co">#&gt; Consider to install these (optional) packages to run all possible Giotto commands:  RTriangle FactoMiner</span>
-<span class="co">#&gt;  Giotto does not automatically install all these packages as they are not absolutely required and this reduces the number of dependencieshvg  was not found in the gene metadata information, all genes will be used</span>
-<span class="co">#&gt; Finished clustering for Lambda=0.25, Resolution=1.2, K Neighbours=30</span>
-<span class="co">#&gt; 38.15 sec elapsed</span></code></pre></div>
+<span class="co">#&gt; Finished clustering for Lambda=0.5, Resolution=0.8, K Neighbours=40</span>
+<span class="co">#&gt; 27.09 sec elapsed</span></code></pre></div>
 </div>
-<div id="visualization" class="section level3">
-<h3 class="hasAnchor">
-<a href="#visualization" class="anchor"></a>Visualization</h3>
+<div id="visualization" class="section level2">
+<h2 class="hasAnchor">
+<a href="#visualization" class="anchor"></a>Visualization</h2>
 <p>UMAP visualization:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/plotUMAP.html">plotUMAP</a></span><span class="op">(</span><span class="va">bank</span>, params <span class="op">=</span> <span class="st">'res1.2_lam0.25_k30'</span>, pt.size <span class="op">=</span> <span class="fl">0.02</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="reference/plotUMAP.html">plotUMAP</a></span><span class="op">(</span><span class="va">bank</span>, params <span class="op">=</span> <span class="st">'res0.8_lam0.5_k40'</span>, pt.size <span class="op">=</span> <span class="fl">0.02</span>, main.size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-10-1.png" width="100%"></p>
 <p>Spatial plot:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/plotSpatialDims.html">plotSpatialDims</a></span><span class="op">(</span><span class="va">bank</span>, params <span class="op">=</span> <span class="st">'res1.2_lam0.25_k30'</span>, pt.size <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="reference/plotSpatialDims.html">plotSpatialDims</a></span><span class="op">(</span><span class="va">bank</span>, params <span class="op">=</span> <span class="st">'res0.8_lam0.5_k40'</span>, pt.size <span class="op">=</span> <span class="fl">0.8</span>, main.size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-11-1.png" width="100%"></p>
 </div>
-</div>
-<div id="session-information" class="section level2">
+<div id="subsetting" class="section level2">
 <h2 class="hasAnchor">
-<a href="#session-information" class="anchor"></a>Session information</h2>
+<a href="#subsetting" class="anchor"></a>Subsetting</h2>
+<p>The <em>BanksyObject</em> can be subset by cells, features or metadata columns.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">bankSubset1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/SubsetBanksy.html">SubsetBanksy</a></span><span class="op">(</span><span class="va">bank</span>,
+                              dimx <span class="op">=</span> <span class="va">sdimx</span> <span class="op">&gt;</span> <span class="fl">1000</span> <span class="op">&amp;</span> <span class="va">sdimx</span> <span class="op">&lt;</span> <span class="fl">4000</span>,
+                              dimy <span class="op">=</span> <span class="va">sdimy</span> <span class="op">&gt;</span> <span class="fl">2000</span> <span class="op">&amp;</span> <span class="va">sdimy</span> <span class="op">&lt;</span> <span class="fl">3000</span>,
+                              cells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">cell_364</span>, <span class="va">cell_367</span>, <span class="va">cell_384</span>,<span class="va">cell_389</span><span class="op">)</span>,
+                              features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="fu"><a href="reference/BanksyObject-class.html">own.expr</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; Before filtering: 6725 cells and 140 genes.</span>
+<span class="co">#&gt; After filtering: 4 cells and 10 genes.</span>
+<span class="co">#&gt; Filtered 6721 cells and 130 genes.</span>
+<span class="fu"><a href="reference/BanksyObject-class.html">head</a></span><span class="op">(</span><span class="va">bankSubset1</span><span class="op">)</span>
+<span class="co">#&gt; own expression:</span>
+<span class="co">#&gt;           cell_364   cell_367   cell_384   cell_389</span>
+<span class="co">#&gt; Cacna1d -0.4665858 -0.4665858 -0.4665858 -0.4665858</span>
+<span class="co">#&gt; Smad3   -0.6349799 -0.6349799 -0.6349799  1.2142839</span>
+<span class="co">#&gt; Tsc22d1 -0.6742251 -0.6742251  0.6137452 -0.6742251</span>
+<span class="co">#&gt; Traf1   -0.3479753 -0.3479753 -0.3479753 -0.3479753</span>
+<span class="co">#&gt; Adamts2 -0.4211489 -0.4211489 -0.4211489 -0.4211489</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; neighbour expression:</span>
+<span class="co">#&gt;               cell_364   cell_367   cell_384   cell_389</span>
+<span class="co">#&gt; Cacna1d.nbr -0.4170890 -0.3539951 -0.6708647 -0.9097485</span>
+<span class="co">#&gt; Smad3.nbr    0.8297271  0.5464924  0.1457932  0.4353906</span>
+<span class="co">#&gt; Tsc22d1.nbr -0.3273127 -0.3267730 -0.2396807  0.4324479</span>
+<span class="co">#&gt; Traf1.nbr   -0.3782101 -0.4923421  0.4701541  1.1875814</span>
+<span class="co">#&gt; Adamts2.nbr -0.4919150 -0.6060863 -0.2951297 -0.2370119</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; cell locations:</span>
+<span class="co">#&gt;             sdimx    sdimy</span>
+<span class="co">#&gt; cell_364 1019.050 2660.030</span>
+<span class="co">#&gt; cell_367 1040.727 2585.758</span>
+<span class="co">#&gt; cell_384 1082.720 2383.199</span>
+<span class="co">#&gt; cell_389 1084.240 2254.025</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; metadata:</span>
+<span class="co">#&gt;           cell_ID n_features res0.8_lam0.5_k40</span>
+<span class="co">#&gt; cell_364 cell_364         25                 1</span>
+<span class="co">#&gt; cell_367 cell_367         35                 2</span>
+<span class="co">#&gt; cell_384 cell_384         99                 3</span>
+<span class="co">#&gt; cell_389 cell_389         60                 3</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">bankSubset2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/SubsetBanksy.html">SubsetBanksy</a></span><span class="op">(</span><span class="va">bank</span>,
+                            metadata <span class="op">=</span> <span class="va">res0.8_lam0.5_k40</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">6</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; Before filtering: 6725 cells and 140 genes.</span>
+<span class="co">#&gt; After filtering: 1452 cells and 140 genes.</span>
+<span class="co">#&gt; Filtered 5273 cells and 0 genes.</span>
+<span class="fu"><a href="reference/plotSpatialDims.html">plotSpatialDims</a></span><span class="op">(</span><span class="va">bankSubset2</span>, params <span class="op">=</span> <span class="st">'res0.8_lam0.5_k40'</span>, 
+                pt.size <span class="op">=</span> <span class="fl">0.5</span>, main.size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-13-1.png" width="100%"></p>
+</div>
+</div>
+<div id="session-information" class="section level1">
+<h1 class="hasAnchor">
+<a href="#session-information" class="anchor"></a>Session information</h1>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; R version 3.6.0 (2019-04-26)</span>
-<span class="co">#&gt; Platform: x86_64-pc-linux-gnu (64-bit)</span>
-<span class="co">#&gt; Running under: Ubuntu 18.04.2 LTS</span>
+<span class="co">#&gt; R version 4.0.3 (2020-10-10)</span>
+<span class="co">#&gt; Platform: x86_64-w64-mingw32/x64 (64-bit)</span>
+<span class="co">#&gt; Running under: Windows 10 x64 (build 19041)</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Matrix products: default</span>
-<span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1</span>
-<span class="co">#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; locale:</span>
-<span class="co">#&gt; [1] C</span>
+<span class="co">#&gt; [1] LC_COLLATE=English_Singapore.1252  LC_CTYPE=English_Singapore.1252   </span>
+<span class="co">#&gt; [3] LC_MONETARY=English_Singapore.1252 LC_NUMERIC=C                      </span>
+<span class="co">#&gt; [5] LC_TIME=English_Singapore.1252    </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; attached base packages:</span>
 <span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span>
@@ -198,22 +279,42 @@
 <span class="co">#&gt; [1] Banksy_0.99.0</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; loaded via a namespace (and not attached):</span>
-<span class="co">#&gt;  [1] reticulate_1.14    tidyselect_0.2.5   xfun_0.12          purrr_0.3.3       </span>
-<span class="co">#&gt;  [5] lattice_0.20-38    Giotto_1.0.2       colorspace_1.4-1   htmltools_0.4.0   </span>
-<span class="co">#&gt;  [9] yaml_2.2.0         rlang_0.4.4        pracma_2.3.3       pillar_1.4.1      </span>
-<span class="co">#&gt; [13] glue_1.3.1         rappdirs_0.3.1     uwot_0.1.5         RColorBrewer_1.1-2</span>
-<span class="co">#&gt; [17] lifecycle_0.1.0    plyr_1.8.5         stringr_1.4.0      tictoc_1.0.1      </span>
-<span class="co">#&gt; [21] munsell_0.5.0      gtable_0.3.0       codetools_0.2-16   evaluate_0.14     </span>
-<span class="co">#&gt; [25] labeling_0.3       knitr_1.27         irlba_2.3.3        parallel_3.6.0    </span>
-<span class="co">#&gt; [29] Rcpp_1.0.5         scales_1.1.0       dbscan_1.1-5       RcppParallel_4.4.4</span>
-<span class="co">#&gt; [33] jsonlite_1.6       farver_2.0.3       RSpectra_0.16-0    gridExtra_2.3     </span>
-<span class="co">#&gt; [37] ggplot2_3.3.2      digest_0.6.19      stringi_1.4.5      dplyr_0.8.4       </span>
-<span class="co">#&gt; [41] ggrepel_0.8.1      cowplot_1.0.0      grid_3.6.0         tools_3.6.0       </span>
-<span class="co">#&gt; [45] magrittr_1.5       RcppAnnoy_0.0.14   tibble_2.1.3       crayon_1.3.4      </span>
-<span class="co">#&gt; [49] pkgconfig_2.0.2    Matrix_1.2-17      data.table_1.12.8  assertthat_0.2.1  </span>
-<span class="co">#&gt; [53] rmarkdown_2.1      R6_2.4.0           igraph_1.2.4.2     compiler_3.6.0</span></code></pre></div>
+<span class="co">#&gt;  [1] RcppEigen_0.3.3.9.1      tidyselect_1.1.1         xfun_0.23               </span>
+<span class="co">#&gt;  [4] purrr_0.3.4              lattice_0.20-41          colorspace_2.0-0        </span>
+<span class="co">#&gt;  [7] vctrs_0.3.8              generics_0.1.0           htmltools_0.5.1.1       </span>
+<span class="co">#&gt; [10] sccore_0.1.3             yaml_2.2.1               utf8_1.2.1              </span>
+<span class="co">#&gt; [13] rlang_0.4.11             pillar_1.6.1             glue_1.4.2              </span>
+<span class="co">#&gt; [16] DBI_1.1.1                uwot_0.1.10              pals_1.7                </span>
+<span class="co">#&gt; [19] plyr_1.8.6               lifecycle_1.0.0          stringr_1.4.0           </span>
+<span class="co">#&gt; [22] tictoc_1.0.1             munsell_0.5.0            Matrix.utils_0.9.8      </span>
+<span class="co">#&gt; [25] gtable_0.3.0             mapproj_1.2.7            codetools_0.2-16        </span>
+<span class="co">#&gt; [28] evaluate_0.14            labeling_0.4.2           knitr_1.33              </span>
+<span class="co">#&gt; [31] RcppArmadillo_0.10.5.0.0 irlba_2.3.3              parallel_4.0.3          </span>
+<span class="co">#&gt; [34] fansi_0.5.0              leidenAlg_0.1.1          highr_0.9               </span>
+<span class="co">#&gt; [37] Rcpp_1.0.5               scales_1.1.1             dbscan_1.1-8            </span>
+<span class="co">#&gt; [40] grr_0.9.5                farver_2.0.3             RSpectra_0.16-0         </span>
+<span class="co">#&gt; [43] ggplot2_3.3.3            digest_0.6.27            stringi_1.5.3           </span>
+<span class="co">#&gt; [46] dplyr_1.0.6              collapse_1.5.3           grid_4.0.3              </span>
+<span class="co">#&gt; [49] tools_4.0.3              RcppAnnoy_0.0.18         magrittr_2.0.1          </span>
+<span class="co">#&gt; [52] maps_3.3.0               tibble_3.1.2             dichromat_2.0-0         </span>
+<span class="co">#&gt; [55] crayon_1.4.1             pkgconfig_2.0.3          ellipsis_0.3.2          </span>
+<span class="co">#&gt; [58] Matrix_1.3-4             data.table_1.13.6        assertthat_0.2.1        </span>
+<span class="co">#&gt; [61] rmarkdown_2.8            R6_2.5.0                 igraph_1.2.6            </span>
+<span class="co">#&gt; [64] compiler_4.0.3</span></code></pre></div>
+<div id="to-dos" class="section level2">
+<h2 class="hasAnchor">
+<a href="#to-dos" class="anchor"></a>To-dos</h2>
+<ul>
+<li>Pass devtools::check: S3/4 documentation</li>
+<li>Normalization methods for multiple datasets</li>
+<li>Clustering methods</li>
+<li>Optimization for handling large matrices (Rcpp)</li>
+<li>Subsetting and Connecting clusters for multiple datasets</li>
+<li>Unit tests</li>
+</ul>
 </div>
 </div>
+
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
