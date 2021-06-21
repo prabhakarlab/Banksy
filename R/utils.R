@@ -39,20 +39,20 @@ geneFilter <- function(x, genes.filter, min.cells.expressed) {
     } else if (genes.filter == 'intersect') {
         common.genes <- Reduce(intersect, lapply(x, rownames))
         x <- lapply(x, function(x) x[rownames(x) %in% common.genes,])
-    }
 
-    if (min.cells.expressed > 0) {
-        message(paste0('Filering genes expressed in less than ', min.cells.expressed, ' cells'))
-        pass.genes <- lapply(x, function(x) rownames(x)[rowSums(x > 0) >= min.cells.expressed])
-        pass.genes <- Reduce(intersect, pass.genes)
-        x <- lapply(x, function(x) x[rownames(x) %in% pass.genes,])
-        ngenesAft <- sapply(x, function(x) dim(x)[1])
-        filt <- ngenesBef - ngenesAft
-        for (i in seq_len(length(x))) {
+        if (min.cells.expressed > 0) {
+          message(paste0('Filering genes expressed in less than ', min.cells.expressed, ' cells'))
+          pass.genes <- lapply(x, function(x) rownames(x)[rowSums(x > 0) >= min.cells.expressed])
+          pass.genes <- Reduce(intersect, pass.genes)
+          x <- lapply(x, function(x) x[rownames(x) %in% pass.genes,])
+          ngenesAft <- sapply(x, function(x) dim(x)[1])
+          filt <- ngenesBef - ngenesAft
+          for (i in seq_len(length(x))) {
             message(paste0('Filtered ', filt[i], ' genes from dataset ',
-                     names(x)[i]))
-        }
+                           names(x)[i]))
+          }
 
+        }
     }
 
     ## Harmonise gene name orderings
