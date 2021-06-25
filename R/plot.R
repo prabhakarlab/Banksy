@@ -33,8 +33,7 @@ plotUMAP <- function(bank, params,
   umap_name <- paste0('umap_', lam)
 
   clusters <- bank@meta.data[[params]]
-  n <- length(unique(clusters))
-
+  n <- max(clusters)
   if (is.null(col)) {
     plotCols <- bank@meta.data[[paste0('col_', params)]]
     if (is.null(plotCols)) plotCols <- getPalette(n)
@@ -54,14 +53,15 @@ plotUMAP <- function(bank, params,
 
   p <- ggplot(plotData, aes(x=umap_1, y=umap_2, col=Clust)) +
     xlab('umap 1') + ylab('umap 2') + theme_minimal() + geom_point(size=pt.size) +
-    scale_color_manual(values=plotCols)
+    scale_color_manual(values=plotCols[
+      as.numeric(levels(plotData$Clust))
+    ])
 
   if (!legend) p <- p + theme(legend.position = 'none')
   if (is.null(main)) p <- p + ggtitle(gsub('_', ' ', params)) +
     theme(plot.title = element_text(size = main.size))
   return(p)
 }
-
 #' Plot Spatial dims
 #'
 #' @param bank BanksyObject

@@ -6,12 +6,11 @@
 \usage{
 SubsetBanksy(
   x,
-  cells = TRUE,
+  cells = NULL,
   features = NULL,
-  dimx = TRUE,
-  dimy = TRUE,
-  dimz = TRUE,
-  metadata = TRUE
+  dims = TRUE,
+  metadata = TRUE,
+  dataset = NULL
 )
 }
 \arguments{
@@ -21,11 +20,7 @@ SubsetBanksy(
 
 \item{features}{genes to filter by}
 
-\item{dimx}{dimx to filter by - must be valid column}
-
-\item{dimy}{dimy to filter by - must be valid column}
-
-\item{dimz}{dimz to filter by - must be valid column}
+\item{dims}{dimensions to filter by - must correspond to valid columns}
 
 \item{metadata}{metadata to filter by - must be valid colulmn}
 }

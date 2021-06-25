@@ -59,13 +59,15 @@ is provided with the package:
 ``` r
 library(Banksy)
 
-expr <- as.matrix(readRDS(system.file('/extdata/expression.rds', package = 'Banksy')))
+expr <- readRDS(system.file('/extdata/expression.rds', package = 'Banksy'))
 locs <- readRDS(system.file('/extdata/locations.rds', package = 'Banksy'))
 ```
 
 The gene expression matrix for cells should be a `matrix`:
 
 ``` r
+class(expr)
+#> [1] "matrix" "array"
 head(expr[,1:5])
 #>          cell_4 cell_5 cell_6 cell_7 cell_8
 #> Slc1a2        4      2     13     26      6
@@ -79,6 +81,8 @@ head(expr[,1:5])
 while cell locations should be supplied as a `data.frame`:
 
 ``` r
+class(locs)
+#> [1] "data.frame"
 head(locs)
 #>            sdimx     sdimy
 #> cell_4  68.49701 13951.186
@@ -107,7 +111,7 @@ bank <- NormalizeBanksy(bank, normFactor = 100)
 bank <- ComputeBanksy(bank)
 #> Computing Banksy matrices...
 #> Spatial mode is kNN_r, k_geom = 10
-#> Banksy matrix: 27.77 sec elapsed
+#> Banksy matrix: 26.14 sec elapsed
 bank <- ScaleBanksy(bank)
 ```
 
@@ -150,7 +154,7 @@ bank <- ClusterBanksy(bank, lambda = 0.5,
                             kneighbours = 40)
 #> Iteration 1 out of 1
 #> Finished clustering for Lambda=0.5, Resolution=0.8, K Neighbours=40
-#> 27.09 sec elapsed
+#> 25.86 sec elapsed
 ```
 
 ## Visualization
@@ -177,13 +181,10 @@ The *BanksyObject* can be subset by cells, features or metadata columns.
 
 ``` r
 bankSubset1 <- SubsetBanksy(bank,
-                              dimx = sdimx > 1000 & sdimx < 4000,
-                              dimy = sdimy > 2000 & sdimy < 3000,
-                              cells = c(cell_364, cell_367, cell_384,cell_389),
-                              features = sample(rownames(own.expr(bank)), 10))
-#> Before filtering: 6725 cells and 140 genes.
-#> After filtering: 4 cells and 10 genes.
-#> Filtered 6721 cells and 130 genes.
+                            dims = (sdimx > 1000 & sdimx < 4000) & 
+                                   (sdimy > 2000 & sdimy < 3000),
+                            cells = c('cell_364', 'cell_367', 'cell_384','cell_389'),
+                            features = sample(rownames(own.expr(bank)), 10))
 head(bankSubset1)
 #> own expression:
 #>           cell_364   cell_367   cell_384   cell_389
@@ -219,9 +220,6 @@ head(bankSubset1)
 ``` r
 bankSubset2 <- SubsetBanksy(bank,
                             metadata = res0.8_lam0.5_k40 %in% c(3,6))
-#> Before filtering: 6725 cells and 140 genes.
-#> After filtering: 1452 cells and 140 genes.
-#> Filtered 5273 cells and 0 genes.
 plotSpatialDims(bankSubset2, params = 'res0.8_lam0.5_k40', 
                 pt.size = 0.5, main.size = 10)
 ```

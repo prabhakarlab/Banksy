@@ -62,17 +62,19 @@ provided with the package:
 ```{r}
 library(Banksy)
 
-expr <- as.matrix(readRDS(system.file('/extdata/expression.rds', package = 'Banksy')))
+expr <- readRDS(system.file('/extdata/expression.rds', package = 'Banksy'))
 locs <- readRDS(system.file('/extdata/locations.rds', package = 'Banksy'))
 ```
 
 The gene expression matrix for cells should be a `matrix`:
 ```{r}
+class(expr)
 head(expr[,1:5])
 ```
 
 while cell locations should be supplied as a `data.frame`:
 ```{r}
+class(locs)
 head(locs)
 ```
 
@@ -136,10 +138,10 @@ plotSpatialDims(bank, params = 'res0.8_lam0.5_k40', pt.size = 0.8, main.size = 1
 The *BanksyObject* can be subset by cells, features or metadata columns.
 ```{r}
 bankSubset1 <- SubsetBanksy(bank,
-                              dimx = sdimx > 1000 & sdimx < 4000,
-                              dimy = sdimy > 2000 & sdimy < 3000,
-                              cells = c(cell_364, cell_367, cell_384,cell_389),
-                              features = sample(rownames(own.expr(bank)), 10))
+                            dims = (sdimx > 1000 & sdimx < 4000) & 
+                                   (sdimy > 2000 & sdimy < 3000),
+                            cells = c('cell_364', 'cell_367', 'cell_384','cell_389'),
+                            features = sample(rownames(own.expr(bank)), 10))
 head(bankSubset1)
 ```
 

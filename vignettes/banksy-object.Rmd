@@ -85,15 +85,15 @@ logical unquoted conditions. The variables here (e.g. `sdimx`) must correspond
 to the columns names of the `cell.locs(bank)`. 
 ```{r subset1, eval=T}
 bankSubsetDim <- SubsetBanksy(bank,
-                              dimx = sdimx > 1000 & sdimx < 4000,
-                              dimy = sdimy > 2000 & sdimy < 3000)
+                              dims = (sdimx > 1000 & sdimx < 4000) &
+                                     (sdimy > 2000 & sdimy < 3000))
 head(bankSubsetDim)
 ```
 
-The object can also be subset by cells with logical unquoted conditions:
+The object can also be subset by cells:
 ```{r subset2, eval=T}
 bankSubsetCells <- SubsetBanksy(bank,
-                                cells = c(cell_364, cell_367, cell_384, cell_389))
+                                cells = c('cell_364', 'cell_367', 'cell_384', 'cell_389'))
 ```
 
 Similarly, the object can also be subset by any metadata column with logical 

@@ -88,10 +88,11 @@ Next, we cluster the organoids from all datasets. A smaller resolution is used
 here, given the relatively limited number of organoids per dataset.
 
 ```{r cluster, eval=T}
+set.seed(1234)
 bank <- ClusterBanksy(bank,
                       resolution = 0.8,
                       lambda = 0.5,
-                      kneighbours = 40,
+                      kneighbours = 35,
                       verbose = TRUE)
 ```
 
@@ -103,7 +104,7 @@ spatial dimension plots. UMAP visualisation is similar to the one dataset case.
 
 ```{r spatdim, eval=T, fig.width = 8, fig.height = 7, fig.align='center'}
 ## UMAP
-params <- 'res0.8_lam0.5_k40'
+params <- 'res0.8_lam0.5_k35'
 umap <- plotUMAP(bank, params, pt.size = 0.02, main.size = 10)
 
 ## Spatial plots
@@ -117,8 +118,27 @@ plots <- c(list(umap), spatdims)
 do.call(grid.arrange, c(plots, ncol=2))
 ```
 
-(Note: *ConnectClusters* and *SubsetBanksy* are currently not supported for 
-multiple datasets)
+## Subsetting 
+
+*BanksyObject* for multiple datasets can be similarly subset in the one dataset 
+case. The main difference is specifying which dataset to subset dimensions by, 
+controlled by the `dataset` argument. Here, we subset the *BanksyObject* by 
+selecting cells in clusters 1 and 3, while filtering out cells in dataset 2 
+by the specified dimensions.
+
+```{r subset, eval=T, fig.width = 8, fig.height = 3.5, fig.align='center'}
+bankSubset <- SubsetBanksy(bank, 
+                           dims = (sdimx < 5700 | sdimx > 8000) | 
+                                  (sdimy < 5000 | sdimy > 8000),
+                           dataset = 'd2',
+                           metadata = res0.8_lam0.5_k35 %in% c(1,3))
+
+umap <- plotUMAP(bankSubset, params, pt.size = 0.5, main.size = 10)
+spatdim <- plotSpatialDims(bankSubset, params, dataset = 'd2',
+                pt.size = 1, main.size = 10)
+grid.arrange(umap, spatdim, ncol = 2)
+
+```
 
 ## Session Information
 ```{r sess}

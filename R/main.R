@@ -61,11 +61,10 @@ ScaleBanksy <- function(bank) {
 #' Subset a BanksyObject
 #' @param x a BanksyObject
 #' @param cells cells to filter by
-#' @param dimx dimx to filter by - must be valid column
-#' @param dimy dimy to filter by - must be valid column
-#' @param dimz dimz to filter by - must be valid column
+#' @param dims dimensions to filter by - must correspond to valid columns
 #' @param features genes to filter by
 #' @param metadata metadata to filter by - must be valid colulmn
+#' @param dataset dataset to subset dimensions by
 #'
 #' @importFrom rlang enquo quo_get_expr
 #'
@@ -73,59 +72,45 @@ ScaleBanksy <- function(bank) {
 #'
 #' @export
 SubsetBanksy <- function(
-  x,
-  cells=TRUE, features=NULL,
-  dimx=TRUE, dimy=TRUE, dimz=TRUE,
-  metadata=TRUE) {
+  x, cells=NULL, features=NULL, dims=TRUE, metadata=TRUE, dataset=NULL) {
 
   nfeaturesBef <- nrow(x@own.expr)
   ncellsBef <- ncol(x@own.expr)
 
-  ## Filter cells by dimension and cells
-  dimx <- rlang::enquo(dimx)
-  x@cell.locs <- subset(data.frame(x@cell.locs), subset = eval(rlang::quo_get_expr(dimx)))
-
-  dimy <- rlang::enquo(dimy)
-  x@cell.locs <- subset(data.frame(x@cell.locs), subset = eval(rlang::quo_get_expr(dimy)))
-
-  dimz <- rlang::enquo(dimz)
-  x@cell.locs <- subset(data.frame(x@cell.locs), subset = eval(rlang::quo_get_expr(dimz)))
-
-  cells <- rlang::enquo(cells)
-  x@own.expr <- subset(data.frame(x@own.expr), select = eval(rlang::quo_get_expr(cells)))
-
-  ## Filter metadata
+  ## Enquote all input conditions
+  dims <- rlang::enquo(dims)
   metadata <- rlang::enquo(metadata)
-  x@meta.data <- subset(x@meta.data, subset = eval(rlang::quo_get_expr(metadata)))
 
-  ## Filter features
-  if(!(is.null(features))) {
-    x@own.expr <- x@own.expr[rownames(x@own.expr)%in%features,,drop=FALSE]
-    if (!is.null(x@nbr.expr)) x@nbr.expr <- x@nbr.expr[rownames(x@nbr.expr) %in%
-                                                      paste0(features,'.nbr'),,drop=FALSE]
-    if (!is.null(x@custom.expr)) x@custom.expr <- x@custom.expr[rownames(x@custom.expr) %in%
-                                                               features,,drop=FALSE]
-  }
+  ## Subset dimensions
+  x <- subsetLocations(x, dims, dataset)
+
+  ## Subset cells
+  x <- subsetCells(x, cells)
+
+  ## Subset metadata
+  x@meta.data <- subset(x@meta.data, subset = eval(rlang::quo_get_expr(metadata)))
+  ## Subset features
+  x <- subsetFeatures(x, features)
 
   ## Consistent Cell filtering
-  surviving_cells <- intersect(x@meta.data$cell_ID,
-                               intersect(colnames(x@own.expr), rownames(x@cell.locs)))
-  x@own.expr <- as.matrix(x@own.expr[,surviving_cells,drop=FALSE])
-  if (!is.null(x@nbr.expr)) x@nbr.expr <- as.matrix(x@nbr.expr[,surviving_cells,drop=FALSE])
-  if (!is.null(x@custom.expr)) x@custom.expr <- as.matrix(x@custom.expr[,surviving_cells,drop=FALSE])
-  x@cell.locs <- x@cell.locs[surviving_cells,,drop=FALSE]
-  x@meta.data <- x@meta.data[x@meta.data$cell_ID %in% surviving_cells,,drop=FALSE]
+  survivingCells <- subsetConsistent(x)
+  x <- subsetCells(x, survivingCells)
+
+  ## Filter cell locations, metadata and dim reductions based on surviving cells
+  x@meta.data <- x@meta.data[x@meta.data$cell_ID %in% survivingCells,,drop=FALSE]
   x@dim.reduction <- lapply(x@dim.reduction, function(dim.red) {
-    dim.red <- dim.red[rownames(dim.red) %in% surviving_cells,,drop=FALSE]
+    dim.red <- dim.red[rownames(dim.red) %in% survivingCells,,drop=FALSE]
     dim.red
   })
-
-  ## Report metrics
-  nfeaturesAft <- nrow(x@own.expr)
-  ncellsAft <- ncol(x@own.expr)
-  message('Before filtering: ', ncellsBef, ' cells and ', nfeaturesBef, ' genes.')
-  message('After filtering: ', ncellsAft, ' cells and ', nfeaturesAft, ' genes.')
-  message('Filtered ', ncellsBef - ncellsAft, ' cells and ', nfeaturesBef - nfeaturesAft, ' genes.')
+  if (is.list(x@own.expr)) {
+    x@cell.locs <- lapply(x@cell.locs, function(x) {
+      keep <- which(rownames(x) %in% survivingCells)
+      x <- x[keep,,drop=FALSE]
+    })
+  } else {
+    keep <- which(rownames(x@cell.locs) %in% survivingCells)
+    x@cell.locs <- x@cell.locs[keep,,drop=FALSE]
+  }
 
   return(x)
 }
@@ -231,11 +216,13 @@ ClusterBanksy <- function(bank,
 
     if (verbose) message('Running PCA')
     pca <- prcomp_irlba(t(joint), n = npcs)$x
+    rownames(pca) <- bank@meta.data$cell_ID
     bank@dim.reduction[[paste0('pca_', lam)]] <- pca
 
     if (verbose) message('Computing UMAP')
     umap <- umap(pca, n_neighbors = nneighbors, spread = spread,
                  n_epochs = nepochs, min_dist = mindist)
+    rownames(umap) <- bank@meta.data$cell_ID
     bank@dim.reduction[[paste0('umap_', lam)]] <- umap
 
     for (res in resolution) {
