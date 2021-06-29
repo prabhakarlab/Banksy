@@ -1,21 +1,60 @@
-# normalizer in NormalizeBanksy
-# scaler in ScaleBanksy
-# geneFilter in BanksyObject
-# .init in ConnectClusters
-# compute.banksyMatrices in ComputeBanksy
-
+# Index of helper functions and where they are called
+# normalizer ---------------- NormalizeBanksy
+# scaler -------------------- ScaleBanksy
+# scalerAll ----------------- ScaleBanksy
+# geneFilter ---------------- BanksyObject
+# init ---------------------- ConnectClusters
+# compute.banksyMatrices ---- ComputeBanksy
+# getPalette ---------------- Plotting
+# subsetDims ---------------- SubsetBanksy
+# subsetLocations ----------- SubsetBanksy
+# subsetCells --------------- SubsetBanksy
+# subsetFeatures ------------ SubsetBanksy
+# subsetConsistent ---------- SubsetBanksy
+# getAssay ------------------ Plotting
+# getHeatmapPalette --------- Plotting
 
 #' @importFrom collapse `%c/%`
+#' @importFrom matrixStats colSums2
 normalizer <- function(x, normFactor) {
-    x <- t(t(x) %c/% colSums(x)) * normFactor
+    x <- t(t(x) %c/% colSums2(x)) * normFactor
     return(x)
 }
 
-#' @importFrom collapse fscale
+#' @importFrom matrixStats rowMeans2 rowSds
 scaler <- function(x) {
-    x <- t(collapse::fscale(t(x)))
-    x[is.nan(x)] <- 0
-    return(x)
+  rm <- rowMeans2(x)
+  rsd <- rowSds(x)
+  x <- (x - rm) / rsd
+  x[is.nan(x)] <- 0
+  return(x)
+}
+
+# Scale rows of the concatenate of matrices without concatenating them
+#' @importFrom matrixStats rowSums2 rowVars rowMeans2
+scalerAll <- function(x) {
+
+  sumIndiv <- lapply(x, rowSums2)
+  nIndiv <- lapply(x, ncol)
+  nAll <- sum(unlist(nIndiv))
+  sumAll <- Reduce(`+`, sumIndiv)
+  meanAll <- sumAll / nAll
+
+  varIndiv <- lapply(x, rowVars)
+  meanIndiv <- lapply(x, rowMeans2)
+  zeroIndiv <- lapply(meanIndiv, `-`, meanAll)
+  a <- Map(`*`, varIndiv, nIndiv)
+  b <- Map(`*`, zeroIndiv, nIndiv)
+  numIndiv <- Map(`+`, a,b)
+  numAll <- Reduce(`+`, numIndiv)
+  sdAll <- sqrt(numAll / nAll)
+
+  x <- lapply(x, function(d) {
+    d <- (d - meanAll) / sdAll
+    d[is.nan(d)] <- 0
+    d
+  })
+  return(x)
 }
 
 geneFilter <- function(x, genes.filter, min.cells.expressed) {
@@ -352,3 +391,71 @@ subsetConsistent <- function(x) {
   cellOut <- intersect(cellMeta, intersect(cellCell, cellLocs))
   return(cellOut)
 }
+
+getAssay <- function(bank, assay, dataset) {
+
+  if (!is.na(pmatch(assay, c('own.expr', 'nbr.expr', 'custom.expr')))) {
+    slot <- get(assay, mode = 'function')
+    mat <- slot(bank)
+    if (is.list(mat)) {
+      if (is.null(dataset)) {
+        message('Dataset not specified. Choosing first dataset.')
+        mat <- mat[[1]]
+      } else if (!(dataset %in% names(mat))) {
+        stop(paste0('Dataset ', dataset, ' not found.'))
+      } else {
+        mat <- mat[[dataset]]
+      }
+    }
+    if (is.null(mat)) stop('Assay chosen is empty.')
+  } else {
+    stop('Specify a valid assay.')
+  }
+  return(mat)
+}
+
+#' @importFrom circlize colorRamp2
+#' @importFrom stats quantile
+getHeatmapPaletteold <- function(mat, col, col.breaks) {
+
+  if (is.null(col)) {
+    lim.high <- quantile(mat, 0.9)
+    lim.low <- quantile(mat, 0.1)
+    col.fun <- colorRamp2(c(lim.low, 0, lim.high),
+                          c('blue', 'white', 'red'))
+  } else {
+    if (is.null(col.breaks)) {
+      lim.high <- quantile(mat, 0.9)
+      lim.low <- quantile(mat, 0.1)
+      col.breaks <- seq(lim.low, lim.high, length.out = length(col))
+    } else if (length(col.breaks) != length(col)) {
+      stop ('Unequal number of breaks and colors.')
+    }
+    col.fun <- colorRamp2(col.breaks, col)
+  }
+  return(col.fun)
+}
+
+#' @importFrom circlize colorRamp2
+#' @importFrom stats quantile
+getHeatmapPalette <- function(mat, col, col.breaks) {
+
+  if (!is.null(col) &
+      !is.null(col.breaks) &
+      (length(col) != length(col.breaks))) {
+    stop('Unequal number of colours and breaks')
+  }
+  if (is.null(col)) {
+    col <- c('blue', 'white', 'red')
+  }
+  if (is.null(col.breaks)) {
+    lim.high <- quantile(mat, 0.9)
+    lim.low <- quantile(mat, 0.1)
+    col.breaks <- seq(lim.low, lim.high, length.out = length(col))
+  }
+
+  col.fun <- colorRamp2(col.breaks, col)
+
+  return(col.fun)
+}
+

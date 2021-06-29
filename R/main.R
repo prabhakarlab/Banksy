@@ -36,14 +36,18 @@ NormalizeBanksy <- function(bank, normFactor = 100) {
 #' Scale rows
 #'
 #' @param bank BanksyObject
+#' @param separate scale datasets separately
 #'
 #' @return scaled BanksyObject
 #'
 #' @export
-ScaleBanksy <- function(bank) {
+ScaleBanksy <- function(bank, separate = TRUE) {
   if (!is.null(bank@own.expr)) {
     if (is.list(bank@own.expr)) {
-      bank@own.expr <- lapply(bank@own.expr, scaler)
+      if (separate) bank@own.expr <- lapply(bank@own.expr, scaler)
+      else {
+        bank@own.expr <- scalerAll(bank@own.expr)
+      }
     } else {
       bank@own.expr <- scaler(bank@own.expr)
     }
@@ -196,7 +200,7 @@ ComputeBanksy <- function(bank,
 #' @export
 ClusterBanksy <- function(bank,
                           ## Grid parameters
-                          lambda = 0.5, resolution = 1.2, kneighbours = 30,
+                          lambda = 0.25, resolution = 1, kneighbours = 40,
                           ## PCA
                           npcs = 50,
                           ## UMAP parameters
@@ -308,7 +312,6 @@ ConnectClusters <- function(bank, verbose=FALSE, optim=TRUE) {
   message(paste0('Mapping clusterings to ', clustNames[parent]))
   ## The rest will be children
   children <- setdiff(seq_len(ncol(clust)), parent)
-  child<-children[3]
   ## Iterate over the clusters of the parent
   for (child in children) {
 

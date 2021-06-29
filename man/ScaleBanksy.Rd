@@ -4,10 +4,12 @@
 \alias{ScaleBanksy}
 \title{Scale rows}
 \usage{
-ScaleBanksy(bank)
+ScaleBanksy(bank, separate = TRUE)
 }
 \arguments{
 \item{bank}{BanksyObject}
+
+\item{separate}{scale datasets separately}
 }
 \value{
 scaled BanksyObject

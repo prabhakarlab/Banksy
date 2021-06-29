@@ -6,9 +6,9 @@
 \usage{
 ClusterBanksy(
   bank,
-  lambda = 0.5,
-  resolution = 1.2,
-  kneighbours = 30,
+  lambda = 0.25,
+  resolution = 1,
+  kneighbours = 40,
   npcs = 50,
   nneighbors = 30,
   spread = 3,

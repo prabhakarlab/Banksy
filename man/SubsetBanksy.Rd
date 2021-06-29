@@ -23,6 +23,8 @@ SubsetBanksy(
 \item{dims}{dimensions to filter by - must correspond to valid columns}
 
 \item{metadata}{metadata to filter by - must be valid colulmn}
+
+\item{dataset}{dataset to subset dimensions by}
 }
 \value{
 subset BanksyObject

@@ -18,13 +18,17 @@ Description: Banksy is an R packaged that incorporates spatial information to
 Depends:
      R (>= 3.5.0)
 Imports:
+    ComplexHeatmap,
     collapse,
+    circlize,
     data.table,
     dbscan,
     ggplot2,
+    grid,
     igraph,
     irlba,
     leidenAlg,
+    matrixStats,
     methods,
     pals,
     plyr,
