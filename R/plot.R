@@ -230,6 +230,7 @@ plotHeatmap <- function(bank, assay = 'own.expr', dataset = NULL,
 #'
 #' @param bank BanksyObject
 #'
+#' @importFrom data.table data.table melt
 #' @importFrom ggplot2 ggplot aes geom_text scale_fill_manual coord_flip guides
 #'   theme_minimal xlab
 #' @importFrom ggalluvial geom_flow geom_stratum
@@ -245,7 +246,7 @@ plotAlluvia <- function(bank) {
   n <- max(adata$value)
   adata$value <- factor(adata$value)
 
-
+  variable <- cell_ID <- value <- NULL
   alluvia <- ggplot(adata,
                     aes(x = variable,
                         alluvium = cell_ID,
