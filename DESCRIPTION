@@ -23,6 +23,7 @@ Imports:
     circlize,
     data.table,
     dbscan,
+    ggalluvial,
     ggplot2,
     grid,
     igraph,
