@@ -37,7 +37,7 @@ BanksyObject(
   nbr.expr = NULL,
   custom.expr = NULL,
   cell.locs = NULL,
-  meta.data = data.frame(),
+  meta.data = NULL,
   dim.reduction = NULL,
   genes.filter = "intersect",
   min.cells.expressed = -1

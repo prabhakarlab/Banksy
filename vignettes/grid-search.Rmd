@@ -82,23 +82,24 @@ be used for visualisation. We can visualise connected output as follows.
 First, obtain cluster names:
 ```{r clustnames, eval=T}
 mdnames <- names(meta.data(bank))
-clustnames <- mdnames[grep("^res", mdnames)]
-clustnames
+clustnames <- mdnames[grep('^res', mdnames)]
+reductions <- rep(c('umap_0.25', 'umap_0.5', 'umap_0.75'), each = 3)
 ```
 
 Generate UMAPs and Spatial Dimension plots for the above clusters:
 ```{r out, eval=T}
-umaps <- lapply(clustnames, 
-                function(param) plotUMAP(bank, param, legend = FALSE, 
-                                         pt.size = 0.01, main.size = 10))
+umaps <- Map(function(by, reduction) {
+  plotUMAP(bank, by, reduction, legend = FALSE, pt.size = 0.01, main.size = 10)
+  }, clustnames, reductions)
+
+
 spatdims <- lapply(clustnames, 
-                   function(param) plotSpatialDims(bank, param, 
-                                                   pt.size = 0.01, main.size = 10))
+                   function(by) plotSpatialDims(bank, by, pt.size = 0.01, main.size = 10))
 ```
 
 One can use the *grid.arrange* function from *gridExtra* to conveniently layout 
 all plots for comparison:
 ```{r visual, fig.width=8.5, fig.height=8.5, fig.align='center', eval=T}
-do.call("grid.arrange", c(umaps, ncol=3))
-do.call("grid.arrange", c(spatdims, ncol=3))
+do.call("grid.arrange", c(umaps, ncol = 3))
+do.call("grid.arrange", c(spatdims, ncol = 3))
 ```

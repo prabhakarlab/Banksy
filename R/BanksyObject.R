@@ -47,7 +47,7 @@ BanksyObject <-
            nbr.expr = NULL,
            custom.expr = NULL,
            cell.locs = NULL,
-           meta.data = data.frame(),
+           meta.data = NULL,
            dim.reduction = NULL,
            genes.filter = 'intersect',
            min.cells.expressed = -1) {
@@ -118,6 +118,15 @@ BanksyObject <-
 
     } else {
       return(object)
+    }
+
+    if (!is.null(meta.data)) {
+      if (nrow(meta.data) != nrow(mdata)) {
+        stop('Wrong number of rows in meta.data.
+              Ensure nrows == number of cells across all datasets.')
+      } else {
+        mdata <- cbind(mdata, meta.data)
+      }
     }
 
     object@own.expr <- own.expr

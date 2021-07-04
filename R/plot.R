@@ -25,12 +25,20 @@ plotUMAP <- function(bank, by, reduction,
 
   mnames <- names(bank@meta.data)
   mnames <- mnames[!grepl('cell_ID|n_features', mnames)]
+  if (length(by) > 1) {
+    warning('More than one plot parameter supplied. Using first.')
+    by <- by[1]
+  }
   if (!(by %in% names(bank@meta.data))) {
     stop(paste0('Invalid parameter to plot UMAP by. One of ',
                 paste(mnames, collapse = ' ')))
   }
 
   umaps <- names(bank@dim.reduction)[grep('umap', names(bank@dim.reduction))]
+  if (length(reduction) > 1) {
+    warning('More than one reduction supplied. Using first.')
+    reduction <- reduction[1]
+  }
   if (!(reduction %in% names(bank@dim.reduction))) {
     stop(paste0('Invalid umap name. One of ',
                 paste(umaps, collapse = ' ')))
@@ -89,6 +97,10 @@ plotSpatialDims <- function(bank, by, dataset = NULL,
 
   mnames <- names(bank@meta.data)
   mnames <- mnames[!grepl('cell_ID|n_features', mnames)]
+  if (length(by) > 1) {
+    warning('More than one plot parameter supplied. Using first.')
+    by <- by[1]
+  }
   if (!(by %in% names(bank@meta.data))) {
     stop(paste0('Invalid parameter to plot UMAP by. One of ',
                 paste(mnames, collapse = ' ')))

@@ -104,8 +104,8 @@ seu <- RunUMAP(seu, dims = 1:10)
 seu <- FindNeighbors(seu)
 seu <- FindClusters(seu, resolution = 0.5, algorithm = 4)
 
-meta.data(bank)[['res_seurat_clusters']] <- as.numeric(seu@meta.data$seurat_clusters)
-plotSpatialDims(bank, params = 'res_seurat_clusters')
+meta.data(bank)[['seurat_clusters']] <- as.numeric(seu@meta.data$seurat_clusters)
+plotSpatialDims(bank, by = 'seurat_clusters')
 ```
 
 Find cluster-specific markers:

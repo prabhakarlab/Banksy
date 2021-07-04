@@ -42,7 +42,7 @@ slotNames(bank)
 Getter and setter methods are defined for each of these slots.
 To illustrate these functionalities, we use the data attached with the package.
 ```{r rdata, eval=T}
-expr <- as.matrix(readRDS(system.file('/extdata/expression.rds', package = 'Banksy')))
+expr <- readRDS(system.file('/extdata/expression.rds', package = 'Banksy'))
 locs <- readRDS(system.file('/extdata/locations.rds', package = 'Banksy'))
 ```
 

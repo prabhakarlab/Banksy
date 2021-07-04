@@ -37,6 +37,9 @@ remotes::install_github("jleechung/Banksy")
 
 # Documentation
 
+NOTE: These links will not work at the moment since the repo is still private.
+Refer to the [vignettes](https://github.com/jleechung/Banksy/tree/main/vignettes) for the time being.
+
 *Banksy* comes installed with [documentation](https://jleechung.github.io/Banksy/reference/index.html) 
 of main functions and their usage, along with several vignettes which detail 
 different use cases:

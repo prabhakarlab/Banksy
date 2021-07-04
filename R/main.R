@@ -351,7 +351,8 @@ ConnectClusters <- function(bank, verbose=FALSE, optim=TRUE) {
   maxClust <- max(apply(newClust, 2, max))
   fromMap <- seq_len(maxClust)
   toMap <- getPalette(maxClust)
-  bank@meta.data <- cbind(cell_ID = bank@meta.data$cell_ID, newClust)
+  bank@meta.data <- cbind(bank@meta.data[,-which(names(bank@meta.data) %in% clustNames)],
+                          newClust)
   return(bank)
 }
 
