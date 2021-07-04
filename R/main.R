@@ -139,8 +139,6 @@ ComputeBanksy <- function(bank,
                           kspatial = 1000, dimensions = 'all',
                           spatialMode = 'kNN_r', k_geom = 10) {
 
-  message('Computing Banksy matrices...')
-
   if (is.list(bank@own.expr)) {
     locs <- lapply(bank@cell.locs, function(x) {
       x <- data.table(x, keep.rownames = TRUE)
@@ -210,7 +208,6 @@ ClusterBanksy <- function(bank,
                           leideniters = -1,
                           verbose = FALSE) {
 
-  tic()
   max_iters <- prod(length(lambda), length(resolution), length(kneighbours))
   iter = 1
   message(paste0('Iteration ', iter, ' out of ', max_iters) )
@@ -263,7 +260,6 @@ ClusterBanksy <- function(bank,
       }
     }
   }
-  toc()
   return(bank)
 
 }

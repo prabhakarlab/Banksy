@@ -36,9 +36,9 @@ Imports:
     rlang,
     scales,
     stats,
-    tictoc,
     utils,
-    uwot
+    uwot, 
+    zeallot
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
