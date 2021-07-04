@@ -4,7 +4,8 @@
 #' Plot UMAP
 #'
 #' @param bank BanksyObject
-#' @param params clustering run to plot by
+#' @param by groupings for cells
+#' @param reduction reduction to use
 #' @param col cluster colours
 #' @param legend cluster legend
 #' @param main title
@@ -18,36 +19,38 @@
 #' @return NULL
 #'
 #' @export
-plotUMAP <- function(bank, params,
+plotUMAP <- function(bank, by, reduction,
                      col = NULL, legend = TRUE,
                      main = NULL, pt.size = 1, main.size = 5) {
 
-  clustnames <- names(bank@meta.data)
-  clustnames <- clustnames[grep('^res', clustnames)]
-  if (!(params %in% clustnames)) {
-    stop(paste0('Invalid parameters. One of ',
-                paste(clustnames, collapse = ' ')))
+  mnames <- names(bank@meta.data)
+  mnames <- mnames[!grepl('cell_ID|n_features', mnames)]
+  if (!(by %in% names(bank@meta.data))) {
+    stop(paste0('Invalid parameter to plot UMAP by. One of ',
+                paste(mnames, collapse = ' ')))
   }
 
-  lam <- gsub('.*lam|_k.*', '', params)
-  umap_name <- paste0('umap_', lam)
+  umaps <- names(bank@dim.reduction)[grep('umap', names(bank@dim.reduction))]
+  if (!(reduction %in% names(bank@dim.reduction))) {
+    stop(paste0('Invalid umap name. One of ',
+                paste(umaps, collapse = ' ')))
+  }
 
-  clusters <- bank@meta.data[[params]]
-  n <- max(clusters)
+  ## Get plotting colours
+  clusters <- bank@meta.data[[by]]
+  if (is.numeric(clusters)) n <- max(clusters)
+  if (is.character(clusters)) n <- length(unique(clusters))
   if (is.null(col)) {
-    plotCols <- bank@meta.data[[paste0('col_', params)]]
-    if (is.null(plotCols)) plotCols <- getPalette(n)
-    else {
-      colMap <- bank@meta.data[!duplicated(bank@meta.data[[params]]),]
-      plotCols <- colMap[[paste0('col_', params)]][order(colMap[[params]])]
-    }
+    plotCols <- getPalette(n)
+    if (is.numeric(clusters)) plotCols <- plotCols[sort(unique(clusters))]
   } else {
     if (length(col) < n) stop('Not enough colours')
     plotCols <- col[seq_len(n)]
   }
 
+  ## Initialize plot
   umap_1 <- umap_2 <- Clust <- NULL
-  plotData <- as.data.frame(bank@dim.reduction[[umap_name]])
+  plotData <- as.data.frame(bank@dim.reduction[[reduction]])
   plotData <- cbind(plotData, Clust = as.factor(clusters))
   names(plotData)[seq_len(2)] <- c('umap_1', 'umap_2')
 
@@ -57,17 +60,19 @@ plotUMAP <- function(bank, params,
     scale_color_manual(values=plotCols)
 
   if (!legend) p <- p + theme(legend.position = 'none')
-  if (is.null(main)) p <- p + ggtitle(gsub('_', ' ', params)) +
+  if (is.null(main)) p <- p + ggtitle(by) +
     theme(plot.title = element_text(size = main.size))
+
   return(p)
 }
 
 #' Plot Spatial dims
 #'
 #' @param bank BanksyObject
-#' @param params clustering run to plot by
+#' @param by clustering run to plot by
 #' @param dataset if multiple dataset are run
 #' @param col colours
+#' @param legend show legend
 #' @param main title
 #' @param pt.size size of points
 #' @param main.size size of title
@@ -78,15 +83,15 @@ plotUMAP <- function(bank, params,
 #' @return NULL
 #'
 #' @export
-plotSpatialDims <- function(bank, params, dataset = NULL,
-                            col = NULL, main = NULL,
-                            pt.size = 1, main.size = 5) {
+plotSpatialDims <- function(bank, by, dataset = NULL,
+                            col = NULL, legend = TRUE,
+                            main = NULL, pt.size = 1, main.size = 5) {
 
-  clustnames <- names(bank@meta.data)
-  clustnames <- clustnames[grep('^res', clustnames)]
-  if (!(params %in% clustnames)) {
-    stop(paste0('Invalid parameters. One of ',
-                paste(clustnames, collapse = ' ')))
+  mnames <- names(bank@meta.data)
+  mnames <- mnames[!grepl('cell_ID|n_features', mnames)]
+  if (!(by %in% names(bank@meta.data))) {
+    stop(paste0('Invalid parameter to plot UMAP by. One of ',
+                paste(mnames, collapse = ' ')))
   }
 
   if (is.list(bank@own.expr)) {
@@ -99,35 +104,32 @@ plotSpatialDims <- function(bank, params, dataset = NULL,
     plotData <- bank@cell.locs
   }
 
-  clusters <- bank@meta.data[[params]][bank@meta.data$cell_ID %in%
-                                         rownames(plotData)]
-  n <- max(clusters)
+  clusters <- bank@meta.data[[by]][bank@meta.data$cell_ID %in%
+                                     rownames(plotData)]
+  if (is.numeric(clusters)) n <- max(clusters)
+  if (is.character(clusters)) n <- length(unique(clusters))
   if (is.null(col)) {
-    plotCols <- bank@meta.data[[paste0('col_', params)]]
-    if (is.null(plotCols)) {
-      plotCols <- plyr::mapvalues(clusters,
-                                  from = seq_len(n),
-                                  to = getPalette(n),
-                                  warn_missing = FALSE)
-    }
+    plotCols <- getPalette(n)
+    if (is.numeric(clusters)) plotCols <- plotCols[sort(unique(clusters))]
   } else {
     if (length(col) < n) stop('Not enough colours')
-    plotCols <- plyr::mapvalues(clusters,
-                                from = seq_len(n),
-                                to = col[seq_len(n)],
-                                warn_missing = FALSE)
+    plotCols <- col[seq_len(n)]
   }
-  dimx <- dimy <- NULL
+
+  dimx <- dimy <- Clust <- NULL
   names(plotData)[seq_len(2)] <- c('dimx','dimy')
-  p <- ggplot(plotData, aes(x=dimx, y=dimy)) +
-    geom_point(color=plotCols, size=pt.size) +
-    xlab('x coordinates') + ylab('y coordinates') + theme_minimal()
-  if (is.null(main)) p <- p + ggtitle(gsub('_', ' ', params)) +
+  plotData <- cbind(plotData, Clust = as.factor(clusters))
+  p <- ggplot(plotData, aes(x=dimx, y=dimy, col=Clust)) +
+    xlab('x coordinates') + ylab('y coordinates') + theme_minimal() +
+    geom_point(size=pt.size) +
+    scale_color_manual(values=plotCols)
+
+  if (!legend) p <- p + theme(legend.position = 'none')
+  if (is.null(main)) p <- p + ggtitle(by) +
     theme(plot.title = element_text(size = main.size))
 
   return(p)
 }
-
 
 #' Plot Heatmap (wrapper for ComplexHeatmap)
 #'

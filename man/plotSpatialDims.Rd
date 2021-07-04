@@ -6,9 +6,10 @@
 \usage{
 plotSpatialDims(
   bank,
-  params,
+  by,
   dataset = NULL,
   col = NULL,
+  legend = TRUE,
   main = NULL,
   pt.size = 1,
   main.size = 5
@@ -17,11 +18,13 @@ plotSpatialDims(
 \arguments{
 \item{bank}{BanksyObject}
 
-\item{params}{clustering run to plot by}
+\item{by}{clustering run to plot by}
 
 \item{dataset}{if multiple dataset are run}
 
 \item{col}{colours}
+
+\item{legend}{show legend}
 
 \item{main}{title}
 

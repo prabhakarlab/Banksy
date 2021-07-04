@@ -4,6 +4,12 @@
 # getAssay ------------------ Plotting Heatmap
 # getHeatmapPalette --------- Plotting Heatmap
 
+init <- function(n, idx, val) {
+  x <- rep(0, n)
+  x[idx] <- val
+  x
+}
+
 #' @importFrom pals kelly glasbey polychrome
 getPalette <- function(n) {
   all.cols <- as.character(pals::kelly()[-c(1,3)],

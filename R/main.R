@@ -351,16 +351,6 @@ ConnectClusters <- function(bank, verbose=FALSE, optim=TRUE) {
   maxClust <- max(apply(newClust, 2, max))
   fromMap <- seq_len(maxClust)
   toMap <- getPalette(maxClust)
-  ## Define a color mapping
-  for (i in seq_len(ncol(newClust))) {
-    clustName <- names(newClust)[i]
-    colName <- paste0('col_', clustName)
-    plotCols <- plyr::mapvalues(newClust[,i],
-                                from = fromMap,
-                                to = toMap,
-                                warn_missing = FALSE)
-    newClust[,colName] <- plotCols
-  }
   bank@meta.data <- cbind(cell_ID = bank@meta.data$cell_ID, newClust)
   return(bank)
 }

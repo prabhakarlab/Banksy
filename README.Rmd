@@ -125,12 +125,12 @@ bank <- ClusterBanksy(bank, lambda = 0.5,
 
 UMAP visualization:
 ```{r}
-plotUMAP(bank, params = 'res0.8_lam0.5_k40', pt.size = 0.02, main.size = 10)
+plotUMAP(bank, by = 'res0.8_lam0.5_k40',  reduction = 'umap_0.5', pt.size = 0.02, main.size = 10)
 ```
 
 Spatial plot:
 ```{r}
-plotSpatialDims(bank, params = 'res0.8_lam0.5_k40', pt.size = 0.8, main.size = 10)
+plotSpatialDims(bank, by = 'res0.8_lam0.5_k40', pt.size = 0.8, main.size = 10)
 ```
 
 ## Subsetting
@@ -148,7 +148,7 @@ head(bankSubset1)
 ```{r}
 bankSubset2 <- SubsetBanksy(bank,
                             metadata = res0.8_lam0.5_k40 %in% c(3,6))
-plotSpatialDims(bankSubset2, params = 'res0.8_lam0.5_k40', 
+plotSpatialDims(bankSubset2, by = 'res0.8_lam0.5_k40', 
                 pt.size = 0.5, main.size = 10)
 ```
 

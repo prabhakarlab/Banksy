@@ -6,7 +6,8 @@
 \usage{
 plotUMAP(
   bank,
-  params,
+  by,
+  reduction,
   col = NULL,
   legend = TRUE,
   main = NULL,
@@ -17,7 +18,9 @@ plotUMAP(
 \arguments{
 \item{bank}{BanksyObject}
 
-\item{params}{clustering run to plot by}
+\item{by}{groupings for cells}
+
+\item{reduction}{reduction to use}
 
 \item{col}{cluster colours}
 

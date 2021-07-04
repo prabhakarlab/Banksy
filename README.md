@@ -109,9 +109,9 @@ scale the resulting gene-cell and neighbour feature-cell matrix.
 ``` r
 bank <- NormalizeBanksy(bank, normFactor = 100)
 bank <- ComputeBanksy(bank)
-#> Computing Banksy matrices...
-#> Spatial mode is kNN_r, k_geom = 10
-#> Banksy matrix: 26.14 sec elapsed
+#> Computing neighbors...
+#> Computing neighbor matrix...
+#> Done
 bank <- ScaleBanksy(bank)
 ```
 
@@ -154,7 +154,6 @@ bank <- ClusterBanksy(bank, lambda = 0.5,
                             kneighbours = 40)
 #> Iteration 1 out of 1
 #> Finished clustering for Lambda=0.5, Resolution=0.8, K Neighbours=40
-#> 25.86 sec elapsed
 ```
 
 ## Visualization
@@ -162,7 +161,7 @@ bank <- ClusterBanksy(bank, lambda = 0.5,
 UMAP visualization:
 
 ``` r
-plotUMAP(bank, params = 'res0.8_lam0.5_k40', pt.size = 0.02, main.size = 10)
+plotUMAP(bank, by = 'res0.8_lam0.5_k40',  reduction = 'umap_0.5', pt.size = 0.02, main.size = 10)
 ```
 
 <img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
@@ -170,7 +169,7 @@ plotUMAP(bank, params = 'res0.8_lam0.5_k40', pt.size = 0.02, main.size = 10)
 Spatial plot:
 
 ``` r
-plotSpatialDims(bank, params = 'res0.8_lam0.5_k40', pt.size = 0.8, main.size = 10)
+plotSpatialDims(bank, by = 'res0.8_lam0.5_k40', pt.size = 0.8, main.size = 10)
 ```
 
 <img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
@@ -220,7 +219,7 @@ head(bankSubset1)
 ``` r
 bankSubset2 <- SubsetBanksy(bank,
                             metadata = res0.8_lam0.5_k40 %in% c(3,6))
-plotSpatialDims(bankSubset2, params = 'res0.8_lam0.5_k40', 
+plotSpatialDims(bankSubset2, by = 'res0.8_lam0.5_k40', 
                 pt.size = 0.5, main.size = 10)
 ```
 
@@ -248,28 +247,33 @@ sessionInfo()
 #> [1] Banksy_0.99.0
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] RcppEigen_0.3.3.9.1      tidyselect_1.1.1         xfun_0.23               
-#>  [4] purrr_0.3.4              lattice_0.20-41          colorspace_2.0-0        
-#>  [7] vctrs_0.3.8              generics_0.1.0           htmltools_0.5.1.1       
-#> [10] sccore_0.1.3             yaml_2.2.1               utf8_1.2.1              
-#> [13] rlang_0.4.11             pillar_1.6.1             glue_1.4.2              
-#> [16] DBI_1.1.1                uwot_0.1.10              pals_1.7                
-#> [19] plyr_1.8.6               lifecycle_1.0.0          stringr_1.4.0           
-#> [22] tictoc_1.0.1             munsell_0.5.0            Matrix.utils_0.9.8      
-#> [25] gtable_0.3.0             mapproj_1.2.7            codetools_0.2-16        
-#> [28] evaluate_0.14            labeling_0.4.2           knitr_1.33              
-#> [31] RcppArmadillo_0.10.5.0.0 irlba_2.3.3              parallel_4.0.3          
-#> [34] fansi_0.5.0              leidenAlg_0.1.1          highr_0.9               
-#> [37] Rcpp_1.0.5               scales_1.1.1             dbscan_1.1-8            
-#> [40] grr_0.9.5                farver_2.0.3             RSpectra_0.16-0         
-#> [43] ggplot2_3.3.3            digest_0.6.27            stringi_1.5.3           
-#> [46] dplyr_1.0.6              collapse_1.5.3           grid_4.0.3              
-#> [49] tools_4.0.3              RcppAnnoy_0.0.18         magrittr_2.0.1          
-#> [52] maps_3.3.0               tibble_3.1.2             dichromat_2.0-0         
-#> [55] crayon_1.4.1             pkgconfig_2.0.3          ellipsis_0.3.2          
-#> [58] Matrix_1.3-4             data.table_1.13.6        assertthat_0.2.1        
-#> [61] rmarkdown_2.8            R6_2.5.0                 igraph_1.2.6            
-#> [64] compiler_4.0.3
+#>  [1] maps_3.3.0               assertthat_0.2.1         highr_0.9               
+#>  [4] stats4_4.0.3             yaml_2.2.1               pillar_1.6.1            
+#>  [7] lattice_0.20-41          glue_1.4.2               RcppEigen_0.3.3.9.1     
+#> [10] digest_0.6.27            RColorBrewer_1.1-2       colorspace_2.0-0        
+#> [13] htmltools_0.5.1.1        Matrix_1.3-4             plyr_1.8.6              
+#> [16] pkgconfig_2.0.3          GetoptLong_1.0.5         purrr_0.3.4             
+#> [19] scales_1.1.1             sccore_0.1.3             leidenAlg_0.1.1         
+#> [22] ggalluvial_0.12.3        RSpectra_0.16-0          collapse_1.5.3          
+#> [25] tibble_3.1.2             farver_2.0.3             generics_0.1.0          
+#> [28] dbscan_1.1-8             IRanges_2.24.1           grr_0.9.5               
+#> [31] ggplot2_3.3.3            ellipsis_0.3.2           BiocGenerics_0.36.1     
+#> [34] magrittr_2.0.1           crayon_1.4.1             evaluate_0.14           
+#> [37] fansi_0.5.0              RcppArmadillo_0.10.5.0.0 Cairo_1.5-12.2          
+#> [40] tools_4.0.3              data.table_1.13.6        GlobalOptions_0.1.2     
+#> [43] lifecycle_1.0.0          matrixStats_0.59.0       ComplexHeatmap_2.6.2    
+#> [46] stringr_1.4.0            S4Vectors_0.28.1         munsell_0.5.0           
+#> [49] cluster_2.1.0            irlba_2.3.3              compiler_4.0.3          
+#> [52] rlang_0.4.11             grid_4.0.3               Matrix.utils_0.9.8      
+#> [55] dichromat_2.0-0          rjson_0.2.20             RcppAnnoy_0.0.18        
+#> [58] circlize_0.4.13          igraph_1.2.6             labeling_0.4.2          
+#> [61] rmarkdown_2.8            gtable_0.3.0             codetools_0.2-16        
+#> [64] DBI_1.1.1                R6_2.5.0                 knitr_1.33              
+#> [67] dplyr_1.0.6              uwot_0.1.10              utf8_1.2.1              
+#> [70] zeallot_0.1.0            clue_0.3-59              pals_1.7                
+#> [73] shape_1.4.6              stringi_1.5.3            parallel_4.0.3          
+#> [76] Rcpp_1.0.5               vctrs_0.3.8              mapproj_1.2.7           
+#> [79] png_0.1-7                tidyselect_1.1.1         xfun_0.23
 ```
 
 ## To-dos
