@@ -1,18 +1,57 @@
 # Index of helper functions and where they are called
+# geneFilter ---------------- BanksyObject
 # normalizer ---------------- NormalizeBanksy
 # scaler -------------------- ScaleBanksy
 # scalerAll ----------------- ScaleBanksy
-# geneFilter ---------------- BanksyObject
-# init ---------------------- ConnectClusters
 # compute.banksyMatrices ---- ComputeBanksy
-# getPalette ---------------- Plotting
-# subsetDims ---------------- SubsetBanksy
-# subsetLocations ----------- SubsetBanksy
-# subsetCells --------------- SubsetBanksy
-# subsetFeatures ------------ SubsetBanksy
-# subsetConsistent ---------- SubsetBanksy
-# getAssay ------------------ Plotting
-# getHeatmapPalette --------- Plotting
+# getSpatialDims ------------ ComputeBanksy
+# with<Method> -------------- ComputeBanksy
+
+geneFilter <- function(x, genes.filter, min.cells.expressed) {
+
+  ngenesBef <- sapply(x, function(x) dim(x)[1])
+
+  if (genes.filter == 'union') {
+    all.genes <- Reduce(union, lapply(x, rownames))
+    x <- lapply(x, function(x) {
+      genes <- setdiff(all.genes, rownames(x))
+      if (length(genes) == 0) {
+        return(x)
+      } else {
+        append <- matrix(0, nrow = length(genes), ncol = ncol(x))
+        colnames(append) <- colnames(x)
+        rownames(append) <- genes
+        x <- rbind(x, append)
+        return(x)
+      }
+    })
+  } else if (genes.filter == 'intersect') {
+    common.genes <- Reduce(intersect, lapply(x, rownames))
+    x <- lapply(x, function(x) x[rownames(x) %in% common.genes,])
+
+    if (min.cells.expressed > 0) {
+      message(paste0('Filering genes expressed in less than ', min.cells.expressed, ' cells'))
+      pass.genes <- lapply(x, function(x) rownames(x)[rowSums(x > 0) >= min.cells.expressed])
+      pass.genes <- Reduce(intersect, pass.genes)
+      x <- lapply(x, function(x) x[rownames(x) %in% pass.genes,])
+      ngenesAft <- sapply(x, function(x) dim(x)[1])
+      filt <- ngenesBef - ngenesAft
+      for (i in seq_len(length(x))) {
+        message(paste0('Filtered ', filt[i], ' genes from dataset ',
+                       names(x)[i]))
+      }
+
+    }
+  }
+
+  ## Harmonise gene name orderings
+  gene.names <- sort(rownames(x[[1]]))
+  x <- lapply(x, function(x) {
+    x[match(gene.names, rownames(x)),]
+  })
+
+  return(x)
+}
 
 #' @importFrom collapse `%c/%`
 #' @importFrom matrixStats colSums2
@@ -55,240 +94,6 @@ scalerAll <- function(x) {
     d
   })
   return(x)
-}
-
-geneFilter <- function(x, genes.filter, min.cells.expressed) {
-
-    ngenesBef <- sapply(x, function(x) dim(x)[1])
-
-    if (genes.filter == 'union') {
-        all.genes <- Reduce(union, lapply(x, rownames))
-        x <- lapply(x, function(x) {
-        genes <- setdiff(all.genes, rownames(x))
-          if (length(genes) == 0) {
-              return(x)
-          } else {
-          append <- matrix(0, nrow = length(genes), ncol = ncol(x))
-          colnames(append) <- colnames(x)
-          rownames(append) <- genes
-          x <- rbind(x, append)
-          return(x)
-          }
-        })
-    } else if (genes.filter == 'intersect') {
-        common.genes <- Reduce(intersect, lapply(x, rownames))
-        x <- lapply(x, function(x) x[rownames(x) %in% common.genes,])
-
-        if (min.cells.expressed > 0) {
-          message(paste0('Filering genes expressed in less than ', min.cells.expressed, ' cells'))
-          pass.genes <- lapply(x, function(x) rownames(x)[rowSums(x > 0) >= min.cells.expressed])
-          pass.genes <- Reduce(intersect, pass.genes)
-          x <- lapply(x, function(x) x[rownames(x) %in% pass.genes,])
-          ngenesAft <- sapply(x, function(x) dim(x)[1])
-          filt <- ngenesBef - ngenesAft
-          for (i in seq_len(length(x))) {
-            message(paste0('Filtered ', filt[i], ' genes from dataset ',
-                           names(x)[i]))
-          }
-
-        }
-    }
-
-    ## Harmonise gene name orderings
-    gene.names <- sort(rownames(x[[1]]))
-    x <- lapply(x, function(x) {
-      x[match(gene.names, rownames(x)),]
-    })
-
-    return(x)
-}
-
-init <- function(n, idx, val) {
-  x <- rep(0, n)
-  x[idx] <- val
-  x
-}
-
-
-#' @importFrom pals kelly glasbey polychrome
-getPalette <- function(n) {
-  all.cols <- as.character(pals::kelly()[-c(1,3)],
-                           pals::glasbey(),
-                           pals::polychrome())
-  return(all.cols[seq_len(n)])
-}
-
-#' @importFrom rlang quo_get_expr
-subsetDims <- function(locs, dims) {
-  locs <- subset(data.frame(locs), subset = eval(rlang::quo_get_expr(dims)))
-  return(locs)
-}
-
-subsetLocations <- function(x, dims=TRUE, dataset=NULL) {
-
-  if (is.list(x@own.expr)) {
-
-    if (is.null(dataset)) {
-      message('Dataset not specified. Subsetting all data sets by dimension.')
-      x@cell.locs <- lapply(x@cell.locs, function(x) {
-        subsetDims(x, dims)
-      })
-    } else {
-      if (!(dataset %in% names(x@cell.locs))) {
-        stop(paste0('Dataset ', dataset, ' not found. One of ',
-                    paste(names(x@cell.locs), collapse = ' ')))
-      }
-      assayid <- which(names(x@cell.locs) == dataset)
-      assay <- x@cell.locs[[assayid]]
-      x@cell.locs[[assayid]] <- subsetDims(assay, dims)
-    }
-
-  } else {
-    x@cell.locs <- subsetDims(x@cell.locs, dims)
-  }
-
-  return(x)
-}
-
-subsetCells <- function(x, cells) {
-
-  if (is.null(cells)) {
-    return(x)
-  }
-
-  if (is.list(x@own.expr)) {
-    x@own.expr <- lapply(x@own.expr, function(x) {
-      keep <- which(colnames(x) %in% cells)
-      x <- x[,keep, drop = FALSE]
-      x
-    })
-    if (!is.null(x@nbr.expr)) {
-      x@nbr.expr <- lapply(x@nbr.expr, function(x) {
-        keep <- which(colnames(x) %in% cells)
-        x <- x[,keep, drop = FALSE]
-        x
-      })
-    }
-  } else {
-    keep <- which(colnames(x@own.expr) %in% cells)
-    x@own.expr <- x@own.expr[, keep, drop = FALSE]
-    if (!is.null(x@nbr.expr)) {
-      x@nbr.expr <- x@nbr.expr[, keep, drop = FALSE]
-    }
-  }
-  return(x)
-}
-
-subsetFeatures <- function(x, features) {
-
-  if (is.null(features)) {
-    return(x)
-  }
-
-  if (is.list(x@own.expr)) {
-    keep <- which(rownames(x@own.expr[[1]]) %in% features )
-    x@own.expr <- lapply(x@own.expr, function(x) {
-      x <- x[keep,,drop = FALSE]
-      x
-    })
-    if (!is.null(x@nbr.expr)) {
-      x@nbr.expr <- lapply(x@nbr.expr, function(x) {
-        x <- x[keep,,drop=FALSE]
-        x
-      })
-    }
-
-  } else {
-    keep <- which(rownames(x@own.expr) %in% features)
-    x@own.expr <- x@own.expr[keep,,drop=FALSE]
-    if (!is.null(x@nbr.expr)) {
-      x@nbr.expr <- x@nbr.expr[keep,,drop=FALSE]
-    }
-  }
-  return(x)
-}
-
-subsetConsistent <- function(x) {
-
-  cellMeta <- x@meta.data$cell_ID
-
-  if (is.list(x@own.expr)) {
-    cellCell <- as.character(unlist(lapply(x@own.expr, colnames)))
-    cellLocs <- as.character(unlist(lapply(x@cell.locs, rownames)))
-  } else {
-    cellCell <- colnames(x@own.expr)
-    cellLocs <- rownames(x@cell.locs)
-  }
-
-  cellOut <- intersect(cellMeta, intersect(cellCell, cellLocs))
-  return(cellOut)
-}
-
-getAssay <- function(bank, assay, dataset) {
-
-  if (!is.na(pmatch(assay, c('own.expr', 'nbr.expr', 'custom.expr')))) {
-    slot <- get(assay, mode = 'function')
-    mat <- slot(bank)
-    if (is.list(mat)) {
-      if (is.null(dataset)) {
-        message('Dataset not specified. Choosing first dataset.')
-        mat <- mat[[1]]
-      } else if (!(dataset %in% names(mat))) {
-        stop(paste0('Dataset ', dataset, ' not found.'))
-      } else {
-        mat <- mat[[dataset]]
-      }
-    }
-    if (is.null(mat)) stop('Assay chosen is empty.')
-  } else {
-    stop('Specify a valid assay.')
-  }
-  return(mat)
-}
-
-#' @importFrom circlize colorRamp2
-#' @importFrom stats quantile
-getHeatmapPaletteold <- function(mat, col, col.breaks) {
-
-  if (is.null(col)) {
-    lim.high <- quantile(mat, 0.9)
-    lim.low <- quantile(mat, 0.1)
-    col.fun <- colorRamp2(c(lim.low, 0, lim.high),
-                          c('blue', 'white', 'red'))
-  } else {
-    if (is.null(col.breaks)) {
-      lim.high <- quantile(mat, 0.9)
-      lim.low <- quantile(mat, 0.1)
-      col.breaks <- seq(lim.low, lim.high, length.out = length(col))
-    } else if (length(col.breaks) != length(col)) {
-      stop ('Unequal number of breaks and colors.')
-    }
-    col.fun <- colorRamp2(col.breaks, col)
-  }
-  return(col.fun)
-}
-
-#' @importFrom circlize colorRamp2
-#' @importFrom stats quantile
-getHeatmapPalette <- function(mat, col, col.breaks) {
-
-  if (!is.null(col) &
-      !is.null(col.breaks) &
-      (length(col) != length(col.breaks))) {
-    stop('Unequal number of colours and breaks')
-  }
-  if (is.null(col)) {
-    col <- c('blue', 'white', 'red')
-  }
-  if (is.null(col.breaks)) {
-    lim.high <- quantile(mat, 0.9)
-    lim.low <- quantile(mat, 0.1)
-    col.breaks <- seq(lim.low, lim.high, length.out = length(col))
-  }
-
-  col.fun <- colorRamp2(col.breaks, col)
-
-  return(col.fun)
 }
 
 getSpatialDims <- function(locs, dimensions, alpha) {

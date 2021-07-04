@@ -198,7 +198,7 @@ ComputeBanksy <- function(bank,
 #' @export
 ClusterBanksy <- function(bank,
                           ## Grid parameters
-                          lambda = 0.25, resolution = 1, kneighbours = 40,
+                          lambda = 0.25, resolution = 0.8, kneighbours = 40,
                           ## PCA
                           npcs = 50,
                           ## UMAP parameters
