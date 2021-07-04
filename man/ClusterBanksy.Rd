@@ -7,7 +7,7 @@
 ClusterBanksy(
   bank,
   lambda = 0.25,
-  resolution = 1,
+  resolution = 0.8,
   kneighbours = 40,
   npcs = 50,
   nneighbors = 30,
