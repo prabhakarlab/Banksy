@@ -8,11 +8,12 @@ plotHeatmap(
   bank,
   assay = "own.expr",
   dataset = NULL,
+  lambda = NULL,
   col = NULL,
   col.breaks = NULL,
   cluster.row = TRUE,
   cluster.column = FALSE,
-  row.dend = TRUE,
+  row.dend = FALSE,
   column.dend = FALSE,
   cex.row = 4,
   cex.column = 4,
@@ -29,6 +30,8 @@ plotHeatmap(
 \item{assay}{assay to plot heatmap}
 
 \item{dataset}{dataset to plot heatmap}
+
+\item{lambda}{lambda if assay == banksy}
 
 \item{col}{colours to use in heatmap}
 

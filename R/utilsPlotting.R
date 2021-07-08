@@ -18,7 +18,7 @@ getPalette <- function(n) {
   return(all.cols[seq_len(n)])
 }
 
-getAssay <- function(bank, assay, dataset) {
+getAssay <- function(bank, assay, dataset, lambda) {
 
   if (!is.na(pmatch(assay, c('own.expr', 'nbr.expr', 'custom.expr')))) {
     slot <- get(assay, mode = 'function')
@@ -34,6 +34,9 @@ getAssay <- function(bank, assay, dataset) {
       }
     }
     if (is.null(mat)) stop('Assay chosen is empty.')
+  } else if (!is.na(pmatch(assay, 'banksy'))) {
+    if (is.null(lambda)) stop('Lambda not specified.')
+    mat <- getBanksyMatrix(bank, lambda)$expr
   } else {
     stop('Specify a valid assay.')
   }
@@ -50,7 +53,7 @@ getHeatmapPalette <- function(mat, col, col.breaks) {
     stop('Unequal number of colours and breaks')
   }
   if (is.null(col)) {
-    col <- c('blue', 'white', 'red')
+    col <- c('magenta', 'black', 'yellow')
   }
   if (is.null(col.breaks)) {
     lim.high <- quantile(mat, 0.9)

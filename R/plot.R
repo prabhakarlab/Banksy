@@ -148,6 +148,7 @@ plotSpatialDims <- function(bank, by, dataset = NULL,
 #' @param bank BanksyObject
 #' @param assay assay to plot heatmap
 #' @param dataset dataset to plot heatmap
+#' @param lambda lambda if assay == banksy
 #' @param col colours to use in heatmap
 #' @param col.breaks color breaks to use in heatmap (same number as col is
 #'   specified)
@@ -169,10 +170,10 @@ plotSpatialDims <- function(bank, by, dataset = NULL,
 #' @return Heatmap of class ComplexHeatmap
 #'
 #' @export
-plotHeatmap <- function(bank, assay = 'own.expr', dataset = NULL,
+plotHeatmap <- function(bank, assay = 'own.expr', dataset = NULL, lambda = NULL,
                         col = NULL, col.breaks = NULL,
                         cluster.row = TRUE, cluster.column = FALSE,
-                        row.dend = TRUE, column.dend = FALSE,
+                        row.dend = FALSE, column.dend = FALSE,
                         cex.row = 4, cex.column = 4,
                         annotate = FALSE,
                         annotate.by = NULL,
@@ -180,7 +181,7 @@ plotHeatmap <- function(bank, assay = 'own.expr', dataset = NULL,
                         name = 'Expression',
                         ...) {
 
-  mat <- getAssay(bank, assay, dataset)
+  mat <- getAssay(bank, assay, dataset, lambda)
   col.fun <- getHeatmapPalette(mat, col, col.breaks)
 
   if (annotate) {
@@ -222,6 +223,34 @@ plotHeatmap <- function(bank, assay = 'own.expr', dataset = NULL,
                   name = name,
                   col = col.fun,
                   ...)
+
+    ## Row annotation
+    if (assay == 'banksy') {
+      group <- rep('own', nrow(mat))
+      group[grepl('.nbr$', rownames(mat))] <- 'nbr'
+      ra <- HeatmapAnnotation(Clusters = factor(group),
+                              which = 'row',
+                              col = list(Clusters=c('own'='transparent',
+                                                    'nbr'='transparent')),
+                              show_annotation_name = FALSE,
+                              show_legend = FALSE)
+
+      ht <- Heatmap(mat[, cell.order],
+                    cluster_rows = cluster.row,
+                    cluster_columns = cluster.column,
+                    show_row_dend = row.dend,
+                    show_column_dend = column.dend,
+                    row_names_gp = gpar(fontsize = cex.row),
+                    column_names_gp = gpar(fontsize = cex.column),
+                    column_split = cell.split,
+                    row_split = group,
+                    top_annotation = ha,
+                    left_annotation = ra,
+                    name = name,
+                    col = col.fun,
+                    ...)
+    }
+
 
   } else {
 
