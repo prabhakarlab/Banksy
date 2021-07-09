@@ -85,7 +85,7 @@ plotUMAP <- function(bank, by, reduction,
 #' @param pt.size size of points
 #' @param main.size size of title
 #'
-#' @importFrom ggplot2 ggplot geom_point aes xlab ylab theme_minimal ggtitle
+#' @importFrom ggplot2 ggplot geom_point aes xlab ylab theme_minimal ggtitle facet_wrap
 #' @importFrom plyr mapvalues
 #'
 #' @return NULL
@@ -135,6 +135,11 @@ plotSpatialDims <- function(bank, by, dataset = NULL,
     xlab('x coordinates') + ylab('y coordinates') + theme_minimal() +
     geom_point(size=pt.size) +
     scale_color_manual(values=plotCols)
+
+  if ('sdimz' %in% names(plotData)) {
+    plotData$sdimz <- as.factor(plotData$sdimz)
+    p <- p + facet_wrap( ~ sdimz)
+  }
 
   if (!legend) p <- p + theme(legend.position = 'none')
   if (is.null(main)) p <- p + ggtitle(by) +
