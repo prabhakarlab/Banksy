@@ -11,9 +11,11 @@
 #' @param main title
 #' @param pt.size size of points
 #' @param main.size size of title
+#' @param legend.text.size size of legend text
+#' @param legend.pt.size size of legent point
 #'
 #' @importFrom ggplot2 ggplot geom_point aes xlab ylab theme_minimal ggtitle
-#'   scale_color_manual theme element_text
+#'   scale_color_manual theme element_text guides guide_legend
 #' @importFrom plyr mapvalues
 #'
 #' @return NULL
@@ -21,7 +23,11 @@
 #' @export
 plotUMAP <- function(bank, by, reduction,
                      col = NULL, legend = TRUE,
-                     main = NULL, pt.size = 1, main.size = 5) {
+                     main = NULL,
+                     pt.size = 1,
+                     main.size = 5,
+                     legend.text.size = 1,
+                     legend.pt.size = 1) {
 
   mnames <- names(bank@meta.data)
   mnames <- mnames[!grepl('cell_ID|n_features', mnames)]
@@ -65,7 +71,10 @@ plotUMAP <- function(bank, by, reduction,
   p <- ggplot(plotData, aes(x=umap_1, y=umap_2, col=Clust)) +
     xlab('umap 1') + ylab('umap 2') + theme_minimal() +
     geom_point(size=pt.size) +
-    scale_color_manual(values=plotCols)
+    scale_color_manual(values=plotCols) +
+    theme(legend.text = element_text(size = legend.text.size)) +
+    guides(color = guide_legend(override.aes = list(size = legend.pt.size)))
+
 
   if (!legend) p <- p + theme(legend.position = 'none')
   if (is.null(main)) p <- p + ggtitle(by) +
@@ -84,8 +93,11 @@ plotUMAP <- function(bank, by, reduction,
 #' @param main title
 #' @param pt.size size of points
 #' @param main.size size of title
+#' @param legend.text.size size of legend text
+#' @param legend.pt.size size of legend point
 #'
-#' @importFrom ggplot2 ggplot geom_point aes xlab ylab theme_minimal ggtitle facet_wrap
+#' @importFrom ggplot2 ggplot geom_point aes xlab ylab theme_minimal ggtitle
+#'   facet_wrap guides guide_legend
 #' @importFrom plyr mapvalues
 #'
 #' @return NULL
@@ -93,7 +105,11 @@ plotUMAP <- function(bank, by, reduction,
 #' @export
 plotSpatialDims <- function(bank, by, dataset = NULL,
                             col = NULL, legend = TRUE,
-                            main = NULL, pt.size = 1, main.size = 5) {
+                            main = NULL,
+                            pt.size = 1,
+                            main.size = 5,
+                            legend.text.size = 1,
+                            legend.pt.size = 1) {
 
   mnames <- names(bank@meta.data)
   mnames <- mnames[!grepl('cell_ID|n_features', mnames)]
@@ -134,7 +150,10 @@ plotSpatialDims <- function(bank, by, dataset = NULL,
   p <- ggplot(plotData, aes(x=dimx, y=dimy, col=Clust)) +
     xlab('x coordinates') + ylab('y coordinates') + theme_minimal() +
     geom_point(size=pt.size) +
-    scale_color_manual(values=plotCols)
+    scale_color_manual(values=plotCols) +
+    theme(legend.text = element_text(size = legend.text.size)) +
+    guides(color = guide_legend(override.aes = list(size = legend.pt.size)))
+
 
   if ('sdimz' %in% names(plotData)) {
     plotData$sdimz <- as.factor(plotData$sdimz)

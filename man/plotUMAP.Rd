@@ -12,7 +12,9 @@ plotUMAP(
   legend = TRUE,
   main = NULL,
   pt.size = 1,
-  main.size = 5
+  main.size = 5,
+  legend.text.size = 1,
+  legend.pt.size = 1
 )
 }
 \arguments{
@@ -31,6 +33,10 @@ plotUMAP(
 \item{pt.size}{size of points}
 
 \item{main.size}{size of title}
+
+\item{legend.text.size}{size of legend text}
+
+\item{legend.pt.size}{size of legent point}
 }
 \description{
 Plot UMAP
