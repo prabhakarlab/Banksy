@@ -13,8 +13,8 @@ plotSpatialDims(
   main = NULL,
   pt.size = 1,
   main.size = 5,
-  legend.text.size = 1,
-  legend.pt.size = 1
+  legend.text.size = 6,
+  legend.pt.size = 3
 )
 }
 \arguments{

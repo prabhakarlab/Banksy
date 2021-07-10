@@ -26,8 +26,8 @@ plotUMAP <- function(bank, by, reduction,
                      main = NULL,
                      pt.size = 1,
                      main.size = 5,
-                     legend.text.size = 1,
-                     legend.pt.size = 1) {
+                     legend.text.size = 6,
+                     legend.pt.size = 3) {
 
   mnames <- names(bank@meta.data)
   mnames <- mnames[!grepl('cell_ID|n_features', mnames)]
@@ -108,8 +108,8 @@ plotSpatialDims <- function(bank, by, dataset = NULL,
                             main = NULL,
                             pt.size = 1,
                             main.size = 5,
-                            legend.text.size = 1,
-                            legend.pt.size = 1) {
+                            legend.text.size = 6,
+                            legend.pt.size = 3) {
 
   mnames <- names(bank@meta.data)
   mnames <- mnames[!grepl('cell_ID|n_features', mnames)]
@@ -132,6 +132,7 @@ plotSpatialDims <- function(bank, by, dataset = NULL,
     plotData <- bank@cell.locs
   }
 
+  meta <- bank@meta.data[bank@meta.data$cell_ID %in% rownames(plotData), ]
   clusters <- bank@meta.data[[by]][bank@meta.data$cell_ID %in%
                                      rownames(plotData)]
   if (is.numeric(clusters)) n <- max(clusters)
@@ -146,7 +147,7 @@ plotSpatialDims <- function(bank, by, dataset = NULL,
 
   dimx <- dimy <- Clust <- NULL
   names(plotData)[seq_len(2)] <- c('dimx','dimy')
-  plotData <- cbind(plotData, Clust = as.factor(clusters))
+  plotData <- cbind(plotData, Clust = as.factor(clusters), meta)
   p <- ggplot(plotData, aes(x=dimx, y=dimy, col=Clust)) +
     xlab('x coordinates') + ylab('y coordinates') + theme_minimal() +
     geom_point(size=pt.size) +
@@ -221,10 +222,14 @@ plotHeatmap <- function(bank, assay = 'own.expr', dataset = NULL, lambda = NULL,
     cell.order <- mdata$cell_ID
     cell.split <- mdata[[annotate.by]]
 
-    ## Col side colours
     clusters <- unique(cell.split)
-    n <- length(clusters)
-    cluster.cols <- getPalette(n)
+    if (is.numeric(clusters)) {
+      n <- max(clusters)
+      cluster.cols <- getPalette(n)[sort(unique(clusters))]
+    } else if (is.character(clusters)) {
+      n <- length(clusters)
+      cluster.cols <- getPalette(n)
+    }
     if (!is.null(annotate.col)) {
       if (length(annotate.col) < n) stop('Not enough colors for annotations.')
       else cluster.cols <- annotate.col[seq_len(n)]
