@@ -72,7 +72,8 @@ plotUMAP <- function(bank, by, reduction,
     xlab('umap 1') + ylab('umap 2') + theme_minimal() +
     geom_point(size=pt.size) +
     scale_color_manual(values=plotCols) +
-    theme(legend.text = element_text(size = legend.text.size)) +
+    theme(legend.text = element_text(size = legend.text.size),
+          legend.title = element_blank()) +
     guides(color = guide_legend(override.aes = list(size = legend.pt.size)))
 
 
@@ -152,7 +153,8 @@ plotSpatialDims <- function(bank, by, dataset = NULL,
     xlab('x coordinates') + ylab('y coordinates') + theme_minimal() +
     geom_point(size=pt.size) +
     scale_color_manual(values=plotCols) +
-    theme(legend.text = element_text(size = legend.text.size)) +
+    theme(legend.text = element_text(size = legend.text.size),
+          legend.title = element_blank()) +
     guides(color = guide_legend(override.aes = list(size = legend.pt.size)))
 
 

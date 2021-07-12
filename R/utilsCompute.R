@@ -255,6 +255,10 @@ compute.banksyMatrices <- function(gcm, locs,
                                     spatialMode = 'kNN_r',
                                     verbose = FALSE){
 
+  if (any(dim(gcm)==0)) {
+    return(NULL)
+  }
+
   # Global binding
   weight <- from <- to <- kernelRadius <- cellID <- NULL
   c(locs, kernelRadius, cellID) %<-% getSpatialDims(locs, dimensions, alpha)

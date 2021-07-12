@@ -94,10 +94,8 @@ BanksyObject <-
       cells <- unlist(lapply(own.expr, colnames))
       ncells <- sapply(own.expr, ncol)
       dnames <- rep(names(own.expr), ncells)
-      nfeatures = unlist(lapply(own.expr, colSums))
       mdata <- data.frame(cell_ID = cells,
-                          dataset = dnames,
-                          n_features = nfeatures)
+                          dataset = dnames)
     } else if (!is.null(own.expr)) {
 
       if (is.null(cell.locs)) {
@@ -113,8 +111,7 @@ BanksyObject <-
       if (!identical(colnames(own.expr), rownames(cell.locs))) {
         stop('Ensure cell locations correspond to gene-cell matrix.')
       }
-      mdata <- data.frame(cell_ID = colnames(own.expr),
-                          n_features = colSums(own.expr))
+      mdata <- data.frame(cell_ID = colnames(own.expr))
 
     } else {
       return(object)
@@ -306,11 +303,15 @@ setMethod('show', signature(object = 'BanksyObject'),
             if (is.null(object@cell.locs)) {
               cat('Spatial dimensions: NULL\n')
             } else if (is.list(object@own.expr)) {
-              cat('Spatial dims:',
-                  paste(unlist(lapply(object@cell.locs, colnames)),
-                        collapse=' '), '\n')
+              cat('Spatial dimensions:\n')
+              dnames <- names(object@cell.locs)
+              for (i in seq_len(nassays)) {
+                cat(dnames[i], ': ',
+                    paste(names(object@cell.locs[[i]]), collapse = ' '),
+                    '\n', sep='')
+              }
             } else {
-              cat('Spatial dims:', names(object@cell.locs), '\n')
+              cat('Spatial dimensions:', names(object@cell.locs), '\n')
             }
 
             cat('Metadata names:', colnames(object@meta.data), '\n')

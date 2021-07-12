@@ -111,3 +111,20 @@ subsetConsistent <- function(x) {
   return(cellOut)
 }
 
+cleanSubset <- function(bank) {
+
+  keep <- unlist(lapply(bank@own.expr, function(x) all(dim(x) != 0)))
+  bank@own.expr <- bank@own.expr[keep]
+  bank@nbr.expr <- bank@nbr.expr[keep]
+  bank@cell.locs <- bank@cell.locs[keep]
+
+  cells <- unlist(lapply(bank@own.expr, colnames))
+
+  bank@meta.data <- bank@meta.data[bank@meta.data$cell_ID %in% cells,,drop=FALSE]
+  bank@dim.reduction <- lapply(bank@dim.reduction, function(dim.red) {
+    dim.red <- dim.red[rownames(dim.red) %in% cells,,drop=FALSE]
+    dim.red
+  })
+
+  return(bank)
+}

@@ -116,6 +116,11 @@ SubsetBanksy <- function(
     x@cell.locs <- x@cell.locs[keep,,drop=FALSE]
   }
 
+  ## For multiple datasets - remove empty datasets
+  if (is.list(x@own.expr)) {
+    x <- cleanSubset(x)
+  }
+
   return(x)
 }
 
@@ -213,7 +218,7 @@ ClusterBanksy <- function(bank,
   message(paste0('Iteration ', iter, ' out of ', max_iters) )
   for (lam in lambda) {
 
-    joint <- getBanksyMatrix(bank)$expr
+    joint <- getBanksyMatrix(bank, lambda = lam)$expr
 
     if (verbose) message('Running PCA')
     pca <- prcomp_irlba(t(joint), n = npcs)$x
@@ -382,4 +387,69 @@ getBanksyMatrix <- function(bank, lambda = 0.25) {
   }
   return(list(expr = joint,
               locs = locs))
+}
+
+
+#' Split a BanksyObject by metadata column
+#'
+#' @param bank BanksyObject
+#' @param by metadata column
+#' @param names names to new datasets
+#'
+#' @return BanksyObject
+#'
+#' @export
+SplitBanksy <- function(bank, by, names = NULL) {
+
+  if (is.list(bank@own.expr)) {
+    warning('SplitBanksy only operates on BanksyObjects with a single dataset')
+    return(bank)
+  }
+
+  if (!(by %in% names(bank@meta.data))) {
+    stop(paste0(by, ' not in metadata.'))
+  }
+
+  groups <- unique(bank@meta.data[[by]])
+  nGroups <- length(groups)
+
+  if (is.null(names)) {
+    names <- paste(by, groups, sep = "_")
+  } else if (length(names) != nGroups) {
+    stop('Invalid number of names.')
+  }
+
+  own.expr <- nbr.expr <- cell.locs <- vector('list', length = nGroups)
+  if (is.null(bank@nbr.expr)) nbr.expr <- NULL
+
+
+  for (i in seq_len(nGroups)) {
+
+    currGroup <- groups[i]
+    message(paste0('Processing ', by, ' ', currGroup))
+    cells <- bank@meta.data$cell_ID[bank@meta.data[[by]] == currGroup]
+    gcm <- bank@own.expr[, cells]
+    ncm <- bank@nbr.expr[, cells]
+    loc <- bank@cell.locs[cells, ]
+    colnames(gcm) <- paste0(names[i], '_', cells)
+    if (!is.null(ncm)) colnames(ncm) <- paste0(names[i], '_', cells)
+    rownames(loc) <- paste0(names[i], '_', cells)
+    own.expr[[i]] <- gcm
+    nbr.expr[[i]] <- ncm
+    cell.locs[[i]] <- loc
+
+  }
+
+  names(own.expr)  <- names(cell.locs) <- names
+  if (!is.null(nbr.expr)) names(nbr.expr) <- names
+
+  bank@own.expr <- own.expr
+  bank@nbr.expr <- nbr.expr
+  bank@cell.locs <- cell.locs
+
+  bank@dim.reduction <- bank@dim.reduction
+  bank@meta.data <- bank@meta.data
+  bank@meta.data$cell_ID <- unlist(lapply(cell.locs, row.names))
+
+  return(bank)
 }

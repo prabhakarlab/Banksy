@@ -12,17 +12,20 @@ init <- function(n, idx, val) {
 
 #' @importFrom pals kelly glasbey polychrome
 getPalette <- function(n) {
-  all.cols <- as.character(pals::kelly()[-c(1,3)],
-                           pals::glasbey(),
-                           pals::polychrome())
+  all.cols <- c(pals::kelly()[-c(1,3)],
+                pals::glasbey(),
+                pals::polychrome())
+  all.cols <- as.character(all.cols)
   return(all.cols[seq_len(n)])
 }
 
 getAssay <- function(bank, assay, dataset, lambda) {
 
   if (!is.na(pmatch(assay, c('own.expr', 'nbr.expr', 'custom.expr')))) {
+
     slot <- get(assay, mode = 'function')
     mat <- slot(bank)
+
     if (is.list(mat)) {
       if (is.null(dataset)) {
         message('Dataset not specified. Choosing first dataset.')
@@ -34,11 +37,31 @@ getAssay <- function(bank, assay, dataset, lambda) {
       }
     }
     if (is.null(mat)) stop('Assay chosen is empty.')
+
   } else if (!is.na(pmatch(assay, 'banksy'))) {
+
     if (is.null(lambda)) stop('Lambda not specified.')
-    mat <- getBanksyMatrix(bank, lambda)$expr
+
+    if (is.list(bank@own.expr)) {
+      if (is.null(dataset)) {
+        message('Dataset not specified. Choosing first dataset.')
+        index <- 1
+      } else if (!(dataset %in% names(bank@own.expr))) {
+        stop(paste0('Dataset', dataset, ' not found.'))
+      }
+      own <- bank@own.expr[[dataset]]
+      nbr <- bank@nbr.expr[[dataset]]
+      mat <- rbind(sqrt(1-lambda)*own,
+                     sqrt(lambda)*nbr)
+
+    } else {
+      mat <- getBanksyMatrix(bank, lambda)$expr
+    }
+
   } else {
+
     stop('Specify a valid assay.')
+
   }
   return(mat)
 }
@@ -58,7 +81,7 @@ getHeatmapPalette <- function(mat, col, col.breaks) {
   if (is.null(col.breaks)) {
     lim.high <- quantile(mat, 0.9)
     lim.low <- quantile(mat, 0.1)
-    col.breaks <- seq(lim.low, lim.high, length.out = length(col))
+    col.breaks <- c(lim.low, 0, lim.high)
   }
 
   col.fun <- colorRamp2(col.breaks, col)
