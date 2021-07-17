@@ -15,7 +15,7 @@
 #' @param legend.pt.size size of legent point
 #'
 #' @importFrom ggplot2 ggplot geom_point aes xlab ylab theme_minimal ggtitle
-#'   scale_color_manual theme element_text guides guide_legend
+#'   scale_color_manual theme element_text element_blank guides guide_legend
 #' @importFrom plyr mapvalues
 #'
 #' @return NULL
@@ -98,7 +98,7 @@ plotUMAP <- function(bank, by, reduction,
 #' @param legend.pt.size size of legend point
 #'
 #' @importFrom ggplot2 ggplot geom_point aes xlab ylab theme_minimal ggtitle
-#'   facet_wrap guides guide_legend
+#'   facet_wrap guides guide_legend element_text element_blank scale_color_manual
 #' @importFrom plyr mapvalues
 #'
 #' @return NULL
