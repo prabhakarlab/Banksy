@@ -184,11 +184,16 @@ plotSpatialDims <- function(bank, by, dataset = NULL,
 #' @param row.dend draw row dendrograms
 #' @param column.dend draw column dendrograms
 #' @param cex.row row label size
-#' @param cex.column column label size
 #' @param annotate add annotation for cells
 #' @param annotate.by metadata to annotate cells by
-#' @param annotate.col colours to annotate cells by
+#' @param order.by metadata to order cells by (one of annotate.by)
+#' @param annotation.name show annotation name
+#' @param annotation.size size of annotation labels
+#' @param annotation.pos position of annotation labels
 #' @param name name of heatmap legend
+#' @param barplot.by metadata to plot barplots (numeric)
+#' @param barplot.border show borders of barplot
+#' @param barplot.width barplot width
 #' @param ... parameters to pass to ComplexHeatmap::Heatmap
 #'
 #' @importFrom ComplexHeatmap HeatmapAnnotation Heatmap
@@ -197,15 +202,22 @@ plotSpatialDims <- function(bank, by, dataset = NULL,
 #' @return Heatmap of class ComplexHeatmap
 #'
 #' @export
-plotHeatmap <- function(bank, assay = 'own.expr', dataset = NULL, lambda = NULL,
+plotHeatmap <- function(bank, assay = 'own.expr',
+                        dataset = NULL, lambda = NULL,
                         col = NULL, col.breaks = NULL,
                         cluster.row = TRUE, cluster.column = FALSE,
                         row.dend = FALSE, column.dend = FALSE,
-                        cex.row = 4, cex.column = 4,
+                        cex.row = 4,
                         annotate = FALSE,
                         annotate.by = NULL,
-                        annotate.col = NULL,
+                        order.by = NULL,
+                        annotation.name = TRUE,
+                        annotation.size = 6,
+                        annotation.pos = 'right',
                         name = 'Expression',
+                        barplot.by = NULL,
+                        barplot.border = FALSE,
+                        barplot.width = 0.6,
                         ...) {
 
   mat <- getAssay(bank, assay, dataset, lambda)
@@ -213,49 +225,16 @@ plotHeatmap <- function(bank, assay = 'own.expr', dataset = NULL, lambda = NULL,
 
   if (annotate) {
 
-    if(is.null(annotate.by) | !(annotate.by %in% names(bank@meta.data))) {
-      stop('Specify a valid metadata column to annotate by.')
-    }
+    anno <- getCellAnnotation(bank = bank, mat = mat,
+                              annotate.by = annotate.by,
+                              annotation.name = annotation.name,
+                              annotation.size = annotation.size,
+                              annotation.pos = annotation.pos,
+                              order.by = order.by)
+    ha <- anno$anno
+    group <- NULL
+    ra <- NULL
 
-    ## Order by clusters
-    mdata <- bank@meta.data
-    mdata <- mdata[order(mdata[[annotate.by]]),]
-    mdata <- mdata[mdata$cell_ID %in% colnames(mat), ]
-    cell.order <- mdata$cell_ID
-    cell.split <- mdata[[annotate.by]]
-
-    clusters <- unique(cell.split)
-    if (is.numeric(clusters)) {
-      n <- max(clusters)
-      cluster.cols <- getPalette(n)[sort(unique(clusters))]
-    } else if (is.character(clusters)) {
-      n <- length(clusters)
-      cluster.cols <- getPalette(n)
-    }
-    if (!is.null(annotate.col)) {
-      if (length(annotate.col) < n) stop('Not enough colors for annotations.')
-      else cluster.cols <- annotate.col[seq_len(n)]
-    }
-    names(cluster.cols) <- clusters
-
-    ha <- HeatmapAnnotation(Clusters = factor(cell.split),
-                            col = list(Clusters = cluster.cols),
-                            show_annotation_name = FALSE)
-
-    ht <- Heatmap(mat[, cell.order],
-                  cluster_rows = cluster.row,
-                  cluster_columns = cluster.column,
-                  show_row_dend = row.dend,
-                  show_column_dend = column.dend,
-                  row_names_gp = gpar(fontsize = cex.row),
-                  column_names_gp = gpar(fontsize = cex.column),
-                  column_split = cell.split,
-                  top_annotation = ha,
-                  name = name,
-                  col = col.fun,
-                  ...)
-
-    ## Row annotation
     if (assay == 'banksy') {
       group <- rep('own', nrow(mat))
       group[grepl('.nbr$', rownames(mat))] <- 'nbr'
@@ -266,37 +245,51 @@ plotHeatmap <- function(bank, assay = 'own.expr', dataset = NULL, lambda = NULL,
                               show_annotation_name = FALSE,
                               show_legend = FALSE)
 
-      ht <- Heatmap(mat[, cell.order],
-                    cluster_rows = cluster.row,
-                    cluster_columns = cluster.column,
-                    show_row_dend = row.dend,
-                    show_column_dend = column.dend,
-                    row_names_gp = gpar(fontsize = cex.row),
-                    column_names_gp = gpar(fontsize = cex.column),
-                    column_split = cell.split,
-                    row_split = group,
-                    top_annotation = ha,
-                    left_annotation = ra,
-                    name = name,
-                    col = col.fun,
-                    ...)
     }
 
+    ht <- Heatmap(mat[, anno$cell.order],
+                  cluster_rows = cluster.row,
+                  cluster_columns = cluster.column,
+                  show_row_dend = row.dend,
+                  show_column_dend = column.dend,
+                  row_names_gp = gpar(fontsize = cex.row),
+                  show_column_names = FALSE,
+                  column_title = NULL,
+                  column_split = anno$cell.split,
+                  row_split = group,
+                  top_annotation = ha,
+                  left_annotation = ra,
+                  name = name,
+                  col = col.fun,
+                  ...)
+
+    if (!is.null(barplot.by)) {
+
+      ht <- appendBarplots(bank = bank, mat = mat,
+                           cell.order = anno$cell.order,
+                           annotation.name = annotation.name,
+                           annotation.size = annotation.size,
+                           annotation.pos = annotation.pos,
+                           barplot.by = barplot.by,
+                           barplot.border = barplot.border,
+                           barplot.width = barplot.width,
+                           heatmap = ht)
+    }
 
   } else {
-
     ht <- Heatmap(mat,
                   cluster_rows = cluster.row,
                   cluster_columns = cluster.column,
                   show_row_dend = row.dend,
                   show_column_dend = column.dend,
                   row_names_gp = gpar(fontsize = cex.row),
-                  column_names_gp = gpar(fontsize = cex.column),
+                  show_column_names = FALSE,
                   name = name,
                   col = col.fun,
                   ...)
 
   }
+
   return(ht)
 }
 

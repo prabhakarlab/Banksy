@@ -79,8 +79,8 @@ getHeatmapPalette <- function(mat, col, col.breaks) {
     col <- c('magenta', 'black', 'yellow')
   }
   if (is.null(col.breaks)) {
-    lim.high <- quantile(mat, 0.9)
-    lim.low <- quantile(mat, 0.1)
+    lim.low <- -1
+    lim.high <- 1
     col.breaks <- c(lim.low, 0, lim.high)
   }
 
@@ -90,7 +90,98 @@ getHeatmapPalette <- function(mat, col, col.breaks) {
 }
 
 
+getClusterColors <- function(x) {
 
+  clusters <- unique(x)
+  if (is.numeric(x)) {
+    n <- max(x)
+    cluster.cols <- getPalette(n)[sort(unique(clusters))]
+  } else if (is.character(x)) {
+    n <- length(clusters)
+    cluster.cols <- getPalette(n)
+  }
+  names(cluster.cols) <- clusters
+
+  return(cluster.cols)
+}
+
+#' @importFrom ComplexHeatmap HeatmapAnnotation
+#' @importFrom grid gpar
+getCellAnnotation <- function(bank, mat,
+                              annotate.by,
+                              annotation.name,
+                              annotation.size,
+                              annotation.pos,
+                              order.by) {
+
+  if (is.null(annotate.by) | !all(annotate.by %in% names(bank@meta.data))) {
+    stop('Specify a valid metadata column to annotate by')
+  }
+
+  if (is.null(order.by)) {
+    order.by <- annotate.by[1]
+    if (length(annotate.by) > 1) {
+      message(paste0('Metadata to order cells by not specified. Using ', order.by))
+    }
+  } else if (!(order.by %in% names(bank@meta.data))) {
+    stop('Specify a valid metadata column to order by.')
+  }
+
+  ## Order by clusters
+  mdata <- bank@meta.data
+  mdata <- mdata[order(mdata[[order.by]]),]
+  mdata <- mdata[mdata$cell_ID %in% colnames(mat), ]
+  cell.order <- mdata$cell_ID
+  mdata <- mdata[,annotate.by,drop=FALSE]
+  cell.split <- mdata[[order.by]]
+
+  ## Generate simple annotations
+  hc <- lapply(mdata, getClusterColors)
+  mdata[] <- lapply(mdata, factor)
+  ha <- HeatmapAnnotation(df = mdata,
+                          show_annotation_name = annotation.name,
+                          annotation_name_gp = gpar(fontsize = annotation.size),
+                          annotation_name_side = annotation.pos,
+                          col = hc)
+
+  return(list(anno = ha,
+              cell.order = cell.order,
+              cell.split = cell.split))
+}
+
+#' @importFrom ComplexHeatmap anno_barplot HeatmapAnnotation `%v%`
+#' @importFrom grid gpar
+appendBarplots <- function(bank, mat, cell.order,
+                           barplot.by,
+                           barplot.border,
+                           barplot.width,
+                           annotation.name,
+                           annotation.size,
+                           annotation.pos,
+                           heatmap) {
+
+  if (!all(barplot.by %in% names(bank@meta.data))) {
+    stop('Specify valid metadata columns to plot barplots.')
+  }
+
+  mdata <- bank@meta.data
+  mdata <- mdata[cell.order, ]
+
+  nbar <- length(barplot.by)
+  for (i in seq_len(nbar)) {
+    bar.anno <- anno_barplot(mdata[[barplot.by[i]]],
+                             border = barplot.border,
+                             bar_width = barplot.width)
+    bar <- HeatmapAnnotation(bar = bar.anno,
+                             show_annotation_name = annotation.name,
+                             annotation_name_gp = gpar(fontsize = annotation.size),
+                             annotation_name_side = annotation.pos)
+    bar@anno_list$bar@label <- barplot.by[i]
+    heatmap <- bar %v% heatmap
+  }
+
+  return(heatmap)
+}
 
 
 

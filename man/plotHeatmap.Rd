@@ -16,11 +16,16 @@ plotHeatmap(
   row.dend = FALSE,
   column.dend = FALSE,
   cex.row = 4,
-  cex.column = 4,
   annotate = FALSE,
   annotate.by = NULL,
-  annotate.col = NULL,
+  order.by = NULL,
+  annotation.name = TRUE,
+  annotation.size = 6,
+  annotation.pos = "right",
   name = "Expression",
+  barplot.by = NULL,
+  barplot.border = FALSE,
+  barplot.width = 0.6,
   ...
 )
 }
@@ -48,15 +53,25 @@ specified)}
 
 \item{cex.row}{row label size}
 
-\item{cex.column}{column label size}
-
 \item{annotate}{add annotation for cells}
 
 \item{annotate.by}{metadata to annotate cells by}
 
-\item{annotate.col}{colours to annotate cells by}
+\item{order.by}{metadata to order cells by (one of annotate.by)}
+
+\item{annotation.name}{show annotation name}
+
+\item{annotation.size}{size of annotation labels}
+
+\item{annotation.pos}{position of annotation labels}
 
 \item{name}{name of heatmap legend}
+
+\item{barplot.by}{metadata to plot barplots (numeric)}
+
+\item{barplot.border}{show borders of barplot}
+
+\item{barplot.width}{barplot width}
 
 \item{...}{parameters to pass to ComplexHeatmap::Heatmap}
 }
