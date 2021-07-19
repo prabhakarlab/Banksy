@@ -81,13 +81,20 @@ class(locs)
 head(locs)
 ```
 
+We store the total number of detect genes and total counts as metadata:
+```{r}
+metadata <- data.frame(num_genes = colSums(expr > 0),
+                       total_count = colSums(expr))
+```
+
 ## Spatial clustering
 
 First, create a *BanksyObject* with the expression matrix and cell locations.
 
 ```{r}
 bank <- BanksyObject(own.expr = expr,
-                     cell.locs = locs)
+                     cell.locs = locs,
+                     meta.data = metadata)
 ```
 
 Next, normalize the expression matrix, compute the neighbour matrix, and scale 
@@ -134,6 +141,15 @@ plotUMAP(bank, by = 'res0.8_lam0.5_k40',  reduction = 'umap_0.5', pt.size = 0.02
 Spatial plot:
 ```{r}
 plotSpatialDims(bank, by = 'res0.8_lam0.5_k40', pt.size = 0.8, main.size = 10)
+```
+
+Heatmap:
+```{r, fig.width=15, fig.height=10}
+plotHeatmap(bank, assay = 'banksy',
+            lambda = 0.5,
+            annotate = TRUE,
+            annotate.by = 'res0.8_lam0.5_k40',
+            barplot.by = c('num_genes', 'total_count'))
 ```
 
 ## Subsetting
