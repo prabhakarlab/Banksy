@@ -248,7 +248,7 @@ head(bankSubset1)
 
 ``` r
 bankSubset2 <- SubsetBanksy(bank,
-                            metadata = res0.8_lam0.5_k40 %in% c(3,6))
+                            metadata = res0.8_lam0.5_k40 %in% c(5,6))
 plotSpatialDims(bankSubset2, by = 'res0.8_lam0.5_k40', 
                 pt.size = 0.5, main.size = 10)
 ```

@@ -16,6 +16,7 @@
 #'
 #' @importFrom ggplot2 ggplot geom_point aes xlab ylab theme_minimal ggtitle
 #'   scale_color_manual theme element_text element_blank guides guide_legend
+#'   element_line
 #' @importFrom plyr mapvalues
 #'
 #' @return NULL
@@ -73,7 +74,12 @@ plotUMAP <- function(bank, by, reduction,
     geom_point(size=pt.size) +
     scale_color_manual(values=plotCols) +
     theme(legend.text = element_text(size = legend.text.size),
-          legend.title = element_blank()) +
+          legend.title = element_blank(),
+          axis.line = element_line(colour = "black"),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.border = element_blank(),
+          panel.background = element_blank()) +
     guides(color = guide_legend(override.aes = list(size = legend.pt.size)))
 
 
@@ -99,6 +105,7 @@ plotUMAP <- function(bank, by, reduction,
 #'
 #' @importFrom ggplot2 ggplot geom_point aes xlab ylab theme_minimal ggtitle
 #'   facet_wrap guides guide_legend element_text element_blank scale_color_manual
+#'   element_line
 #' @importFrom plyr mapvalues
 #'
 #' @return NULL
@@ -154,7 +161,12 @@ plotSpatialDims <- function(bank, by, dataset = NULL,
     geom_point(size=pt.size) +
     scale_color_manual(values=plotCols) +
     theme(legend.text = element_text(size = legend.text.size),
-          legend.title = element_blank()) +
+          legend.title = element_blank(),
+          axis.line = element_line(colour = "black"),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.border = element_blank(),
+          panel.background = element_blank()) +
     guides(color = guide_legend(override.aes = list(size = legend.pt.size)))
 
 
