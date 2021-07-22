@@ -65,9 +65,10 @@ ScaleBanksy <- function(bank, separate = TRUE) {
 #' Subset a BanksyObject
 #' @param x a BanksyObject
 #' @param cells cells to filter by
-#' @param dims dimensions to filter by - must correspond to valid columns
+#' @param dims dimensions to filter by - must correspond to valid columns in
+#'  cell.locs
 #' @param features genes to filter by
-#' @param metadata metadata to filter by - must be valid colulmn
+#' @param metadata metadata to filter by - must be valid column in meta.data
 #' @param dataset dataset to subset dimensions by
 #'
 #' @importFrom rlang enquo quo_get_expr
@@ -126,12 +127,16 @@ SubsetBanksy <- function(
 
 #' Compute Banksy Matrices
 #' @param bank BanksyObject
-#' @param sigma sigma
-#' @param alpha alpha
-#' @param kspatial kspatial
-#' @param dimensions dims
-#' @param spatialMode spatialMode
-#' @param k_geom k_geom
+#' @param k_geom kNN parameter - number of neighbors to use
+#' @param sigma rNN parameter - standard deviation of Gaussian kernel
+#' @param alpha rNN parameter - determines radius used (larger alphas give
+#'   smaller radii)
+#' @param kspatial rNN parameter - number of neighbors to use
+#' @param dimensions dimensions to use when computing neighborhood - one of
+#'   column name in cell.locs, or 'all'
+#' @param spatialMode spatial mode to use - one of kNN_r, kNN_rank, kNN_unif,
+#'   rNN_gauss
+#' @param verbose messages
 #'
 #' @importFrom data.table data.table setnames
 #'
@@ -140,9 +145,11 @@ SubsetBanksy <- function(
 #' @export
 ComputeBanksy <- function(bank,
                           ## For computing nbr matrix
+                          k_geom = 10,
                           sigma = 1.5, alpha = 0.05,
-                          kspatial = 1000, dimensions = 'all',
-                          spatialMode = 'kNN_r', k_geom = 10) {
+                          kspatial = 10, dimensions = 'all',
+                          spatialMode = 'kNN_r',
+                          verbose=FALSE) {
 
   if (is.list(bank@own.expr)) {
     locs <- lapply(bank@cell.locs, function(x) {
@@ -156,7 +163,8 @@ ComputeBanksy <- function(bank,
                              kspatial = kspatial,
                              dimensions = dimensions,
                              spatialMode = spatialMode,
-                             k_geom = k_geom)},
+                             k_geom = k_geom,
+                             verbose = verbose)},
       bank@own.expr, locs)
     bank@nbr.expr <- nbr
     names(bank@nbr.expr) <- names(bank@own.expr)
@@ -170,7 +178,8 @@ ComputeBanksy <- function(bank,
                                   kspatial=kspatial,
                                   dimensions = dimensions,
                                   spatialMode = spatialMode ,
-                                  k_geom = k_geom)
+                                  k_geom = k_geom,
+                                  verbose = verbose)
     bank@nbr.expr <- nbr
   }
   return(bank)
@@ -180,16 +189,17 @@ ComputeBanksy <- function(bank,
 #' Cluster based on joint expression matrix
 #'
 #' @param bank BanksyObject
-#' @param lambda lambda mixing
-#' @param resolution resolution
-#' @param kneighbours kneighbours (sNN)
-#' @param npcs num princ. comp.
-#' @param nneighbors umap
-#' @param spread umap
-#' @param nepochs umap
-#' @param mindist umap
-#' @param leideniters leiden iters
-#' @param verbose messages
+#' @param lambda weighting parameter - larger values incorporate more spatial
+#'   information
+#' @param resolution parameter used for clustering
+#' @param kneighbours parameter for constructing shared nearest neighbor network
+#' @param npcs number of principal components to use
+#' @param nneighbors umap parameter - number of neighbors to use for umap
+#' @param spread umap parameter - effective scale of embedded points
+#' @param nepochs umap parameter - number of epochs to run umap optimization
+#' @param mindist umap parameter - effective min. dist. between embedded points
+#' @param leideniters number of leiden iterations
+#' @param verbose output messages
 #'
 #' @importFrom irlba prcomp_irlba
 #' @importFrom uwot umap
@@ -273,8 +283,9 @@ ClusterBanksy <- function(bank,
 #' Harmonise cluster labels among parameter runs
 #'
 #' @param bank Banksy Object
-#' @param verbose verbose or not
-#' @param optim optimise or not (KS-test)
+#' @param verbose output messages
+#' @param optim optimize cluster mapping based on parent distribution in
+#'   ambiguous cases
 #'
 #' @importFrom data.table copy
 #' @importFrom stats median ks.test
@@ -364,7 +375,8 @@ ConnectClusters <- function(bank, verbose=FALSE, optim=TRUE) {
 #' Returns the Banksy matrix (own + nbr)
 #'
 #' @param bank Banksy Object
-#' @param lambda lambda
+#' @param lambda weighting parameter - larger values incorporate more spatial
+#'   information
 #'
 #' @return BanksyMatrix
 #'
@@ -394,7 +406,7 @@ getBanksyMatrix <- function(bank, lambda = 0.25) {
 #'
 #' @param bank BanksyObject
 #' @param by metadata column
-#' @param names names to new datasets
+#' @param names names for new datasets
 #'
 #' @return BanksyObject
 #'

@@ -55,6 +55,10 @@ BanksyObject <-
     dimnames <- paste0('sdim', c('x', 'y','z'))
     object <- new('BanksyObject')
 
+    if (is.null(own.expr)) {
+      stop('Provide expression matrix.')
+    }
+
     # Multiple dataset case
     if (is.list(own.expr)) {
 

@@ -12,7 +12,7 @@
 #' @param pt.size size of points
 #' @param main.size size of title
 #' @param legend.text.size size of legend text
-#' @param legend.pt.size size of legent point
+#' @param legend.pt.size size of legend point
 #'
 #' @importFrom ggplot2 ggplot geom_point aes xlab ylab theme_minimal ggtitle
 #'   scale_color_manual theme element_text element_blank guides guide_legend
@@ -93,7 +93,7 @@ plotUMAP <- function(bank, by, reduction,
 #' Plot Spatial dims
 #'
 #' @param bank BanksyObject
-#' @param by clustering run to plot by
+#' @param by groupings for cells
 #' @param dataset if multiple dataset are run
 #' @param col colours
 #' @param legend show legend
@@ -126,7 +126,7 @@ plotSpatialDims <- function(bank, by, dataset = NULL,
     by <- by[1]
   }
   if (!(by %in% names(bank@meta.data))) {
-    stop(paste0('Invalid parameter to plot UMAP by. One of ',
+    stop(paste0('Invalid parameter to plot spatial dimensions by. One of ',
                 paste(mnames, collapse = ' ')))
   }
 
@@ -337,7 +337,6 @@ plotAlluvia <- function(bank) {
     geom_text(stat = "stratum", reverse = FALSE) +
     scale_fill_manual(values = getPalette(n)) +
     coord_flip() +
-    guides(fill = FALSE) +
     theme_minimal() +
     xlab('Assignment')
 

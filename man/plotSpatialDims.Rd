@@ -20,7 +20,7 @@ plotSpatialDims(
 \arguments{
 \item{bank}{BanksyObject}
 
-\item{by}{clustering run to plot by}
+\item{by}{groupings for cells}
 
 \item{dataset}{if multiple dataset are run}
 

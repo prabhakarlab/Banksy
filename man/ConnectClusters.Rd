@@ -9,9 +9,10 @@ ConnectClusters(bank, verbose = FALSE, optim = TRUE)
 \arguments{
 \item{bank}{Banksy Object}
 
-\item{verbose}{verbose or not}
+\item{verbose}{output messages}
 
-\item{optim}{optimise or not (KS-test)}
+\item{optim}{optimize cluster mapping based on parent distribution in
+ambiguous cases}
 }
 \value{
 BanksyObject with harmonised cluster labels

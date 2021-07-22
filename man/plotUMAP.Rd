@@ -36,7 +36,7 @@ plotUMAP(
 
 \item{legend.text.size}{size of legend text}
 
-\item{legend.pt.size}{size of legent point}
+\item{legend.pt.size}{size of legend point}
 }
 \description{
 Plot UMAP

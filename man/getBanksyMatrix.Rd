@@ -9,7 +9,8 @@ getBanksyMatrix(bank, lambda = 0.25)
 \arguments{
 \item{bank}{Banksy Object}
 
-\item{lambda}{lambda}
+\item{lambda}{weighting parameter - larger values incorporate more spatial
+information}
 }
 \value{
 BanksyMatrix

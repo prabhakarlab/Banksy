@@ -20,9 +20,10 @@ SubsetBanksy(
 
 \item{features}{genes to filter by}
 
-\item{dims}{dimensions to filter by - must correspond to valid columns}
+\item{dims}{dimensions to filter by - must correspond to valid columns in
+cell.locs}
 
-\item{metadata}{metadata to filter by - must be valid colulmn}
+\item{metadata}{metadata to filter by - must be valid column in meta.data}
 
 \item{dataset}{dataset to subset dimensions by}
 }

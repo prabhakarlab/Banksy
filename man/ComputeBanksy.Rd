@@ -6,28 +6,34 @@
 \usage{
 ComputeBanksy(
   bank,
+  k_geom = 10,
   sigma = 1.5,
   alpha = 0.05,
-  kspatial = 1000,
+  kspatial = 10,
   dimensions = "all",
   spatialMode = "kNN_r",
-  k_geom = 10
+  verbose = FALSE
 )
 }
 \arguments{
 \item{bank}{BanksyObject}
 
-\item{sigma}{sigma}
+\item{k_geom}{kNN parameter - number of neighbors to use}
 
-\item{alpha}{alpha}
+\item{sigma}{rNN parameter - standard deviation of Gaussian kernel}
 
-\item{kspatial}{kspatial}
+\item{alpha}{rNN parameter - determines radius used (larger alphas give
+smaller radii)}
 
-\item{dimensions}{dims}
+\item{kspatial}{rNN parameter - number of neighbors to use}
 
-\item{spatialMode}{spatialMode}
+\item{dimensions}{dimensions to use when computing neighborhood - one of
+column name in cell.locs, or 'all'}
 
-\item{k_geom}{k_geom}
+\item{spatialMode}{spatial mode to use - one of kNN_r, kNN_rank, kNN_unif,
+rNN_gauss}
+
+\item{verbose}{messages}
 }
 \value{
 BanksyObject

@@ -21,25 +21,26 @@ ClusterBanksy(
 \arguments{
 \item{bank}{BanksyObject}
 
-\item{lambda}{lambda mixing}
+\item{lambda}{weighting parameter - larger values incorporate more spatial
+information}
 
-\item{resolution}{resolution}
+\item{resolution}{parameter used for clustering}
 
-\item{kneighbours}{kneighbours (sNN)}
+\item{kneighbours}{parameter for constructing shared nearest neighbor network}
 
-\item{npcs}{num princ. comp.}
+\item{npcs}{number of principal components to use}
 
-\item{nneighbors}{umap}
+\item{nneighbors}{umap parameter - number of neighbors to use for umap}
 
-\item{spread}{umap}
+\item{spread}{umap parameter - effective scale of embedded points}
 
-\item{nepochs}{umap}
+\item{nepochs}{umap parameter - number of epochs to run umap optimization}
 
-\item{mindist}{umap}
+\item{mindist}{umap parameter - effective min. dist. between embedded points}
 
-\item{leideniters}{leiden iters}
+\item{leideniters}{number of leiden iterations}
 
-\item{verbose}{messages}
+\item{verbose}{output messages}
 }
 \value{
 BanksyObject with cluster labels in meta.data

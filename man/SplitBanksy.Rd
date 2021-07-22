@@ -11,7 +11,7 @@ SplitBanksy(bank, by, names = NULL)
 
 \item{by}{metadata column}
 
-\item{names}{names to new datasets}
+\item{names}{names for new datasets}
 }
 \value{
 BanksyObject
