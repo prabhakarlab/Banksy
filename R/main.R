@@ -283,6 +283,7 @@ ClusterBanksy <- function(bank,
 #' Harmonise cluster labels among parameter runs
 #'
 #' @param bank Banksy Object
+#' @param mapto specify a cluster to map to
 #' @param verbose output messages
 #' @param optim optimize cluster mapping based on parent distribution in
 #'   ambiguous cases
@@ -294,41 +295,44 @@ ClusterBanksy <- function(bank,
 #' @return BanksyObject with harmonised cluster labels
 #'
 #' @export
-ConnectClusters <- function(bank, verbose=FALSE, optim=TRUE) {
+ConnectClusters <- function(bank, mapto = NULL, verbose=FALSE, optim=TRUE) {
 
   d <- bank@meta.data
-  clust <- d[,grep('^res', colnames(d)),drop=FALSE]
+  cols <- ifelse(!is.null(mapto),
+                 names(d)[grepl('^res', names(d)) |
+                            grepl(mapto, names(d))],
+                 names(d)[grepl('^res', names(d))])
+  clust <- d[, cols, drop = FALSE]
   clustNames <- names(clust)
 
   if (length(clustNames) == 1) {
-    message("Only one cluster.")
+    message('Only one cluster.')
     return(bank)
   }
 
-  ## Init the new clustering output
+  if (!is.null(mapto)) {
+    parent <- which(clustNames == mapto)
+  } else {
+    numClust <- apply(clust, 2, function(x) length(unique(x)))
+    medClust <- median(numClust)
+    parent <- which.min(abs(numClust - medClust))
+  }
+
   newClust <- copy(clust)
-  ## Use median clusters as seed
-  numClust <- apply(clust, 2, function(x) length(unique(x)))
-  medClust <- median(numClust)
-  ## Get the clusters for each parameter run
   allClust <- apply(clust, 2, unique)
-  ## Settle the parent cluster labels
-  #parent <- max(which(numClust == medClust))
-  parent <- which.min(abs(numClust - medClust))
   parentClusters <- allClust[[parent]]
   newClust[,parent] <- plyr::mapvalues(clust[,parent],
-                                  from = parentClusters,
-                                  to = seq_len(length(unique(parentClusters))),
-                                  warn_missing = FALSE)
+                                       from = parentClusters,
+                                       to = seq_len(length(unique(parentClusters))),
+                                       warn_missing = FALSE)
   parentDist <- as.numeric(table(newClust[,parent]))
+
   message(paste0('Mapping clusterings to ', clustNames[parent]))
-  ## The rest will be children
   children <- setdiff(seq_len(ncol(clust)), parent)
-  ## Iterate over the clusters of the parent
+
   for (child in children) {
 
     message(paste0('Processing ', clustNames[child]))
-    ## Child-centered mapping approach
     childClust <- sort(allClust[[child]], decreasing = FALSE)
     childDist <- rep(0, medClust)
 
@@ -347,9 +351,9 @@ ConnectClusters <- function(bank, verbose=FALSE, optim=TRUE) {
                                       ' - using KS-test'))
           hits <- as.numeric(levels(map)[tab %in% topn])
           test1 <- childDist + init(medClust, hits[1],
-                                     tab[which(levels(map)==hits[1])])
+                                    tab[which(levels(map)==hits[1])])
           test2 <- childDist + init(medClust, hits[2],
-                                     tab[which(levels(map)==hits[2])])
+                                    tab[which(levels(map)==hits[2])])
           stat1 <- ks.test(parentDist, jitter(test1), exact=FALSE)$stat
           stat2 <- ks.test(parentDist, jitter(test2), exact=FALSE)$stat
           hit <- ifelse(stat1 < stat2, hits[1], hits[2])
@@ -367,8 +371,8 @@ ConnectClusters <- function(bank, verbose=FALSE, optim=TRUE) {
   maxClust <- max(apply(newClust, 2, max))
   fromMap <- seq_len(maxClust)
   toMap <- getPalette(maxClust)
-  bank@meta.data <- cbind(bank@meta.data[,-which(names(bank@meta.data) %in% clustNames)],
-                          newClust)
+  bank@meta.data <- cbind(bank@meta.data[,-which(names(bank@meta.data) %in%
+                                                   names(clust))], newClust)
   return(bank)
 }
 

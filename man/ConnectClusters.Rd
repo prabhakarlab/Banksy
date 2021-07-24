@@ -4,10 +4,12 @@
 \alias{ConnectClusters}
 \title{Harmonise cluster labels among parameter runs}
 \usage{
-ConnectClusters(bank, verbose = FALSE, optim = TRUE)
+ConnectClusters(bank, mapto = NULL, verbose = FALSE, optim = TRUE)
 }
 \arguments{
 \item{bank}{Banksy Object}
+
+\item{mapto}{specify a cluster to map to}
 
 \item{verbose}{output messages}
 
