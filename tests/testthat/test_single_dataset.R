@@ -192,7 +192,7 @@ test_that('Split Banksy', {
 })
 
 test_that('Connect clusters', {
-    expect_s4_class(ConnectClusters(bank), 'BanksyObject')
+    expect_s4_class(ConnectClusters(bank)$BanksyObject, 'BanksyObject')
 })
 
 

@@ -4,7 +4,7 @@
 \alias{ConnectClusters}
 \title{Harmonise cluster labels among parameter runs}
 \usage{
-ConnectClusters(bank, mapto = NULL, verbose = FALSE, optim = TRUE)
+ConnectClusters(bank, mapto = NULL)
 }
 \arguments{
 \item{bank}{Banksy Object}
@@ -12,12 +12,10 @@ ConnectClusters(bank, mapto = NULL, verbose = FALSE, optim = TRUE)
 \item{mapto}{specify a cluster to map to}
 
 \item{verbose}{output messages}
-
-\item{optim}{optimize cluster mapping based on parent distribution in
-ambiguous cases}
 }
 \value{
-BanksyObject with harmonised cluster labels
+A list with BanksyObject with harmonised cluster labels and
+  adjusted Rand indices for each cluster mapping
 }
 \description{
 Harmonise cluster labels among parameter runs

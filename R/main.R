@@ -285,95 +285,64 @@ ClusterBanksy <- function(bank,
 #' @param bank Banksy Object
 #' @param mapto specify a cluster to map to
 #' @param verbose output messages
-#' @param optim optimize cluster mapping based on parent distribution in
-#'   ambiguous cases
 #'
-#' @importFrom data.table copy
-#' @importFrom stats median ks.test
+#' @importFrom mclust adjustedRandIndex
 #' @importFrom plyr mapvalues
+#' @importFrom RcppHungarian HungarianSolver
+#' @importFrom stats median
 #'
-#' @return BanksyObject with harmonised cluster labels
+#' @return A list with BanksyObject with harmonised cluster labels and
+#'   adjusted Rand indices for each cluster mapping
 #'
 #' @export
-ConnectClusters <- function(bank, mapto = NULL, verbose=FALSE, optim=TRUE) {
+ConnectClusters <- function(bank, mapto = NULL) {
 
-  d <- bank@meta.data
-  cols <- ifelse(!is.null(mapto),
-                 names(d)[grepl('^res', names(d)) |
-                            grepl(mapto, names(d))],
-                 names(d)[grepl('^res', names(d))])
-  clust <- d[, cols, drop = FALSE]
-  clustNames <- names(clust)
+  mdata <- bank@meta.data
+  mnames <- names(mdata)
+  if (is.null(mapto)) labels <- mnames[grepl('^res', mnames)]
+  else labels <- mnames[grepl('^res', mnames) | grepl(mapto, mnames)]
 
-  if (length(clustNames) == 1) {
-    message('Only one cluster.')
+  if (length(labels) == 1) {
+    message('Only one cluster')
     return(bank)
   }
 
-  if (!is.null(mapto)) {
-    parent <- which(clustNames == mapto)
-  } else {
-    numClust <- apply(clust, 2, function(x) length(unique(x)))
+  clusters <- mdata[,labels]
+  clustnames <- names(clusters)
+  if (is.null(mapto)) {
+    numClust <- apply(clusters, 2, function(x) length(unique(x)))
     medClust <- median(numClust)
     parent <- which.min(abs(numClust - medClust))
+  } else {
+    if (!(mapto %in% mnames)) stop('Specify a valid metadata column to map to.')
+    parent <- which(labels == mapto)
   }
 
-  newClust <- copy(clust)
-  allClust <- apply(clust, 2, unique)
-  parentClusters <- allClust[[parent]]
-  newClust[,parent] <- plyr::mapvalues(clust[,parent],
-                                       from = parentClusters,
-                                       to = seq_len(length(unique(parentClusters))),
-                                       warn_missing = FALSE)
-  parentDist <- as.numeric(table(newClust[,parent]))
+  message(paste0('Mapping to ', clustnames[parent]))
+  children <- setdiff(seq_len(ncol(clusters)), parent)
+  newLabels <- lapply(children, function(child) {
+    contingency <- table(clusters[, parent],
+                         clusters[, child])
+    mat <- max(contingency) - contingency
+    matching <- HungarianSolver(mat)
+    newChild <- mapvalues(clusters[, child],
+                          from = matching$pairs[,2],
+                          to = matching$pairs[,1],
+                          warn_missing = FALSE)
+    adjRI <- adjustedRandIndex(clusters[, parent], clusters[, child])
+    adjRI <- round(adjRI, 3)
+    message(paste0('Mapped ', clustnames[child],
+                   ' with adjusted Rand index ', adjRI))
+    return(list(newChild, adjRI))
+  })
 
-  message(paste0('Mapping clusterings to ', clustNames[parent]))
-  children <- setdiff(seq_len(ncol(clust)), parent)
-
-  for (child in children) {
-
-    message(paste0('Processing ', clustNames[child]))
-    childClust <- sort(allClust[[child]], decreasing = FALSE)
-    childDist <- rep(0, medClust)
-
-    for (i in childClust) {
-
-      map <- factor(newClust[,parent][clust[,child]==i])
-      tab <- tabulate(map)
-      hit <- as.numeric(levels(map)[tab == max(tab)])
-
-      ## Optimize
-      if (optim & i > length(childClust) / 2 & length(tab) > 1) {
-        topn <- sort(tab, decreasing = TRUE)[seq_len(2)]
-        ambig <- min(topn)/max(topn) > 0.9
-        if (ambig) {
-          if (verbose) message(paste0('Ambiguous mapping for cluster ', i,
-                                      ' - using KS-test'))
-          hits <- as.numeric(levels(map)[tab %in% topn])
-          test1 <- childDist + init(medClust, hits[1],
-                                    tab[which(levels(map)==hits[1])])
-          test2 <- childDist + init(medClust, hits[2],
-                                    tab[which(levels(map)==hits[2])])
-          stat1 <- ks.test(parentDist, jitter(test1), exact=FALSE)$stat
-          stat2 <- ks.test(parentDist, jitter(test2), exact=FALSE)$stat
-          hit <- ifelse(stat1 < stat2, hits[1], hits[2])
-        }
-      } else {
-        hit <- max(hit)
-      }
-      newClust[,child][clust[,child]==i] <- hit
-      childDist[hit] <- childDist[hit] + tab[hit]
-      childDist[is.na(childDist)] <- 0
-      if(verbose) message(paste0('Mapping child cluster ',
-                                 i , ' to parent cluster ', hit))
-    }
-  }
-  maxClust <- max(apply(newClust, 2, max))
-  fromMap <- seq_len(maxClust)
-  toMap <- getPalette(maxClust)
-  bank@meta.data <- cbind(bank@meta.data[,-which(names(bank@meta.data) %in%
-                                                   names(clust))], newClust)
-  return(bank)
+  result <- do.call(cbind.data.frame, lapply(newLabels, `[[`, 1))
+  rand <- sapply(newLabels, `[[`, 2)
+  names(result) <- names(clusters)[children]
+  names(rand) <- names(clusters)[children]
+  bank@meta.data <- cbind(bank@meta.data[,
+                     -which(names(bank@meta.data) %in% names(result))], result)
+  return(list(BanksyObject = bank, rand.index = rand))
 }
 
 #' Returns the Banksy matrix (own + nbr)
