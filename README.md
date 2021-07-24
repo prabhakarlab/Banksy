@@ -310,8 +310,3 @@ sessionInfo()
 ## To-dos
 
   - Pass devtools::check: S3/4 documentation
-  - Normalization methods for multiple datasets
-  - Clustering methods
-  - Optimization for handling large matrices (Rcpp)
-  - Subsetting and Connecting clusters for multiple datasets
-  - Unit tests
