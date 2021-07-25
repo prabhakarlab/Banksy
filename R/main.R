@@ -279,12 +279,11 @@ ClusterBanksy <- function(bank,
 
 }
 
-
 #' Harmonise cluster labels among parameter runs
 #'
 #' @param bank Banksy Object
 #' @param mapto specify a cluster to map to
-#' @param verbose output messages
+#' @param reverse reverse the map
 #'
 #' @importFrom mclust adjustedRandIndex
 #' @importFrom plyr mapvalues
@@ -295,7 +294,7 @@ ClusterBanksy <- function(bank,
 #'   adjusted Rand indices for each cluster mapping
 #'
 #' @export
-ConnectClusters <- function(bank, mapto = NULL) {
+ConnectClusters <- function(bank, mapto = NULL, reverse = FALSE) {
 
   mdata <- bank@meta.data
   mnames <- names(mdata)
@@ -320,21 +319,34 @@ ConnectClusters <- function(bank, mapto = NULL) {
 
   message(paste0('Mapping to ', clustnames[parent]))
   children <- setdiff(seq_len(ncol(clusters)), parent)
-  newLabels <- lapply(children, function(child) {
-    contingency <- table(clusters[, parent],
-                         clusters[, child])
-    mat <- max(contingency) - contingency
-    matching <- HungarianSolver(mat)
-    newChild <- mapvalues(clusters[, child],
-                          from = matching$pairs[,2],
-                          to = matching$pairs[,1],
-                          warn_missing = FALSE)
+  newLabels <- lapply(children, function(child, reverse) {
+
+    contingency <- table(clusters[, parent], clusters[, child])
+    if (reverse) {
+        contingency <- t(contingency)
+        mat <- max(contingency) - contingency
+        matching <- HungarianSolver(mat)
+        map <- matching$pairs[,2]
+        map[which(map == 0)] <- apply(contingency[which(map == 0),],
+                                      1, which.max)
+        newChild <- mapvalues(clusters[, child],
+                              from = matching$pairs[,1],
+                              to = map,
+                              warn_missing = FALSE)
+    } else {
+      mat <- max(contingency) - contingency
+      matching <- HungarianSolver(mat)
+      newChild <- mapvalues(clusters[, child],
+                            from = matching$pairs[,2],
+                            to = matching$pairs[,1],
+                            warn_missing = FALSE)
+    }
     adjRI <- adjustedRandIndex(clusters[, parent], clusters[, child])
     adjRI <- round(adjRI, 3)
     message(paste0('Mapped ', clustnames[child],
                    ' with adjusted Rand index ', adjRI))
     return(list(newChild, adjRI))
-  })
+  }, reverse = reverse)
 
   result <- do.call(cbind.data.frame, lapply(newLabels, `[[`, 1))
   rand <- sapply(newLabels, `[[`, 2)

@@ -4,14 +4,14 @@
 \alias{ConnectClusters}
 \title{Harmonise cluster labels among parameter runs}
 \usage{
-ConnectClusters(bank, mapto = NULL)
+ConnectClusters(bank, mapto = NULL, reverse = FALSE)
 }
 \arguments{
 \item{bank}{Banksy Object}
 
 \item{mapto}{specify a cluster to map to}
 
-\item{verbose}{output messages}
+\item{reverse}{reverse the map}
 }
 \value{
 A list with BanksyObject with harmonised cluster labels and
