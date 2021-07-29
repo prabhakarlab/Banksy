@@ -4,10 +4,12 @@
 \alias{NormalizeBanksy}
 \title{Normalize columns to a normFactor}
 \usage{
-NormalizeBanksy(bank, normFactor = 100)
+NormalizeBanksy(bank, assay = "both", normFactor = 100)
 }
 \arguments{
 \item{bank}{BanksyObject}
+
+\item{assay}{assay to scale - one of both, own, nbr (default: both)}
 
 \item{normFactor}{normalization factor}
 }

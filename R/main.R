@@ -8,13 +8,24 @@
 #' Normalize columns to a normFactor
 #'
 #' @param bank BanksyObject
+#' @param assay assay to scale - one of both, own, nbr (default: both)
 #' @param normFactor normalization factor
 #'
 #' @return normalized Banksy object
 #'
 #' @export
-NormalizeBanksy <- function(bank, normFactor = 100) {
-  ## Own expression
+NormalizeBanksy <- function(bank, assay = 'both', normFactor = 100) {
+
+  scaleOwn <- TRUE
+  scaleNbr <- TRUE
+  if (assay == 'own') {
+    scaleNbr <- FALSE
+  } else if (assay == 'nbr') {
+    scaleOwn <- FALSE
+  } else if (assay != 'both'){
+    stop('Specify a valid assay. One of both, own, or nbr.')
+  }
+
   if (!is.null(bank@own.expr)) {
     if (is.list(bank@own.expr)) {
       bank@own.expr <- lapply(bank@own.expr, normalizer, normFactor)
@@ -22,7 +33,6 @@ NormalizeBanksy <- function(bank, normFactor = 100) {
       bank@own.expr <- normalizer(bank@own.expr, normFactor)
     }
   }
-  ## Nbr expression
   if (!is.null(bank@nbr.expr)) {
     if (is.list(bank@nbr.expr)) {
       bank@nbr.expr <- lapply(bank@nbr.expr, normalizer, normFactor)
@@ -36,13 +46,25 @@ NormalizeBanksy <- function(bank, normFactor = 100) {
 #' Scale rows
 #'
 #' @param bank BanksyObject
+#' @param assay assay to scale - one of both, own, nbr (default: both)
 #' @param separate scale datasets separately
 #'
 #' @return scaled BanksyObject
 #'
 #' @export
-ScaleBanksy <- function(bank, separate = TRUE) {
-  if (!is.null(bank@own.expr)) {
+ScaleBanksy <- function(bank, assay = 'both', separate = TRUE) {
+
+  scaleOwn <- TRUE
+  scaleNbr <- TRUE
+  if (assay == 'own') {
+    scaleNbr <- FALSE
+  } else if (assay == 'nbr') {
+    scaleOwn <- FALSE
+  } else if (assay != 'both'){
+    stop('Specify a valid assay. One of both, own, or nbr.')
+  }
+
+  if (!is.null(bank@own.expr) & scaleOwn) {
     if (is.list(bank@own.expr)) {
       if (separate) bank@own.expr <- lapply(bank@own.expr, scaler)
       else {
@@ -52,7 +74,7 @@ ScaleBanksy <- function(bank, separate = TRUE) {
       bank@own.expr <- scaler(bank@own.expr)
     }
   }
-  if (!is.null(bank@nbr.expr)) {
+  if (!is.null(bank@nbr.expr) & scaleNbr) {
     if (is.list(bank@nbr.expr)) {
       bank@nbr.expr <- lapply(bank@nbr.expr, scaler)
     } else {
