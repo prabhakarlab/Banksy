@@ -49,7 +49,7 @@ giotto <- createGiottoObject(raw_exprs = combined$expr,
 
 Next, run principal component analysis:
 
-```{r giotto-pca, evak=F}
+```{r giotto-pca, eval=F}
 giotto <- runPCA(giotto, expression_values = 'normalized', ncp = 50)
 plotPCA(giotto)
 screePlot(giotto)
