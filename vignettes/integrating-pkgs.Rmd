@@ -81,16 +81,17 @@ spatGenePlot(giotto, expression_values = 'scaled',
 
 ## Integration with Seurat
 
-We first create the *Seurat* object by supplying the *Banksy* matrix to *CreateSeuratObject*:
+We first create the *Seurat* object by supplying the *Banksy* matrix to *CreateSeuratObject*. Since the data has been scaled, we populate the
+`scale.data` slot with the *Banksy* matrix.
 
 ```{r seurat, eval=F}
 seu <- CreateSeuratObject(counts = combined$expr)
+seu <- SetAssayData(seu, slot = "scale.data", new.data = combined$expr)
 ```
 
-*Seurat* requires that the combined data is scaled. Re-scale the data and run principal component analysis:
+Run principal component analysis:
 
 ```{r seurat-process, eval=F}
-seu <- ScaleData(seu)
 seu <- FindVariableFeatures(seu)
 seu <- RunPCA(seu)
 ElbowPlot(seu)
