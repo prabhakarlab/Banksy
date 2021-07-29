@@ -49,8 +49,8 @@ bank <- ScaleBanksy(bank)
 Define a parameter space. We explore different combinations of `lambda` and 
 `resolution`, fixing `kneighbours`.
 ```{r params, eval=T}
-lambda <- seq(0.25, 0.75, by = 0.25)
-resolution <- seq(0.5, 1.5, by = 0.5)
+lambda <- c(0, 0.5)
+resolution <- c(0.8, 1.2)
 kneighbours <- 40
 
 set.seed(1234)
@@ -73,7 +73,7 @@ To compare between clusters obtained with different combination of parameters
 performs a mapping to harmonise cluster labels between different parameter runs.
 
 ```{r connect, eval=T}
-bank <- ConnectClusters(bank)
+bank <- ConnectClusters(bank)$BanksyObject
 ```
 
 This updates the `meta.data` slot with new cluster labels and colours that can
@@ -83,23 +83,17 @@ First, obtain cluster names:
 ```{r clustnames, eval=T}
 mdnames <- names(meta.data(bank))
 clustnames <- mdnames[grep('^res', mdnames)]
-reductions <- rep(c('umap_0.25', 'umap_0.5', 'umap_0.75'), each = 3)
 ```
 
-Generate UMAPs and Spatial Dimension plots for the above clusters:
-```{r out, eval=T}
-umaps <- Map(function(by, reduction) {
-  plotUMAP(bank, by, reduction, legend = FALSE, pt.size = 0.01, main.size = 10)
-  }, clustnames, reductions)
+Generate UMAPs and Spatial Dimension plots for the above clusters. One can use 
+the *grid.arrange* function from *gridExtra* to conveniently layout all plots 
+for comparison:
 
+```{r out, eval=T, fig.width=10, fig.height=8}
+uplot <- Map(function(by, red) plotUMAP(bank, by = by, reduction = red, pt.size = 0.01),
+             clustnames, rep(c('umap_0', 'umap_0.5'), each = 2))
+do.call(grid.arrange, c(uplot, ncol = 2))
 
-spatdims <- lapply(clustnames, 
-                   function(by) plotSpatialDims(bank, by, pt.size = 0.01, main.size = 10))
-```
-
-One can use the *grid.arrange* function from *gridExtra* to conveniently layout 
-all plots for comparison:
-```{r visual, fig.width=8.5, fig.height=8.5, fig.align='center', eval=T}
-do.call("grid.arrange", c(umaps, ncol = 3))
-do.call("grid.arrange", c(spatdims, ncol = 3))
+splot <- lapply(clustnames, function(by) plotSpatialDims(bank, by = by))
+do.call(grid.arrange, c(splot, ncol = 2))
 ```

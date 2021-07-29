@@ -69,7 +69,7 @@ the neighbour-feature cell matrix and scale the datasets separately (No
 normalization step here is required as the data has been pre-normalized).
 
 ```{r compute, eval=T}
-bank <- ComputeBanksy(bank)
+bank <- ComputeBanksy(bank, spatialMode = 'kNN_r', k_geom = 10)
 bank <- ScaleBanksy(bank)
 ```
 
@@ -91,8 +91,8 @@ here, given the relatively limited number of organoids per dataset.
 set.seed(1234)
 bank <- ClusterBanksy(bank,
                       resolution = 0.8,
-                      lambda = 0.5,
-                      kneighbours = 35,
+                      lambda = 0.25,
+                      kneighbours = 40,
                       verbose = TRUE)
 ```
 
@@ -104,8 +104,9 @@ spatial dimension plots. UMAP visualisation is similar to the one dataset case.
 
 ```{r spatdim, eval=T, fig.width = 8, fig.height = 7, fig.align='center'}
 ## UMAP
-by <- 'res0.8_lam0.5_k35'
-umap <- plotUMAP(bank, by, pt.size = 0.02, main.size = 10)
+by <- 'res0.8_lam0.25_k40'
+umap <- plotUMAP(bank, by, reduction = 'umap_0.25', 
+                 pt.size = 0.02, main.size = 10)
 
 ## Spatial plots
 dsetnames <- names(own.expr(bank))
@@ -131,9 +132,10 @@ bankSubset <- SubsetBanksy(bank,
                            dims = (sdimx < 5700 | sdimx > 8000) | 
                                   (sdimy < 5000 | sdimy > 8000),
                            dataset = 'd2',
-                           metadata = res0.8_lam0.5_k35 %in% c(1,3))
+                           metadata = res0.8_lam0.25_k40 %in% c(1,3))
 
-umap <- plotUMAP(bankSubset, by, pt.size = 0.5, main.size = 10)
+umap <- plotUMAP(bankSubset, by, reduction = 'umap_0.25',
+                 pt.size = 0.5, main.size = 10)
 spatdim <- plotSpatialDims(bankSubset, by, dataset = 'd2',
                 pt.size = 1, main.size = 10)
 grid.arrange(umap, spatdim, ncol = 2)

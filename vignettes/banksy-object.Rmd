@@ -19,12 +19,26 @@ with it.
 
 ## Class structure
 
-An object of the *BanksyObject* class can be constructed as follows:
-
-```{r setup, eval=T}
+We use data attached with the package:
+```{r rdata, eval=T}
 library(Banksy)
-bank <- BanksyObject()
+expr <- readRDS(system.file('/extdata/expression.rds', package = 'Banksy'))
+locs <- readRDS(system.file('/extdata/locations.rds', package = 'Banksy'))
 ```
+
+The *BanksyObject* can be constructed by supplying the gene-cell expression 
+matrix and cell locations. Calling *BanksyObject* populates metadata and performs
+gene filtering in the case of multiple datasets. This should be the default 
+method of construction - avoid setter methods for construction. 
+
+```{r construct, eval=T}
+bank <- BanksyObject(own.expr = expr,
+                     cell.locs = locs)
+
+bank
+```
+
+The dataset consists of 6725 cells, 140 genes, with 2 spatial dimensions.
 
 *BanksyObject* has the following slots:
 ```{r slotnm, eval=T}
@@ -40,23 +54,6 @@ slotNames(bank)
 * `dim.reduction` stores dimension reductions 
 
 Getter and setter methods are defined for each of these slots.
-To illustrate these functionalities, we use the data attached with the package.
-```{r rdata, eval=T}
-expr <- readRDS(system.file('/extdata/expression.rds', package = 'Banksy'))
-locs <- readRDS(system.file('/extdata/locations.rds', package = 'Banksy'))
-```
-
-The *BanksyObject* can be constructed by supplying the gene-cell expression 
-matrix and cell locations. Calling *BanksyObject* populates metadata and performs
-gene filtering in the of multiple datasets and should be the default method of 
-construction - avoid setter methods for construction. 
-```{r construct, eval=T}
-bank <- BanksyObject(own.expr = expr,
-                     cell.locs = locs)
-
-bank
-```
-The dataset consists of 6725 cells, 140 genes, with 2 spatial dimensions.
 
 Calling *ComputeBanksy* computes the neighbour feature-cell expression matrix,
 populating the `nbr.expr` slot: 
