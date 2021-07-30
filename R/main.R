@@ -26,14 +26,14 @@ NormalizeBanksy <- function(bank, assay = 'both', normFactor = 100) {
     stop('Specify a valid assay. One of both, own, or nbr.')
   }
 
-  if (!is.null(bank@own.expr)) {
+  if (!is.null(bank@own.expr) & scaleOwn) {
     if (is.list(bank@own.expr)) {
       bank@own.expr <- lapply(bank@own.expr, normalizer, normFactor)
     } else {
       bank@own.expr <- normalizer(bank@own.expr, normFactor)
     }
   }
-  if (!is.null(bank@nbr.expr)) {
+  if (!is.null(bank@nbr.expr) & scaleNbr) {
     if (is.list(bank@nbr.expr)) {
       bank@nbr.expr <- lapply(bank@nbr.expr, normalizer, normFactor)
     } else {
