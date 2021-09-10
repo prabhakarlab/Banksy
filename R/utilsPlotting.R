@@ -3,6 +3,9 @@
 # getPalette ---------------- Plotting
 # getAssay ------------------ Plotting Heatmap
 # getHeatmapPalette --------- Plotting Heatmap
+# getCellAnnotation --------- Plotting Heatmap
+# appendBarplots ------------ Plotting Heatmap
+# sampleMatrix -------------- Plotting Heatmap
 
 init <- function(n, idx, val) {
   x <- rep(0, n)
@@ -19,7 +22,7 @@ getPalette <- function(n) {
   return(all.cols[seq_len(n)])
 }
 
-getAssay <- function(bank, assay, dataset, lambda) {
+getAssay <- function(bank, assay, dataset, lambda, cells, features) {
 
   if (!is.na(pmatch(assay, c('own.expr', 'nbr.expr', 'custom.expr')))) {
 
@@ -63,6 +66,10 @@ getAssay <- function(bank, assay, dataset, lambda) {
     stop('Specify a valid assay.')
 
   }
+  if (is.null(features)) features <- rownames(mat)
+  if (is.null(cells)) cells <- colnames(mat)
+  features <- c(features, paste0(features, '.nbr'))
+  mat <- mat[rownames(mat) %in% features, colnames(mat) %in% cells]
   return(mat)
 }
 
@@ -183,13 +190,11 @@ appendBarplots <- function(bank, mat, cell.order,
   return(heatmap)
 }
 
-
-
-
-
-
-
-
-
-
-
+sampleMatrix <- function(mat, max.cols, seed) {
+  set.seed(seed)
+  message(paste0('Sampling ', max.cols, ' columns with seed ', seed))
+  message(paste0('Keeping ', round(max.cols/ncol(mat) * 100,2), '% of cells'))
+  keep <- sample(colnames(mat), min(length(colnames(mat)), max.cols))
+  mat <- mat[, keep]
+  return(mat)
+}

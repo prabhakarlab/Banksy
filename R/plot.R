@@ -185,9 +185,11 @@ plotSpatialDims <- function(bank, by, dataset = NULL,
 #' Plot Heatmap (wrapper for ComplexHeatmap)
 #'
 #' @param bank BanksyObject
-#' @param assay assay to plot heatmap
+#' @param assay assay to plot heatmap (one of own.expr, nbr.expr or banksy)
 #' @param dataset dataset to plot heatmap
 #' @param lambda lambda if assay == banksy
+#' @param cells specific cells to plot
+#' @param features specific features to plot
 #' @param col colours to use in heatmap
 #' @param col.breaks color breaks to use in heatmap (same number as col is
 #'   specified)
@@ -206,6 +208,9 @@ plotSpatialDims <- function(bank, by, dataset = NULL,
 #' @param barplot.by metadata to plot barplots (numeric)
 #' @param barplot.border show borders of barplot
 #' @param barplot.width barplot width
+#' @param max.cols max columns to display - will subsample if not NULL
+#' @param seed used for sampling
+#' @param rasterize rasterize if TRUE
 #' @param ... parameters to pass to ComplexHeatmap::Heatmap
 #'
 #' @importFrom ComplexHeatmap HeatmapAnnotation Heatmap
@@ -216,6 +221,7 @@ plotSpatialDims <- function(bank, by, dataset = NULL,
 #' @export
 plotHeatmap <- function(bank, assay = 'own.expr',
                         dataset = NULL, lambda = NULL,
+                        cells = NULL, features = NULL,
                         col = NULL, col.breaks = NULL,
                         cluster.row = TRUE, cluster.column = FALSE,
                         row.dend = FALSE, column.dend = FALSE,
@@ -230,9 +236,13 @@ plotHeatmap <- function(bank, assay = 'own.expr',
                         barplot.by = NULL,
                         barplot.border = FALSE,
                         barplot.width = 0.6,
+                        max.cols = NULL,
+                        seed = 42,
+                        rasterize = FALSE,
                         ...) {
 
-  mat <- getAssay(bank, assay, dataset, lambda)
+  mat <- getAssay(bank, assay, dataset, lambda, cells, features)
+  if (!is.null(max.cols)) mat <- sampleMatrix(mat, max.cols, seed)
   col.fun <- getHeatmapPalette(mat, col, col.breaks)
 
   if (annotate) {
@@ -250,6 +260,7 @@ plotHeatmap <- function(bank, assay = 'own.expr',
     if (assay == 'banksy') {
       group <- rep('own', nrow(mat))
       group[grepl('.nbr$', rownames(mat))] <- 'nbr'
+      group <- factor(group, levels = c('own', 'nbr'))
       ra <- HeatmapAnnotation(Clusters = factor(group),
                               which = 'row',
                               col = list(Clusters=c('own'='transparent',
@@ -273,6 +284,7 @@ plotHeatmap <- function(bank, assay = 'own.expr',
                   left_annotation = ra,
                   name = name,
                   col = col.fun,
+                  use_raster = rasterize,
                   ...)
 
     if (!is.null(barplot.by)) {
@@ -298,6 +310,7 @@ plotHeatmap <- function(bank, assay = 'own.expr',
                   show_column_names = FALSE,
                   name = name,
                   col = col.fun,
+                  use_raster = rasterize,
                   ...)
 
   }
