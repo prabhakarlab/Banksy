@@ -30,9 +30,7 @@ spatially-informed clusters.
 
 ```{r, eval=F}
 # Install from GitHub
-remotes::install_github("jleechung/Banksy")
-
-# Install from Bioconductor (sooon)
+remotes::install_github("jleechung/Banksy", dependencies = TRUE)
 ```
 
 # Documentation
@@ -62,7 +60,7 @@ different use cases:
 
 Inputs consist of an expression matrix and cell locations. Sample data is 
 provided with the package:
-```{r}
+```{r, eval = T}
 library(Banksy)
 
 expr <- readRDS(system.file('/extdata/expression.rds', package = 'Banksy'))
@@ -70,37 +68,48 @@ locs <- readRDS(system.file('/extdata/locations.rds', package = 'Banksy'))
 ```
 
 The gene expression matrix for cells should be a `matrix`:
-```{r}
+```{r, eval = T}
 class(expr)
 head(expr[,1:5])
 ```
 
 while cell locations should be supplied as a `data.frame`:
-```{r}
+```{r, eval = T}
 class(locs)
 head(locs)
 ```
 
 We store the total number of detect genes and total counts as metadata:
-```{r}
+```{r, eval = T}
 metadata <- data.frame(num_genes = colSums(expr > 0),
                        total_count = colSums(expr))
 ```
 
-## Spatial clustering
+Next, create a *BanksyObject* with the expression matrix and cell locations.
 
-First, create a *BanksyObject* with the expression matrix and cell locations.
-
-```{r}
+```{r, eval = T}
 bank <- BanksyObject(own.expr = expr,
                      cell.locs = locs,
                      meta.data = metadata)
 ```
 
-Next, normalize the expression matrix, compute the neighbour matrix, and scale 
+We can visualize the spatial layout of the cells, number of detected genes, 
+total count, and the expression of specific genes:
+
+```{r, eval = T, fig.width=12, fig.height=10}
+p1 <- plotSpatialDims(bank)
+p2 <- plotSpatialDims(bank, by = 'num_genes', type = 'continuous', pt.size = 1, pt.alpha = 1, main = 'Number of detected genes')
+p3 <- plotSpatialDims(bank, by = 'total_count', type = 'continuous', pt.size = 1, pt.alpha = 1, main = 'Total count')
+p4 <- plotSpatialDims(bank, by = 'Kcnh2', type = 'continuous', pt.size = 1, pt.alpha = 1, main = 'Kcnh2')
+gridExtra::grid.arrange(p1, p2, p3, p4, nrow = 2, ncol = 2)
+```
+
+## Spatial clustering
+
+We first normalize the expression matrix, compute the neighbour matrix, and scale 
 the resulting gene-cell and neighbour feature-cell matrix.
 
-```{r}
+```{r, eval = T}
 bank <- NormalizeBanksy(bank, normFactor = 100)
 bank <- ComputeBanksy(bank)
 bank <- ScaleBanksy(bank)
@@ -110,11 +119,34 @@ At this point, the joint expression matrix (gene-cell matrix and neighbour
 feature-cell matrix) can be extracted with *getBanksyMatrix*, which returns
 the joint matrix and cell locations:
 
-```{r}
+```{r, eval = T}
 joint <- getBanksyMatrix(bank, lambda = 0.25)
 
 joint$expr[1:5,1:5]
 joint$locs[1:5,]
+```
+
+Run PCA on the Banksy matrix. We set `lambda=0.25`. This populates the 
+`reduction` slot:
+
+```{r, eval = T}
+lambda <- 0.25
+bank <- RunPCA(bank, lambda = lambda, npcs = 30)
+names(bank@reduction)
+```
+
+Visualize PCA and its scree plot:
+
+```{r, eval = T, fig.height=8, fig.width=16}
+p1 <- plotReduction(bank, reduction = 'pca_0.25')
+p2 <- plotScree(bank, lambda = lambda)
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+```
+
+For visualization, we run UMAP on 30 principal components:
+
+```{r, eval = T}
+bank <- RunUMAP(bank, lambda = lambda, npcs = 30)
 ```
 
 Next, we obtain cluster assignments for the following parameters:
@@ -124,58 +156,37 @@ Next, we obtain cluster assignments for the following parameters:
 * `resolution`. Leiden clustering resolution.  
 * `kneighbours`. Number of k neighbours to use for constructing sNN.
 
-```{r}
+```{r, eval = T}
 set.seed(1234)
-bank <- ClusterBanksy(bank, lambda = 0.5,
-                            resolution = 0.8,
-                            kneighbours = 40)
+bank <- ClusterBanksy(bank, lambda = lambda, method = 'leiden',
+                      k.neighbors = 40, resolution = 0.8)
 ```
 
 ## Visualization
 
-UMAP visualization:
-```{r}
-plotUMAP(bank, by = 'res0.8_lam0.5_k40',  reduction = 'umap_0.5', pt.size = 0.02, main.size = 10)
+We can visualize the UMAP and spatial plots by the clustering run:
+
+```{r, eval = T}
+run <-  'clust_lam0.25_k40_res0.8'
+plotReduction(bank, reduction = 'umap_0.25', by = run, type = 'discrete', pt.size = 0.02)
 ```
 
-Spatial plot:
-```{r}
-plotSpatialDims(bank, by = 'res0.8_lam0.5_k40', pt.size = 0.8, main.size = 10)
+```{r, eval = T}
+plotSpatialDims(bank, by = run, type = 'discrete', pt.size = 0.8)
 ```
 
-Heatmap:
-```{r, fig.width=15, fig.height=10}
+Heatmap of the cells, annotated by the clustering run with barplots of the 
+number of detected genes and total count:
+
+```{r, fig.width=15, fig.height=10, eval = T}
 plotHeatmap(bank, assay = 'banksy',
-            lambda = 0.5,
+            lambda = lambda,
             annotate = TRUE,
-            annotate.by = 'res0.8_lam0.5_k40',
+            annotate.by = run,
             barplot.by = c('num_genes', 'total_count'))
 ```
 
-## Subsetting
-
-The *BanksyObject* can be subset by cells, features or metadata columns.
-```{r}
-bankSubset1 <- SubsetBanksy(bank,
-                            dims = (sdimx > 1000 & sdimx < 4000) & 
-                                   (sdimy > 2000 & sdimy < 3000),
-                            cells = c('cell_364', 'cell_367', 'cell_384','cell_389'),
-                            features = sample(rownames(own.expr(bank)), 10))
-head(bankSubset1)
-```
-
-```{r}
-bankSubset2 <- SubsetBanksy(bank,
-                            metadata = res0.8_lam0.5_k40 %in% c(5,6))
-plotSpatialDims(bankSubset2, by = 'res0.8_lam0.5_k40', 
-                pt.size = 0.5, main.size = 10)
-```
-
 # Session information
-```{r}
+```{r, eval = T}
 sessionInfo()
 ```
-
-## To-dos
-
-* Pass devtools::check: S3/4 documentation

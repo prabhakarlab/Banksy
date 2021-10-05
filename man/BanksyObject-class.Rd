@@ -14,8 +14,8 @@
 \alias{cell.locs,BanksyObject-method}
 \alias{meta.data}
 \alias{meta.data,BanksyObject-method}
-\alias{dim.reduction}
-\alias{dim.reduction,BanksyObject-method}
+\alias{reduction}
+\alias{reduction,BanksyObject-method}
 \alias{own.expr<-}
 \alias{own.expr<-,BanksyObject,assay-method}
 \alias{nbr.expr<-}
@@ -26,10 +26,8 @@
 \alias{cell.locs<-,BanksyObject,assay-method}
 \alias{meta.data<-}
 \alias{meta.data<-,BanksyObject,data.frame-method}
-\alias{dim.reduction<-}
-\alias{dim.reduction<-,BanksyObject,list-method}
-\alias{head}
-\alias{head,BanksyObject-class}
+\alias{reduction<-}
+\alias{reduction<-,BanksyObject,list-method}
 \title{S4 class BanksyObject}
 \usage{
 BanksyObject(
@@ -38,7 +36,7 @@ BanksyObject(
   custom.expr = NULL,
   cell.locs = NULL,
   meta.data = NULL,
-  dim.reduction = NULL,
+  reduction = NULL,
   genes.filter = "intersect",
   min.cells.expressed = -1
 )
@@ -63,9 +61,9 @@ meta.data(object)
 
 \S4method{meta.data}{BanksyObject}(object)
 
-dim.reduction(object)
+reduction(object)
 
-\S4method{dim.reduction}{BanksyObject}(object)
+\S4method{reduction}{BanksyObject}(object)
 
 own.expr(object) <- value
 
@@ -87,11 +85,9 @@ meta.data(object) <- value
 
 \S4method{meta.data}{BanksyObject,data.frame}(object) <- value
 
-dim.reduction(object) <- value
+reduction(object) <- value
 
-\S4method{dim.reduction}{BanksyObject,list}(object) <- value
-
-head(x, ...)
+\S4method{reduction}{BanksyObject,list}(object) <- value
 }
 \arguments{
 \item{own.expr}{own expression}
@@ -104,7 +100,7 @@ head(x, ...)
 
 \item{meta.data}{metadata}
 
-\item{dim.reduction}{dimension reductions}
+\item{reduction}{dimension reductions}
 
 \item{genes.filter}{intersect or union}
 
@@ -114,8 +110,6 @@ head(x, ...)
 \item{object}{BanksyObject}
 
 \item{value}{to be assigned}
-
-\item{x}{BanksyObject}
 }
 \value{
 BanksyObject
@@ -145,9 +139,9 @@ S4 class BanksyObject
 
 \item \code{meta.data,BanksyObject-method}: getter meta.data
 
-\item \code{dim.reduction}: getter dim.reduction
+\item \code{reduction}: getter reduction
 
-\item \code{dim.reduction,BanksyObject-method}: getter dim.reduction
+\item \code{reduction,BanksyObject-method}: getter reduction
 
 \item \code{own.expr<-}: setter for own.expr
 
@@ -169,11 +163,9 @@ S4 class BanksyObject
 
 \item \code{meta.data<-,BanksyObject,data.frame-method}: setter for meta.data
 
-\item \code{dim.reduction<-}: setter for dim.reduction
+\item \code{reduction<-}: setter for reduction
 
-\item \code{dim.reduction<-,BanksyObject,list-method}: setter for dim.reduction
-
-\item \code{head}: head for banksy object
+\item \code{reduction<-,BanksyObject,list-method}: setter for reduction
 }}
 
 \section{Slots}{
@@ -189,6 +181,6 @@ S4 class BanksyObject
 
 \item{\code{meta.data}}{metadata}
 
-\item{\code{dim.reduction}}{dimension reductions}
+\item{\code{reduction}}{dimension reductions}
 }}
 

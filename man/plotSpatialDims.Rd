@@ -6,13 +6,19 @@
 \usage{
 plotSpatialDims(
   bank,
-  by,
   dataset = NULL,
-  col = NULL,
-  legend = TRUE,
+  by = NULL,
+  type = c("discrete", "continuous"),
+  pt.size = 0.5,
+  pt.alpha = 0.7,
+  col.midpoint = NULL,
+  col.low = "blue",
+  col.mid = "gray95",
+  col.high = "red",
+  col.discrete = NULL,
   main = NULL,
-  pt.size = 1,
   main.size = 5,
+  legend = TRUE,
   legend.text.size = 6,
   legend.pt.size = 3
 )
@@ -20,23 +26,38 @@ plotSpatialDims(
 \arguments{
 \item{bank}{BanksyObject}
 
-\item{by}{groupings for cells}
-
 \item{dataset}{if multiple dataset are run}
 
-\item{col}{colours}
+\item{by}{groupings for cells}
 
-\item{legend}{show legend}
-
-\item{main}{title}
+\item{type}{type of groupings (one of 'discrete' or 'continuous')}
 
 \item{pt.size}{size of points}
 
+\item{pt.alpha}{transparency of points}
+
+\item{col.midpoint}{for continuous labels - midpoint of color gradient}
+
+\item{col.low}{for continuous labels - color gradient low}
+
+\item{col.mid}{for continuous labels - color gradient mid}
+
+\item{col.high}{for continuous labels - color gradient high}
+
+\item{col.discrete}{for discrete labels - colors for groupings}
+
+\item{main}{title}
+
 \item{main.size}{size of title}
+
+\item{legend}{show legend}
 
 \item{legend.text.size}{size of legend text}
 
 \item{legend.pt.size}{size of legend point}
+}
+\value{
+plot
 }
 \description{
 Plot Spatial dims
