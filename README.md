@@ -141,7 +141,10 @@ bank <- ScaleBanksy(bank)
 
 At this point, the joint expression matrix (gene-cell matrix and
 neighbour feature-cell matrix) can be extracted with *getBanksyMatrix*,
-which returns the joint matrix and cell locations:
+which returns the joint matrix and cell locations. Here, `lambda` is a
+mixing parameter from 0 to 1 which determines how much spatial
+information is incorporated. Larger values of `lambda` incorporate more
+spatial information for identifying clusters.
 
 ``` r
 joint <- getBanksyMatrix(bank, lambda = 0.25)
@@ -162,22 +165,22 @@ joint$locs[1:5,]
 #> cell_8  96.64224  4806.681
 ```
 
-Run PCA on the Banksy matrix. We set `lambda=0.25`. This populates the
-`reduction` slot:
+Run PCA on the Banksy matrix for `lambda = 0` (no spatial information)
+and `lambda = 0.25`. This populates the `reduction` slot:
 
 ``` r
-lambda <- 0.25
-bank <- RunPCA(bank, lambda = lambda, npcs = 30)
+bank <- RunPCA(bank, lambda = c(0, 0.25), npcs = 30)
+#> Running PCA for lambda=0
 #> Running PCA for lambda=0.25
 names(bank@reduction)
-#> [1] "pca_0.25"
+#> [1] "pca_0"    "pca_0.25"
 ```
 
 Visualize PCA and its scree plot:
 
 ``` r
 p1 <- plotReduction(bank, reduction = 'pca_0.25')
-p2 <- plotScree(bank, lambda = lambda)
+p2 <- plotScree(bank, lambda = 0.25)
 gridExtra::grid.arrange(p1, p2, ncol = 2)
 ```
 
@@ -186,25 +189,25 @@ gridExtra::grid.arrange(p1, p2, ncol = 2)
 For visualization, we run UMAP on 30 principal components:
 
 ``` r
-bank <- RunUMAP(bank, lambda = lambda, npcs = 30)
+bank <- RunUMAP(bank, lambda = 0.25, npcs = 30)
 #> Computing UMAP with 30 PCs
 #> Running UMAP for lambda=0.25
 ```
 
-Next, we obtain cluster assignments for the following parameters:
+Next, we obtain cluster assignments using graph-based clustering with
+the Leiden algorithm. Specify the following parameters:
 
-  - `lambda`. A mixing parameter from 0 to 1 which determines how much
-    spatial information is incorporated.  
   - `resolution`. Leiden clustering resolution.  
-  - `kneighbours`. Number of k neighbours to use for constructing sNN.
+  - `k.neighbours`. Number of k neighbours to use for constructing sNN.
 
 <!-- end list -->
 
 ``` r
 set.seed(1234)
-bank <- ClusterBanksy(bank, lambda = lambda, method = 'leiden',
-                      k.neighbors = 40, resolution = 0.8)
-#> Iteration 1 out of 1
+bank <- ClusterBanksy(bank, lambda = c(0, 0.25), method = 'leiden',
+                      k.neighbors = 40, resolution = 1)
+#> Iteration 1 out of 2
+#> Iteration 2 out of 2
 ```
 
 ## Visualization
@@ -212,14 +215,21 @@ bank <- ClusterBanksy(bank, lambda = lambda, method = 'leiden',
 We can visualize the UMAP and spatial plots by the clustering run:
 
 ``` r
-run <-  'clust_lam0.25_k40_res0.8'
-plotReduction(bank, reduction = 'umap_0.25', by = run, type = 'discrete', pt.size = 0.02)
+run1 <- 'clust_lam0_k40_res1'
+run2 <- 'clust_lam0.25_k40_res1'
+
+plotReduction(bank, reduction = 'umap_0.25', by = run2, type = 'discrete', pt.size = 0.02)
 ```
 
 <img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
 
+Observe the effects of incorporating spatially information (right,
+`lambda = 0.25`) in identifying clusters:
+
 ``` r
-plotSpatialDims(bank, by = run, type = 'discrete', pt.size = 0.8)
+p1 <- plotSpatialDims(bank, by = run1, type = 'discrete', pt.size = 1.5)
+p2 <- plotSpatialDims(bank, by = run2, type = 'discrete', pt.size = 1.5)
+gridExtra::grid.arrange(p1, p2, ncol = 2)
 ```
 
 <img src="man/figures/README-unnamed-chunk-16-1.png" width="100%" />
@@ -229,9 +239,9 @@ the number of detected genes and total count:
 
 ``` r
 plotHeatmap(bank, assay = 'banksy',
-            lambda = lambda,
+            lambda = 0.25,
             annotate = TRUE,
-            annotate.by = run,
+            annotate.by = run2,
             barplot.by = c('num_genes', 'total_count'))
 #> `use_raster` is automatically set to TRUE for a matrix with more than
 #> 2000 columns You can control `use_raster` argument by explicitly
