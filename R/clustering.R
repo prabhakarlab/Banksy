@@ -138,7 +138,7 @@ runKmeans <- function(bank, lambda, pca, npcs,
   return(bank)
 }
 
-#' @importFrom mclust Mclust
+#' @importFrom mclust Mclust mclustBIC
 runMclust <- function(bank, lambda, pca, npcs, mclust.G, ...) {
 
   max.iters <- prod(length(lambda), length(mclust.G))

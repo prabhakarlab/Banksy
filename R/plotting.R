@@ -96,17 +96,17 @@ plotReduction <- function(bank, reduction, components = c(1,2),
 #' @return plot
 #'
 #' @export
-plotSpatialDims <- function(bank, dataset = NULL,
-                            by = NULL, type = c('discrete', 'continuous'),
-                            pt.size = 0.5, pt.alpha = 0.7, col.midpoint = NULL, col.low = 'blue',
-                            col.mid = 'gray95', col.high = 'red', col.discrete = NULL, main = NULL,
-                            main.size = 5, legend = TRUE, legend.text.size = 6, legend.pt.size = 3) {
+plotSpatial <- function(bank, dataset = NULL,
+                        by = NA, type = c('discrete', 'continuous'),
+                        pt.size = 0.5, pt.alpha = 0.7, col.midpoint = NULL, col.low = 'blue',
+                        col.mid = 'gray95', col.high = 'red', col.discrete = NULL, main = NULL,
+                        main.size = 5, legend = TRUE, legend.text.size = 6, legend.pt.size = 3) {
 
   data <- getLocations(bank, dataset = dataset)
   sdimx <- sdimy <- NULL
 
 
-  if (is.null(by)) plot <- ggplot(data, aes(x = sdimx, y = sdimy))
+  if (is.na(by)) plot <- ggplot(data, aes(x = sdimx, y = sdimy))
   else {
 
     checkType(type)
@@ -137,6 +137,31 @@ plotSpatialDims <- function(bank, dataset = NULL,
   return(plot)
 }
 
+#' Wrapper for plotSpatial
+#'
+#' @param bank BanksyObject
+#' @param dataset if multiple datasets are used
+#' @param by features to plot
+#' @param type type corresponding to features
+#' @param nrow nrow for grob
+#' @param ncol ncol for grob
+#' @param ... parameters to pass to plotSpatial
+#'
+#' @importFrom gridExtra grid.arrange
+#'
+#' @export
+plotSpatialFeatures <- function(bank, dataset = NULL, by, type, nrow, ncol, ...) {
+
+  valid <- length(by) == length(type)
+  if (!valid) stop('Ensure a 1-1 correspondence between features to plot (by)
+                   and type of features (type)')
+
+  plots <- Map(f = function(feature, feature.type, ...) {
+    plotSpatial(bank, dataset = dataset, by = feature, type = feature.type, ...)
+  }, by, type, ...)
+
+  do.call(grid.arrange, c(plots, nrow = nrow, ncol = ncol))
+}
 
 #' Plot Heatmap (wrapper for ComplexHeatmap)
 #'

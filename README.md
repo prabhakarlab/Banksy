@@ -112,15 +112,16 @@ bank <- BanksyObject(own.expr = expr,
                      meta.data = metadata)
 ```
 
-We can visualize the spatial layout of the cells, number of detected
-genes, total count, and the expression of specific genes:
+We can visualize the spatial layout of the cells, number of non-zero
+genes, and the expression of specific genes:
 
 ``` r
-p1 <- plotSpatialDims(bank)
-p2 <- plotSpatialDims(bank, by = 'num_genes', type = 'continuous', pt.size = 1, pt.alpha = 1, main = 'Number of detected genes')
-p3 <- plotSpatialDims(bank, by = 'total_count', type = 'continuous', pt.size = 1, pt.alpha = 1, main = 'Total count')
-p4 <- plotSpatialDims(bank, by = 'Kcnh2', type = 'continuous', pt.size = 1, pt.alpha = 1, main = 'Kcnh2')
-gridExtra::grid.arrange(p1, p2, p3, p4, nrow = 2, ncol = 2)
+features <- c(NA, 'num_genes', 'Kcnh2', 'Slc38a1')
+feature.types <- c(NA, rep('continuous', 3))
+main <- features; main[1] <- ''
+alpha <- c(0.2, rep(1, 3))
+plotSpatialFeatures(bank, by = features, type = feature.types, main = main, 
+                    nrow = 2, ncol = 2, pt.size = 1, pt.alpha = alpha, main.size = 10)
 ```
 
 <img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
@@ -227,9 +228,11 @@ Observe the effects of incorporating spatially information (right,
 `lambda = 0.25`) in identifying clusters:
 
 ``` r
-p1 <- plotSpatialDims(bank, by = run1, type = 'discrete', pt.size = 1.5)
-p2 <- plotSpatialDims(bank, by = run2, type = 'discrete', pt.size = 1.5)
-gridExtra::grid.arrange(p1, p2, ncol = 2)
+features <- c(run1, run2)
+feature.types <- rep('discrete', 2)
+main <- c('Lambda=0', 'Lambda=0.25')
+plotSpatialFeatures(bank, by = features, type = feature.types, main = main, 
+                    pt.size = 1.5, main.size = 15, nrow = 1, ncol = 2)
 ```
 
 <img src="man/figures/README-unnamed-chunk-16-1.png" width="100%" />
