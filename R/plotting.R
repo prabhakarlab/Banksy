@@ -119,6 +119,7 @@ plotSpatial <- function(bank, dataset = NULL,
     }
 
     if (type == 'discrete') {
+      data <- cbind(data, feature = as.factor(feature))
       plot <- ggplot(data, aes(x = sdimx, y = sdimy, col = as.factor(feature))) +
         scale_color_manual(values = getDiscretePalette(feature, col.discrete)) +
         guides(color = guide_legend(override.aes = list(size = legend.pt.size)))
