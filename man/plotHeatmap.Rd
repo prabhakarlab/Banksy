@@ -9,6 +9,8 @@ plotHeatmap(
   assay = "own.expr",
   dataset = NULL,
   lambda = NULL,
+  cells = NULL,
+  features = NULL,
   col = NULL,
   col.breaks = NULL,
   cluster.row = TRUE,
@@ -26,17 +28,24 @@ plotHeatmap(
   barplot.by = NULL,
   barplot.border = FALSE,
   barplot.width = 0.6,
+  max.cols = NULL,
+  seed = 42,
+  rasterize = FALSE,
   ...
 )
 }
 \arguments{
 \item{bank}{BanksyObject}
 
-\item{assay}{assay to plot heatmap}
+\item{assay}{assay to plot heatmap (one of own.expr, nbr.expr or banksy)}
 
 \item{dataset}{dataset to plot heatmap}
 
 \item{lambda}{lambda if assay == banksy}
+
+\item{cells}{specific cells to plot}
+
+\item{features}{specific features to plot}
 
 \item{col}{colours to use in heatmap}
 
@@ -72,6 +81,12 @@ specified)}
 \item{barplot.border}{show borders of barplot}
 
 \item{barplot.width}{barplot width}
+
+\item{max.cols}{max columns to display - will subsample if not NULL}
+
+\item{seed}{used for sampling}
+
+\item{rasterize}{rasterize if TRUE}
 
 \item{...}{parameters to pass to ComplexHeatmap::Heatmap}
 }
