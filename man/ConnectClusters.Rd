@@ -2,21 +2,18 @@
 % Please edit documentation in R/clustering.R
 \name{ConnectClusters}
 \alias{ConnectClusters}
-\title{Harmonise cluster labels among parameter runs}
+\title{Harmonize cluster labels among parameter runs}
 \usage{
-ConnectClusters(bank, mapto = NULL, reverse = FALSE)
+ConnectClusters(bank, map.to = NULL)
 }
 \arguments{
 \item{bank}{Banksy Object}
 
-\item{mapto}{specify a cluster to map to}
-
-\item{reverse}{reverse the map}
+\item{map.to}{specify a cluster to map to}
 }
 \value{
-A list with BanksyObject with harmonised cluster labels and
-  adjusted Rand indices for each cluster mapping
+BanksyObject with harmonized cluster labels
 }
 \description{
-Harmonise cluster labels among parameter runs
+Harmonize cluster labels among parameter runs
 }

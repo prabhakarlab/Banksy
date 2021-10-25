@@ -428,7 +428,6 @@ withKNNunif <- function(locs, k_geom, verbose) {
   return(knnDF)
 }
 
-#' @importFrom zeallot `%<-%`
 compute.banksyMatrices <- function(gcm, locs,
                                    sigma=3, alpha=0.05,
                                    kspatial=1000, k_geom = 10,
@@ -442,7 +441,10 @@ compute.banksyMatrices <- function(gcm, locs,
 
   # Global binding
   weight <- from <- to <- kernelRadius <- cellID <- NULL
-  c(locs, kernelRadius, cellID) %<-% getSpatialDims(locs, dimensions, alpha)
+  out <- getSpatialDims(locs, dimensions, alpha)
+  locs <- out[[1]]
+  kernelRadius <- out[[2]]
+  cellID <- out[[3]]
 
   message('Computing neighbors...')
   if (spatialMode == 'rNN_gauss'){

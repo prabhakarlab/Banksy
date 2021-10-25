@@ -180,80 +180,85 @@ runLeiden <- function(bank, lambda, pca, npcs,
   return(bank)
 }
 
-#' Harmonise cluster labels among parameter runs
+#' Harmonize cluster labels among parameter runs
 #'
 #' @param bank Banksy Object
-#' @param mapto specify a cluster to map to
-#' @param reverse reverse the map
+#' @param map.to specify a cluster to map to
 #'
-#' @importFrom mclust adjustedRandIndex
-#' @importFrom plyr mapvalues
-#' @importFrom RcppHungarian HungarianSolver
-#' @importFrom stats median
-#'
-#' @return A list with BanksyObject with harmonised cluster labels and
-#'   adjusted Rand indices for each cluster mapping
+#' @return BanksyObject with harmonized cluster labels
 #'
 #' @export
-ConnectClusters <- function(bank, mapto = NULL, reverse = FALSE) {
+ConnectClusters <- function(bank, map.to = NULL) {
 
-  mdata <- bank@meta.data
-  mnames <- names(mdata)
-  if (is.null(mapto)) labels <- mnames[grepl('^res', mnames)]
-  else labels <- mnames[grepl('^res', mnames) | grepl(mapto, mnames)]
+  clusters <- bank@meta.data[, grepl('^clust', names(bank@meta.data))]
+  order.name <- names(clusters)
+  seed.name <- getSeed(clusters, map.to)
+  seed <- clusters[[seed.name]]
+  values <- clusters[, -match(seed.name, names(clusters)), drop = FALSE]
+  new.clusters <- data.frame(apply(values, 2, function(x) mapToSeed(x, seed)))
+  new.clusters[[seed.name]] <- seed
+  new.clusters <- new.clusters[, order.name]
+  bank@meta.data[, grepl('^clust', names(bank@meta.data))] <- new.clusters
 
-  if (length(labels) == 1) {
-    message('Only one cluster')
-    return(bank)
-  }
-
-  clusters <- mdata[,labels]
-  clustnames <- names(clusters)
-  if (is.null(mapto)) {
-    numClust <- apply(clusters, 2, function(x) length(unique(x)))
-    medClust <- median(numClust)
-    parent <- which.min(abs(numClust - medClust))
-  } else {
-    if (!(mapto %in% mnames)) stop('Specify a valid metadata column to map to.')
-    parent <- which(labels == mapto)
-  }
-
-  message(paste0('Mapping to ', clustnames[parent]))
-  children <- setdiff(seq_len(ncol(clusters)), parent)
-  newLabels <- lapply(children, function(child, reverse) {
-
-    contingency <- table(clusters[, parent], clusters[, child])
-    if (reverse) {
-      contingency <- t(contingency)
-      mat <- max(contingency) - contingency
-      matching <- HungarianSolver(mat)
-      map <- matching$pairs[,2]
-      map[which(map == 0)] <- apply(contingency[which(map == 0),],
-                                    1, which.max)
-      newChild <- mapvalues(clusters[, child],
-                            from = matching$pairs[,1],
-                            to = map,
-                            warn_missing = FALSE)
-    } else {
-      mat <- max(contingency) - contingency
-      matching <- HungarianSolver(mat)
-      newChild <- mapvalues(clusters[, child],
-                            from = matching$pairs[,2],
-                            to = matching$pairs[,1],
-                            warn_missing = FALSE)
-    }
-    adjRI <- adjustedRandIndex(clusters[, parent], clusters[, child])
-    adjRI <- round(adjRI, 3)
-    message(paste0('Mapped ', clustnames[child],
-                   ' with adjusted Rand index ', adjRI))
-    return(list(newChild, adjRI))
-  }, reverse = reverse)
-
-  result <- do.call(cbind.data.frame, lapply(newLabels, `[[`, 1))
-  rand <- sapply(newLabels, `[[`, 2)
-  names(result) <- names(clusters)[children]
-  names(rand) <- names(clusters)[children]
-  bank@meta.data <- cbind(bank@meta.data[,
-                                         -which(names(bank@meta.data) %in% names(result))], result)
-  return(list(BanksyObject = bank, rand.index = rand))
+  return(bank)
 }
+
+#' @importFrom stats median
+getSeed <- function(clusters, map.to) {
+  if (!is.null(map.to)) {
+    found <- map.to %in% names(clusters)
+    if (!found) stop(map.to, ' not found in cluster names.')
+    seed <- map.to
+  } else {
+    n.clust <- apply(clusters, 2, function(x) length(unique(x)))
+    med <- median(n.clust)
+    seed <- names(which.min(abs(n.clust - med)))
+  }
+  return(seed)
+}
+
+#' @importFrom plyr mapvalues
+#' @importFrom RcppHungarian HungarianSolver
+mapToSeed <- function(val, seed) {
+  con.mat <- table(val, seed)
+  cost.mat <- max(con.mat) - con.mat
+  matching <- HungarianSolver(cost.mat)$pairs
+
+  ## Mapping fr more clusters to fewer
+  unmapped <- which(matching[,2] == 0)
+  impute <- max(seed) + seq_len(length(unmapped))
+  matching[,2][matching[,2] == 0] <- impute
+
+  new.val <- mapvalues(x = val, from = matching[,1], to = matching[,2])
+  return(new.val)
+}
+
+#' Calculate adjusted rand index for harmonized clusters
+#'
+#' @param bank BanksyObject with harmonized clusters
+#' @param digits number of digits to round ARI to
+#'
+#' @return matrix of ARI
+#'
+#' @importFrom mclust adjustedRandIndex
+#' @importFrom utils combn
+#'
+#' @export
+getARI <- function(bank, digits = 3) {
+  clust <- bank@meta.data[, grepl('^clust', names(bank@meta.data))]
+  n.clust <- ncol(clust)
+  comb <- combn(names(clust), 2)
+  n.comb <- ncol(comb)
+  ari <- numeric(length = ncol(comb))
+  for (i in seq_len(n.comb)) {
+    ari[i] <- adjustedRandIndex(clust[[comb[1,i]]], clust[[comb[2,i]]])
+  }
+
+  ari.mat <- diag(nrow = n.clust, ncol = n.clust)
+  ari.mat[lower.tri(ari.mat)] <- ari
+  rownames(ari.mat) <- colnames(ari.mat) <- colnames(clust)
+  ari.mat <- ari.mat + t(ari.mat) - diag(nrow = n.clust, ncol = n.clust)
+  ari.mat <- round(ari.mat, digits)
+  return(ari.mat)
+}
+

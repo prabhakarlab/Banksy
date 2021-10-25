@@ -300,6 +300,33 @@ plotHeatmap <- function(bank, assay = 'own.expr',
   return(ht)
 }
 
+#' Plot ARI matrix
+#'
+#' @param bank BanksyObject with harmonised clusterings
+#' @param col.low color gradient low
+#' @param col.high color gradient high
+#' @param label TRUE if to label plot with ARI
+#' @param digits number of digits to round ARI to
+#'
+#' @importFrom ggplot2 ggplot geom_tile scale_fill_gradient theme_minimal theme
+#'   element_blank labs geom_text
+#'
+#' @export
+plotARI <- function(bank, col.low = 'white', col.high = 'red', label = TRUE, digits = 3) {
+  ari.mat <- getARI(bank, digits = digits)
+  data <- reshape2::melt(ari.mat)
+  data$Var1 <- factor(data$Var1, levels = colnames(ari.mat))
+  data$Var2 <- factor(data$Var2, levels = rev(colnames(ari.mat)))
+  Var1 <- Var2 <- value <- NULL
+  tile <- ggplot(data, aes(x=Var1, y=Var2, fill = value)) + geom_tile()+
+    scale_fill_gradient(low = 'white', high = 'red') + theme_minimal() +
+    theme(axis.title = element_blank()) +
+    labs(fill = 'ARI')
+  if (label) tile <- tile + geom_text(aes(label = round(value, digits)))
+  return(tile)
+}
+
+
 #' Plot Alluvial plot for different cluster assignments
 #'
 #' @param bank BanksyObject
