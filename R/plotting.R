@@ -455,11 +455,13 @@ getClusterColors <- function(x) {
   if (is.numeric(x)) {
     n <- max(x)
     cluster.cols <- getPalette(n)[sort(unique(clusters))]
+    names(cluster.cols) <- sort(clusters)
   } else if (is.character(x)) {
     n <- length(clusters)
     cluster.cols <- getPalette(n)
+    names(cluster.cols) <- clusters
   }
-  names(cluster.cols) <- clusters
+  
 
   return(cluster.cols)
 }
