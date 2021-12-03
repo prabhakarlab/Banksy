@@ -632,7 +632,7 @@ getDiscretePalette <- function(feature, col.discrete = NULL) {
   } else {
     if (length(col.discrete) < n) stop('Not enough colors')
     pal <- col.discrete
-    if is.null(names(col.discrete)) stop('Color palatte must be supplies with valid cluster names.')
+    if (is.null(names(col.discrete))) stop('Color palatte must be supplies with valid cluster names.')
     # also check that all names are valid cluster labels if characters
   }
 
