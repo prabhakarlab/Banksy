@@ -473,6 +473,7 @@ getCellAnnotation <- function(bank, mat,
                               annotation.name,
                               annotation.size,
                               annotation.pos,
+                              col.discrete = NULL,
                               order.by) {
 
   if (is.null(annotate.by) | !all(annotate.by %in% names(bank@meta.data))) {
@@ -497,7 +498,8 @@ getCellAnnotation <- function(bank, mat,
   cell.split <- mdata[[order.by]]
 
   ## Generate simple annotations
-  hc <- lapply(mdata, getClusterColors)
+  #hc <- lapply(mdata, getDiscretePalette)
+  hc <- lapply(mdata, FUN = getDiscretePalette, col.discrete = col.discrete)
   mdata[] <- lapply(mdata, factor)
   ha <- HeatmapAnnotation(df = mdata,
                           show_annotation_name = annotation.name,
@@ -611,7 +613,7 @@ checkType <- function(type) {
 
 }
 
-getDiscretePalette <- function(feature, col.discrete) {
+getDiscretePalette <- function(feature, col.discrete = NULL) {
 
   num <- is.numeric(feature)
   char <- is.character(feature)
@@ -621,9 +623,17 @@ getDiscretePalette <- function(feature, col.discrete) {
 
   if (is.null(col.discrete)) {
     pal <- getPalette(n)
-    if (num) pal <- pal[sort(unique(feature))]
+    if (num) {
+      pal <- pal[sort(unique(feature))]
+      names(pal) <- sort(unique(feature))
+    } else if (char) {
+      names(pal) <- unique(feature)
+    }
   } else {
     if (length(col.discrete) < n) stop('Not enough colors')
+    pal <- col.discrete
+    if is.null(names(col.discrete)) stop('Color palatte must be supplies with valid cluster names.')
+    # also check that all names are valid cluster labels if characters
   }
 
   return(pal)
