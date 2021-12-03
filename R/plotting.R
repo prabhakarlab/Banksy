@@ -236,7 +236,7 @@ plotHeatmap <- function(bank, assay = 'own.expr',
                               annotation.name = annotation.name,
                               annotation.size = annotation.size,
                               annotation.pos = annotation.pos,
-                              order.by = order.by, col.discrete = NULL)
+                              order.by = order.by, col.discrete = col.discrete)
     ha <- anno$anno
     group <- NULL
     ra <- NULL
@@ -634,8 +634,16 @@ getDiscretePalette <- function(feature, col.discrete = NULL) {
   } else {
     if (length(col.discrete) < n) stop('Not enough colors')
     pal <- col.discrete
-    if (is.null(names(col.discrete))) stop('Color palatte must be supplies with valid cluster names.')
-    # also check that all names are valid cluster labels if characters
+    if (is.null(names(col.discrete))) stop('Color palatte must be supplied with valid cluster names.')
+    if (!all(unique(feature) %in% names(col.discrete))) stop('Not all clusters have an assigned color. Ensure that names(col.discrete) has all the cluster labels.')
+    
+    if (num) {
+      clust.as.char <- as.character(unique(feature))
+      pal <- col.discrete[clust.as.char]
+    } else if (char) {
+      clust.as.char <- unique(feature)
+      pal <- col.discrete[clust.as.char]
+    }
   }
 
   return(pal)
