@@ -175,6 +175,7 @@ plotSpatialFeatures <- function(bank, dataset = NULL, by, type, nrow, ncol, ...)
 #' @param col colours to use in heatmap
 #' @param col.breaks color breaks to use in heatmap (same number as col is
 #'   specified)
+#' @param col.discrete cluster colors, named color array, names are clusters, values are colors in hexadecimal
 #' @param cluster.row cluster rows
 #' @param cluster.column cluster columns
 #' @param row.dend draw row dendrograms
@@ -205,6 +206,7 @@ plotHeatmap <- function(bank, assay = 'own.expr',
                         dataset = NULL, lambda = NULL,
                         cells = NULL, features = NULL,
                         col = NULL, col.breaks = NULL,
+                        col.discrete = NULL,
                         cluster.row = TRUE, cluster.column = FALSE,
                         row.dend = FALSE, column.dend = FALSE,
                         cex.row = 4,
@@ -234,7 +236,7 @@ plotHeatmap <- function(bank, assay = 'own.expr',
                               annotation.name = annotation.name,
                               annotation.size = annotation.size,
                               annotation.pos = annotation.pos,
-                              order.by = order.by)
+                              order.by = order.by, col.discrete = NULL)
     ha <- anno$anno
     group <- NULL
     ra <- NULL
