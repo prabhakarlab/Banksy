@@ -98,8 +98,13 @@ plotReduction <- function(bank, reduction, components = c(1,2),
 #' @export
 plotSpatial <- function(bank, dataset = NULL,
                         by = NA, type = c('discrete', 'continuous'),
-                        pt.size = 0.5, pt.alpha = 0.7, col.midpoint = NULL, col.low = 'blue',
-                        col.mid = 'gray95', col.high = 'red', col.discrete = NULL, main = NULL,
+                        pt.size = 0.5, pt.alpha = 0.7, col.midpoint = NULL, 
+                        col.lowpoint = NULL, 
+                        col.highpoint = NULL, 
+                        col.low = 'blue',
+                        col.mid = 'gray95', col.high = 'red', 
+                        na.value = 'gray',
+                        col.discrete = NULL, main = NULL,
                         main.size = 5, legend = TRUE, legend.text.size = 6, legend.pt.size = 3) {
 
   data <- getLocations(bank, dataset = dataset)
@@ -114,8 +119,17 @@ plotSpatial <- function(bank, dataset = NULL,
 
     if (type == 'continuous') {
       if (is.null(col.midpoint)) col.midpoint <- median(feature)
-      plot <- ggplot(data, aes(x = sdimx, y = sdimy, col = feature)) +
-        scale_color_gradient2(midpoint = col.midpoint, low = col.low, mid = col.mid, high = col.high)
+      if ((is.null(col.highpoint)) | (is.null(col.lowpoint))){
+        plot <- ggplot(data, aes(x = sdimx, y = sdimy, col = feature)) + 
+          scale_color_gradient2(midpoint = col.midpoint, low = col.low, 
+                                mid = col.mid, high = col.high)
+      } else {
+        plot <- ggplot(data, aes(x = sdimx, y = sdimy, col = feature)) + 
+          scale_color_gradient2(midpoint = col.midpoint, limits = c(col.lowpoint, col.highpoint),
+                                low = col.low, mid = col.mid, high = col.high, na.value = na.value)
+      }
+      #plot <- ggplot(data, aes(x = sdimx, y = sdimy, col = feature)) +
+      # scale_color_gradient2(midpoint = col.midpoint, low = col.low, mid = col.mid, high = col.high)
     }
 
     if (type == 'discrete') {
