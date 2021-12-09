@@ -240,8 +240,8 @@ mapToSeed <- function(val, seed) {
   matching <- HungarianSolver(cost.mat)$pairs
   
   # split into matched and unmatched
-  matched <- matching[!(matching[,2] == 0),]
-  unmateched <- matching[matching[,2] == 0,]
+  matched <- matching[!(matching[,2] == 0),,drop=FALSE]
+  unmateched <- matching[matching[,2] == 0,,drop=FALSE]
   ## Mapping fr more clusters to fewer
   unmapped <- which(matching[,2] == 0)
   impute <- max(seed) + seq_len(length(unmapped))
