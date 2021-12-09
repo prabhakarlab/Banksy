@@ -220,18 +220,41 @@ getSeed <- function(clusters, map.to) {
 #' @importFrom plyr mapvalues
 #' @importFrom RcppHungarian HungarianSolver
 mapToSeed <- function(val, seed) {
+  # ----- commenting out old version to test new. ------
+#   con.mat <- table(val, seed)
+#   cost.mat <- max(con.mat) - con.mat
+#   matching <- HungarianSolver(cost.mat)$pairs
+
+#   ## Mapping fr more clusters to fewer
+#   unmapped <- which(matching[,2] == 0)
+#   impute <- max(seed) + seq_len(length(unmapped))
+#   matching[,2][matching[,2] == 0] <- impute
+
+#   new.val <- mapvalues(x = val, from = matching[,1], to = matching[,2])
+#   return(new.val)
+  
+  # ------ new version --------
+   # seed and val must be numeric for this to work (because max(seed) is used for assigning unmatched values)
   con.mat <- table(val, seed)
   cost.mat <- max(con.mat) - con.mat
   matching <- HungarianSolver(cost.mat)$pairs
-
+  
+  # split into matched and unmatched
+  matched <- matching[!(matching[,2] == 0),]
+  unmateched <- matching[matching[,2] == 0,]
   ## Mapping fr more clusters to fewer
   unmapped <- which(matching[,2] == 0)
   impute <- max(seed) + seq_len(length(unmapped))
-  matching[,2][matching[,2] == 0] <- impute
-
-  new.val <- mapvalues(x = val, from = matching[,1], to = matching[,2])
+  unmateched[,2] <- impute
+  
+  # matched is currently the indices of the rows and cols of the contingency matrix
+  matched.names.from <- c(as.numeric(rownames(cost.mat)[matched[,1]]), unmateched[,1])
+  matched.names.to <- c(as.numeric(colnames(cost.mat)[matched[,2]]), unmateched[,2])
+  
+  new.val <- mapvalues(x = val, from = matched.names.from, to = matched.names.to)
   return(new.val)
 }
+                     
 
 #' Calculate adjusted rand index for harmonized clusters
 #'
