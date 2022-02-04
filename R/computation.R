@@ -27,7 +27,7 @@ NormalizeBanksy <- function(bank, assay = 'both', normFactor = 100,
     stop('Specify a valid assay. One of both, own, or nbr.')
   }
 
-  if (!is.null(bank@own.expr)) {
+  if (!is.null(bank@own.expr) & scaleOwn) {
     if (is.list(bank@own.expr)) {
       bank@own.expr <- lapply(bank@own.expr, normalizer, normFactor,
                               logNorm, pseudocount)
@@ -36,7 +36,7 @@ NormalizeBanksy <- function(bank, assay = 'both', normFactor = 100,
                                   logNorm, pseudocount)
     }
   }
-  if (!is.null(bank@nbr.expr)) {
+  if (!is.null(bank@nbr.expr) & scaleNbr) {
     if (is.list(bank@nbr.expr)) {
       bank@nbr.expr <- lapply(bank@nbr.expr, normalizer, normFactor,
                               logNorm, pseudocount)
@@ -91,15 +91,16 @@ ScaleBanksy <- function(bank, assay = 'both', separate = TRUE) {
 
 #' Compute Banksy Matrices
 #' @param bank BanksyObject
+#' @param spatialMode spatial mode to use - one of kNN_r, kNN_rn, kNN_rank,
+#'   kNN_unif, rNN_gauss
 #' @param k_geom kNN parameter - number of neighbors to use
+#' @param n kNN_rn parameter - exponent of radius
 #' @param sigma rNN parameter - standard deviation of Gaussian kernel
 #' @param alpha rNN parameter - determines radius used (larger alphas give
 #'   smaller radii)
 #' @param kspatial rNN parameter - number of neighbors to use
 #' @param dimensions dimensions to use when computing neighborhood - one of
 #'   column name in cell.locs, or 'all'
-#' @param spatialMode spatial mode to use - one of kNN_r, kNN_rank, kNN_unif,
-#'   rNN_gauss
 #' @param verbose messages
 #'
 #' @importFrom data.table data.table setnames
@@ -109,10 +110,11 @@ ScaleBanksy <- function(bank, assay = 'both', separate = TRUE) {
 #' @export
 ComputeBanksy <- function(bank,
                           ## For computing nbr matrix
-                          k_geom = 10,
-                          sigma = 1.5, alpha = 0.05,
-                          kspatial = 10, dimensions = 'all',
                           spatialMode = 'kNN_r',
+                          k_geom = 10, n = 2,
+                          sigma = 1.5, alpha = 0.05,
+                          kspatial = 10,
+                          dimensions = 'all',
                           verbose=FALSE) {
 
   if (is.list(bank@own.expr)) {
@@ -402,6 +404,34 @@ withKNNr <- function(locs, k_geom, verbose) {
 
 #' @importFrom dbscan kNN
 #' @importFrom data.table data.table setnames `:=`
+withKNNrn <- function(locs, k_geom, n, verbose) {
+
+  if (verbose) message('Computing Banksy matrix')
+  if (verbose) message('Spatial mode is kNNrn')
+  if (verbose) message(paste0('Parameters: k_geom = ', k_geom, ', n = ', n))
+
+  tryCatch({
+    knn <- dbscan::kNN(x = locs, k = k_geom)
+  },
+  error=function(cond) {
+    message(paste("Not enough neighbours at k_geom = ", k_geom, " level."))
+    message(cond)
+  })
+
+  norm.weight <- weight <- from <- NULL
+  knnDF <- data.table(from = rep(seq_len(nrow(knn$id)), k_geom),
+                      to = as.vector(knn$id),
+                      weight = 1/(as.vector(knn$dist)^n),
+                      distance = as.vector(knn$dist))
+  knnDF[, norm.weight := weight / sum(weight), by = from]
+  knnDF <- knnDF[,-3, with=FALSE]
+  setnames(knnDF, 'norm.weight', 'weight')
+
+  return(knnDF)
+}
+
+#' @importFrom dbscan kNN
+#' @importFrom data.table data.table setnames `:=`
 withKNNunif <- function(locs, k_geom, verbose) {
 
   if (verbose) message('Computing Banksy matrix')
@@ -430,7 +460,7 @@ withKNNunif <- function(locs, k_geom, verbose) {
 
 compute.banksyMatrices <- function(gcm, locs,
                                    sigma=3, alpha=0.05,
-                                   kspatial=1000, k_geom = 10,
+                                   kspatial=1000, k_geom = 10, n=2,
                                    dimensions = 'all',
                                    spatialMode = 'kNN_r',
                                    verbose = FALSE){
@@ -456,6 +486,9 @@ compute.banksyMatrices <- function(gcm, locs,
 
   } else if (spatialMode =='kNN_r'){
     knnDF <- withKNNr(locs = locs, k_geom = k_geom, verbose = verbose)
+
+  } else if (spatialMode == 'kNN_rn') {
+    knnDF <- withKNNrn(locs, k_geom = k_geom, n = n, verbose = verbose)
 
   } else if (spatialMode == 'kNN_unif') {
     knnDF <- withKNNunif(locs = locs, k_geom = k_geom, verbose = verbose)
