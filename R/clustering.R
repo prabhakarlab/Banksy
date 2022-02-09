@@ -7,8 +7,8 @@
 #' @param lambda weighting parameter
 #' @param pca if TRUE, runs clustering on PCA, else runs on Banksy matrix
 #' @param npcs number of pcs to use for clustering
-#' @param method one of leiden, mclust, kmeans
-#' @param k.neighbors leiden - parameter for constructing shared nearest neighbor network
+#' @param method one of leiden, louvain, mclust, kmeans
+#' @param k.neighbors leiden / louvain - parameter for constructing shared nearest neighbor network
 #' @param resolution leiden - parameter used for clustering
 #' @param leiden.iter leiden - number of leiden iterations
 #' @param mclust.G mclust - number of mixture components G
@@ -20,13 +20,13 @@
 #'
 #' @export
 ClusterBanksy <- function(bank, lambda = 0.25, pca = TRUE, npcs = 30,
-                          method = c('leiden', 'mclust', 'kmeans'),
+                          method = c('leiden', 'louvain', 'mclust', 'kmeans'),
                           k.neighbors = NULL, resolution = NULL,
                           leiden.iter = -1, mclust.G = NULL,
                           kmeans.centers = NULL, kmeans.iter.max = 10, ...) {
 
   method <- checkMethod(method)
-  checkArgs(bank, method, lambda, pca, match.call())
+  checkArgs(bank, method, lambda, pca, npcs, match.call())
 
   if (method == 'kmeans') {
     bank <- runKmeans(bank, lambda, pca, npcs,
@@ -40,6 +40,10 @@ ClusterBanksy <- function(bank, lambda = 0.25, pca = TRUE, npcs = 30,
   if (method == 'leiden') {
     bank <- runLeiden(bank, lambda, pca, npcs,
                       k.neighbors, resolution, leiden.iter, ...)
+  }
+
+  if (method == 'louvain') {
+    bank <- runLouvain(bank, lambda, pca, npcs, k.neighbors)
   }
 
   return(bank)
@@ -59,17 +63,28 @@ checkMethod <- function(method) {
   return(method)
 }
 
-checkArgs <- function(bank, method, lambda, pca, call) {
+checkArgs <- function(bank, method, lambda, pca, npcs, call) {
 
   args <- names(call)
 
   if (pca) {
+    # Check if pca has been run for lambda
     pca.names <- paste0('pca_', lambda)
     check <- pca.names %in% names(bank@reduction)
+    # Check if enough pcs
     if (any(check == FALSE)) {
       id <- which(check == FALSE)
-      stop('Run PCA for lambda=', paste(lambda[id], collaspe = ''))
+      stop('Run PCA for lambda=', paste(lambda[id], collapse = ','))
     }
+    pca.mats <- lapply(pca.names, function(nm) bank@reduction[[nm]]$x)
+    pca.ncols <- sapply(pca.mats, ncol)
+    if (any(pca.ncols < npcs)) {
+      id <- which(pca.ncols < npcs)
+      print(lambda[id])
+      stop('Not enough PCs for lambda=', paste(lambda[id], collapse = ','),
+           '\nCall RunPCA and increase npcs for these lambdas.')
+    }
+
   }
 
   if (method == 'kmeans') {
@@ -83,6 +98,10 @@ checkArgs <- function(bank, method, lambda, pca, call) {
   if (method == 'leiden') {
     if (!('k.neighbors' %in% args)) stop('Specify k.neighbors')
     if (!('resolution' %in% args)) stop('Specify resolution')
+  }
+
+  if (method == 'louvain') {
+    if (!('k.neighbors' %in% args)) stop('Specify k.neighbors')
   }
 
 }
@@ -180,6 +199,26 @@ runLeiden <- function(bank, lambda, pca, npcs,
   return(bank)
 }
 
+#' @importFrom igraph cluster_louvain membership as.undirected
+runLouvain <- function(bank, lambda, pca, npcs, k.neighbors) {
+  max.iters <- prod(length(lambda), length(k.neighbors))
+  iter <- 1
+  message('Iteration ', iter, ' out of ', max.iters)
+  for (lam in lambda) {
+    x <- getClusterMatrix(bank, lam, pca, npcs)
+    for (k in k.neighbors) {
+      graph <- as.undirected(getGraph(x, k))
+      out <- membership(cluster_louvain(graph))
+      clust.name <- paste0('clust_lam', lam, '_k', k, '_louvain')
+      bank@meta.data[[clust.name]] <- as.numeric(out)
+      iter <- iter + 1
+      if (iter <= max.iters) message('Iteration ', iter, ' out of ', max.iters)
+    }
+  }
+  return(bank)
+}
+
+
 #' Harmonize cluster labels among parameter runs
 #'
 #' @param bank Banksy Object
@@ -232,13 +271,13 @@ mapToSeed <- function(val, seed) {
 
 #   new.val <- mapvalues(x = val, from = matching[,1], to = matching[,2])
 #   return(new.val)
-  
+
   # ------ new version --------
    # seed and val must be numeric for this to work (because max(seed) is used for assigning unmatched values)
   con.mat <- table(val, seed)
   cost.mat <- max(con.mat) - con.mat
   matching <- HungarianSolver(cost.mat)$pairs
-  
+
   # split into matched and unmatched
   matched <- matching[!(matching[,2] == 0),,drop=FALSE]
   unmateched <- matching[matching[,2] == 0,,drop=FALSE]
@@ -246,15 +285,15 @@ mapToSeed <- function(val, seed) {
   unmapped <- which(matching[,2] == 0)
   impute <- max(seed) + seq_len(length(unmapped))
   unmateched[,2] <- impute
-  
+
   # matched is currently the indices of the rows and cols of the contingency matrix
   matched.names.from <- c(as.numeric(rownames(cost.mat)[matched[,1]]), unmateched[,1])
   matched.names.to <- c(as.numeric(colnames(cost.mat)[matched[,2]]), unmateched[,2])
-  
+
   new.val <- mapvalues(x = val, from = matched.names.from, to = matched.names.to)
   return(new.val)
 }
-                     
+
 
 #' Calculate adjusted rand index for harmonized clusters
 #'

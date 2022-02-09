@@ -9,7 +9,7 @@ ClusterBanksy(
   lambda = 0.25,
   pca = TRUE,
   npcs = 30,
-  method = c("leiden", "mclust", "kmeans"),
+  method = c("leiden", "louvain", "mclust", "kmeans"),
   k.neighbors = NULL,
   resolution = NULL,
   leiden.iter = -1,
@@ -28,9 +28,9 @@ ClusterBanksy(
 
 \item{npcs}{number of pcs to use for clustering}
 
-\item{method}{one of leiden, mclust, kmeans}
+\item{method}{one of leiden, louvain, mclust, kmeans}
 
-\item{k.neighbors}{leiden - parameter for constructing shared nearest neighbor network}
+\item{k.neighbors}{leiden / louvain - parameter for constructing shared nearest neighbor network}
 
 \item{resolution}{leiden - parameter used for clustering}
 
