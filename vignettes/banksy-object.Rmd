@@ -1,0 +1,153 @@
+---
+title: "Working with Banksy objects"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Working with Banksy objects}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This article describes the *BanksyObject* class in detail and how to interact 
+with it. 
+
+## Class structure
+
+We use data attached with the package:
+
+```{r rdata, eval=T, warning=F, message=F}
+library(Banksy)
+
+data(hippocampus)
+expr <- hippocampus$expression
+locs <- hippocampus$locations
+```
+
+The *BanksyObject* can be constructed by supplying the gene-cell expression 
+matrix and cell locations. Calling *BanksyObject* populates metadata and 
+performs gene filtering in the case of multiple datasets. This should be the 
+default method of construction - avoid setter methods for construction. 
+
+```{r construct, eval=T, warning=F, message=F}
+bank <- BanksyObject(own.expr = expr, cell.locs = locs)
+
+bank
+```
+
+The dataset consists of 7944 cells and 124 genes in 2 spatial dimensions.
+
+*BanksyObject* has the following slots:
+
+```{r slotnm, eval=T}
+slotNames(bank)
+```
+
+* `own.expr` stores the raw gene*cell expression matrix  
+* `nbr.expr` stores the neighbour feature*cell expression matrix   
+* `custom.expr` is an auxillary slot for storing a custom expression matrix
+* `cell.locs` stores the cell locations   
+* `meta.data` stores cell metadata, such as cluster labels or colours for 
+   visualisation  
+*  `reduction` stores dimension reductions 
+
+Getter and setter methods are defined for each of these slots.
+
+Calling *ComputeBanksy* computes the neighbour feature-cell expression matrix,
+populating the `nbr.expr` slot: 
+
+```{r compute, eval=T}
+bank <- NormalizeBanksy(bank)
+bank <- ComputeBanksy(bank)
+bank <- ScaleBanksy(bank)
+head(bank)
+```
+
+Dimensionality reduction with *RunPCA* or *RunUMAP* populates the `reduction`
+slot:
+
+```{r pca, eval=T, message=F, warning=F}
+bank <- RunPCA(bank, lambda = 0.3)
+
+names(reduction(bank))
+```
+
+Perform clustering with *ClusterBanksy*. This popluates the `meta.data` slot
+with cluster labels.
+
+```{r cluster, eval=T}
+set.seed(42)
+bank <- ClusterBanksy(bank, npcs = 20, lambda = 0.3, 
+                      resolution = 1, k.neighbors = 40)
+
+head(meta.data(bank))
+```
+
+## Subsetting
+
+*SubsetBanksy* allows users to subset a *BanksyObject* by dimension, genes, 
+cells, and metadata columns. The *BanksyObject* can be subset by dimensions with
+logical unquoted conditions. The variables here (e.g. `sdimx`) must correspond
+to the columns names of the `cell.locs(bank)`. 
+
+```{r subset1, eval=T, fig.width=10, fig.height=5, fig.align='center'}
+bankDim <- SubsetBanksy(bank, dims = (sdimx < -4000 | sdimx > 10000) | (sdimy < 3000 | sdimy > 10000))
+
+gridExtra::grid.arrange(
+  plotSpatial(bank),
+  plotSpatial(bankDim),
+  ncol = 2
+)
+```
+
+The object can also be subset by cells:
+
+```{r subset2, eval=T, fig.width=10, fig.height=5, fig.align='center'}
+set.seed(42)
+sample_cells <- sample(meta.data(bank)$cell_ID, 1000)
+bankCells <- SubsetBanksy(bank, cells = sample_cells)
+
+gridExtra::grid.arrange(
+  plotSpatial(bank),
+  plotSpatial(bankCells),
+  ncol = 2
+)
+```
+
+Similarly, the object can also be subset by any metadata column with logical 
+unquoted conditions. Here, we select cells in clusters 3 to 6 based on the 
+clustering with `lam=0.3`, `k=40`, `res=1`. 
+
+```{r subset3, eval=T, fig.width=10, fig.height=5, fig.align='center'}
+select_clusters <- c(3,7,10,15)
+bankMeta <- SubsetBanksy(bank, metadata = clust_lam0.3_k40_res1 %in% select_clusters)
+
+gridExtra::grid.arrange(
+  plotSpatial(bank),
+  plotSpatial(bankMeta),
+  ncol = 2
+)
+```
+
+Subsetting by genes can be achieved by supplying a character vector of genes
+to the `features` argument:
+
+```{r subset4, eval=T}
+set.seed(42)
+genes <- sample(rownames(own.expr(bank)), 10)
+bankFeatures <- SubsetBanksy(bank, features = genes)
+```
+
+If multiple subsetting features are supplied, the intersection of all conditions
+will be returned.
+
+## Session information
+```{r}
+sessionInfo()
+```
+
