@@ -7,7 +7,7 @@
 \format{
 A list with 2 entries:
 \describe{
-\item{expression}{(matrix) gene-cell matrix}
+\item{expression}{(matrix) gene expression matrix}
 \item{locations}{(data.frame) cell centroids in 2D}
 }
 }
@@ -18,7 +18,7 @@ A list with 2 entries:
 cerebellum
 }
 \description{
-This data set comprise Slide-seq V2 profiling of cells of the mouse
+This dataset comprise Slide-seq V2 profiling of cells of the mouse
 cerebellum. Gene expression and cell centroids for 9,953 cells and 8,365
 genes in 2 spatial dimensions are provided.
 }

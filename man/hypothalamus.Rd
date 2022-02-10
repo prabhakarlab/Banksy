@@ -7,7 +7,7 @@
 \format{
 A list with 3 entries:
 \describe{
-\item{expression}{(matrix) gene-cell matrix}
+\item{expression}{(matrix) gene expression matrix}
 \item{locations}{(data.frame) cell centroids in 3D}
 \item{metadata}{(data.frame) metadata for cells, including cell class,
   neuronal cluster, animal ID, behavioral class}
@@ -20,7 +20,7 @@ A list with 3 entries:
 hypothalamus
 }
 \description{
-This data set comprises MERFISH profiling of cells in the pre-optic region
+This dataset comprises MERFISH profiling of cells in the pre-optic region
 of the mouse hypothalamus (Moffitt et al. (2018), Molecular, spatial, and
 functional single-cell profiling of the hypothalamic preoptic region.
 doi: 10.1126/science.aau5324). The data is subset to 2 z-planes from a single

@@ -7,7 +7,7 @@
 \format{
 A list with 3 entries:
 \describe{
-\item{expression}{(matrix) gene-cell matrix}
+\item{expression}{(matrix) gene expression matrix}
 \item{locations}{(data.frame) cell centroids in 2D}
 \item{metadata}{(data.frame) metadata for cells, including HMRF domain}
 \item{spatialgenes}{(character) spatial genes for HMRF analysis}
