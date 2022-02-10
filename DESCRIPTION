@@ -1,6 +1,6 @@
 Package: Banksy
 Title: Spatial transcriptomic clustering
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person(given = "Vipul",
            family = "Singhal",
@@ -9,7 +9,7 @@ Authors@R: c(
            family = "Lee",
            role = c("aut", "cre"),
            email = "joseph.lee@u.nus.edu"))
-Description: Banksy is an R packaged that incorporates spatial information to 
+Description: Banksy is an R package that incorporates spatial information to 
     cluster cells in a feature space (e.g. gene expression). Spatial information
     is incorporated by averaging the features of the k nearest neighbours to 
     generate new 'neighbour' features for a given cell. This is concatenated to
