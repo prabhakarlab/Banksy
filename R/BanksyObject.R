@@ -279,6 +279,7 @@ setReplaceMethod('reduction', signature(object = 'BanksyObject', value = 'list')
 
 ## Display ---------------------------------------------------------------------
 
+#' @exportMethod show
 setMethod('show', signature(object = 'BanksyObject'),
           function(object){
 
@@ -324,6 +325,7 @@ setMethod('show', signature(object = 'BanksyObject'),
 
           })
 
+#' @exportMethod head
 setMethod('head', signature(x = 'BanksyObject'),
           function(x, n=5) {
 

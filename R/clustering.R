@@ -14,6 +14,7 @@
 #' @param mclust.G mclust - number of mixture components G
 #' @param kmeans.centers kmeans - number of clusters
 #' @param kmeans.iter.max kmeans - max number of iterations
+#' @param seed seed
 #' @param ... to pass to methods
 #'
 #' @return BanksyObject with cluster labels in meta.data
@@ -23,8 +24,10 @@ ClusterBanksy <- function(bank, lambda = 0.25, pca = TRUE, npcs = 30,
                           method = c('leiden', 'louvain', 'mclust', 'kmeans'),
                           k.neighbors = NULL, resolution = NULL,
                           leiden.iter = -1, mclust.G = NULL,
-                          kmeans.centers = NULL, kmeans.iter.max = 10, ...) {
+                          kmeans.centers = NULL, kmeans.iter.max = 10,
+                          seed = 42, ...) {
 
+  set.seed(seed)
   method <- checkMethod(method)
   checkArgs(bank, method, lambda, pca, npcs, match.call())
 

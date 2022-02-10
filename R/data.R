@@ -16,15 +16,15 @@
 #' Mouse brain organoid MERFISH data
 #'
 #' This data consists of 3 separate datasets comprising MERFISH profiling of
-#' mouse brain organoids. Gene expression and cell centroids for 3,600 cells,
+#' mouse brain organoids. Gene expression and cell centroids for 3,600 cells and
 #' at least 557 genes in 2 spatial dimensions are provided.
 #'
 #' @format A list with 2 entries:
 #' \describe{
 #' \item{expression}{(list) a list with 3 entries, each a gene expression
 #'   matrix}
-#' \item{locations}{list} a list with 3 entries with corresponding cell
-#'   centroids in 2D)
+#' \item{locations}{(list) a list with 3 entries with corresponding cell
+#'   centroids in 2D)}
 #' }
 #'
 "organoid"

@@ -98,11 +98,11 @@ plotReduction <- function(bank, reduction, components = c(1,2),
 #' @export
 plotSpatial <- function(bank, dataset = NULL,
                         by = NA, type = c('discrete', 'continuous'),
-                        pt.size = 0.5, pt.alpha = 0.7, col.midpoint = NULL, 
-                        col.lowpoint = NULL, 
-                        col.highpoint = NULL, 
+                        pt.size = 0.5, pt.alpha = 0.7, col.midpoint = NULL,
+                        col.lowpoint = NULL,
+                        col.highpoint = NULL,
                         col.low = 'blue',
-                        col.mid = 'gray95', col.high = 'red', 
+                        col.mid = 'gray95', col.high = 'red',
                         na.value = 'gray',
                         col.discrete = NULL, main = NULL,
                         main.size = 5, legend = TRUE, legend.text.size = 6, legend.pt.size = 3) {
@@ -115,16 +115,16 @@ plotSpatial <- function(bank, dataset = NULL,
   else {
 
     checkType(type)
-    feature <- getFeature(bank, by = by)
+    feature <- getFeature(bank, by = by, dataset = dataset)
 
     if (type == 'continuous') {
       if (is.null(col.midpoint)) col.midpoint <- median(feature)
       if ((is.null(col.highpoint)) | (is.null(col.lowpoint))){
-        plot <- ggplot(data, aes(x = sdimx, y = sdimy, col = feature)) + 
-          scale_color_gradient2(midpoint = col.midpoint, low = col.low, 
+        plot <- ggplot(data, aes(x = sdimx, y = sdimy, col = feature)) +
+          scale_color_gradient2(midpoint = col.midpoint, low = col.low,
                                 mid = col.mid, high = col.high)
       } else {
-        plot <- ggplot(data, aes(x = sdimx, y = sdimy, col = feature)) + 
+        plot <- ggplot(data, aes(x = sdimx, y = sdimy, col = feature)) +
           scale_color_gradient2(midpoint = col.midpoint, limits = c(col.lowpoint, col.highpoint),
                                 low = col.low, mid = col.mid, high = col.high, na.value = na.value)
       }
@@ -325,7 +325,7 @@ plotHeatmap <- function(bank, assay = 'own.expr',
 #' @param digits number of digits to round ARI to
 #'
 #' @importFrom ggplot2 ggplot geom_tile scale_fill_gradient theme_minimal theme
-#'   element_blank labs geom_text
+#'   element_blank labs geom_text element_text
 #'
 #' @export
 plotARI <- function(bank, col.low = 'white', col.high = 'red', label = TRUE, digits = 3) {
@@ -336,7 +336,8 @@ plotARI <- function(bank, col.low = 'white', col.high = 'red', label = TRUE, dig
   Var1 <- Var2 <- value <- NULL
   tile <- ggplot(data, aes(x=Var1, y=Var2, fill = value)) + geom_tile()+
     scale_fill_gradient(low = 'white', high = 'red') + theme_minimal() +
-    theme(axis.title = element_blank()) +
+    theme(axis.title = element_blank(),
+          axis.text.x = element_text(angle = 90)) +
     labs(fill = 'ARI')
   if (label) tile <- tile + geom_text(aes(label = round(value, digits)))
   return(tile)
@@ -477,7 +478,7 @@ getClusterColors <- function(x) {
     cluster.cols <- getPalette(n)
     names(cluster.cols) <- clusters
   }
-  
+
 
   return(cluster.cols)
 }
@@ -580,25 +581,35 @@ theme_blank <- function(legend.text.size,
         legend.key = element_blank())
 }
 
-getFeature <- function(bank, by) {
+getFeature <- function(bank, by, dataset) {
 
   if (is.null(by)) return(NULL)
-  found.meta <- by %in% names(bank@meta.data)
-  found.own <- by %in% rownames(bank@own.expr)
-  found.nbr <- by %in% rownames(bank@nbr.expr)
-  found <- found.meta | found.own | found.nbr
-  if (!found) stop('Invalid parameter to plot by.')
-  if (found.meta) return(bank@meta.data[[by]])
-  if (found.own) return(bank@own.expr[by,])
-  if (found.nbr) return(bank@nbr.expr[by,])
+  if (is.null(dataset) {
+    found.meta <- by %in% names(bank@meta.data)
+    found.own <- by %in% rownames(bank@own.expr)
+    found.nbr <- by %in% rownames(bank@nbr.expr)
+    found <- found.meta | found.own | found.nbr
+    if (!found) stop('Invalid parameter to plot by.')
+    if (found.meta) return(bank@meta.data[[by]])
+    if (found.own) return(bank@own.expr[by,])
+    if (found.nbr) return(bank@nbr.expr[by,])
 
+  } else {
+    found.meta <- by %in% names(bank@meta.data)
+    found.own <- by %in% rownames(bank@own.expr[1])
+    found.nbr <- by%in% rownames(bank@nbr.expr[1])
+    if (!found) stop('Invalid parameter to plot by.')
+    if (found.meta) return(bank@meta.data[[by]][bank@meta.data[['dataset']] ==
+                                                dataset])
+    if (found.own) return(bank@own.expr[[dataset]][by,])
+    if (found.nbr) return(bank@nbr.expr[[dataset]][by,])
+  }
 }
 
 getLocations <- function(bank, dataset) {
 
   if (is.list(bank@own.expr)) {  # Multiple dataset case
-    if (is.null(dataset)) warning('No dataset specified. Using first dataset')
-    dataset <- ifelse(is.null(dataset), 1, dataset)
+    if (is.null(dataset)) stop('No dataset specified.')
     data <- bank@cell.locs[[dataset]]
   } else {  # Single dataset case
     data <- bank@cell.locs
@@ -650,7 +661,7 @@ getDiscretePalette <- function(feature, col.discrete = NULL) {
     pal <- col.discrete
     if (is.null(names(col.discrete))) stop('Color palatte must be supplied with valid cluster names.')
     if (!all(unique(feature) %in% names(col.discrete))) stop('Not all clusters have an assigned color. Ensure that names(col.discrete) has all the cluster labels.')
-    
+
     if (num) {
       clust.as.char <- as.character(unique(feature))
       pal <- col.discrete[clust.as.char]
