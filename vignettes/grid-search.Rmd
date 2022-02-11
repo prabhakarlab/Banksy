@@ -57,7 +57,6 @@ lam <- c(0, 0.3)
 res <- c(0.8, 1.2)
 knbr <- 50
 
-set.seed(42)
 bank <- ClusterBanksy(bank, lambda = lam, npcs = 20, k.neighbors = knbr, resolution = res)
 ```
 
@@ -120,3 +119,17 @@ p2 <- plotSpatial(bank, by = cnms[4], type = 'discrete',
 
 grid.arrange(p1, p2, ncol = 2)
 ```
+
+In addition, one can also visualise differences in the clustering labels with
+alluvial plots:
+
+```{r alluv, eval=T, fig.width=7, fig.height=6, fig.align='center'}
+plotAlluvia(bank)
+```
+
+
+## Session information
+```{r}
+sessionInfo()
+```
+
