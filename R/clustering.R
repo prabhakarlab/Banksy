@@ -310,7 +310,7 @@ mapToSeed <- function(val, seed) {
 #'
 #' @export
 getARI <- function(bank, digits = 3) {
-  clust <- clust.names(bank)
+  clust <- bank@meta.data[,clust.names(bank)]
   n.clust <- ncol(clust)
   if (n.clust < 2) {
     stop('ARI will only be calculated for at least 2 clustering runs.')

@@ -4,10 +4,16 @@
 \alias{plotAlluvia}
 \title{Plot Alluvial plot for different cluster assignments}
 \usage{
-plotAlluvia(bank)
+plotAlluvia(bank, max.cells = 500, seed = 42, flow.colors = NULL)
 }
 \arguments{
 \item{bank}{BanksyObject}
+
+\item{max.cells}{Number of cells to display}
+
+\item{seed}{Seed for sampling cells if max.cells is not NULL}
+
+\item{flow.colors}{Colors for alluvial flow}
 }
 \value{
 Alluvial plot

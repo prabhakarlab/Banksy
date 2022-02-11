@@ -348,37 +348,62 @@ plotARI <- function(bank, col.low = 'white', col.high = 'red', label = TRUE, dig
 #' Plot Alluvial plot for different cluster assignments
 #'
 #' @param bank BanksyObject
+#' @param max.cells Number of cells to display
+#' @param seed Seed for sampling cells if max.cells is not NULL
+#' @param flow.colors Colors for alluvial flow
 #'
-#' @importFrom data.table data.table melt
-#' @importFrom ggplot2 ggplot aes geom_text scale_fill_manual coord_flip guides
-#'   theme_minimal xlab
-#' @importFrom ggalluvial geom_flow geom_stratum
+#' @importFrom ggplot2 ggplot aes theme theme_minimal element_blank
+#'   element_line element_text scale_x_discrete scale_fill_manual
+#' @importFrom ggalluvial geom_flow geom_stratum StatStratum
 #'
 #' @return Alluvial plot
 #'
 #' @export
-plotAlluvia <- function(bank) {
+plotAlluvia <- function(bank, max.cells = 500, seed = 42, flow.colors = NULL) {
 
-  mdata <- bank@meta.data
-  adata <- data.table(mdata[grep('^res|cell_ID', colnames(mdata))])
-  adata <- melt(adata, id.vars = 'cell_ID')
-  n <- max(adata$value)
-  adata$value <- factor(adata$value)
+  df <- meta.data(bank)[,clust.names(bank)]
 
-  variable <- cell_ID <- value <- NULL
-  alluvia <- ggplot(adata,
-                    aes(x = variable,
-                        alluvium = cell_ID,
-                        stratum = value,
-                        fill = value,
-                        label = value)) +
-    geom_flow(reverse=FALSE) +
-    geom_stratum(alpha = .5, reverse = FALSE) +
-    geom_text(stat = "stratum", reverse = FALSE) +
-    scale_fill_manual(values = getPalette(n)) +
-    coord_flip() +
+  if (ncol(df) < 2) {
+    stop('Alluvia will only be plotted for at least 2 clustering runs.')
+  }
+
+  if (!is.null(max.cells)) {
+    set.seed(seed)
+    df <- df[sample(1:nrow(df), max.cells), ]
+  }
+
+  cell <- rep(1:nrow(df), times = ncol(df))
+  run <- rep(names(df), each = nrow(df))
+  cluster <- factor(unlist(df))
+  plotdf <- data.frame(cell = cell, run = run, cluster = cluster)
+  nclust <- length(levels(cluster))
+
+  if (!is.null(flow.colors)) {
+    if (length(flow.colors) < nclust) {
+      stop('Not enough colors. Need ', nclust,
+           ' but supplied ', length(flow.colors))
+    } else {
+      flow.colors <- flow.colors[1:nclust]
+    }
+  } else {
+    flow.colors <- getPalette(nclust)
+  }
+
+  StatStratum <- ggalluvial::StatStratum
+
+  alluvia <- ggplot(plotdf,
+                    aes(x = run, stratum = cluster, alluvium = cell,
+                        fill = cluster, label = cluster)) +
+    geom_flow(stat = 'alluvium', lode.guidance = 'forward',
+              color = 'transparent', alpha = 0.4) +
+    geom_stratum(alpha = 0.75) +
     theme_minimal() +
-    xlab('Assignment')
+    theme(panel.grid = element_blank(),
+          axis.line = element_line(color = 'grey40'),
+          axis.text.x = element_text(angle = 90),
+          axis.title.x = element_blank()) +
+    scale_x_discrete(expand = c(0.05, 0.05)) +
+    scale_fill_manual(values = flow.colors)
 
   return(alluvia)
 }
