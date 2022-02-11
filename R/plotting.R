@@ -20,8 +20,6 @@
 #' @param legend show legend
 #' @param legend.text.size size of legend text
 #' @param legend.pt.size size of legend point
-#' @param phi 3D visualization - colatitutde
-#' @param theta 3D visualization - azimuthal direction
 #'
 #' @importFrom ggplot2 ggplot geom_point aes xlab ylab theme_minimal ggtitle
 #'   facet_wrap guides guide_legend element_text element_blank scale_color_manual
@@ -32,10 +30,13 @@
 #' @export
 plotReduction <- function(bank, reduction, components = c(1,2),
                           by = NULL, type = c('discrete', 'continuous'),
-                          pt.size = 0.5, pt.alpha = 0.7, col.midpoint = NULL, col.low = 'blue',
-                          col.mid = 'gray95', col.high = 'red', col.discrete = NULL, main = NULL,
-                          main.size = 5, legend = TRUE, legend.text.size = 6, legend.pt.size = 3,
-                          phi = 5, theta = 45) {
+                          pt.size = 0.5, pt.alpha = 0.7,
+                          col.midpoint = NULL, col.low = 'blue',
+                          col.mid = 'gray95', col.high = 'red',
+                          col.discrete = NULL,
+                          main = NULL, main.size = 5,
+                          legend = TRUE, legend.text.size = 6,
+                          legend.pt.size = 3) {
 
   data <- getReduction(bank, reduction, components)
   x <- colnames(data)[1]
@@ -45,7 +46,7 @@ plotReduction <- function(bank, reduction, components = c(1,2),
   else {
 
     checkType(type)
-    feature <- getFeature(bank, by = by)
+    feature <- getFeature(bank, by = by, dataset = NULL)
 
     if (type == 'continuous') {
       if (is.null(col.midpoint)) col.midpoint <- median(feature)
@@ -584,7 +585,7 @@ theme_blank <- function(legend.text.size,
 getFeature <- function(bank, by, dataset) {
 
   if (is.null(by)) return(NULL)
-  if (is.null(dataset) {
+  if (is.null(dataset)) {
     found.meta <- by %in% names(bank@meta.data)
     found.own <- by %in% rownames(bank@own.expr)
     found.nbr <- by %in% rownames(bank@nbr.expr)
@@ -598,6 +599,7 @@ getFeature <- function(bank, by, dataset) {
     found.meta <- by %in% names(bank@meta.data)
     found.own <- by %in% rownames(bank@own.expr[1])
     found.nbr <- by%in% rownames(bank@nbr.expr[1])
+    found <- found.meta | found.own | found.nbr
     if (!found) stop('Invalid parameter to plot by.')
     if (found.meta) return(bank@meta.data[[by]][bank@meta.data[['dataset']] ==
                                                 dataset])

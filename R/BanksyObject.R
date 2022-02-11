@@ -194,6 +194,14 @@ setGeneric('reduction', function(object) standardGeneric('reduction'))
 setMethod('reduction', signature(object = 'BanksyObject'),
           function(object) return(object@reduction))
 
+#' @describeIn BanksyObject-class getter clust.names
+#' @exportMethod clust.names
+setGeneric('clust.names', function(object) standardGeneric('clust.names'))
+#' @describeIn BanksyObject-class getter clust.names
+setMethod('clust.names', signature(object = 'BanksyObject'),
+          function(object) return(names(object@meta.data)[
+            grepl('^clust', names(object@meta.data))]))
+
 ## Setters ---------------------------------------------------------------------
 
 #' @param object BanksyObject

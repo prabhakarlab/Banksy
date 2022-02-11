@@ -232,7 +232,7 @@ runLouvain <- function(bank, lambda, pca, npcs, k.neighbors) {
 #' @export
 ConnectClusters <- function(bank, map.to = NULL) {
 
-  clusters <- bank@meta.data[, grepl('^clust', names(bank@meta.data))]
+  clusters <- bank@meta.data[, clust.names(bank)]
   order.name <- names(clusters)
   seed.name <- getSeed(clusters, map.to)
   seed <- clusters[[seed.name]]
@@ -240,7 +240,7 @@ ConnectClusters <- function(bank, map.to = NULL) {
   new.clusters <- data.frame(apply(values, 2, function(x) mapToSeed(x, seed)))
   new.clusters[[seed.name]] <- seed
   new.clusters <- new.clusters[, order.name]
-  bank@meta.data[, grepl('^clust', names(bank@meta.data))] <- new.clusters
+  bank@meta.data[, clust.names(bank)] <- new.clusters
 
   return(bank)
 }
@@ -310,8 +310,11 @@ mapToSeed <- function(val, seed) {
 #'
 #' @export
 getARI <- function(bank, digits = 3) {
-  clust <- bank@meta.data[, grepl('^clust', names(bank@meta.data))]
+  clust <- clust.names(bank)
   n.clust <- ncol(clust)
+  if (n.clust < 2) {
+    stop('ARI will only be calculated for at least 2 clustering runs.')
+  }
   comb <- combn(names(clust), 2)
   n.comb <- ncol(comb)
   ari <- numeric(length = ncol(comb))
