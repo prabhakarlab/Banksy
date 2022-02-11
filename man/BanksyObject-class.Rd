@@ -16,6 +16,8 @@
 \alias{meta.data,BanksyObject-method}
 \alias{reduction}
 \alias{reduction,BanksyObject-method}
+\alias{clust.names}
+\alias{clust.names,BanksyObject-method}
 \alias{own.expr<-}
 \alias{own.expr<-,BanksyObject,assay-method}
 \alias{nbr.expr<-}
@@ -64,6 +66,10 @@ meta.data(object)
 reduction(object)
 
 \S4method{reduction}{BanksyObject}(object)
+
+clust.names(object)
+
+\S4method{clust.names}{BanksyObject}(object)
 
 own.expr(object) <- value
 
@@ -142,6 +148,10 @@ S4 class BanksyObject
 \item \code{reduction}: getter reduction
 
 \item \code{reduction,BanksyObject-method}: getter reduction
+
+\item \code{clust.names}: getter clust.names
+
+\item \code{clust.names,BanksyObject-method}: getter clust.names
 
 \item \code{own.expr<-}: setter for own.expr
 

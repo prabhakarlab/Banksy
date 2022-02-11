@@ -16,6 +16,7 @@ ClusterBanksy(
   mclust.G = NULL,
   kmeans.centers = NULL,
   kmeans.iter.max = 10,
+  seed = 42,
   ...
 )
 }
@@ -41,6 +42,8 @@ ClusterBanksy(
 \item{kmeans.centers}{kmeans - number of clusters}
 
 \item{kmeans.iter.max}{kmeans - max number of iterations}
+
+\item{seed}{seed}
 
 \item{...}{to pass to methods}
 }

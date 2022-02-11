@@ -21,9 +21,7 @@ plotReduction(
   main.size = 5,
   legend = TRUE,
   legend.text.size = 6,
-  legend.pt.size = 3,
-  phi = 5,
-  theta = 45
+  legend.pt.size = 3
 )
 }
 \arguments{
@@ -60,10 +58,6 @@ plotReduction(
 \item{legend.text.size}{size of legend text}
 
 \item{legend.pt.size}{size of legend point}
-
-\item{phi}{3D visualization - colatitutde}
-
-\item{theta}{3D visualization - azimuthal direction}
 }
 \description{
 Plot UMAP
