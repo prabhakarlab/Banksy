@@ -1,8 +1,8 @@
 ---
-title: "Mouse Brain Organoid MERFISH data"
+title: "Mouse Brain Organoid MERFISH analysis"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Mouse Brain Organoid MERFISH data}
+  %\VignetteIndexEntry{Mouse Brain Organoid MERFISH analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

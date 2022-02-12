@@ -143,10 +143,10 @@ sample_ari <- Map(function(x,y) round(mclust::adjustedRandIndex(x,y),3),
 sample_plots <- Map(function(x,y) {
     p1 <- plotSpatial(bank, dataset = x, by = 'clust_anno', type = 'discrete',
                 main = sprintf('Sample %s', gsub('sample_', '', x)),
-                main.size = 15, pt.size = 2, legend = FALSE)
+                main.size = 15, pt.size = 1.5, legend = FALSE)
     p2 <- plotSpatial(bank, dataset = x, by = 'clust_lam0.2_k40_res0.5', type = 'discrete',
                 main = sprintf('BANKSY ARI: %s', y),
-                main.size = 15, pt.size = 2, legend = FALSE)
+                main.size = 15, pt.size = 1.5, legend = FALSE)
     list(p1, p2)
   },
   sample_names, sample_ari)

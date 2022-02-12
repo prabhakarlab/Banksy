@@ -30,6 +30,8 @@
 \alias{meta.data<-,BanksyObject,data.frame-method}
 \alias{reduction<-}
 \alias{reduction<-,BanksyObject,list-method}
+\alias{show,BanksyObject-method}
+\alias{head,BanksyObject-method}
 \title{S4 class BanksyObject}
 \usage{
 BanksyObject(
@@ -94,6 +96,10 @@ meta.data(object) <- value
 reduction(object) <- value
 
 \S4method{reduction}{BanksyObject,list}(object) <- value
+
+\S4method{show}{BanksyObject}(object)
+
+\S4method{head}{BanksyObject}(x, n = 5)
 }
 \arguments{
 \item{own.expr}{own expression}
@@ -116,6 +122,10 @@ reduction(object) <- value
 \item{object}{BanksyObject}
 
 \item{value}{to be assigned}
+
+\item{x}{BanksyObject}
+
+\item{n}{Number of records to display}
 }
 \value{
 BanksyObject
@@ -176,6 +186,10 @@ S4 class BanksyObject
 \item \code{reduction<-}: setter for reduction
 
 \item \code{reduction<-,BanksyObject,list-method}: setter for reduction
+
+\item \code{show,BanksyObject-method}: show BanksyObject
+
+\item \code{head,BanksyObject-method}: header for BanksyObject
 }}
 
 \section{Slots}{

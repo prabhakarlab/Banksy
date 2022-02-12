@@ -287,6 +287,8 @@ setReplaceMethod('reduction', signature(object = 'BanksyObject', value = 'list')
 
 ## Display ---------------------------------------------------------------------
 
+#' @importFrom methods show
+#' @describeIn BanksyObject-class show BanksyObject
 #' @exportMethod show
 setMethod('show', signature(object = 'BanksyObject'),
           function(object){
@@ -333,6 +335,10 @@ setMethod('show', signature(object = 'BanksyObject'),
 
           })
 
+#' @importFrom utils head
+#' @describeIn BanksyObject-class header for BanksyObject
+#' @param x BanksyObject
+#' @param n Number of records to display
 #' @exportMethod head
 setMethod('head', signature(x = 'BanksyObject'),
           function(x, n=5) {

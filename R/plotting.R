@@ -51,7 +51,8 @@ plotReduction <- function(bank, reduction, components = c(1,2),
     if (type == 'continuous') {
       if (is.null(col.midpoint)) col.midpoint <- median(feature)
       plot <- ggplot(data, aes(x = !!ensym(x), y = !!ensym(y), col = feature)) +
-        scale_color_gradient2(midpoint = col.midpoint, low = col.low, mid = col.mid, high = col.high)
+        scale_color_gradient2(midpoint = col.midpoint, low = col.low,
+                              mid = col.mid, high = col.high)
     }
 
     if (type == 'discrete') {
@@ -83,6 +84,9 @@ plotReduction <- function(bank, reduction, components = c(1,2),
 #' @param col.low for continuous labels - color gradient low
 #' @param col.mid for continuous labels - color gradient mid
 #' @param col.high for continuous labels - color gradient high
+#' @param col.highpoint for continuous labels - high limit of scale
+#' @param col.lowpoint for continuous labels - low limit of scale
+#' @param na.value for continuous labels - colors to use for missing values
 #' @param col.discrete for discrete labels - colors for groupings
 #' @param main title
 #' @param main.size size of title
@@ -100,13 +104,11 @@ plotReduction <- function(bank, reduction, components = c(1,2),
 plotSpatial <- function(bank, dataset = NULL,
                         by = NA, type = c('discrete', 'continuous'),
                         pt.size = 0.5, pt.alpha = 0.7, col.midpoint = NULL,
-                        col.lowpoint = NULL,
-                        col.highpoint = NULL,
-                        col.low = 'blue',
-                        col.mid = 'gray95', col.high = 'red',
-                        na.value = 'gray',
-                        col.discrete = NULL, main = NULL,
-                        main.size = 5, legend = TRUE, legend.text.size = 6, legend.pt.size = 3) {
+                        col.lowpoint = NULL, col.highpoint = NULL,
+                        col.low = 'blue', col.mid = 'gray95', col.high = 'red',
+                        na.value = 'gray', col.discrete = NULL, main = NULL,
+                        main.size = 5, legend = TRUE,
+                        legend.text.size = 6, legend.pt.size = 3) {
 
   data <- getLocations(bank, dataset = dataset)
   sdimx <- sdimy <- NULL
@@ -190,7 +192,8 @@ plotSpatialFeatures <- function(bank, dataset = NULL, by, type, nrow, ncol, ...)
 #' @param col colours to use in heatmap
 #' @param col.breaks color breaks to use in heatmap (same number as col is
 #'   specified)
-#' @param col.discrete cluster colors, named color array, names are clusters, values are colors in hexadecimal
+#' @param col.discrete cluster colors, named color array, names are clusters,
+#'   values are colors in hexadecimal
 #' @param cluster.row cluster rows
 #' @param cluster.column cluster columns
 #' @param row.dend draw row dendrograms
@@ -686,8 +689,11 @@ getDiscretePalette <- function(feature, col.discrete = NULL) {
   } else {
     if (length(col.discrete) < n) stop('Not enough colors')
     pal <- col.discrete
-    if (is.null(names(col.discrete))) stop('Color palatte must be supplied with valid cluster names.')
-    if (!all(unique(feature) %in% names(col.discrete))) stop('Not all clusters have an assigned color. Ensure that names(col.discrete) has all the cluster labels.')
+    if (is.null(names(col.discrete))) stop('
+       Color palatte must be supplied with valid cluster names.')
+    if (!all(unique(feature) %in% names(col.discrete))) stop(
+      'Not all clusters have an assigned color.
+       Ensure that names(col.discrete) has all the cluster labels.')
 
     if (num) {
       clust.as.char <- as.character(unique(feature))

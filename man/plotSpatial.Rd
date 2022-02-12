@@ -41,11 +41,17 @@ plotSpatial(
 
 \item{col.midpoint}{for continuous labels - midpoint of color gradient}
 
+\item{col.lowpoint}{for continuous labels - low limit of scale}
+
+\item{col.highpoint}{for continuous labels - high limit of scale}
+
 \item{col.low}{for continuous labels - color gradient low}
 
 \item{col.mid}{for continuous labels - color gradient mid}
 
 \item{col.high}{for continuous labels - color gradient high}
+
+\item{na.value}{for continuous labels - colors to use for missing values}
 
 \item{col.discrete}{for discrete labels - colors for groupings}
 

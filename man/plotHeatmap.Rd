@@ -53,7 +53,8 @@ plotHeatmap(
 \item{col.breaks}{color breaks to use in heatmap (same number as col is
 specified)}
 
-\item{col.discrete}{cluster colors, named color array, names are clusters, values are colors in hexadecimal}
+\item{col.discrete}{cluster colors, named color array, names are clusters,
+values are colors in hexadecimal}
 
 \item{cluster.row}{cluster rows}
 
