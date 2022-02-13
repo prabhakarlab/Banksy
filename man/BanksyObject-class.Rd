@@ -208,3 +208,28 @@ S4 class BanksyObject
 \item{\code{reduction}}{dimension reductions}
 }}
 
+\examples{
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+mat <- own.expr(bank)
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+mat <- own.expr(bank)
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+mat <- nbr.expr(bank)
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+df <- cell.locs(bank)
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+df <- meta.data(bank)
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+lst <- reduction(bank)
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+vec <- clust.names(bank)
+}

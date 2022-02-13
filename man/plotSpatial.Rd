@@ -71,3 +71,10 @@ plot
 \description{
 Plot Spatial dims
 }
+\examples{
+# Generate a simulated dataset
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+plotSpatial(bank, by = 'Label', type = 'discrete')
+
+}

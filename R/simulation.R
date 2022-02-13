@@ -1,54 +1,144 @@
 
-# Simulate dataset for testing
+#' Simulate a dataset consisting of expression and location information 
+#' with concentric circular structure
+#' 
+#' @param n_buds Number of rings
+#' @param n_genes Number of genes
+#' @param n_deg Number of de genes per bud
+#' @param de_shift Mean shift for de genes per bud
+#' @param de_dropout Fraction of cells where gene is de per bud
+#' @param n_cells Number of cells per bud
+#' @param n_circles Number of circles per bud
+#' @param n_thickness Thickness of each circle per bud
+#' @param radius_init Initial radius of each bud
+#' @param radius_increment Radius increment per bud
+#' @param x_stretch Amount of stretching in the x-direction per bud
+#' @param y_stretch Amount of stretching in the y-direction per bud
+#' @param offset_x Offset to shift x center of bud
+#' @param offset_y Offset to shift y center of bud
+#' @param skew Rotation of bud
+#' @param seed Seed for sampling
+#' 
 #' @importFrom stats rnorm
-simulateDataset <- function(n_clusters = 5,
-                            n_cells = 100,
-                            n_genes = 100,
-                            seed = 1234) {
-  set.seed(seed)
-
-  ## Get count for each cluster
-  count_clusters <- vector(mode = 'numeric', length = n_clusters)
-  for (i in seq_len(n_clusters-1)) {
-    count_clusters[i] <- floor(n_cells / n_clusters)
-  }
-  count_clusters[n_clusters] <- n_cells - sum(count_clusters)
-  count_clusters <- count_clusters[sample(n_clusters)]
-  memberships <- rep(seq_len(n_clusters), count_clusters)
-
-  gcm <- matrix(data = rnorm(n_genes * n_cells, mean = 10, sd = 2),
-                nrow = n_genes)
-  for (i in seq_len(n_clusters)) {
-    gene_idx <- sample(n_genes, floor(n_genes / n_clusters / 2))
-    cell_idx <- which(memberships == i)
-    gcm[gene_idx, cell_idx] <- gcm[gene_idx, cell_idx] +
-      rnorm(length(gene_idx)*length(cell_idx), mean = 5)
-  }
-
-  ## Set hyperpriors
-  mu_x0 <- rnorm(n_clusters, mean = 1000, sd = 250)
-  mu_y0 <- rnorm(n_clusters, mean = 1000, sd = 250)
-  sigma <- rnorm(n_clusters, mean = 100, sd = 10)
-
-  ## Generate Locs
-  locs <- Map(function(mu_x, mu_y, sigma, num_cells){
-    data.frame(sdimx = rnorm(num_cells, mean = mu_x, sd = sigma),
-               sdimy = rnorm(num_cells, mean = mu_y, sd = sigma))},
-    mu_x0, mu_y0, sigma, count_clusters)
-  locs <- do.call(rbind.data.frame, locs)
-
-  permute <- sample(n_cells)
-  gcm <- gcm[, permute]
-  locs <- locs[permute, ]
-  memberships <- memberships[permute]
-
-  rownames(gcm) <- paste0('gene_', seq_len(n_genes))
-  colnames(gcm) <- paste0('cell_', seq_len(n_cells))
-  rownames(locs) <- colnames(gcm)
-
-  gcm <- as.matrix(gcm)
-  gcm[gcm < 0] <- 0
-
-  return(list(gcm, locs, memberships))
+#'  
+#' @export
+simulateDataset <- function(
+    n_buds = 3,
+    n_genes = 100,
+    n_deg = c(10,5,7),
+    de_shift = c(3,4,2),
+    de_dropout = c(0.8,0.9,0.7),
+    n_cells = c(250, 150, 100),
+    n_circles = c(3,3,3),
+    n_thickness = list(c(3,1,3), c(2,1,4), c(2,2,2)),
+    radius_init = c(5,3,3),
+    radius_increment = c(4,3,3),
+    x_stretch = c(1.1,1,1),
+    y_stretch = c(0.9,1.1,1),
+    offset_x = c(0,50,20),
+    offset_y = c(0,40,35),
+    skew = c(0,0,0.5),
+    seed = 1000) {
+    
+    set.seed(seed)
+    
+    locs <- generateLocs(n_buds = n_buds, 
+                         n_circles = n_circles,
+                         n_cells = n_cells,
+                         n_thickness = n_thickness,
+                         radius_init = radius_init,
+                         radius_increment = radius_increment,
+                         x_stretch = x_stretch,
+                         y_stretch = y_stretch,
+                         offset_x = offset_x,
+                         offset_y = offset_y,
+                         skew = skew)
+    
+    n_cells <- nrow(locs)
+    n_clusters <- length(unique(locs$Label))
+    
+    gcm <- matrix(data = rnorm(n_genes * n_cells, mean = 15, sd = 2), 
+                  nrow = n_genes)
+    de_genes <- sample(1:nrow(gcm), sum(n_deg))
+    
+    start <- c(1, cumsum(n_deg)[-length(n_deg)]+1)
+    end <- cumsum(n_deg)
+    
+    for (i in seq_len(n_clusters)) {
+        
+        curr_de <- de_genes[start[i]:end[i]]
+        cell_idx <- which(locs$Label == i)
+        cell_idx <- sample(cell_idx, size = length(cell_idx) * de_dropout[i])
+        gcm[curr_de, cell_idx] <- gcm[curr_de, cell_idx] +
+            rnorm(length(curr_de)*length(cell_idx), mean = de_shift[i])
+    }
+    
+    rownames(gcm) <- paste0('gene_', 1:nrow(gcm))
+    colnames(gcm) <- rownames(locs) <- paste0('cell_', 1:ncol(gcm))
+    meta <- locs[,3,drop=F]
+    return(list(gcm=gcm, locs=locs[,1:2], meta=meta))
 }
 
+
+#' @importFrom stats runif rnorm
+generateBud <- function(n_circles, n_thickness, n_cells, 
+                         radius_init, radius_increment,
+                         x_stretch, y_stretch,
+                         skew) {
+      
+    # First, get the number of cells per radius
+    cells_per_radius <- round(n_cells / sum(n_thickness))
+    n_cells <- cells_per_radius * sum(n_thickness)
+    x <- rep(0, length(n_cells))
+    y <- rep(0, length(n_cells))
+    total_circles <- sum(n_thickness)
+    lab <- rep(seq_len(n_circles), n_thickness * cells_per_radius)
+    
+    radius <- radius_init
+    for (i in seq_len(total_circles)) {
+        
+        start <- (i-1)*cells_per_radius + 1
+        end <- i*cells_per_radius 
+        theta <- runif(cells_per_radius, min = 0, max = 2 * pi)
+        x[start:end] <- radius * x_stretch * sin(theta + skew) + 
+            rnorm(cells_per_radius)
+        y[start:end] <- radius * y_stretch * cos(theta) + 
+            rnorm(cells_per_radius)
+        radius <- radius + radius_increment
+    }
+    
+    list(x=x,y=y,Label=lab)
+    
+} 
+
+
+generateLocs <- function(n_buds, n_circles, n_thickness, n_cells, 
+                         radius_init, radius_increment, x_stretch, y_stretch,
+                         offset_x, offset_y, skew) {
+    
+    locs <- vector(mode = 'list', length = n_buds)
+    
+    for (i in seq_len(n_buds)) {
+        
+        curr <- generateBud(n_circles = n_circles[i], 
+                            n_thickness = n_thickness[[i]], 
+                            n_cells = n_cells[i], 
+                            radius_init = radius_init[i], 
+                            radius_increment = radius_increment[i],
+                            x_stretch = x_stretch[i], 
+                            y_stretch = y_stretch[i],
+                            skew = skew[i])
+        locs[[i]] <- curr
+    }
+    
+    lens <- sapply(locs, function(x) length(x$x))
+    res <- do.call(rbind.data.frame, locs)
+    off_x <- rep(offset_x, lens)
+    off_y <- rep(offset_y, lens)
+    res$x <- res$x + off_x
+    res$y <- res$y + off_y
+    res$x <- res$x - mean(res$x)
+    res$y <- res$y - mean(res$y)
+    return(res)
+    
+}

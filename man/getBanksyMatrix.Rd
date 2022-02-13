@@ -18,3 +18,13 @@ BanksyMatrix
 \description{
 Returns the Banksy matrix (own + nbr)
 }
+\examples{
+# Generate a simulated dataset
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+# Normalize the own.expr matrix
+bank <- NormalizeBanksy(bank)
+# Compute BANKSY matrix
+bank <- ComputeBanksy(bank)
+bm <- getBanksyMatrix(bank)
+}

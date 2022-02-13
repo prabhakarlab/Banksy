@@ -14,6 +14,14 @@
 #' @return normalized Banksy object
 #'
 #' @export
+#' 
+#' @examples
+#' # Generate a simulated dataset
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' # Normalize the own.expr matrix
+#' bank <- NormalizeBanksy(bank)
+#' 
 NormalizeBanksy <- function(bank, assay = 'both', normFactor = 100,
                             logNorm = FALSE, pseudocount = 0.1) {
 
@@ -57,6 +65,16 @@ NormalizeBanksy <- function(bank, assay = 'both', normFactor = 100,
 #' @return scaled BanksyObject
 #'
 #' @export
+#' 
+#' @examples 
+#' # Generate a simulated dataset
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' # Normalize the own.expr matrix
+#' bank <- NormalizeBanksy(bank)
+#' # Scale the own.expr matrix
+#' bank <- ScaleBanksy(bank)
+#' 
 ScaleBanksy <- function(bank, assay = 'both', separate = TRUE) {
 
   scaleOwn <- TRUE
@@ -108,6 +126,14 @@ ScaleBanksy <- function(bank, assay = 'both', separate = TRUE) {
 #' @return BanksyObject
 #'
 #' @export
+#' 
+#' @examples 
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' bank <- NormalizeBanksy(bank)
+#' # Compute neighbors 
+#' bank <- ComputeBanksy(bank)
+#' 
 ComputeBanksy <- function(bank,
                           ## For computing nbr matrix
                           spatialMode = 'kNN_r',
@@ -259,6 +285,16 @@ scalerAll <- function(x) {
 #' @return BanksyMatrix
 #'
 #' @export
+#' 
+#' @examples 
+#' # Generate a simulated dataset
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' # Normalize the own.expr matrix
+#' bank <- NormalizeBanksy(bank)
+#' # Compute BANKSY matrix
+#' bank <- ComputeBanksy(bank)
+#' bm <- getBanksyMatrix(bank)
 getBanksyMatrix <- function(bank, lambda = 0.25) {
 
   # Optimize this

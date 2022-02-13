@@ -11,6 +11,16 @@
 #' @return BanksyObject with PCA
 #'
 #' @export
+#' 
+#' @examples 
+#' # Generate a simulated dataset
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' bank <- NormalizeBanksy(bank)
+#' bank <- ScaleBanksy(bank)
+#' bank <- ComputeBanksy(bank)
+#' bank <- RunPCA(bank, lambda = 0.2)
+#' 
 RunPCA <- function(bank, lambda, npcs = 20) {
 
   for (lam in lambda) {
@@ -40,6 +50,18 @@ RunPCA <- function(bank, lambda, npcs = 20) {
 #' @return Scree plot
 #'
 #' @export
+#' 
+#' @examples 
+#' # Generate a simulated dataset
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' bank <- NormalizeBanksy(bank)
+#' bank <- ScaleBanksy(bank)
+#' bank <- ComputeBanksy(bank)
+#' bank <- RunPCA(bank, lambda = 0.2)
+#' scree <- plotScree(bank, lambda = 0.2)
+#' scree
+#' 
 plotScree <- function(bank, lambda) {
 
   pca.name <- paste0('pca_', lambda)
@@ -72,6 +94,16 @@ plotScree <- function(bank, lambda) {
 #' @return BanksyObject with dimensionality reduction
 #'
 #' @export
+#' @examples 
+#' # Generate a simulated dataset
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' bank <- NormalizeBanksy(bank)
+#' bank <- ScaleBanksy(bank)
+#' bank <- ComputeBanksy(bank)
+#' bank <- RunPCA(bank, lambda = 0.2)
+#' bank <- RunUMAP(bank, lambda = 0.2)
+#' 
 RunUMAP <- function(bank, lambda, ncomponents = 2, pca = TRUE, npcs = 20,
                     nneighbors = 30, spread = 3, mindist = 0.3, nepochs = 300,
                     ...) {

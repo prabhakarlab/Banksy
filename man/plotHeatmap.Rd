@@ -100,3 +100,12 @@ Heatmap of class ComplexHeatmap
 \description{
 Plot Heatmap (wrapper for ComplexHeatmap)
 }
+\examples{
+# Generate a simulated dataset
+d <- simulateDataset(n_cells = c(20,20,20), n_genes = 30)
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+bank <- NormalizeBanksy(bank)
+bank <- ScaleBanksy(bank)
+plotHeatmap(bank, annotate = TRUE, annotate.by = 'Label')
+
+}

@@ -53,3 +53,14 @@ BanksyObject with cluster labels in meta.data
 \description{
 Cluster based on joint expression matrix
 }
+\examples{
+# Generate a simulated dataset
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+bank <- NormalizeBanksy(bank)
+bank <- ComputeBanksy(bank)
+bank <- ScaleBanksy(bank)
+bank <- RunPCA(bank, lambda = 0.3)
+bank <- ClusterBanksy(bank, lambda = 0.3, npcs = 20, k.neighbors = 50, resolution = 0.5)
+
+}

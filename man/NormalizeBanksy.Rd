@@ -29,3 +29,11 @@ normalized Banksy object
 \description{
 Normalize columns to a normFactor
 }
+\examples{
+# Generate a simulated dataset
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+# Normalize the own.expr matrix
+bank <- NormalizeBanksy(bank)
+
+}

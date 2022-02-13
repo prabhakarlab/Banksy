@@ -42,6 +42,10 @@ setClass('BanksyObject',
 #' @return BanksyObject
 #'
 #' @export
+#' 
+#' @examples 
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
 BanksyObject <-
   function(own.expr = NULL,
            nbr.expr = NULL,
@@ -154,6 +158,10 @@ setValidity('BanksyObject', function(object) {
 #'
 #' @describeIn BanksyObject-class getter own.expr
 #' @exportMethod own.expr
+#' @examples 
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' mat <- own.expr(bank)
 setGeneric('own.expr', function(object) standardGeneric('own.expr'))
 #' @describeIn BanksyObject-class getter own.expr
 setMethod('own.expr', signature(object = 'BanksyObject'),
@@ -161,6 +169,10 @@ setMethod('own.expr', signature(object = 'BanksyObject'),
 
 #' @describeIn BanksyObject-class getter nbr.expr
 #' @exportMethod nbr.expr
+#' @examples 
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' mat <- own.expr(bank)
 setGeneric('nbr.expr', function(object) standardGeneric('nbr.expr'))
 #' @describeIn BanksyObject-class getter nbr.expr
 setMethod('nbr.expr', signature(object = 'BanksyObject'),
@@ -168,6 +180,10 @@ setMethod('nbr.expr', signature(object = 'BanksyObject'),
 
 #' @describeIn BanksyObject-class getter custom.expr
 #' @exportMethod custom.expr
+#' @examples 
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' mat <- nbr.expr(bank)
 setGeneric('custom.expr', function(object) standardGeneric('custom.expr'))
 #' @describeIn BanksyObject-class getter custom.expr
 setMethod('custom.expr', signature(object = 'BanksyObject'),
@@ -175,6 +191,10 @@ setMethod('custom.expr', signature(object = 'BanksyObject'),
 
 #' @describeIn BanksyObject-class getter cell.locs
 #' @exportMethod cell.locs
+#' @examples 
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' df <- cell.locs(bank)
 setGeneric('cell.locs', function(object) standardGeneric('cell.locs'))
 #' @describeIn BanksyObject-class getter cell.locs
 setMethod('cell.locs', signature(object = 'BanksyObject'),
@@ -182,6 +202,10 @@ setMethod('cell.locs', signature(object = 'BanksyObject'),
 
 #' @describeIn BanksyObject-class getter meta.data
 #' @exportMethod meta.data
+#' @examples 
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' df <- meta.data(bank)
 setGeneric('meta.data', function(object) standardGeneric('meta.data'))
 #' @describeIn BanksyObject-class getter meta.data
 setMethod('meta.data', signature(object = 'BanksyObject'),
@@ -189,6 +213,10 @@ setMethod('meta.data', signature(object = 'BanksyObject'),
 
 #' @describeIn BanksyObject-class getter reduction
 #' @exportMethod reduction
+#' @examples 
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' lst <- reduction(bank)
 setGeneric('reduction', function(object) standardGeneric('reduction'))
 #' @describeIn BanksyObject-class getter reduction
 setMethod('reduction', signature(object = 'BanksyObject'),
@@ -196,6 +224,10 @@ setMethod('reduction', signature(object = 'BanksyObject'),
 
 #' @describeIn BanksyObject-class getter clust.names
 #' @exportMethod clust.names
+#' @examples 
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' vec <- clust.names(bank)
 setGeneric('clust.names', function(object) standardGeneric('clust.names'))
 #' @describeIn BanksyObject-class getter clust.names
 setMethod('clust.names', signature(object = 'BanksyObject'),
