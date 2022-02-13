@@ -5,7 +5,7 @@
 #' @slot custom.expr custom expression
 #' @slot cell.locs cell locations
 #' @slot meta.data metadata
-#' @slot dim.reduction dimension reductions
+#' @slot reduction dimension reductions
 #'
 # #' @importClassesFrom Matrix dgCMatrix
 #'
@@ -20,7 +20,7 @@ setClass('BanksyObject',
                       custom.expr = 'assay',
                       cell.locs = 'assay',
                       meta.data = 'data.frame',
-                      dim.reduction = 'assay'
+                      reduction = 'assay'
          ))
 
 ## Constructor -----------------------------------------------------------------
@@ -29,7 +29,7 @@ setClass('BanksyObject',
 #' @param custom.expr custom expression
 #' @param cell.locs cell locations
 #' @param meta.data metadata
-#' @param dim.reduction dimension reductions
+#' @param reduction dimension reductions
 #' @param genes.filter intersect or union
 #' @param min.cells.expressed min number of cells a gene is expressed in
 #'   (to be used with intersect)
@@ -48,7 +48,7 @@ BanksyObject <-
            custom.expr = NULL,
            cell.locs = NULL,
            meta.data = NULL,
-           dim.reduction = NULL,
+           reduction = NULL,
            genes.filter = 'intersect',
            min.cells.expressed = -1) {
 
@@ -144,7 +144,7 @@ setValidity('BanksyObject', function(object) {
   if (!is(object@custom.expr, 'assay')) check <- FALSE
   if (!is(object@cell.locs, 'assay')) check <- FALSE
   if (!is(object@meta.data, 'data.frame')) check <- FALSE
-  if (!is(object@dim.reduction, 'assay')) check <- FALSE
+  if (!is(object@reduction, 'assay')) check <- FALSE
   return(check)
 })
 
@@ -187,12 +187,20 @@ setGeneric('meta.data', function(object) standardGeneric('meta.data'))
 setMethod('meta.data', signature(object = 'BanksyObject'),
           function(object) return(object@meta.data))
 
-#' @describeIn BanksyObject-class getter dim.reduction
-#' @exportMethod dim.reduction
-setGeneric('dim.reduction', function(object) standardGeneric('dim.reduction'))
-#' @describeIn BanksyObject-class getter dim.reduction
-setMethod('dim.reduction', signature(object = 'BanksyObject'),
-          function(object) return(object@dim.reduction))
+#' @describeIn BanksyObject-class getter reduction
+#' @exportMethod reduction
+setGeneric('reduction', function(object) standardGeneric('reduction'))
+#' @describeIn BanksyObject-class getter reduction
+setMethod('reduction', signature(object = 'BanksyObject'),
+          function(object) return(object@reduction))
+
+#' @describeIn BanksyObject-class getter clust.names
+#' @exportMethod clust.names
+setGeneric('clust.names', function(object) standardGeneric('clust.names'))
+#' @describeIn BanksyObject-class getter clust.names
+setMethod('clust.names', signature(object = 'BanksyObject'),
+          function(object) return(names(object@meta.data)[
+            grepl('^clust', names(object@meta.data))]))
 
 ## Setters ---------------------------------------------------------------------
 
@@ -265,20 +273,23 @@ setReplaceMethod('meta.data', signature(object = 'BanksyObject', value = 'data.f
                  })
 
 #' @importFrom methods validObject
-#' @describeIn BanksyObject-class setter for dim.reduction
-#' @exportMethod dim.reduction<-
-setGeneric('dim.reduction<-',
-           function(object, value) standardGeneric('dim.reduction<-'))
-#' @describeIn BanksyObject-class setter for dim.reduction
-setReplaceMethod('dim.reduction', signature(object = 'BanksyObject', value = 'list'),
+#' @describeIn BanksyObject-class setter for reduction
+#' @exportMethod reduction<-
+setGeneric('reduction<-',
+           function(object, value) standardGeneric('reduction<-'))
+#' @describeIn BanksyObject-class setter for reduction
+setReplaceMethod('reduction', signature(object = 'BanksyObject', value = 'list'),
                  function(object, value) {
-                   object@dim.reduction <- value
+                   object@reduction <- value
                    validObject(object)
                    return(object)
                  })
 
 ## Display ---------------------------------------------------------------------
 
+#' @importFrom methods show
+#' @describeIn BanksyObject-class show BanksyObject
+#' @exportMethod show
 setMethod('show', signature(object = 'BanksyObject'),
           function(object){
 
@@ -320,15 +331,15 @@ setMethod('show', signature(object = 'BanksyObject'),
 
             cat('Metadata names:', colnames(object@meta.data), '\n')
 
-            cat('Dimension reductions:', names(object@dim.reduction), '\n')
+            cat('Dimension reductions:', names(object@reduction), '\n')
 
           })
 
+#' @importFrom utils head
+#' @describeIn BanksyObject-class header for BanksyObject
 #' @param x BanksyObject
-#' @aliases head,BanksyObject-class
+#' @param n Number of records to display
 #' @exportMethod head
-#' @describeIn BanksyObject-class head for banksy object
-setGeneric('head', function(x) standardGeneric('head'))
 setMethod('head', signature(x = 'BanksyObject'),
           function(x, n=5) {
 
@@ -357,7 +368,6 @@ setMethod('head', signature(x = 'BanksyObject'),
               rd <- min(nrow(x@own.expr), n)
               cd <- min(ncol(x@own.expr), n)
               print(x@own.expr[seq_len(rd),seq_len(cd),drop=FALSE])
-
               cat('\nneighbour expression:\n')
               rd <- min(nrow(x@nbr.expr), n)
               cd <- min(ncol(x@nbr.expr), n)
@@ -374,4 +384,3 @@ setMethod('head', signature(x = 'BanksyObject'),
               print(x@meta.data[seq_len(rd),seq_len(cd),drop=FALSE])
             }
           })
-

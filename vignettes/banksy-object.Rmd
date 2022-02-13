@@ -20,27 +20,30 @@ with it.
 ## Class structure
 
 We use data attached with the package:
-```{r rdata, eval=T}
+
+```{r rdata, eval=T, warning=F, message=F}
 library(Banksy)
-expr <- readRDS(system.file('/extdata/expression.rds', package = 'Banksy'))
-locs <- readRDS(system.file('/extdata/locations.rds', package = 'Banksy'))
+
+data(hippocampus)
+expr <- hippocampus$expression
+locs <- hippocampus$locations
 ```
 
 The *BanksyObject* can be constructed by supplying the gene-cell expression 
-matrix and cell locations. Calling *BanksyObject* populates metadata and performs
-gene filtering in the case of multiple datasets. This should be the default 
-method of construction - avoid setter methods for construction. 
+matrix and cell locations. Calling *BanksyObject* populates metadata and 
+performs gene filtering in the case of multiple datasets. This should be the 
+default method of construction - avoid setter methods for construction. 
 
-```{r construct, eval=T}
-bank <- BanksyObject(own.expr = expr,
-                     cell.locs = locs)
+```{r construct, eval=T, warning=F, message=F}
+bank <- BanksyObject(own.expr = expr, cell.locs = locs)
 
 bank
 ```
 
-The dataset consists of 6725 cells, 140 genes, with 2 spatial dimensions.
+The dataset consists of 7944 cells and 124 genes in 2 spatial dimensions.
 
 *BanksyObject* has the following slots:
+
 ```{r slotnm, eval=T}
 slotNames(bank)
 ```
@@ -51,12 +54,13 @@ slotNames(bank)
 * `cell.locs` stores the cell locations   
 * `meta.data` stores cell metadata, such as cluster labels or colours for 
    visualisation  
-* `dim.reduction` stores dimension reductions 
+*  `reduction` stores dimension reductions 
 
 Getter and setter methods are defined for each of these slots.
 
 Calling *ComputeBanksy* computes the neighbour feature-cell expression matrix,
 populating the `nbr.expr` slot: 
+
 ```{r compute, eval=T}
 bank <- NormalizeBanksy(bank)
 bank <- ComputeBanksy(bank)
@@ -64,14 +68,24 @@ bank <- ScaleBanksy(bank)
 head(bank)
 ```
 
-We compute cluster information based on the gene-cell and neighbour feature-cell 
-matrix.
+Dimensionality reduction with *RunPCA* or *RunUMAP* populates the `reduction`
+slot:
+
+```{r pca, eval=T, message=F, warning=F}
+bank <- RunPCA(bank, lambda = 0.3)
+
+names(reduction(bank))
+```
+
+Perform clustering with *ClusterBanksy*. This popluates the `meta.data` slot
+with cluster labels.
+
 ```{r cluster, eval=T}
-set.seed(1234)
-bank <- ClusterBanksy(bank, 
-                      resolution = 0.8,
-                      lambda = 0.5,
-                      kneighbours = 40)
+bank <- ClusterBanksy(bank, lambda = 0.3, pca = TRUE, npcs = 20,
+                      method = 'leiden', resolution = 1, k.neighbors = 40,
+                      seed = 42)
+
+head(meta.data(bank))
 ```
 
 ## Subsetting
@@ -80,34 +94,51 @@ bank <- ClusterBanksy(bank,
 cells, and metadata columns. The *BanksyObject* can be subset by dimensions with
 logical unquoted conditions. The variables here (e.g. `sdimx`) must correspond
 to the columns names of the `cell.locs(bank)`. 
-```{r subset1, eval=T}
-bankSubsetDim <- SubsetBanksy(bank,
-                              dims = (sdimx > 1000 & sdimx < 4000) &
-                                     (sdimy > 2000 & sdimy < 3000))
-head(bankSubsetDim)
+
+```{r subset1, eval=T, fig.width=10, fig.height=5, fig.align='center'}
+bankDim <- SubsetBanksy(bank, dims = (sdimx < -4000 | sdimx > 10000) | (sdimy < 3000 | sdimy > 10000))
+
+gridExtra::grid.arrange(
+  plotSpatial(bank),
+  plotSpatial(bankDim),
+  ncol = 2
+)
 ```
 
 The object can also be subset by cells:
-```{r subset2, eval=T}
-bankSubsetCells <- SubsetBanksy(bank,
-                                cells = c('cell_364', 'cell_367', 'cell_384', 'cell_389'))
+
+```{r subset2, eval=T, fig.width=10, fig.height=5, fig.align='center'}
+sample_cells <- sample(meta.data(bank)$cell_ID, 1000)
+bankCells <- SubsetBanksy(bank, cells = sample_cells)
+
+gridExtra::grid.arrange(
+  plotSpatial(bank),
+  plotSpatial(bankCells),
+  ncol = 2
+)
 ```
 
 Similarly, the object can also be subset by any metadata column with logical 
-unquoted conditions. Here, we select cells in clusters 3 to 6 based on the 
-clustering with `res=0.8`, `lam=0.5`, `k=40`. 
-```{r subset3, eval=T}
-bankSubsetMeta <- SubsetBanksy(bank,
-                               metadata = res0.8_lam0.5_k40 %in% 3:6)
+unquoted conditions. Here, we select cells in in certain clusters based on the 
+clustering with `lam=0.3`, `k=40`, `res=1`. 
+
+```{r subset3, eval=T, fig.width=10, fig.height=5, fig.align='center'}
+select_clusters <- c(3,6,10,15)
+bankMeta <- SubsetBanksy(bank, metadata = clust_lam0.3_k40_res1 %in% select_clusters)
+
+gridExtra::grid.arrange(
+  plotSpatial(bank),
+  plotSpatial(bankMeta),
+  ncol = 2
+)
 ```
 
 Subsetting by genes can be achieved by supplying a character vector of genes
-to the `features` argument.
+to the `features` argument:
+
 ```{r subset4, eval=T}
-set.seed(42)
 genes <- sample(rownames(own.expr(bank)), 10)
-bankSubsetFeatures <- SubsetBanksy(bank,
-                                   features = genes)
+bankFeatures <- SubsetBanksy(bank, features = genes)
 ```
 
 If multiple subsetting features are supplied, the intersection of all conditions

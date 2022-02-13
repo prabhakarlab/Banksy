@@ -30,9 +30,7 @@ spatially-informed clusters.
 
 ```{r, eval=F}
 # Install from GitHub
-remotes::install_github("jleechung/Banksy")
-
-# Install from Bioconductor (sooon)
+remotes::install_github("jleechung/Banksy", dependencies = TRUE)
 ```
 
 # Documentation
@@ -62,7 +60,7 @@ different use cases:
 
 Inputs consist of an expression matrix and cell locations. Sample data is 
 provided with the package:
-```{r}
+```{r, eval = T}
 library(Banksy)
 
 expr <- readRDS(system.file('/extdata/expression.rds', package = 'Banksy'))
@@ -70,37 +68,49 @@ locs <- readRDS(system.file('/extdata/locations.rds', package = 'Banksy'))
 ```
 
 The gene expression matrix for cells should be a `matrix`:
-```{r}
+```{r, eval = T}
 class(expr)
 head(expr[,1:5])
 ```
 
 while cell locations should be supplied as a `data.frame`:
-```{r}
+```{r, eval = T}
 class(locs)
 head(locs)
 ```
 
 We store the total number of detect genes and total counts as metadata:
-```{r}
+```{r, eval = T}
 metadata <- data.frame(num_genes = colSums(expr > 0),
                        total_count = colSums(expr))
 ```
 
-## Spatial clustering
+Next, create a *BanksyObject* with the expression matrix and cell locations.
 
-First, create a *BanksyObject* with the expression matrix and cell locations.
-
-```{r}
+```{r, eval = T}
 bank <- BanksyObject(own.expr = expr,
                      cell.locs = locs,
                      meta.data = metadata)
 ```
 
-Next, normalize the expression matrix, compute the neighbour matrix, and scale 
+We can visualize the spatial layout of the cells, number of non-zero genes, 
+and the expression of specific genes:
+
+```{r, eval = T, fig.width=12, fig.height=10}
+features <- c(NA, 'num_genes', 'Kcnh2', 'Slc38a1')
+feature.types <- c(NA, rep('continuous', 3))
+main <- features; main[1] <- ''
+alpha <- c(0.2, rep(1, 3))
+plotSpatialFeatures(bank, by = features, type = feature.types, main = main, 
+                    nrow = 2, ncol = 2, pt.size = 1, pt.alpha = alpha, main.size = 10)
+```
+
+## Spatial clustering
+
+We first normalize the expression matrix, compute the neighbour matrix, and scale 
 the resulting gene-cell and neighbour feature-cell matrix.
 
-```{r}
+```{r, eval = T}
 bank <- NormalizeBanksy(bank, normFactor = 100)
 bank <- ComputeBanksy(bank)
 bank <- ScaleBanksy(bank)
@@ -108,74 +118,86 @@ bank <- ScaleBanksy(bank)
 
 At this point, the joint expression matrix (gene-cell matrix and neighbour 
 feature-cell matrix) can be extracted with *getBanksyMatrix*, which returns
-the joint matrix and cell locations:
+the joint matrix and cell locations. Here, `lambda` is a mixing parameter 
+from 0 to 1 which determines how much spatial information is incorporated. 
+Larger values of `lambda` incorporate more spatial information for identifying
+clusters.
 
-```{r}
+```{r, eval = T}
 joint <- getBanksyMatrix(bank, lambda = 0.25)
 
 joint$expr[1:5,1:5]
 joint$locs[1:5,]
 ```
 
-Next, we obtain cluster assignments for the following parameters:
+Run PCA on the Banksy matrix for `lambda = 0` (no spatial information) 
+and `lambda = 0.25`. This populates the `reduction` slot:
 
-* `lambda`. A mixing parameter from 0 to 1 which determines how much spatial 
-   information is incorporated.  
+```{r, eval = T}
+bank <- RunPCA(bank, lambda = c(0, 0.25), npcs = 30)
+names(bank@reduction)
+```
+
+Visualize PCA and its scree plot:
+
+```{r, eval = T, fig.height=8, fig.width=16}
+p1 <- plotReduction(bank, reduction = 'pca_0.25')
+p2 <- plotScree(bank, lambda = 0.25)
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+```
+
+For visualization, we run UMAP on 30 principal components:
+
+```{r, eval = T}
+bank <- RunUMAP(bank, lambda = 0.25, npcs = 30)
+```
+
+Next, we obtain cluster assignments using graph-based clustering with the Leiden
+algorithm. Specify the following parameters:
+
 * `resolution`. Leiden clustering resolution.  
-* `kneighbours`. Number of k neighbours to use for constructing sNN.
+* `k.neighbours`. Number of k neighbours to use for constructing sNN.
 
-```{r}
+```{r, eval = T}
 set.seed(1234)
-bank <- ClusterBanksy(bank, lambda = 0.5,
-                            resolution = 0.8,
-                            kneighbours = 40)
+bank <- ClusterBanksy(bank, lambda = c(0, 0.25), method = 'leiden',
+                      k.neighbors = 40, resolution = 1)
 ```
 
 ## Visualization
 
-UMAP visualization:
-```{r}
-plotUMAP(bank, by = 'res0.8_lam0.5_k40',  reduction = 'umap_0.5', pt.size = 0.02, main.size = 10)
+We can visualize the UMAP and spatial plots by the clustering run:
+
+```{r, eval = T}
+run1 <- 'clust_lam0_k40_res1'
+run2 <- 'clust_lam0.25_k40_res1'
+
+plotReduction(bank, reduction = 'umap_0.25', by = run2, type = 'discrete', pt.size = 0.02)
 ```
 
-Spatial plot:
-```{r}
-plotSpatialDims(bank, by = 'res0.8_lam0.5_k40', pt.size = 0.8, main.size = 10)
+Observe the effects of incorporating spatially information (right, `lambda = 0.25`) 
+in identifying clusters: 
+
+```{r, eval = T, fig.height=8, fig.width=18}
+features <- c(run1, run2)
+feature.types <- rep('discrete', 2)
+main <- c('Lambda=0', 'Lambda=0.25')
+plotSpatialFeatures(bank, by = features, type = feature.types, main = main, 
+                    pt.size = 1.5, main.size = 15, nrow = 1, ncol = 2)
 ```
 
-Heatmap:
-```{r, fig.width=15, fig.height=10}
+Heatmap of the cells, annotated by the clustering run with barplots of the 
+number of detected genes and total count:
+
+```{r, fig.width=15, fig.height=10, eval = T}
 plotHeatmap(bank, assay = 'banksy',
-            lambda = 0.5,
+            lambda = 0.25,
             annotate = TRUE,
-            annotate.by = 'res0.8_lam0.5_k40',
+            annotate.by = run2,
             barplot.by = c('num_genes', 'total_count'))
 ```
 
-## Subsetting
-
-The *BanksyObject* can be subset by cells, features or metadata columns.
-```{r}
-bankSubset1 <- SubsetBanksy(bank,
-                            dims = (sdimx > 1000 & sdimx < 4000) & 
-                                   (sdimy > 2000 & sdimy < 3000),
-                            cells = c('cell_364', 'cell_367', 'cell_384','cell_389'),
-                            features = sample(rownames(own.expr(bank)), 10))
-head(bankSubset1)
-```
-
-```{r}
-bankSubset2 <- SubsetBanksy(bank,
-                            metadata = res0.8_lam0.5_k40 %in% c(5,6))
-plotSpatialDims(bankSubset2, by = 'res0.8_lam0.5_k40', 
-                pt.size = 0.5, main.size = 10)
-```
-
 # Session information
-```{r}
+```{r, eval = T}
 sessionInfo()
 ```
-
-## To-dos
-
-* Pass devtools::check: S3/4 documentation

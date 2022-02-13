@@ -2,3 +2,4 @@
 *.Rproj
 .Rhistory
 inst/doc
+scripts
