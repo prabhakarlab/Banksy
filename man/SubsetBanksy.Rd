@@ -33,3 +33,11 @@ subset BanksyObject
 \description{
 Subset a BanksyObject
 }
+\examples{
+# Generate a simulated dataset
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+# Subset cells with Label = 1
+bank <- SubsetBanksy(bank, metadata = Label == 1)
+
+}

@@ -13,6 +13,14 @@
 #' @return subset BanksyObject
 #'
 #' @export
+#' 
+#' @examples
+#' # Generate a simulated dataset
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' # Subset cells with Label = 1
+#' bank <- SubsetBanksy(bank, metadata = Label == 1)
+#' 
 SubsetBanksy <- function(
   x, cells=NULL, features=NULL, dims=TRUE, metadata=TRUE, dataset=NULL) {
 
@@ -76,6 +84,15 @@ SubsetBanksy <- function(
 #' @return BanksyObject
 #'
 #' @export
+#' 
+#' @examples 
+#' # Generate a simulated dataset
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' # Split BanksyObject into multiple datasets based on label
+#' bank <- SplitBanksy(bank, by = 'Label')
+#' bank
+#'
 SplitBanksy <- function(bank, by, names = NULL) {
 
   if (is.list(bank@own.expr)) {

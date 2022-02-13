@@ -44,3 +44,14 @@ BanksyObject with dimensionality reduction
 \description{
 Run UMAP
 }
+\examples{
+# Generate a simulated dataset
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+bank <- NormalizeBanksy(bank)
+bank <- ScaleBanksy(bank)
+bank <- ComputeBanksy(bank)
+bank <- RunPCA(bank, lambda = 0.2)
+bank <- RunUMAP(bank, lambda = 0.2)
+
+}

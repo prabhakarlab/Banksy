@@ -17,3 +17,16 @@ matrix of ARI
 \description{
 Calculate adjusted rand index for harmonized clusters
 }
+\examples{
+# Generate a simulated dataset
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+bank <- NormalizeBanksy(bank)
+bank <- ScaleBanksy(bank)
+bank <- ComputeBanksy(bank)
+bank <- RunPCA(bank, lambda = 0.2)
+bank <- ClusterBanksy(bank, lambda = 0.2, npcs = 20, k.neighbors = 50, resolution = c(0.5,1.5))
+ari <- getARI(bank)
+ari
+
+}

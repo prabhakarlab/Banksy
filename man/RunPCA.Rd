@@ -19,3 +19,13 @@ BanksyObject with PCA
 \description{
 Run PCA
 }
+\examples{
+# Generate a simulated dataset
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+bank <- NormalizeBanksy(bank)
+bank <- ScaleBanksy(bank)
+bank <- ComputeBanksy(bank)
+bank <- RunPCA(bank, lambda = 0.2)
+
+}

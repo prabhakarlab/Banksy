@@ -28,6 +28,18 @@
 #' @return NULL
 #'
 #' @export
+#' 
+#' @examples 
+#' # Generate a simulated dataset
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' bank <- NormalizeBanksy(bank)
+#' bank <- ScaleBanksy(bank)
+#' bank <- ComputeBanksy(bank)
+#' bank <- RunPCA(bank, lambda = 0.2)
+#' names(reduction(bank))
+#' plotReduction(bank, reduction = 'pca_0.2', by = 'Label', type = 'discrete')
+#' 
 plotReduction <- function(bank, reduction, components = c(1,2),
                           by = NULL, type = c('discrete', 'continuous'),
                           pt.size = 0.5, pt.alpha = 0.7,
@@ -101,6 +113,13 @@ plotReduction <- function(bank, reduction, components = c(1,2),
 #' @return plot
 #'
 #' @export
+#' 
+#' @examples 
+#' # Generate a simulated dataset
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' plotSpatial(bank, by = 'Label', type = 'discrete')
+#' 
 plotSpatial <- function(bank, dataset = NULL,
                         by = NA, type = c('discrete', 'continuous'),
                         pt.size = 0.5, pt.alpha = 0.7, col.midpoint = NULL,
@@ -168,6 +187,19 @@ plotSpatial <- function(bank, dataset = NULL,
 #' @importFrom gridExtra grid.arrange
 #'
 #' @export
+#' 
+#' @examples 
+#' # Generate a simulated dataset
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' bank <- NormalizeBanksy(bank)
+#' bank <- ScaleBanksy(bank)
+#' bank <- ComputeBanksy(bank)
+#' bank <- RunPCA(bank, lambda = 0.2)
+#' bank <- ClusterBanksy(bank, lambda = 0.2, npcs = 20, k.neighbors = 50, resolution = 0.8)
+#' plotSpatialFeatures(bank, by = c('Label', clust.names(bank)), 
+#'   type = rep('discrete', 2), nrow = 1, ncol = 2, pt.size = 2)
+#' 
 plotSpatialFeatures <- function(bank, dataset = NULL, by, type, nrow, ncol, ...) {
 
   valid <- length(by) == length(type)
@@ -220,6 +252,15 @@ plotSpatialFeatures <- function(bank, dataset = NULL, by, type, nrow, ncol, ...)
 #' @return Heatmap of class ComplexHeatmap
 #'
 #' @export
+#' 
+#' @examples 
+#' # Generate a simulated dataset
+#' d <- simulateDataset(n_cells = c(20,20,20), n_genes = 30)
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' bank <- NormalizeBanksy(bank)
+#' bank <- ScaleBanksy(bank)
+#' plotHeatmap(bank, annotate = TRUE, annotate.by = 'Label')
+#' 
 plotHeatmap <- function(bank, assay = 'own.expr',
                         dataset = NULL, lambda = NULL,
                         cells = NULL, features = NULL,
@@ -332,6 +373,18 @@ plotHeatmap <- function(bank, assay = 'own.expr',
 #'   element_blank labs geom_text element_text
 #'
 #' @export
+#' 
+#' @examples 
+#' # Generate a simulated dataset
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' bank <- NormalizeBanksy(bank)
+#' bank <- ScaleBanksy(bank)
+#' bank <- ComputeBanksy(bank)
+#' bank <- RunPCA(bank, lambda = 0.2)
+#' bank <- ClusterBanksy(bank, lambda = 0.2, npcs = 20, k.neighbors = 50, resolution = c(0.5,1.5))
+#' plotARI(bank)
+#' 
 plotARI <- function(bank, col.low = 'white', col.high = 'red', label = TRUE, digits = 3) {
   ari.mat <- getARI(bank, digits = digits)
   data <- reshape2::melt(ari.mat)
@@ -362,6 +415,18 @@ plotARI <- function(bank, col.low = 'white', col.high = 'red', label = TRUE, dig
 #' @return Alluvial plot
 #'
 #' @export
+#' 
+#' @examples 
+#' # Generate a simulated dataset
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' bank <- NormalizeBanksy(bank)
+#' bank <- ScaleBanksy(bank)
+#' bank <- ComputeBanksy(bank)
+#' bank <- RunPCA(bank, lambda = 0.2)
+#' bank <- ClusterBanksy(bank, lambda = 0.2, npcs = 20, k.neighbors = 50, resolution = c(0.5,1.5))
+#' plotAlluvia(bank, max.cells = 20)
+#' 
 plotAlluvia <- function(bank, max.cells = 500, seed = 42, flow.colors = NULL) {
 
   df <- meta.data(bank)[,clust.names(bank)]

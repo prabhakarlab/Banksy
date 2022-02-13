@@ -20,6 +20,17 @@
 #' @return BanksyObject with cluster labels in meta.data
 #'
 #' @export
+#' 
+#' @examples
+#' # Generate a simulated dataset
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' bank <- NormalizeBanksy(bank)
+#' bank <- ComputeBanksy(bank)
+#' bank <- ScaleBanksy(bank)
+#' bank <- RunPCA(bank, lambda = 0.3)
+#' bank <- ClusterBanksy(bank, lambda = 0.3, npcs = 20, k.neighbors = 50, resolution = 0.5)
+#'
 ClusterBanksy <- function(bank, lambda = 0.25, pca = TRUE, npcs = 30,
                           method = c('leiden', 'louvain', 'mclust', 'kmeans'),
                           k.neighbors = NULL, resolution = NULL,
@@ -230,6 +241,18 @@ runLouvain <- function(bank, lambda, pca, npcs, k.neighbors) {
 #' @return BanksyObject with harmonized cluster labels
 #'
 #' @export
+#' 
+#' @examples 
+#' # Generate a simulated dataset
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' bank <- NormalizeBanksy(bank)
+#' bank <- ScaleBanksy(bank)
+#' bank <- ComputeBanksy(bank)
+#' bank <- RunPCA(bank, lambda = 0.2)
+#' bank <- ClusterBanksy(bank, lambda = 0.2, npcs = 20, k.neighbors = 50, resolution = c(0.5,1.5))
+#' bank <- ConnectClusters(bank)
+#' 
 ConnectClusters <- function(bank, map.to = NULL) {
 
   clusters <- bank@meta.data[, clust.names(bank)]
@@ -309,6 +332,19 @@ mapToSeed <- function(val, seed) {
 #' @importFrom utils combn
 #'
 #' @export
+#' 
+#' @examples 
+#' # Generate a simulated dataset
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' bank <- NormalizeBanksy(bank)
+#' bank <- ScaleBanksy(bank)
+#' bank <- ComputeBanksy(bank)
+#' bank <- RunPCA(bank, lambda = 0.2)
+#' bank <- ClusterBanksy(bank, lambda = 0.2, npcs = 20, k.neighbors = 50, resolution = c(0.5,1.5))
+#' ari <- getARI(bank)
+#' ari
+#' 
 getARI <- function(bank, digits = 3) {
   clust <- bank@meta.data[,clust.names(bank)]
   n.clust <- ncol(clust)

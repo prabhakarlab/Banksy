@@ -19,3 +19,12 @@ BanksyObject
 \description{
 Split a BanksyObject by metadata column
 }
+\examples{
+# Generate a simulated dataset
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+# Split BanksyObject into multiple datasets based on label
+bank <- SplitBanksy(bank, by = 'Label')
+bank
+
+}

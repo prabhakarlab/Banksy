@@ -44,3 +44,11 @@ BanksyObject
 \description{
 Compute Banksy Matrices
 }
+\examples{
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+bank <- NormalizeBanksy(bank)
+# Compute neighbors 
+bank <- ComputeBanksy(bank)
+
+}
