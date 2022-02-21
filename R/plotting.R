@@ -1,7 +1,7 @@
 # plotUMAP
 # plotSpatialDims
 
-#' Plot UMAP
+#' Plot dimensionality reduction assays
 #'
 #' @param bank BanksyObject
 #' @param reduction reduction to visualize
@@ -105,10 +105,11 @@ plotReduction <- function(bank, reduction, components = c(1,2),
 #' @param legend show legend
 #' @param legend.text.size size of legend text
 #' @param legend.pt.size size of legend point
+#' @param wrap wrap by feature
 #'
 #' @importFrom ggplot2 ggplot geom_point aes xlab ylab theme_minimal ggtitle
-#'   facet_wrap guides guide_legend element_text element_blank scale_color_manual
-#'   element_line scale_color_gradient2
+#'   facet_wrap facet_grid guides guide_legend element_text element_blank 
+#'   scale_color_manual element_line scale_color_gradient2
 #'
 #' @return plot
 #'
@@ -127,7 +128,8 @@ plotSpatial <- function(bank, dataset = NULL,
                         col.low = 'blue', col.mid = 'gray95', col.high = 'red',
                         na.value = 'gray', col.discrete = NULL, main = NULL,
                         main.size = 5, legend = TRUE,
-                        legend.text.size = 6, legend.pt.size = 3) {
+                        legend.text.size = 6, legend.pt.size = 3,
+                        wrap = FALSE) {
 
   data <- getLocations(bank, dataset = dataset)
   sdimx <- sdimy <- NULL
@@ -169,8 +171,12 @@ plotSpatial <- function(bank, dataset = NULL,
     theme_blank(legend.text.size = legend.text.size,
                 main.size = main.size,
                 legend.pos = legend.pos)
-  if ('sdimz' %in% names(data)) plot <- plot + facet_wrap(~ sdimz)
-
+  
+  wrap.z <- 'sdimz' %in% names(data)
+  if (wrap.z & wrap) plot <- plot + facet_grid(sdimz ~ feature) 
+  else if (wrap) plot <- plot + facet_wrap(~ feature)
+  else if (wrap.z) plot <- plot + facet_wrap(~ sdimz)
+  
   return(plot)
 }
 

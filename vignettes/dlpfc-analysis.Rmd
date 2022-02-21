@@ -50,6 +50,20 @@ Each processed sample contains roughly ~3,500 spots and 7,319 genes.
 
 ## Running BANKSY
 
+<details>
+  <summary>**Note**</summary>
+  
+For brevity, the code chunks in this section are not run. The table below shows 
+the expected run time and memory requirements for the following function calls:
+
+```{r, mem, echo=FALSE}
+d <- readRDS(system.file('extdata/dlpfc_benchmark.rds', package = 'Banksy'))
+names(d) <- c('Function call', 'Elapsed time (sec)', 'Total RAM used (MiB)', 'Peaked RAM used (MiB)')
+knitr::kable(d)
+```
+
+</details>
+
 We run BANKSY by first computing the neighbor-augmented matrix. We use 
 `k_geom=6`, which corresponds to the first order neighbors for 10x Visium data:
 
@@ -70,20 +84,6 @@ Finally, we perform Leiden clustering on 25 PCs:
 bank <- ClusterBanksy(bank, lambda = 0.2, pca = TRUE, npcs = 25,
                       k.neighbors = 40, resolution = 0.5, seed = 1000)
 ```
-
-<details>
-  <summary>**Note**</summary>
-  
-For brevity, the code chunks in this section are not run. The table below shows 
-the expected run time and memory requirements for each function call above:
-
-```{r, mem, echo=FALSE}
-d <- readRDS(system.file('extdata/dlpfc_benchmark.rds', package = 'Banksy'))
-names(d) <- c('Function call', 'Elapsed time (sec)', 'Total RAM used (MiB)', 'Peaked RAM used (MiB)')
-knitr::kable(d)
-```
-
-</details>
 
 ```{r addresults, eval=T, include=F}
 banksy <- readRDS(system.file('extdata/dlpfc_clusters.rds', package = 'Banksy'))

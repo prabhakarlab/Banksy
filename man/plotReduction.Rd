@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotting.R
 \name{plotReduction}
 \alias{plotReduction}
-\title{Plot UMAP}
+\title{Plot dimensionality reduction assays}
 \usage{
 plotReduction(
   bank,
@@ -60,7 +60,7 @@ plotReduction(
 \item{legend.pt.size}{size of legend point}
 }
 \description{
-Plot UMAP
+Plot dimensionality reduction assays
 }
 \examples{
 # Generate a simulated dataset

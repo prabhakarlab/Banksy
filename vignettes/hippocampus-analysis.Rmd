@@ -15,7 +15,10 @@ knitr::opts_chunk$set(
 ```
 
 Here, we demonstrate a grid search of clustering parameters with a mouse 
-hippocampus VeraFISH dataset. *BANKSY* currently provides four algorithms for clustering the BANKSY matrix with *ClusterBanksy*: Leiden (default), Louvain, k-means, and model-based clustering. In this vignette, we run only Leiden clustering. See `?ClusterBanksy` for more details on the parameters for
+hippocampus VeraFISH dataset. *BANKSY* currently provides four algorithms for 
+clustering the BANKSY matrix with *ClusterBanksy*: Leiden (default), Louvain,
+k-means, and model-based clustering. In this vignette, we run only Leiden 
+clustering. See `?ClusterBanksy` for more details on the parameters for
 different clustering methods.
 
 ## Loading the data
@@ -45,7 +48,8 @@ smaller values of `lambda` (e.g. `[0,0.25]`), BANKY operates in
 *zone-finding* mode. See the pre-print for more details.
 
 Leiden graph-based clustering admits two parameters: `k.neighbors` and 
-`resolution`. `k.neighbors` determines the number of k nearest neighbors used to construct the shared nearest neighbors graph. Leiden clustering is then 
+`resolution`. `k.neighbors` determines the number of k nearest neighbors used to
+construct the shared nearest neighbors graph. Leiden clustering is then 
 performed on the resultant graph with resolution `resolution`.
 
 We first process the data for clustering:
@@ -58,7 +62,8 @@ bank <- ScaleBanksy(bank)
 
 ## Grid search
 
-Before clustering, we define a parameter space. Here, we'll explore different combinations of `lambda` and `resolution` while fixing `kneighbours`. We first
+Before clustering, we define a parameter space. Here, we'll explore different 
+combinations of `lambda` and `resolution` while fixing `kneighbours`. We first
 run PCA on the BANKSY matrix with 20 PCs for each `lambda`. Clustering is then
 performed on the PCs (by default):
 
@@ -104,7 +109,8 @@ bank <- ConnectClusters(bank, map.to = 'clust_lam0.3_k50_res1.2')
 head(meta.data(bank))
 ```
 
-This updates the `meta.data` slot with new cluster labels that can be used for visualisation. We can visualise connected output as follows.
+This updates the `meta.data` slot with new cluster labels that can be used for 
+visualisation. We can visualise connected output as follows.
 
 First, obtain cluster names:
 
@@ -120,14 +126,15 @@ plotSpatialFeatures(bank, by = cnms, type = rep('discrete', 4),
 ```
 
 We visualise the differences between clusters obtained with non-spatial 
-clustering (`lam=0`) and BANKSY in cell-typing mode (`lam=0.3`) more finely by splitting the clusters with `ggplot2::facet_wrap`:
+clustering (`lam=0`) and BANKSY in cell-typing mode (`lam=0.3`) more finely by 
+splitting the clusters with `wrap = TRUE`:
 
 ```{r wrap, eval=T, fig.width=12, fig.height=6, fig.align='center'}
 p1 <- plotSpatial(bank, by = cnms[2], type = 'discrete', 
-            main = cnms[2], main.size = 10, pt.size = 0.1) + facet_wrap(~ feature)
+            main = cnms[2], main.size = 10, pt.size = 0.1, wrap = TRUE)
 
 p2 <- plotSpatial(bank, by = cnms[4], type = 'discrete', 
-            main = cnms[4], main.size = 10, pt.size = 0.1) + facet_wrap(~ feature)
+            main = cnms[4], main.size = 10, pt.size = 0.1, wrap = TRUE)
 
 grid.arrange(p1, p2, ncol = 2)
 ```

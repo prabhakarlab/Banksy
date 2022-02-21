@@ -23,7 +23,8 @@ plotSpatial(
   main.size = 5,
   legend = TRUE,
   legend.text.size = 6,
-  legend.pt.size = 3
+  legend.pt.size = 3,
+  wrap = FALSE
 )
 }
 \arguments{
@@ -64,6 +65,8 @@ plotSpatial(
 \item{legend.text.size}{size of legend text}
 
 \item{legend.pt.size}{size of legend point}
+
+\item{wrap}{wrap by feature}
 }
 \value{
 plot
