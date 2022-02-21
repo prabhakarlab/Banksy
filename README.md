@@ -1,69 +1,59 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
-# Banksy
-
 <!-- badges: start -->
-
 <!-- badges: end -->
 
-Banksy is an R package that incorporates spatial information to cluster
-cells in a feature space (e.g. gene expression). Spatial information is
-incorporated by averaging the features of the k nearest neighbours to
-generate new ‘neighbour’ features for a given cell. This is concatenated
-to the cell’s own features to generate a combined feature matrix which
-is used for constructing a nearest neighbour network. Leiden clustering
-is used to obtain spatially-informed clusters.
+BANKSY is a method for clustering spatial transcriptomic data by
+augmenting the transcriptomic profile of each cell with an average of
+the transcriptomes of its spatial neighbors. By incorporating this
+neighborhood information for clustering, BANKSY is able to
 
-# Installation
+-   improve cell-type assignment in noisy data
+-   distinguish subtly different cell-types stratified by
+    microenvironment
+-   identify contiguous regions of spatial homogeneity
+
+BANKSY is applicable to a wide array of spatial technologies (e.g. 10x
+Visium, Slide-seq, MERFISH) and scales well to large datasets. For more
+details on use-cases and methods, see the [preprint]().
+
+## Installation
+
+*Banksy* package can be installed via `remotes`:
 
 ``` r
-# Install from GitHub
 remotes::install_github("jleechung/Banksy", dependencies = TRUE)
 ```
 
-# Documentation
+## Documentation
 
-NOTE: These links will not work at the moment since the repo is still
-private. Refer to the
-[vignettes](https://github.com/jleechung/Banksy/tree/main/vignettes) for
-the time being.
+Detailed description of *Banksy* functionality and example analyses are
+available at the [package webpage]().
 
-*Banksy* comes installed with
-[documentation](https://jleechung.github.io/Banksy/reference/index.html)
-of main functions and their usage, along with several vignettes which
-detail different use cases:
+*Banksy* comes installed with [documentation]() of main functions and
+their usage, along with several vignettes which detail different use
+cases:
 
-  - [Working with Banksy
-    objects](https://jleechung.github.io/Banksy/articles/banksy-object.html):
-    Introduction to the *BanksyObject* class which serves as a container
-    for *Banksy*.
+-   [Working with Banksy objects](): Introduction to the *BanksyObject*
+    class which serves as a container for *Banksy*.
 
-  - [Finding optimal clustering
-    parameters](https://jleechung.github.io/Banksy/articles/grid-search.html):
-    Illustrates a grid search of parameters which best cluster cells.
+-   [Mouse hippocampus MERFISH dataset](): Illustrates a grid search of
+    parameters which best cluster cells.
 
-  - [Analysing multiple
-    datasets](https://jleechung.github.io/Banksy/articles/multiple-datasets.html):
+-   [Human dorsolateral prefrontal cortex 10x Visium dataset]():
     Illustrates analysis of multiple spatial transcriptomic datasets.
 
-  - [Integrating *Banksy* with other
-    packages](https://jleechung.github.io/Banksy/articles/integrating-pkgs.html):
-    Illustrates how users can integrate *Banksy* with packages like
-    *Seurat* and *Giotto*.
+## Quick start
 
-# Basic Usage
-
-## Input data
-
-Inputs consist of an expression matrix and cell locations. Sample data
-is provided with the package:
+*Banksy* takes as input an expression matrix and cell centroids. Example
+datasets are provided with the package:
 
 ``` r
 library(Banksy)
 
-expr <- readRDS(system.file('/extdata/expression.rds', package = 'Banksy'))
-locs <- readRDS(system.file('/extdata/locations.rds', package = 'Banksy'))
+data(hippocampus)
+expr <- hippocampus$expression
+locs <- hippocampus$locations
 ```
 
 The gene expression matrix for cells should be a `matrix`:
@@ -72,13 +62,13 @@ The gene expression matrix for cells should be a `matrix`:
 class(expr)
 #> [1] "matrix" "array"
 head(expr[,1:5])
-#>          cell_4 cell_5 cell_6 cell_7 cell_8
-#> Slc1a2        4      2     13     26      6
-#> Scn4b         3      6     17      0      1
-#> Itpr1         3      0     15      2      3
-#> Slc25a23      3      0      5      3      1
-#> Slc1a3        1      1      0     31      2
-#> Nfib          1      1      1      4      0
+#>         cellID_110 cellID_124 cellID_128 cellID_150 cellID_160
+#> Dcx              0          0          0          0          0
+#> Sqstm1           3          0          0          1          0
+#> Rgs5             0          0          0          0          0
+#> Slc1a3           0          0          0          0          0
+#> Sparcl1          7          0          1          9          1
+#> Notch1           1          0          0          0          0
 ```
 
 while cell locations should be supplied as a `data.frame`:
@@ -87,20 +77,13 @@ while cell locations should be supplied as a `data.frame`:
 class(locs)
 #> [1] "data.frame"
 head(locs)
-#>            sdimx     sdimy
-#> cell_4  68.49701 13951.186
-#> cell_5  73.80242 18085.385
-#> cell_6 119.55364  3143.897
-#> cell_7 105.25295  2191.132
-#> cell_8  96.64224  4806.681
-#> cell_9 110.59598 14124.008
-```
-
-We store the total number of detect genes and total counts as metadata:
-
-``` r
-metadata <- data.frame(num_genes = colSums(expr > 0),
-                       total_count = colSums(expr))
+#>                  sdimx    sdimy
+#> cellID_110 -13039.7282 16162.19
+#> cellID_124  -8470.7282 16153.19
+#> cellID_128  -8009.7282 16185.19
+#> cellID_150  -2664.7282 16164.19
+#> cellID_160   -797.7282 16223.19
+#> cellID_166   2200.2718 16208.19
 ```
 
 Next, create a *BanksyObject* with the expression matrix and cell
@@ -108,28 +91,11 @@ locations.
 
 ``` r
 bank <- BanksyObject(own.expr = expr,
-                     cell.locs = locs,
-                     meta.data = metadata)
+                     cell.locs = locs)
 ```
 
-We can visualize the spatial layout of the cells, number of non-zero
-genes, and the expression of specific genes:
-
-``` r
-features <- c(NA, 'num_genes', 'Kcnh2', 'Slc38a1')
-feature.types <- c(NA, rep('continuous', 3))
-main <- features; main[1] <- ''
-alpha <- c(0.2, rep(1, 3))
-plotSpatialFeatures(bank, by = features, type = feature.types, main = main, 
-                    nrow = 2, ncol = 2, pt.size = 1, pt.alpha = alpha, main.size = 10)
-```
-
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
-
-## Spatial clustering
-
-We first normalize the expression matrix, compute the neighbour matrix,
-and scale the resulting gene-cell and neighbour feature-cell matrix.
+We first normalize the expression matrix, compute the neighbor matrix,
+and scale the resulting matrices.
 
 ``` r
 bank <- NormalizeBanksy(bank, normFactor = 100)
@@ -140,170 +106,59 @@ bank <- ComputeBanksy(bank)
 bank <- ScaleBanksy(bank)
 ```
 
-At this point, the joint expression matrix (gene-cell matrix and
-neighbour feature-cell matrix) can be extracted with *getBanksyMatrix*,
-which returns the joint matrix and cell locations. Here, `lambda` is a
-mixing parameter from 0 to 1 which determines how much spatial
-information is incorporated. Larger values of `lambda` incorporate more
-spatial information for identifying clusters.
+Run PCA on the BANKSY matrix for `lambda = 0` (no spatial information)
+and `lambda = 0.3`.
 
 ``` r
-joint <- getBanksyMatrix(bank, lambda = 0.25)
-
-joint$expr[1:5,1:5]
-#>              cell_4      cell_5     cell_6     cell_7     cell_8
-#> Slc1a2   0.41040297 -0.36165667 -0.4364615  0.8607711  0.3392922
-#> Scn4b    0.85950683  2.02739671  0.2884143 -0.7755390 -0.4313188
-#> Itpr1    0.77398900 -1.00281439  0.0173598 -0.7598327  0.1193772
-#> Slc25a23 2.51032763 -1.15087647 -0.4501676 -0.3998602 -0.3800967
-#> Slc1a3   0.07620877 -0.01765429 -0.5808326  3.5972767  0.2491144
-joint$locs[1:5,]
-#>            sdimx     sdimy
-#> cell_4  68.49701 13951.186
-#> cell_5  73.80242 18085.385
-#> cell_6 119.55364  3143.897
-#> cell_7 105.25295  2191.132
-#> cell_8  96.64224  4806.681
-```
-
-Run PCA on the Banksy matrix for `lambda = 0` (no spatial information)
-and `lambda = 0.25`. This populates the `reduction` slot:
-
-``` r
-bank <- RunPCA(bank, lambda = c(0, 0.25), npcs = 30)
+bank <- RunPCA(bank, lambda = c(0, 0.3), npcs = 30)
 #> Running PCA for lambda=0
-#> Running PCA for lambda=0.25
-names(bank@reduction)
-#> [1] "pca_0"    "pca_0.25"
-```
-
-Visualize PCA and its scree plot:
-
-``` r
-p1 <- plotReduction(bank, reduction = 'pca_0.25')
-p2 <- plotScree(bank, lambda = 0.25)
-gridExtra::grid.arrange(p1, p2, ncol = 2)
-```
-
-<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
-
-For visualization, we run UMAP on 30 principal components:
-
-``` r
-bank <- RunUMAP(bank, lambda = 0.25, npcs = 30)
-#> Computing UMAP with 30 PCs
-#> Running UMAP for lambda=0.25
+#> Running PCA for lambda=0.3
 ```
 
 Next, we obtain cluster assignments using graph-based clustering with
 the Leiden algorithm. Specify the following parameters:
 
-  - `resolution`. Leiden clustering resolution.  
-  - `k.neighbours`. Number of k neighbours to use for constructing sNN.
-
-<!-- end list -->
+-   `resolution`. Leiden clustering resolution.  
+-   `k.neighbours`. Number of k neighbours to use for constructing sNN.
 
 ``` r
-set.seed(1234)
-bank <- ClusterBanksy(bank, lambda = c(0, 0.25), method = 'leiden',
-                      k.neighbors = 40, resolution = 1)
+bank <- ClusterBanksy(bank, lambda = c(0, 0.3), method = 'leiden',
+                      k.neighbors = 50, resolution = 1.2, seed = 1234)
 #> Iteration 1 out of 2
 #> Iteration 2 out of 2
 ```
 
-## Visualization
-
-We can visualize the UMAP and spatial plots by the clustering run:
+Different clustering runs can be harmonised with `ConnectClusters`:
 
 ``` r
-run1 <- 'clust_lam0_k40_res1'
-run2 <- 'clust_lam0.25_k40_res1'
-
-plotReduction(bank, reduction = 'umap_0.25', by = run2, type = 'discrete', pt.size = 0.02)
+bank <- ConnectClusters(bank, map.to = clust.names(bank)[1])
 ```
 
-<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
-
-Observe the effects of incorporating spatially information (right,
-`lambda = 0.25`) in identifying clusters:
+Visualise the clustering output for non-spatial clustering (`lambda=0`)
+and BANKSY clustering (`lambda = 0.3`).
 
 ``` r
-features <- c(run1, run2)
+features <- clust.names(bank)
 feature.types <- rep('discrete', 2)
-main <- c('Lambda=0', 'Lambda=0.25')
+main <- c('Non-spatial', 'BANKSY')
 plotSpatialFeatures(bank, by = features, type = feature.types, main = main, 
                     pt.size = 1.5, main.size = 15, nrow = 1, ncol = 2)
 ```
 
-<img src="man/figures/README-unnamed-chunk-16-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
 
-Heatmap of the cells, annotated by the clustering run with barplots of
-the number of detected genes and total count:
-
-``` r
-plotHeatmap(bank, assay = 'banksy',
-            lambda = 0.25,
-            annotate = TRUE,
-            annotate.by = run2,
-            barplot.by = c('num_genes', 'total_count'))
-#> `use_raster` is automatically set to TRUE for a matrix with more than
-#> 2000 columns You can control `use_raster` argument by explicitly
-#> setting TRUE/FALSE to it.
-#> 
-#> Set `ht_opt$message = FALSE` to turn off this message.
-```
-
-<img src="man/figures/README-unnamed-chunk-17-1.png" width="100%" />
-
-# Session information
+For clarity, we can visualise each of the clusters separately with
+`wrap = TRUE`:
 
 ``` r
-sessionInfo()
-#> R version 4.0.3 (2020-10-10)
-#> Platform: x86_64-w64-mingw32/x64 (64-bit)
-#> Running under: Windows 10 x64 (build 19043)
-#> 
-#> Matrix products: default
-#> 
-#> locale:
-#> [1] LC_COLLATE=English_Singapore.1252  LC_CTYPE=English_Singapore.1252   
-#> [3] LC_MONETARY=English_Singapore.1252 LC_NUMERIC=C                      
-#> [5] LC_TIME=English_Singapore.1252    
-#> 
-#> attached base packages:
-#> [1] stats     graphics  grDevices utils     datasets  methods   base     
-#> 
-#> other attached packages:
-#> [1] Banksy_0.1.0
-#> 
-#> loaded via a namespace (and not attached):
-#>  [1] maps_3.3.0               RcppHungarian_0.1        assertthat_0.2.1        
-#>  [4] highr_0.9                stats4_4.0.3             yaml_2.2.1              
-#>  [7] pillar_1.6.2             lattice_0.20-41          glue_1.4.2              
-#> [10] RcppEigen_0.3.3.9.1      digest_0.6.27            RColorBrewer_1.1-2      
-#> [13] colorspace_2.0-2         htmltools_0.5.1.1        Matrix_1.3-4            
-#> [16] plyr_1.8.6               pkgconfig_2.0.3          GetoptLong_1.0.5        
-#> [19] magick_2.7.2             purrr_0.3.4              scales_1.1.1            
-#> [22] sccore_0.1.3             RSpectra_0.16-0          leidenAlg_0.1.1         
-#> [25] ggalluvial_0.12.3        collapse_1.6.5           tibble_3.1.3            
-#> [28] generics_0.1.0           dbscan_1.1-8             farver_2.1.0            
-#> [31] IRanges_2.24.1           grr_0.9.5                ggplot2_3.3.5           
-#> [34] ellipsis_0.3.2           BiocGenerics_0.36.1      magrittr_2.0.1          
-#> [37] crayon_1.4.1             mclust_5.4.7             evaluate_0.14           
-#> [40] fansi_0.5.0              RcppArmadillo_0.10.6.0.0 Cairo_1.5-12.2          
-#> [43] tools_4.0.3              data.table_1.14.0        GlobalOptions_0.1.2     
-#> [46] lifecycle_1.0.0          matrixStats_0.60.0       ComplexHeatmap_2.6.2    
-#> [49] stringr_1.4.0            S4Vectors_0.28.1         munsell_0.5.0           
-#> [52] cluster_2.1.2            irlba_2.3.3              compiler_4.0.3          
-#> [55] rlang_0.4.11             grid_4.0.3               Matrix.utils_0.9.8      
-#> [58] dichromat_2.0-0          RcppAnnoy_0.0.19         rjson_0.2.20            
-#> [61] circlize_0.4.13          igraph_1.2.6             labeling_0.4.2          
-#> [64] rmarkdown_2.10           codetools_0.2-16         gtable_0.3.0            
-#> [67] DBI_1.1.1                R6_2.5.1                 gridExtra_2.3           
-#> [70] knitr_1.33               dplyr_1.0.7              uwot_0.1.10             
-#> [73] utf8_1.2.2               zeallot_0.1.0            clue_0.3-59             
-#> [76] pals_1.7                 shape_1.4.6              stringi_1.7.3           
-#> [79] parallel_4.0.3           Rcpp_1.0.7               vctrs_0.3.8             
-#> [82] mapproj_1.2.7            png_0.1-7                tidyselect_1.1.1        
-#> [85] xfun_0.25
+plotSpatialFeatures(bank, by = features, type = feature.types, main = main, 
+                    pt.size = 0.5, main.size = 15, nrow = 1, ncol = 2, 
+                    wrap = TRUE)
 ```
+
+<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
+
+## Contributing
+
+Bug reports, questions, request for enhancements or other contributions
+can be raised at the [issue page]().
