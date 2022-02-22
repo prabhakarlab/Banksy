@@ -2,16 +2,19 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
 <!-- badges: end -->
+<!--![BANKSY-panel](man/figures/banksy-panel-subtitle.png)-->
+
+## Overview
 
 BANKSY is a method for clustering spatial transcriptomic data by
 augmenting the transcriptomic profile of each cell with an average of
-the transcriptomes of its spatial neighbors. By incorporating this
+the transcriptomes of its spatial neighbors. By incorporating
 neighborhood information for clustering, BANKSY is able to
 
 -   improve cell-type assignment in noisy data
 -   distinguish subtly different cell-types stratified by
     microenvironment
--   identify contiguous regions of spatial homogeneity
+-   identify spatial zones sharing the same microenvironment
 
 BANKSY is applicable to a wide array of spatial technologies (e.g. 10x
 Visium, Slide-seq, MERFISH) and scales well to large datasets. For more
@@ -19,7 +22,7 @@ details on use-cases and methods, see the [preprint]().
 
 ## Installation
 
-*Banksy* package can be installed via `remotes`:
+The *Banksy* package can be installed via `remotes`:
 
 ``` r
 remotes::install_github("jleechung/Banksy", dependencies = TRUE)
