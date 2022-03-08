@@ -119,7 +119,7 @@ and scale the resulting matrices.
 
 ``` r
 bank <- NormalizeBanksy(bank, normFactor = 100)
-bank <- ComputeBanksy(bank)
+bank <- ComputeBanksy(bank, k_geom = 10, spatialMode = 'kNN_r')
 #> Computing neighbors...
 #> Computing neighbor matrix...
 #> Done
@@ -136,14 +136,16 @@ bank <- RunPCA(bank, lambda = c(0, 0.3), npcs = 30)
 ```
 
 Next, we obtain cluster assignments using graph-based clustering with
-the Leiden algorithm. Specify the following parameters:
+the Leiden algorithm on the first 20 PCs. Specify the following
+parameters:
 
 -   `resolution`. Leiden clustering resolution.  
 -   `k.neighbours`. Number of k neighbours to use for constructing sNN.
 
 ``` r
-bank <- ClusterBanksy(bank, lambda = c(0, 0.3), method = 'leiden',
-                      k.neighbors = 50, resolution = 1.2, seed = 42)
+bank <- ClusterBanksy(bank, lambda = c(0, 0.3), pca = TRUE, npcs = 20,
+                      method = 'leiden', k.neighbors = 50, resolution = 1.2, 
+                      seed = 42)
 #> Iteration 1 out of 2
 #> Iteration 2 out of 2
 ```
