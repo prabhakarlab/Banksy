@@ -102,6 +102,7 @@ and add it to the *BanksyObject*:
 
 ```{r manual, eval=T}
 library(plyr)
+
 # Manual annotation is provided with the package
 anno <- readRDS(system.file('extdata/dlpfc_annotation.rds', package = 'Banksy'))
 layers <- c('L1','L2','L3','L4','L5','L6','WM','NA')
@@ -114,12 +115,12 @@ meta.data(bank)$clust_anno <- anno
 Here, we visualise the UMAP for the spots from all samples combined, overlayed
 with BANKSY clusters and manual annotation. 
 
-```{r umap, fig.width=12, fig.height=6, fig.align='center', warning=F, message=F}
+```{r umap, fig.width=7, fig.height=3.5, fig.align='center', warning=F, message=F}
 grid.arrange(
   plotReduction(bank, reduction = 'umap_0.2', by = 'clust_lam0.2_k40_res0.5', type = 'discrete',
-                main = 'BANKSY clusters', main.size = 15), 
+                main = 'BANKSY clusters', main.size = 10, pt.size = 0.25), 
   plotReduction(bank, reduction = 'umap_0.2', by = 'clust_anno', type = 'discrete',
-                main = 'Manual annotation', main.size = 15) +
+                main = 'Manual annotation', main.size = 10, pt.size = 0.25) +
     scale_color_manual(labels = layers, values = Banksy:::getPalette(8)),
   ncol = 2
 )
@@ -128,7 +129,7 @@ grid.arrange(
 Next, we compare BANKSY clusters against the manual annotation by computing the
 adjusted Rand index for each sample and visualising the spatial plots:
 
-```{r plot, fig.width=16, fig.height=8, fig.align='center'}
+```{r plot, fig.width=6, fig.height=12, fig.align='center'}
 sample_names <- unique(meta.data(bank)$dataset)
 
 # Get labels for each sample separately
@@ -143,21 +144,22 @@ sample_ari <- Map(function(x,y) round(mclust::adjustedRandIndex(x,y),3),
 sample_plots <- Map(function(x,y) {
     p1 <- plotSpatial(bank, dataset = x, by = 'clust_anno', type = 'discrete',
                 main = sprintf('Sample %s', gsub('sample_', '', x)),
-                main.size = 15, pt.size = 1.5, legend = FALSE)
+                main.size = 10, pt.size = 1, legend = FALSE)
     p2 <- plotSpatial(bank, dataset = x, by = 'clust_lam0.2_k40_res0.5', type = 'discrete',
                 main = sprintf('BANKSY ARI: %s', y),
-                main.size = 15, pt.size = 1.5, legend = FALSE)
+                main.size = 10, pt.size = 1, legend = FALSE)
     list(p1, p2)
   },
   sample_names, sample_ari)
 sample_plots <- unlist(sample_plots, recursive = FALSE)
 
 grid.arrange(
-  grobs = sample_plots, nrow = 2, ncol = 4, 
-  layout_matrix = rbind(c(1,3,5,7),c(2,4,6,8))
+  grobs = sample_plots, nrow = 4, ncol = 2, 
+  layout_matrix = rbind(1:2,3:4,5:6,7:8)
 )
 ```
 
+## Session information
 
 ```{r sess}
 sessionInfo()

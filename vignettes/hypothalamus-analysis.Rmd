@@ -1,0 +1,165 @@
+---
+title: "Visualisation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Visualisation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This article demonstrates functions for visualisation with a mouse hypothalamus
+MERFISH dataset. The dataset comprises 11,162 cells and 161 genes in 3 spatial 
+dimensions. Cell type annotation along with other metadata is provided. 
+
+```{r, init, eval=TRUE}
+library(Banksy)
+
+data(hypothalamus)
+
+# Initialize BanksyObject
+expr <- hypothalamus$expression
+locs <- hypothalamus$locations
+meta <- hypothalamus$metadata
+
+total_count <- colSums(expr)
+meta <- cbind(meta, total_count = total_count)
+
+bank <- BanksyObject(own.expr = expr,
+                     cell.locs = locs,
+                     meta.data = meta)
+
+# Filter BanksyObject based on total count
+bank <- SubsetBanksy(bank, metadata = total_count > quantile(total_count, 0.05))
+
+bank
+``` 
+
+Almost all plotting functions in *Banksy* return *ggplot* objects. They can thus
+be further modified with the grammar of *ggplot*.
+
+## Spatial plots
+
+*Banksy* implements `plotSpatial` for visualising cells in spatial dimensions. 
+For 3 dimensional datasets, it is assumed that the z-plane is
+discretized. Spatial plots will be wrapped by z-plane. 
+
+```{r, spatial-1, fig.width=7, fig.height=3.5, fig.align='center'}
+plotSpatial(bank)
+``` 
+
+Cells can be colored by groups. Any column in the metadata and any feature 
+(gene) can be used as a grouping variable.
+
+```{r, spatial-2, fig.width=7, fig.height=3.5, fig.align='center'}
+plotSpatial(bank, by = 'Cell_class', type = 'discrete')
+```
+
+Plots can be wrapped with `wrap=TRUE`:
+
+```{r, wrap, fig.width=14, fig.height=4, fig.align='center'}
+# Wrap to visualise each group in the grouping factor
+plotSpatial(bank, by = 'Cell_class', type = 'discrete', wrap = TRUE)
+``` 
+
+Process the data:
+
+```{r, process}
+bank <- NormalizeBanksy(bank)
+bank <- ComputeBanksy(bank, k_geom = 15, spatialMode = 'kNN_r')
+bank <- ScaleBanksy(bank)
+``` 
+
+Visualise scaled *Mbp* expression, a marker for myelinating oligodendrocytes:
+
+```{r, spatial-3, fig.width=7, fig.height=3.5, fig.align='center'}
+plotSpatial(bank, by = 'Mbp', type = 'continuous', 
+            col.lowpoint = -1, col.highpoint = 1)
+``` 
+
+Multiple features can be plotted simultaneously with `plotSpatialFeatures`:
+
+```{r, spatial-4, fig.width=7, fig.height=8, fig.align='center'}
+features <- c('Mbp', 'Cxcl14', 'Fn1')
+type <- rep('continuous', 3)
+plotSpatialFeatures(bank, by = features, type = type, 
+                    col.lowpoint = -1, col.highpoint = 1, 
+                    main = features, main.size = 10, nrow = 3)
+``` 
+
+## Dimensionality reduction 
+
+*Banksy* provides functions for running and visualising principal component 
+analysis (PCA) and uniform manifold approximation projection (UMAP) for 
+dimensionality reduction.
+
+We run PCA and UMAP, and visualise the results. A scree plot can be used to 
+visualise the proportion of variance explained by each PC, and determine
+how many PCs are used in downstream analyses.
+
+```{r, pca, fig.width=7, fig.height=3.5, fig.align='center'}
+bank <- RunPCA(bank, lambda = 0.2, npcs = 30)
+plotReduction(bank, reduction = 'pca_0.2', by = 'Cell_class', type = 'discrete')
+plotScree(bank, lambda = 0.2)
+```
+
+Next, we run UMAP and visualise the projection:
+
+```{r, umap, fig.width=7, fig.height=3.5, fig.align='center'}
+bank <- RunUMAP(bank, lambda = 0.2, npcs = 20)
+p1 <- plotReduction(bank, reduction = 'umap_0.2', by = 'Cell_class', 
+                    type = 'discrete', pt.size = 0.25)
+```
+
+Run BANKSY with Leiden clustering, and compare the clustering output with the
+cell class annotation:
+
+```{r, cluster, fig.width=7, fig.height=3.5, fig.align='center'}
+bank <- ClusterBanksy(bank, lambda = 0.2, pca = TRUE, npcs = 20,
+                      method = 'leiden', k.neighbors = 50, resolution = 1)
+p2 <- plotReduction(bank, reduction = 'umap_0.2', by = clust.names(bank), 
+                    type = 'discrete', pt.size = 0.25)
+
+gridExtra::grid.arrange(
+    p1, p2, ncol = 2
+)
+```
+
+## Heatmaps
+
+We implement heatmap visualisation with the *ComplexHeatmap* package. The 
+`assay` argument takes one of:
+
+- `own.expr`: visualise the cell's own expression
+- `nbr.expr`: visualises the neighborhood expression
+- `banksy`: visualises combined own and neighbor expression weighted by `lambda`
+
+We can introduce multiple cell annotations by setting `annotate=TRUE` and 
+specifying `annotate.by`. 
+
+Because expression matrices can be large, one can also specify the maximum 
+number of columns that should be plotted with `max.cols`. This subsamples the
+matrix to speed up plotting.
+
+```{r, heatmap, fig.width=7, fig.height=6, fig.align='center'}
+set.seed(1000)
+plotHeatmap(bank, assay = 'banksy', lambda = 0.2, 
+            annotate = TRUE, 
+            annotate.by = c('Cell_class', clust.names(bank)), 
+            order.by = clust.names(bank), 
+            features = sample(rownames(own.expr(bank)), 100),
+            max.cols = 200)
+```
+
+## Session information
+
+```{r}
+sessionInfo()
+```
+

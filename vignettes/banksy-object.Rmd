@@ -27,16 +27,21 @@ library(Banksy)
 data(hippocampus)
 expr <- hippocampus$expression
 locs <- hippocampus$locations
+```
 
+We store the total counts and the number of expressed genes for each cell:
+
+```{r counts, eval=T}
 total_count <- colSums(expr)
 num_genes <- colSums(expr > 0)
 meta <- data.frame(total_count = total_count, num_genes = num_genes)
 ```
 
 The *BanksyObject* can be constructed by supplying the gene-cell expression 
-matrix and cell locations. Calling *BanksyObject* populates metadata and 
-performs gene filtering in the case of multiple datasets. This should be the 
-default method of construction - avoid setter methods for construction. 
+matrix and cell locations. Optionally, metadata can be provided. Calling 
+*BanksyObject* populates metadata and performs gene filtering in the case of 
+multiple datasets. This should be the default method of construction - avoid 
+setter methods for construction. 
 
 ```{r construct, eval=T, warning=F, message=F}
 bank <- BanksyObject(own.expr = expr, cell.locs = locs, meta.data = meta)
@@ -47,7 +52,8 @@ bank <- SubsetBanksy(bank, metadata = total_count > quantile(total_count, 0.05) 
 bank
 ```
 
-The dataset consists of 7944 cells and 124 genes in 2 spatial dimensions.
+The filtered dataset consists of 10,205 cells and 129 genes in 2 spatial 
+dimensions.
 
 *BanksyObject* has the following slots:
 
@@ -103,7 +109,8 @@ logical unquoted conditions. The variables here (e.g. `sdimx`) must correspond
 to the columns names of the `cell.locs(bank)`. 
 
 ```{r subset1, eval=T, fig.width=10, fig.height=5, fig.align='center'}
-bankDim <- SubsetBanksy(bank, dims = (sdimx < -4000 | sdimx > 10000) | (sdimy < 3000 | sdimy > 10000))
+bankDim <- SubsetBanksy(bank, dims = (sdimx < -4000 | sdimx > 10000) | 
+                                     (sdimy < 3000 | sdimy > 10000))
 
 gridExtra::grid.arrange(
   plotSpatial(bank),
@@ -130,7 +137,7 @@ unquoted conditions. Here, we select cells in in certain clusters based on the
 clustering with `lam=0.3`, `k=50`, `res=1.2`. 
 
 ```{r subset3, eval=T, fig.width=10, fig.height=5, fig.align='center'}
-select_clusters <- c(3,6,10,15)
+select_clusters <- c(6,7,10)
 bankMeta <- SubsetBanksy(bank, metadata = clust_lam0.3_k50_res1.2 %in% select_clusters)
 
 gridExtra::grid.arrange(
@@ -152,6 +159,7 @@ If multiple subsetting features are supplied, the intersection of all conditions
 will be returned.
 
 ## Session information
+
 ```{r}
 sessionInfo()
 ```

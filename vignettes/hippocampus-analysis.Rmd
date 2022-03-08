@@ -35,9 +35,13 @@ library(gridExtra)
 data(hippocampus)
 expr <- hippocampus$expression
 locs <- hippocampus$locations
-total_count <- colSums(gcm)
-num_genes <- colSums(gcm > 0)
+
+# Store total counts and number of expressed genes
+total_count <- colSums(expr)
+num_genes <- colSums(expr > 0)
 meta <- data.frame(total_count = total_count, num_genes = num_genes)
+
+# Construct BanksyObject
 bank <- BanksyObject(own.expr = expr, cell.locs = locs, meta.data = meta)
 bank
 ```
@@ -79,7 +83,8 @@ knbr <- 50
 
 bank <- RunPCA(bank, lambda = c(0, 0.3), npcs = 20)
 bank <- ClusterBanksy(bank, lambda = lam, pca = TRUE, npcs = 20, 
-                      method = 'leiden', k.neighbors = knbr, resolution = res)
+                      method = 'leiden', k.neighbors = knbr, resolution = res,
+                      seed = 42)
 ```
 
 This populates the `meta.data` slot of the *BanksyObject* with cluster labels
@@ -94,7 +99,8 @@ head(meta.data(bank))
 To compare clustering labels from different parameter combinations, the package
 implements the *getARI* and *plotARI* functions. These compute the adjusted 
 Rand index (ARI) for all pairs of clusters to assess the similarity of 
-clustering labels. 
+clustering labels. Observe that clusters with the same `lambda` share more
+similarity:
 
 ```{r runari, eval=T, fig.height=4.5, fig.width=5, fig.align='center'}
 getARI(bank)
@@ -151,8 +157,8 @@ alluvial plots:
 plotAlluvia(bank)
 ```
 
-
 ## Session information
+
 ```{r}
 sessionInfo()
 ```
