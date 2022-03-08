@@ -111,7 +111,7 @@ plotReduction <- function(bank, reduction, components = c(1,2),
 #'   facet_wrap facet_grid guides guide_legend element_text element_blank 
 #'   scale_color_manual element_line scale_color_gradient2
 #'
-#' @return plot
+#' @return Spatial plot
 #'
 #' @export
 #' 
@@ -148,6 +148,8 @@ plotSpatial <- function(bank, dataset = NULL,
           scale_color_gradient2(midpoint = col.midpoint, low = col.low,
                                 mid = col.mid, high = col.high)
       } else {
+        feature[feature > col.highpoint] <- col.highpoint
+        feature[feature < col.lowpoint] <- col.lowpoint
         plot <- ggplot(data, aes(x = sdimx, y = sdimy, col = feature)) +
           scale_color_gradient2(midpoint = col.midpoint, limits = c(col.lowpoint, col.highpoint),
                                 low = col.low, mid = col.mid, high = col.high, na.value = na.value)
@@ -183,15 +185,18 @@ plotSpatial <- function(bank, dataset = NULL,
 #' Wrapper for plotSpatial
 #'
 #' @param bank BanksyObject
-#' @param dataset if multiple datasets are used
 #' @param by features to plot
 #' @param type type corresponding to features
+#' @param dataset if multiple datasets are used
 #' @param nrow nrow for grob
 #' @param ncol ncol for grob
+#' @param return.plot return plots
 #' @param ... parameters to pass to plotSpatial
 #'
 #' @importFrom gridExtra grid.arrange
 #'
+#' @return Spatial plots
+#' 
 #' @export
 #' 
 #' @examples 
@@ -206,7 +211,9 @@ plotSpatial <- function(bank, dataset = NULL,
 #' plotSpatialFeatures(bank, by = c('Label', clust.names(bank)), 
 #'   type = rep('discrete', 2), nrow = 1, ncol = 2, pt.size = 2)
 #' 
-plotSpatialFeatures <- function(bank, dataset = NULL, by, type, nrow, ncol, ...) {
+plotSpatialFeatures <- function(bank, by, type, dataset = NULL,
+                                nrow = NULL, ncol= NULL, return.plot = FALSE, 
+                                ...) {
 
   valid <- length(by) == length(type)
   if (!valid) stop('Ensure a 1-1 correspondence between features to plot (by)
@@ -217,6 +224,8 @@ plotSpatialFeatures <- function(bank, dataset = NULL, by, type, nrow, ncol, ...)
   }, by, type, ...)
 
   do.call(grid.arrange, c(plots, nrow = nrow, ncol = ncol))
+  
+  if (return.plot) return(plots)
 }
 
 #' Plot Heatmap (wrapper for ComplexHeatmap)
