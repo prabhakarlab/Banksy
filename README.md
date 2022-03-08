@@ -3,8 +3,6 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-![BANKSY-panel](man/figures/banksy-panel-subtitle.png)
-
 ## Overview
 
 BANKSY is a method for clustering spatial transcriptomic data by
@@ -66,13 +64,13 @@ The gene expression matrix for cells should be a `matrix`:
 class(expr)
 #> [1] "matrix" "array"
 head(expr[,1:5])
-#>         cellID_110 cellID_124 cellID_128 cellID_150 cellID_160
-#> Dcx              0          0          0          0          0
-#> Sqstm1           3          0          0          1          0
-#> Rgs5             0          0          0          0          0
-#> Slc1a3           0          0          0          0          0
-#> Sparcl1          7          0          1          9          1
-#> Notch1           1          0          0          0          0
+#>         cell_1276 cell_8890 cell_691 cell_396 cell_9818
+#> Sparcl1        45         0       11       22         0
+#> Slc1a2         17         0        6        5         0
+#> Map            10         0       12       16         0
+#> Sqstm1         26         0        0        2         0
+#> Atp1a2          0         0        4        3         0
+#> Tnc             0         0        0        0         0
 ```
 
 while cell locations should be supplied as a `data.frame`:
@@ -81,21 +79,39 @@ while cell locations should be supplied as a `data.frame`:
 class(locs)
 #> [1] "data.frame"
 head(locs)
-#>                  sdimx    sdimy
-#> cellID_110 -13039.7282 16162.19
-#> cellID_124  -8470.7282 16153.19
-#> cellID_128  -8009.7282 16185.19
-#> cellID_150  -2664.7282 16164.19
-#> cellID_160   -797.7282 16223.19
-#> cellID_166   2200.2718 16208.19
+#>                 sdimx    sdimy
+#> cell_1276  -13372.899 15776.37
+#> cell_8890    8941.101 15866.37
+#> cell_691   -14882.899 15896.37
+#> cell_396   -15492.899 15835.37
+#> cell_9818   11308.101 15846.37
+#> cell_11310  14894.101 15810.37
+```
+
+We store the total counts for each cell and the number of expressed
+genes as metadata `data.frame`, which can optionally be supplied:
+
+``` r
+total_count <- colSums(expr)
+num_genes <- colSums(expr > 0)
+meta <- data.frame(total_count = total_count, num_genes = num_genes)
 ```
 
 Next, create a *BanksyObject* with the expression matrix and cell
-locations.
+locations (metadata is optional).
 
 ``` r
 bank <- BanksyObject(own.expr = expr,
-                     cell.locs = locs)
+                     cell.locs = locs,
+                     meta.data = meta)
+```
+
+Apply basic QC by keeping only cells with total counts within the 5th
+and 98th percentile:
+
+``` r
+bank <- SubsetBanksy(bank, metadata = total_count > quantile(total_count, 0.05) &
+                                      total_count < quantile(total_count, 0.98))
 ```
 
 We first normalize the expression matrix, compute the neighbor matrix,
@@ -127,7 +143,7 @@ the Leiden algorithm. Specify the following parameters:
 
 ``` r
 bank <- ClusterBanksy(bank, lambda = c(0, 0.3), method = 'leiden',
-                      k.neighbors = 50, resolution = 1.2, seed = 1234)
+                      k.neighbors = 50, resolution = 1.2, seed = 42)
 #> Iteration 1 out of 2
 #> Iteration 2 out of 2
 ```
@@ -149,7 +165,7 @@ plotSpatialFeatures(bank, by = features, type = feature.types, main = main,
                     pt.size = 1.5, main.size = 15, nrow = 1, ncol = 2)
 ```
 
-<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
 
 For clarity, we can visualise each of the clusters separately with
 `wrap = TRUE`:
@@ -160,7 +176,7 @@ plotSpatialFeatures(bank, by = features, type = feature.types, main = main,
                     wrap = TRUE)
 ```
 
-<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
 
 ## Contributing
 

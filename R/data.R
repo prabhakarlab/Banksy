@@ -2,7 +2,7 @@
 #' Mouse Hippocampus VeraFISH data
 #'
 #' This dataset comprises VeraFISH profiling of cells in the mouse hippocampus.
-#' Gene expression and cell centroids for 7,944 cells and 124 genes in 2 spatial
+#' Gene expression and cell centroids for 10,944 cells and 129 genes in 2 spatial
 #' dimensions are provided.
 #'
 #' @format A list with 2 entries:

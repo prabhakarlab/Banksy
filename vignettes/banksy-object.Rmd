@@ -27,6 +27,10 @@ library(Banksy)
 data(hippocampus)
 expr <- hippocampus$expression
 locs <- hippocampus$locations
+
+total_count <- colSums(expr)
+num_genes <- colSums(expr > 0)
+meta <- data.frame(total_count = total_count, num_genes = num_genes)
 ```
 
 The *BanksyObject* can be constructed by supplying the gene-cell expression 
@@ -35,7 +39,10 @@ performs gene filtering in the case of multiple datasets. This should be the
 default method of construction - avoid setter methods for construction. 
 
 ```{r construct, eval=T, warning=F, message=F}
-bank <- BanksyObject(own.expr = expr, cell.locs = locs)
+bank <- BanksyObject(own.expr = expr, cell.locs = locs, meta.data = meta)
+# Filter cells based on total count 
+bank <- SubsetBanksy(bank, metadata = total_count > quantile(total_count, 0.05) &
+                                      total_count < quantile(total_count, 0.98))
 
 bank
 ```
@@ -82,7 +89,7 @@ with cluster labels.
 
 ```{r cluster, eval=T}
 bank <- ClusterBanksy(bank, lambda = 0.3, pca = TRUE, npcs = 20,
-                      method = 'leiden', resolution = 1, k.neighbors = 40,
+                      method = 'leiden', resolution = 1.2, k.neighbors = 50,
                       seed = 42)
 
 head(meta.data(bank))
@@ -120,11 +127,11 @@ gridExtra::grid.arrange(
 
 Similarly, the object can also be subset by any metadata column with logical 
 unquoted conditions. Here, we select cells in in certain clusters based on the 
-clustering with `lam=0.3`, `k=40`, `res=1`. 
+clustering with `lam=0.3`, `k=50`, `res=1.2`. 
 
 ```{r subset3, eval=T, fig.width=10, fig.height=5, fig.align='center'}
 select_clusters <- c(3,6,10,15)
-bankMeta <- SubsetBanksy(bank, metadata = clust_lam0.3_k40_res1 %in% select_clusters)
+bankMeta <- SubsetBanksy(bank, metadata = clust_lam0.3_k50_res1.2 %in% select_clusters)
 
 gridExtra::grid.arrange(
   plotSpatial(bank),

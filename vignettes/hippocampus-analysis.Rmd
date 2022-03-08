@@ -24,7 +24,7 @@ different clustering methods.
 ## Loading the data
 
 First, we construct the *BanksyObject*. The dataset comprises gene expression 
-for 7,944 cells and 124 genes in 2 spatial dimensions. See 
+for 10,944 cells and 120 genes in 2 spatial dimensions. See 
 `?Banksy::hippocampus` for more details.
 
 ```{r load, eval=T, message=F, warning=F}
@@ -35,7 +35,10 @@ library(gridExtra)
 data(hippocampus)
 expr <- hippocampus$expression
 locs <- hippocampus$locations
-bank <- BanksyObject(own.expr = expr, cell.locs = locs)
+total_count <- colSums(gcm)
+num_genes <- colSums(gcm > 0)
+meta <- data.frame(total_count = total_count, num_genes = num_genes)
+bank <- BanksyObject(own.expr = expr, cell.locs = locs, meta.data = meta)
 bank
 ```
 
@@ -55,6 +58,8 @@ performed on the resultant graph with resolution `resolution`.
 We first process the data for clustering:
 
 ```{r process, eval=T, message=F, warning=F}
+bank <- SubsetBanksy(bank, metadata = total_count > quantile(total_count, 0.05) &
+                                      total_count < quantile(total_count, 0.98))
 bank <- NormalizeBanksy(bank)
 bank <- ComputeBanksy(bank)
 bank <- ScaleBanksy(bank)

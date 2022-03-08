@@ -72,22 +72,43 @@ locs <- hippocampus$locations
 ```
 
 The gene expression matrix for cells should be a `matrix`:
+
 ```{r, eval = T}
 class(expr)
 head(expr[,1:5])
 ```
 
 while cell locations should be supplied as a `data.frame`:
+
 ```{r, eval = T}
 class(locs)
 head(locs)
 ```
 
-Next, create a *BanksyObject* with the expression matrix and cell locations.
+We store the total counts for each cell and the number of expressed genes as 
+metadata `data.frame`, which can optionally be supplied:
+
+```{r, eval = T}
+total_count <- colSums(expr)
+num_genes <- colSums(expr > 0)
+meta <- data.frame(total_count = total_count, num_genes = num_genes)
+```
+
+Next, create a *BanksyObject* with the expression matrix and cell locations 
+(metadata is optional).
 
 ```{r, eval = T}
 bank <- BanksyObject(own.expr = expr,
-                     cell.locs = locs)
+                     cell.locs = locs,
+                     meta.data = meta)
+```
+
+Apply basic QC by keeping only cells with total counts within the 5th and 98th 
+percentile:
+
+```{r, eval = T}
+bank <- SubsetBanksy(bank, metadata = total_count > quantile(total_count, 0.05) &
+                                      total_count < quantile(total_count, 0.98))
 ```
 
 We first normalize the expression matrix, compute the neighbor matrix, and 
@@ -114,7 +135,7 @@ algorithm. Specify the following parameters:
 
 ```{r, eval = T}
 bank <- ClusterBanksy(bank, lambda = c(0, 0.3), method = 'leiden',
-                      k.neighbors = 50, resolution = 1.2, seed = 1234)
+                      k.neighbors = 50, resolution = 1.2, seed = 42)
 ```
 
 Different clustering runs can be harmonised with `ConnectClusters`:
