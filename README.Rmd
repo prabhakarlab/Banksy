@@ -17,8 +17,6 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-<!--![BANKSY-panel](man/figures/banksy-panel-subtitle.png)-->
-
 ## Overview
 
 BANKSY is a method for clustering spatial transcriptomic data by augmenting the
