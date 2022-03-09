@@ -50,8 +50,6 @@ RoxygenNote: 7.1.2
 Suggests: 
     knitr,
     rmarkdown,
-    Seurat,
-    Giotto,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
