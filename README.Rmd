@@ -15,6 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/jleechung/Banksy/workflows/R-CMD-check/badge.svg)](https://github.com/jleechung/Banksy/actions)
 <!-- badges: end -->
 
 ## Overview
