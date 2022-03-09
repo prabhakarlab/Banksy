@@ -49,6 +49,11 @@ jobs:
           brew update
           brew install libxml2 glpk gmp
           
+      - name: Install igraphr
+        run: |
+          install.packages("igraph")
+        shell: Rscript {0}        
+          
       - uses: r-lib/actions/setup-r-dependencies@v1
         with:
           extra-packages: rcmdcheck
