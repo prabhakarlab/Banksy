@@ -18,11 +18,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest,   r: 'release'}
-          - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
-          - {os: ubuntu-latest,   r: 'release'}
-          - {os: ubuntu-latest,   r: 'oldrel-1'}
+          - {os: macOS-latest,   r: '4.1'}
+          - {os: windows-latest, r: '4.1'}
+          - {os: ubuntu-latest,   r: '4.1'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -38,7 +36,19 @@ jobs:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
-
+          
+      - name: Linux dependencies for leidenAlg
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install libxml2-dev libgmp-dev libglpk-dev
+          
+      - name: Mac OS dependencies for leidenAlg
+        if: matrix.config.os == 'macOS-latest'
+        run: |
+          brew update
+          brew install libxml2 glpk gmp
+          
       - uses: r-lib/actions/setup-r-dependencies@v1
         with:
           extra-packages: rcmdcheck

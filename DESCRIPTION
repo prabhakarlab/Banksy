@@ -38,7 +38,6 @@ Imports:
     RcppHungarian,
     reshape2,
     rlang,
-    scales,
     stats,
     utils,
     uwot
