@@ -135,7 +135,7 @@ BanksyObject <-
     }
 
     object@own.expr <- own.expr
-    object@meta.data <- mdata
+    object@meta.data <- mdata[!duplicated(as.list(mdata))]
     object@cell.locs <- cell.locs
     return(object)
   }
@@ -416,3 +416,4 @@ setMethod('head', signature(x = 'BanksyObject'),
               print(x@meta.data[seq_len(rd),seq_len(cd),drop=FALSE])
             }
           })
+
