@@ -69,7 +69,7 @@ plotSpatial(
 \item{wrap}{wrap by feature}
 }
 \value{
-plot
+Spatial plot
 }
 \description{
 Plot Spatial dims

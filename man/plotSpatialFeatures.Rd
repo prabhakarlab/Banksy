@@ -4,22 +4,36 @@
 \alias{plotSpatialFeatures}
 \title{Wrapper for plotSpatial}
 \usage{
-plotSpatialFeatures(bank, dataset = NULL, by, type, nrow, ncol, ...)
+plotSpatialFeatures(
+  bank,
+  by,
+  type,
+  dataset = NULL,
+  nrow = NULL,
+  ncol = NULL,
+  return.plot = FALSE,
+  ...
+)
 }
 \arguments{
 \item{bank}{BanksyObject}
-
-\item{dataset}{if multiple datasets are used}
 
 \item{by}{features to plot}
 
 \item{type}{type corresponding to features}
 
+\item{dataset}{if multiple datasets are used}
+
 \item{nrow}{nrow for grob}
 
 \item{ncol}{ncol for grob}
 
+\item{return.plot}{return plots}
+
 \item{...}{parameters to pass to plotSpatial}
+}
+\value{
+Spatial plots
 }
 \description{
 Wrapper for plotSpatial
