@@ -28,7 +28,7 @@ details on use-cases and methods, see the [preprint]().
 The *Banksy* package can be installed via `remotes`:
 
 ``` r
-remotes::install_github("jleechung/Banksy", dependencies = TRUE)
+remotes::install_github("prabhakarlab/Banksy", dependencies = TRUE)
 ```
 
 ## Documentation
