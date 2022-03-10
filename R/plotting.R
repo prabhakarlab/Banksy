@@ -57,9 +57,9 @@ plotReduction <- function(bank, reduction, components = c(1,2),
   if (is.null(by)) plot <- ggplot(data, aes(x = !!ensym(x), y = !!ensym(y)))
   else {
 
-    checkType(type)
     feature <- getFeature(bank, by = by, dataset = NULL)
-
+    checkType(type)
+    
     if (type == 'continuous') {
       if (is.null(col.midpoint)) col.midpoint <- median(feature)
       plot <- ggplot(data, aes(x = !!ensym(x), y = !!ensym(y), col = feature)) +
@@ -68,7 +68,8 @@ plotReduction <- function(bank, reduction, components = c(1,2),
     }
 
     if (type == 'discrete') {
-      plot <- ggplot(data, aes(x = !!ensym(x), y = !!ensym(y), col = as.factor(feature))) +
+      plot <- ggplot(data, aes(x = !!ensym(x), y = !!ensym(y), 
+                               col = as.factor(feature))) +
         scale_color_manual(values = getDiscretePalette(feature, col.discrete)) +
         guides(color = guide_legend(override.aes = list(size = legend.pt.size)))
     }
@@ -138,9 +139,9 @@ plotSpatial <- function(bank, dataset = NULL,
   if (is.na(by)) plot <- ggplot(data, aes(x = sdimx, y = sdimy))
   else {
 
-    checkType(type)
     feature <- getFeature(bank, by = by, dataset = dataset)
-
+    checkType(type)
+    
     if (type == 'continuous') {
       if (is.null(col.midpoint)) col.midpoint <- median(feature)
       if ((is.null(col.highpoint)) | (is.null(col.lowpoint))){
@@ -151,11 +152,11 @@ plotSpatial <- function(bank, dataset = NULL,
         feature[feature > col.highpoint] <- col.highpoint
         feature[feature < col.lowpoint] <- col.lowpoint
         plot <- ggplot(data, aes(x = sdimx, y = sdimy, col = feature)) +
-          scale_color_gradient2(midpoint = col.midpoint, limits = c(col.lowpoint, col.highpoint),
-                                low = col.low, mid = col.mid, high = col.high, na.value = na.value)
+          scale_color_gradient2(midpoint = col.midpoint, 
+                                limits = c(col.lowpoint, col.highpoint),
+                                low = col.low, mid = col.mid, high = col.high, 
+                                na.value = na.value)
       }
-      #plot <- ggplot(data, aes(x = sdimx, y = sdimy, col = feature)) +
-      # scale_color_gradient2(midpoint = col.midpoint, low = col.low, mid = col.mid, high = col.high)
     }
 
     if (type == 'discrete') {
@@ -444,7 +445,7 @@ plotARI <- function(bank, col.low = 'white', col.high = 'red', label = TRUE, dig
 #' 
 plotAlluvia <- function(bank, max.cells = 500, seed = 42, flow.colors = NULL) {
 
-  df <- meta.data(bank)[,clust.names(bank)]
+  df <- meta.data(bank)[,clust.names(bank),drop=FALSE]
 
   if (ncol(df) < 2) {
     stop('Alluvia will only be plotted for at least 2 clustering runs.')
@@ -526,7 +527,7 @@ getAssay <- function(bank, assay, dataset, lambda, cells, features) {
     if (is.list(bank@own.expr)) {
       if (is.null(dataset)) {
         message('Dataset not specified. Choosing first dataset.')
-        index <- 1
+        dataset <- names(bank@own.expr)[1]
       } else if (!(dataset %in% names(bank@own.expr))) {
         stop(paste0('Dataset', dataset, ' not found.'))
       }
@@ -693,6 +694,10 @@ theme_blank <- function(legend.text.size,
 getFeature <- function(bank, by, dataset) {
 
   if (is.null(by)) return(NULL)
+  if (length(by) > 1) {
+      warning('More than one variable to plot by supplied. Using first.')
+      by <- by[1]
+  }
   if (is.null(dataset)) {
     found.meta <- by %in% names(bank@meta.data)
     found.own <- by %in% rownames(bank@own.expr)
@@ -705,8 +710,8 @@ getFeature <- function(bank, by, dataset) {
 
   } else {
     found.meta <- by %in% names(bank@meta.data)
-    found.own <- by %in% rownames(bank@own.expr[1])
-    found.nbr <- by%in% rownames(bank@nbr.expr[1])
+    found.own <- by %in% rownames(bank@own.expr[[1]])
+    found.nbr <- by%in% rownames(bank@nbr.expr[[1]])
     found <- found.meta | found.own | found.nbr
     if (!found) stop('Invalid parameter to plot by.')
     if (found.meta) return(bank@meta.data[[by]][bank@meta.data[['dataset']] ==

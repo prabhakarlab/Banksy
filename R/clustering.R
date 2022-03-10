@@ -94,7 +94,6 @@ checkArgs <- function(bank, method, lambda, pca, npcs, call) {
     pca.ncols <- sapply(pca.mats, ncol)
     if (any(pca.ncols < npcs)) {
       id <- which(pca.ncols < npcs)
-      print(lambda[id])
       stop('Not enough PCs for lambda=', paste(lambda[id], collapse = ','),
            '\nCall RunPCA and increase npcs for these lambdas.')
     }
@@ -126,7 +125,7 @@ getClusterMatrix <- function(bank, lambda, pca, npcs) {
     pca.name <- paste0('pca_', lambda)
     x <- bank@reduction[[pca.name]]$x[,seq_len(npcs)]
   } else {
-    x <- getBanksyMatrix(bank, lambda = lambda)$expr
+    x <- t(getBanksyMatrix(bank, lambda = lambda)$expr)
   }
   return(x)
 }
@@ -306,15 +305,15 @@ mapToSeed <- function(val, seed) {
 
   # split into matched and unmatched
   matched <- matching[!(matching[,2] == 0),,drop=FALSE]
-  unmateched <- matching[matching[,2] == 0,,drop=FALSE]
+  unmatched <- matching[matching[,2] == 0,,drop=FALSE]
   ## Mapping fr more clusters to fewer
   unmapped <- which(matching[,2] == 0)
   impute <- max(seed) + seq_len(length(unmapped))
-  unmateched[,2] <- impute
+  unmatched[,2] <- impute
 
   # matched is currently the indices of the rows and cols of the contingency matrix
-  matched.names.from <- c(as.numeric(rownames(cost.mat)[matched[,1]]), unmateched[,1])
-  matched.names.to <- c(as.numeric(colnames(cost.mat)[matched[,2]]), unmateched[,2])
+  matched.names.from <- c(as.numeric(rownames(cost.mat)[matched[,1]]), unmatched[,1])
+  matched.names.to <- c(as.numeric(colnames(cost.mat)[matched[,2]]), unmatched[,2])
 
   new.val <- mapvalues(x = val, from = matched.names.from, to = matched.names.to)
   return(new.val)
@@ -346,7 +345,7 @@ mapToSeed <- function(val, seed) {
 #' ari
 #' 
 getARI <- function(bank, digits = 3) {
-  clust <- bank@meta.data[,clust.names(bank)]
+  clust <- bank@meta.data[,clust.names(bank),drop=FALSE]
   n.clust <- ncol(clust)
   if (n.clust < 2) {
     stop('ARI will only be calculated for at least 2 clustering runs.')

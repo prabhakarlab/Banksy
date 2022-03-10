@@ -49,7 +49,7 @@ SubsetBanksy <- function(
   ## Filter cell locations, metadata and dim reductions based on surviving cells
   x@meta.data <- x@meta.data[x@meta.data$cell_ID %in% survivingCells,,drop=FALSE]
   r1 <- lapply(x@reduction[grepl('pca', names(x@reduction))], function(red) {
-    red$x <- red$x[rownames(red) %in% survivingCells,,drop=FALSE]
+    red$x <- red$x[rownames(red$x) %in% survivingCells,,drop=FALSE]
     red
   })
   r2 <- lapply(x@reduction[!grepl('pca', names(x@reduction))], function(red) {
@@ -271,10 +271,16 @@ cleanSubset <- function(bank) {
   cells <- unlist(lapply(bank@own.expr, colnames))
 
   bank@meta.data <- bank@meta.data[bank@meta.data$cell_ID %in% cells,,drop=FALSE]
-  bank@reduction <- lapply(bank@reduction, function(dim.red) {
-    dim.red <- dim.red[rownames(dim.red) %in% cells,,drop=FALSE]
-    dim.red
-  })
-
+  r1 <- lapply(bank@reduction[grepl('pca', names(bank@reduction))], 
+               function(red) {
+                   red$x <- red$x[rownames(red$x) %in% cells,,drop=FALSE]
+                   red})
+  r2 <- lapply(bank@reduction[!grepl('pca', names(bank@reduction))], 
+               function(red) {
+                   red <- red[rownames(red) %in% cells,,drop=FALSE]
+                   red})
+  bank@reduction <- c(r1, r2)
+  
+  
   return(bank)
 }

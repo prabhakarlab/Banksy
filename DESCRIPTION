@@ -1,6 +1,6 @@
 Package: Banksy
 Title: Spatial transcriptomic clustering
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c(
     person(given = "Vipul",
            family = "Singhal",
@@ -44,9 +44,10 @@ Imports:
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-LazyDataCompression:xz
+LazyDataCompression: xz
 RoxygenNote: 7.1.2
 Suggests: 
+    covr,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)

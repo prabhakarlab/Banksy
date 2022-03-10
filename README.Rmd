@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/jleechung/Banksy/workflows/R-CMD-check/badge.svg)](https://github.com/jleechung/Banksy/actions)
+[![Codecov test coverage](https://codecov.io/gh/jleechung/Banksy/branch/main/graph/badge.svg)](https://app.codecov.io/gh/jleechung/Banksy?branch=main)
 <!-- badges: end -->
 
 ## Overview
