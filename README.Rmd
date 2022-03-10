@@ -170,4 +170,4 @@ plotSpatialFeatures(bank, by = features, type = feature.types, main = main,
 ## Contributing
 
 Bug reports, questions, request for enhancements or other contributions can be 
-raised at the [issue page](). 
+raised at the [issue page](https://github.com/prabhakarlab/Banksy/issues). 

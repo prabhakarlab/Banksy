@@ -87,10 +87,8 @@ bank <- ClusterBanksy(bank, lambda = 0.2, pca = TRUE, npcs = 25,
 
 ```{r addresults, eval=T, include=F}
 banksy <- readRDS(system.file('extdata/dlpfc_clusters.rds', package = 'Banksy'))
-pca <- readRDS(system.file('extdata/dlpfc_pca.rds', package = 'Banksy'))
 umap <- readRDS(system.file('extdata/dlpfc_umap.rds', package = 'Banksy'))
 
-reduction(bank)$pca_0.2 <- pca
 reduction(bank)$umap_0.2 <- umap
 meta.data(bank)$clust_lam0.2_k40_res0.5 <- banksy
 ```
