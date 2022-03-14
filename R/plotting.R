@@ -25,7 +25,7 @@
 #'   facet_wrap guides guide_legend element_text element_blank scale_color_manual
 #'   element_line ensym scale_color_gradient2
 #'
-#' @return NULL
+#' @return Dimensionality reduction plot
 #'
 #' @export
 #' 
@@ -135,10 +135,8 @@ plotSpatial <- function(bank, dataset = NULL,
   data <- getLocations(bank, dataset = dataset)
   sdimx <- sdimy <- NULL
 
-
   if (is.na(by)) plot <- ggplot(data, aes(x = sdimx, y = sdimy))
   else {
-
     feature <- getFeature(bank, by = by, dataset = dataset)
     checkType(type)
     
@@ -390,6 +388,8 @@ plotHeatmap <- function(bank, assay = 'own.expr',
 #'
 #' @export
 #' 
+#' @return ARI plot
+#' 
 #' @examples 
 #' # Generate a simulated dataset
 #' d <- simulateDataset()
@@ -452,11 +452,10 @@ plotAlluvia <- function(bank, max.cells = 500, seed = 42, flow.colors = NULL) {
   }
 
   if (!is.null(max.cells)) {
-    set.seed(seed)
-    df <- df[sample(1:nrow(df), max.cells), ]
+    df <- df[sample(seq_len(nrow(df)), max.cells), ]
   }
 
-  cell <- rep(1:nrow(df), times = ncol(df))
+  cell <- rep(seq_len(nrow(df)), times = ncol(df))
   run <- rep(names(df), each = nrow(df))
   cluster <- factor(unlist(df))
   plotdf <- data.frame(cell = cell, run = run, cluster = cluster)
@@ -467,7 +466,7 @@ plotAlluvia <- function(bank, max.cells = 500, seed = 42, flow.colors = NULL) {
       stop('Not enough colors. Need ', nclust,
            ' but supplied ', length(flow.colors))
     } else {
-      flow.colors <- flow.colors[1:nclust]
+      flow.colors <- flow.colors[seq_len(nclust)]
     }
   } else {
     flow.colors <- getPalette(nclust)
@@ -513,7 +512,7 @@ getAssay <- function(bank, assay, dataset, lambda, cells, features) {
         message('Dataset not specified. Choosing first dataset.')
         mat <- mat[[1]]
       } else if (!(dataset %in% names(mat))) {
-        stop(paste0('Dataset ', dataset, ' not found.'))
+        stop('Dataset ', dataset, ' not found.')
       } else {
         mat <- mat[[dataset]]
       }
@@ -529,7 +528,7 @@ getAssay <- function(bank, assay, dataset, lambda, cells, features) {
         message('Dataset not specified. Choosing first dataset.')
         dataset <- names(bank@own.expr)[1]
       } else if (!(dataset %in% names(bank@own.expr))) {
-        stop(paste0('Dataset', dataset, ' not found.'))
+        stop('Dataset', dataset, ' not found.')
       }
       own <- bank@own.expr[[dataset]]
       nbr <- bank@nbr.expr[[dataset]]
@@ -610,7 +609,7 @@ getCellAnnotation <- function(bank, mat,
   if (is.null(order.by)) {
     order.by <- annotate.by[1]
     if (length(annotate.by) > 1) {
-      message(paste0('Metadata to order cells by not specified. Using ', order.by))
+      message('Metadata to order cells by not specified. Using ', order.by)
     }
   } else if (!(order.by %in% names(bank@meta.data))) {
     stop('Specify a valid metadata column to order by.')
@@ -794,9 +793,8 @@ getDiscretePalette <- function(feature, col.discrete = NULL) {
 }
 
 sampleMatrix <- function(mat, max.cols, seed) {
-  set.seed(seed)
-  message(paste0('Sampling ', max.cols, ' columns with seed ', seed))
-  message(paste0('Keeping ', round(max.cols/ncol(mat) * 100,2), '% of cells'))
+  message('Sampling ', max.cols)
+  message('Keeping ', round(max.cols/ncol(mat) * 100,2), '% of cells')
   keep <- sample(colnames(mat), min(length(colnames(mat)), max.cols))
   mat <- mat[, keep, drop=FALSE]
   return(mat)

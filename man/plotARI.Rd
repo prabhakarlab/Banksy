@@ -17,6 +17,9 @@ plotARI(bank, col.low = "white", col.high = "red", label = TRUE, digits = 3)
 
 \item{digits}{number of digits to round ARI to}
 }
+\value{
+ARI plot
+}
 \description{
 Plot ARI matrix
 }

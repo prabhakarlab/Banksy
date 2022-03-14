@@ -15,7 +15,7 @@ A list with 3 entries:
 \url{http://research.libd.org/spatialLIBD/}
 }
 \usage{
-dlpfc151673
+data(dlpfc151673)
 }
 \description{
 This dataset comprises 10x Visium profiling of the human DLPFC (Maynard et

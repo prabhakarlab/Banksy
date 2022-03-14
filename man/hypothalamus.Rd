@@ -17,7 +17,7 @@ A list with 3 entries:
 \url{https://datadryad.org/stash/dataset/doi:10.5061/dryad.8t8s248}
 }
 \usage{
-hypothalamus
+data(hypothalamus)
 }
 \description{
 This dataset comprises MERFISH profiling of cells in the pre-optic region

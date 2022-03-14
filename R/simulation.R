@@ -21,26 +21,21 @@
 #' 
 #' @importFrom stats rnorm
 #'  
+#' @return List of expression, locations, and metadata
+#'  
+#' @examples 
+#' data <- simulateDataset() 
+#'  
 #' @export
 simulateDataset <- function(
-    n_buds = 3,
-    n_genes = 100,
-    n_deg = c(10,5,7),
-    de_shift = c(3,4,2),
-    de_dropout = c(0.8,0.9,0.7),
-    n_cells = c(250, 150, 100),
-    n_circles = c(3,3,3),
+    n_buds = 3, n_genes = 100,
+    n_deg = c(10,5,7), de_shift = c(3,4,2), de_dropout = c(0.8,0.9,0.7),
+    n_cells = c(250, 150, 100), n_circles = c(3,3,3),
     n_thickness = list(c(3,1,3), c(2,1,4), c(2,2,2)),
-    radius_init = c(5,3,3),
-    radius_increment = c(4,3,3),
-    x_stretch = c(1.1,1,1),
-    y_stretch = c(0.9,1.1,1),
-    offset_x = c(0,50,20),
-    offset_y = c(0,40,35),
-    skew = c(0,0,0.5),
-    seed = 1000) {
-    
-    set.seed(seed)
+    radius_init = c(5,3,3), radius_increment = c(4,3,3),
+    x_stretch = c(1.1,1,1), y_stretch = c(0.9,1.1,1),
+    offset_x = c(0,50,20), offset_y = c(0,40,35),
+    skew = c(0,0,0.5), seed = 1000) {
     
     locs <- generateLocs(n_buds = n_buds, 
                          n_circles = n_circles,
@@ -59,7 +54,7 @@ simulateDataset <- function(
     
     gcm <- matrix(data = rnorm(n_genes * n_cells, mean = 15, sd = 2), 
                   nrow = n_genes)
-    de_genes <- sample(1:nrow(gcm), sum(n_deg))
+    de_genes <- sample(seq_len(nrow(gcm)), sum(n_deg))
     
     start <- c(1, cumsum(n_deg)[-length(n_deg)]+1)
     end <- cumsum(n_deg)
@@ -73,10 +68,10 @@ simulateDataset <- function(
             rnorm(length(curr_de)*length(cell_idx), mean = de_shift[i])
     }
     
-    rownames(gcm) <- paste0('gene_', 1:nrow(gcm))
-    colnames(gcm) <- rownames(locs) <- paste0('cell_', 1:ncol(gcm))
-    meta <- locs[,3,drop=F]
-    return(list(gcm=gcm, locs=locs[,1:2], meta=meta))
+    rownames(gcm) <- paste0('gene_', seq_len(nrow(gcm)))
+    colnames(gcm) <- rownames(locs) <- paste0('cell_', seq_len(ncol(gcm)))
+    meta <- locs[,3,drop=FALSE]
+    return(list(gcm=gcm, locs=locs[,seq_len(2)], meta=meta))
 }
 
 
@@ -131,7 +126,7 @@ generateLocs <- function(n_buds, n_circles, n_thickness, n_cells,
         locs[[i]] <- curr
     }
     
-    lens <- sapply(locs, function(x) length(x$x))
+    lens <- vapply(locs, function(x) length(x$x), FUN.VALUE = numeric(1))
     res <- do.call(rbind.data.frame, locs)
     off_x <- rep(offset_x, lens)
     off_y <- rep(offset_y, lens)

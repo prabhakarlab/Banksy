@@ -82,9 +82,9 @@ res <- c(0.8, 1.2)
 knbr <- 50
 
 bank <- RunPCA(bank, lambda = c(0, 0.3), npcs = 20)
+set.seed(42)
 bank <- ClusterBanksy(bank, lambda = lam, pca = TRUE, npcs = 20, 
-                      method = 'leiden', k.neighbors = knbr, resolution = res,
-                      seed = 42)
+                      method = 'leiden', k.neighbors = knbr, resolution = res)
 ```
 
 This populates the `meta.data` slot of the *BanksyObject* with cluster labels

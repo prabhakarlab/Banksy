@@ -15,7 +15,7 @@ A list with 2 entries:
 \url{https://singlecell.broadinstitute.org/single_cell/study/SCP948}
 }
 \usage{
-cerebellum
+data(cerebellum)
 }
 \description{
 This dataset comprise Slide-seq V2 profiling of cells of the mouse

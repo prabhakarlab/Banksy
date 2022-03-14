@@ -10,6 +10,8 @@
 #' \item{expression}{(matrix) gene expression matrix}
 #' \item{locations}{data.frame} cell centroids in 2D)
 #' }
+#' 
+#' @usage data(hippocampus)
 #'
 "hippocampus"
 
@@ -24,6 +26,8 @@
 #' \item{expression}{(matrix) gene expression matrix}
 #' \item{locations}{(data.frame) cell centroids in 2D}
 #' }
+#'
+#' @usage data(cerebellum)
 #'
 #' @source \url{https://singlecell.broadinstitute.org/single_cell/study/SCP948}
 #'
@@ -46,6 +50,8 @@
 #' \item{metadata}{(data.frame) metadata for cells, including cell class,
 #'   neuronal cluster, animal ID, behavioral class}
 #' }
+#' 
+#' @usage data(hypothalamus)
 #'
 #' @source \url{https://datadryad.org/stash/dataset/doi:10.5061/dryad.8t8s248}
 #'
@@ -69,6 +75,8 @@
 #' \item{metadata}{(data.frame) metadata for cells, including HMRF domain}
 #' \item{spatialgenes}{(character) spatial genes for HMRF analysis}
 #' }
+#' 
+#' @usage data(visualcortex)
 #'
 #' @source \url{https://bitbucket.org/qzhudfci/smfishhmrf-r/src}
 #'
@@ -88,6 +96,8 @@
 #' \item{expression}{(matrix) gene expression matrix}
 #' \item{locations}{(data.frame) spot locations in 2D}
 #' }
+#' 
+#' @usage data(dlpfc151673)
 #'
 #' @source \url{http://research.libd.org/spatialLIBD/}
 #'
@@ -108,6 +118,8 @@
 #' \item{locations}{(data.frame) spot locations in 2D}
 #' }
 #'
+#' @usage data(dlpfc151674)
+#'
 #' @source \url{http://research.libd.org/spatialLIBD/}
 #'
 "dlpfc151674"
@@ -127,6 +139,8 @@
 #' \item{locations}{(data.frame) spot locations in 2D}
 #' }
 #'
+#' @usage data(dlpfc151675)
+#'
 #' @source \url{http://research.libd.org/spatialLIBD/}
 #'
 "dlpfc151675"
@@ -145,6 +159,8 @@
 #' \item{expression}{(matrix) gene expression matrix}
 #' \item{locations}{(data.frame) spot locations in 2D}
 #' }
+#'
+#' @usage data(dlpfc151676)
 #'
 #' @source \url{http://research.libd.org/spatialLIBD/}
 #'

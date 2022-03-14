@@ -188,7 +188,7 @@ ComputeBanksy <- function(bank,
 
 geneFilter <- function(x, genes.filter, min.cells.expressed) {
 
-  ngenesBef <- sapply(x, function(x) dim(x)[1])
+  ngenesBef <- vapply(x, function(x) dim(x)[1], FUN.VALUE = numeric(1))
 
   if (genes.filter == 'union') {
     all.genes <- Reduce(union, lapply(x, rownames))
@@ -209,15 +209,14 @@ geneFilter <- function(x, genes.filter, min.cells.expressed) {
     x <- lapply(x, function(x) x[rownames(x) %in% common.genes,])
 
     if (min.cells.expressed > 0) {
-      message(paste0('Filering genes expressed in less than ', min.cells.expressed, ' cells'))
+      message('Filering genes expressed in less than ', min.cells.expressed, ' cells')
       pass.genes <- lapply(x, function(x) rownames(x)[rowSums(x > 0) >= min.cells.expressed])
       pass.genes <- Reduce(intersect, pass.genes)
       x <- lapply(x, function(x) x[rownames(x) %in% pass.genes,])
-      ngenesAft <- sapply(x, function(x) dim(x)[1])
+      ngenesAft <- vapply(x, function(x) dim(x)[1], FUN.VALUE = numeric(1))
       filt <- ngenesBef - ngenesAft
       for (i in seq_len(length(x))) {
-        message(paste0('Filtered ', filt[i], ' genes from dataset ',
-                       names(x)[i]))
+        message('Filtered ', filt[i], ' genes from dataset ', names(x)[i])
       }
 
     }
@@ -232,17 +231,15 @@ geneFilter <- function(x, genes.filter, min.cells.expressed) {
   return(x)
 }
 
-#' @importFrom collapse `%c/%`
-#' @importFrom matrixStats colSums2
 normalizer <- function(x, normFactor, logNorm, pseudocount) {
-  x <- t(t(x) %c/% colSums2(x)) * normFactor
+  x <- t(t(x) / colSums(x)) * normFactor
   if (logNorm) x <- log2(x + pseudocount)
   return(x)
 }
 
-#' @importFrom matrixStats rowMeans2 rowSds
+#' @importFrom matrixStats rowSds
 scaler <- function(x) {
-  rm <- rowMeans2(x)
+  rm <- rowMeans(x)
   rsd <- rowSds(x)
   x <- (x - rm) / rsd
   x[is.nan(x)] <- 0
@@ -250,17 +247,17 @@ scaler <- function(x) {
 }
 
 # Scale rows of the concatenate of matrices without concatenating them
-#' @importFrom matrixStats rowSums2 rowVars rowMeans2
+#' @importFrom matrixStats rowVars
 scalerAll <- function(x) {
 
-  sumIndiv <- lapply(x, rowSums2)
+  sumIndiv <- lapply(x, rowSums)
   nIndiv <- lapply(x, ncol)
   nAll <- sum(unlist(nIndiv))
   sumAll <- Reduce(`+`, sumIndiv)
   meanAll <- sumAll / nAll
 
   varIndiv <- lapply(x, rowVars)
-  meanIndiv <- lapply(x, rowMeans2)
+  meanIndiv <- lapply(x, rowMeans)
   zeroIndiv <- lapply(meanIndiv, `-`, meanAll)
   a <- Map(`*`, varIndiv, nIndiv)
   b <- Map(`*`, zeroIndiv, nIndiv)
@@ -349,13 +346,13 @@ withRNNgauss <- function(locs, sigma, kspatial, kernelRadius, verbose) {
 
   if (verbose) message('Computing Banksy matrix')
   if (verbose) message('Spatial mode is rNN gaussian')
-  if (verbose) message(paste0('Parameters: sigma = ', sigma, ', kspatial = ', kspatial))
+  if (verbose) message('Parameters: sigma = ', sigma, ', kspatial = ', kspatial)
 
   tryCatch({
     knn <- dbscan::kNN(x = locs, k = kspatial)
   },
   error=function(cond) {
-    message(paste("Not enough neighbours at kspatial = ", kspatial, " level."))
+    message("Not enough neighbours at kspatial = ", kspatial, " level.")
     message(cond)
   })
 
@@ -389,7 +386,7 @@ withKNNrank <- function(locs, k_geom, verbose) {
 
   if (verbose) message('Computing Banksy matrix')
   if (verbose) message('Spatial mode is kNNrank')
-  if (verbose) message(paste0('Parameters: k_geom = ', k_geom))
+  if (verbose) message('Parameters: k_geom = ', k_geom)
 
   tryCatch({
     knn <- dbscan::kNN(x = locs, k = k_geom)
@@ -403,7 +400,7 @@ withKNNrank <- function(locs, k_geom, verbose) {
                        distance = as.vector(knn$dist))
   },
   error=function(cond) {
-    message(paste("Not enough neighbours at kspatial = ", k_geom, " level."))
+    message("Not enough neighbours at kspatial = ", k_geom, " level.")
     message(cond)
   })
 
@@ -416,13 +413,13 @@ withKNNr <- function(locs, k_geom, verbose) {
 
   if (verbose) message('Computing Banksy matrix')
   if (verbose) message('Spatial mode is kNNr')
-  if (verbose) message(paste0('Parameters: k_geom = ', k_geom))
+  if (verbose) message('Parameters: k_geom = ', k_geom)
 
   tryCatch({
     knn <- dbscan::kNN(x = locs, k = k_geom)
   },
   error=function(cond) {
-    message(paste("Not enough neighbours at k_geom = ", k_geom, " level."))
+    message("Not enough neighbours at k_geom = ", k_geom, " level.")
     message(cond)
   })
 
@@ -444,13 +441,13 @@ withKNNrn <- function(locs, k_geom, n, verbose) {
 
   if (verbose) message('Computing Banksy matrix')
   if (verbose) message('Spatial mode is kNNrn')
-  if (verbose) message(paste0('Parameters: k_geom = ', k_geom, ', n = ', n))
+  if (verbose) message('Parameters: k_geom = ', k_geom, ', n = ', n)
 
   tryCatch({
     knn <- dbscan::kNN(x = locs, k = k_geom)
   },
   error=function(cond) {
-    message(paste("Not enough neighbours at k_geom = ", k_geom, " level."))
+    message("Not enough neighbours at k_geom = ", k_geom, " level.")
     message(cond)
   })
 
@@ -472,13 +469,13 @@ withKNNunif <- function(locs, k_geom, verbose) {
 
   if (verbose) message('Computing Banksy matrix')
   if (verbose) message('Spatial mode is kNNunif')
-  if (verbose) message(paste0('Parameters: k_geom = ', k_geom))
+  if (verbose) message('Parameters: k_geom = ', k_geom)
 
   tryCatch({
     knn <- dbscan::kNN(x = locs, k = k_geom)
   },
   error=function(cond) {
-    message(paste("Not enough neighbours at kspatial = ", k_geom, " level."))
+    message("Not enough neighbours at kspatial = ", k_geom, " level.")
     message(cond)
   })
 

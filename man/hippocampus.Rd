@@ -12,7 +12,7 @@ A list with 2 entries:
 }
 }
 \usage{
-hippocampus
+data(hippocampus)
 }
 \description{
 This dataset comprises VeraFISH profiling of cells in the mouse hippocampus.

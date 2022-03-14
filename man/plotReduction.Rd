@@ -59,6 +59,9 @@ plotReduction(
 
 \item{legend.pt.size}{size of legend point}
 }
+\value{
+Dimensionality reduction plot
+}
 \description{
 Plot dimensionality reduction assays
 }

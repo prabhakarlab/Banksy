@@ -57,7 +57,14 @@ simulateDataset(
 
 \item{seed}{Seed for sampling}
 }
+\value{
+List of expression, locations, and metadata
+}
 \description{
 Simulate a dataset consisting of expression and location information 
 with concentric circular structure
+}
+\examples{
+data <- simulateDataset() 
+ 
 }

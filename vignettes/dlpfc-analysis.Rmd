@@ -81,8 +81,9 @@ bank <- RunPCA(bank, lambda = 0.2, npcs = 25)
 Finally, we perform Leiden clustering on 25 PCs:
 
 ```{r cluster,eval=F}
+set.seed(1000)
 bank <- ClusterBanksy(bank, lambda = 0.2, pca = TRUE, npcs = 25,
-                      k.neighbors = 40, resolution = 0.5, seed = 1000)
+                      k.neighbors = 40, resolution = 0.5)
 ```
 
 ```{r addresults, eval=T, include=F}

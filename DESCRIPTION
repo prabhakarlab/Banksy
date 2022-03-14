@@ -1,6 +1,6 @@
 Package: Banksy
 Title: Spatial transcriptomic clustering
-Version: 0.1.2
+Version: 0.1.3
 Authors@R: c(
     person(given = "Vipul",
            family = "Singhal",
@@ -18,38 +18,46 @@ Description: Banksy is an R package that incorporates spatial information to
 Depends:
      R (>= 3.5.0)
 Imports:
-    ComplexHeatmap,
-    collapse,
-    circlize,
     data.table,
+    matrixStats,
+    reshape2,
+    irlba,
+    uwot,
     dbscan,
+    igraph,
+    leidenAlg,
+    mclust,
+    ComplexHeatmap,
+    circlize,
     ggalluvial,
     ggplot2,
     grid,
     gridExtra,
-    igraph,
-    irlba,
-    leidenAlg,
-    matrixStats,
-    mclust,
-    methods,
     pals,
     plyr,
+    methods,
     RcppHungarian,
-    reshape2,
     rlang,
+    SummarizedExperiment,
     stats,
-    utils,
-    uwot
+    utils
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
-LazyDataCompression: xz
+URL: https://github.com/prabhakarlab/Banksy
 RoxygenNote: 7.1.2
 Suggests: 
     covr,
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    SingleCellExperiment,
+    scran,
+    scater
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+biocViews:
+    Clustering,
+    Spatial,
+    SingleCell,
+    GeneExpression,
+    DimensionReduction

@@ -137,9 +137,9 @@ algorithm on the first 20 PCs. Specify the following parameters:
 * `k.neighbours`. Number of k neighbours to use for constructing sNN.
 
 ```{r, eval = T}
+set.seed(42)
 bank <- ClusterBanksy(bank, lambda = c(0, 0.3), pca = TRUE, npcs = 20,
-                      method = 'leiden', k.neighbors = 50, resolution = 1.2, 
-                      seed = 42)
+                      method = 'leiden', k.neighbors = 50, resolution = 1.2)
 ```
 
 Different clustering runs can be harmonised with `ConnectClusters`:

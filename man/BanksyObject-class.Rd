@@ -210,7 +210,11 @@ S4 class BanksyObject
 
 \examples{
 d <- simulateDataset()
-bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+bank <- BanksyObject(
+    own.expr = d$gcm, 
+    cell.locs = d$locs, 
+    meta.data = d$meta
+    )
 d <- simulateDataset()
 bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
 mat <- own.expr(bank)

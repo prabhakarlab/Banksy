@@ -5,6 +5,7 @@ library(testthat)
 library(matrixStats)
 library(plyr)
 
+set.seed(1000)
 d1 <- Banksy::simulateDataset(n_cells = c(400,100,100), 
                               n_deg = c(20,20,20), de_dropout = c(1,1,1))
 d2 <- Banksy::simulateDataset(n_cells = c(200,200,200), 
@@ -28,11 +29,11 @@ test_that('Construct Banksy', {
     
     bank <- BanksyObject(own.expr = gcm, cell.locs = locs, 
                          genes.filter = 'intersect')
-    expect_equal(as.numeric(sapply(bank@own.expr, nrow)), rep(42,2))
+    expect_equal(as.numeric(sapply(bank@own.expr, nrow)), rep(41,2))
     
     bank <- BanksyObject(own.expr = gcm, cell.locs = locs, 
                          genes.filter = 'intersect', min.cells.expressed = 5)
-    expect_equal(as.numeric(sapply(bank@own.expr, nrow)), rep(42,2))
+    expect_equal(as.numeric(sapply(bank@own.expr, nrow)), rep(41,2))
     
     expect_s4_class(BanksyObject(own.expr = gcm, cell.locs = locs,
                          genes.filter = 'union'), 'BanksyObject')

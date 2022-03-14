@@ -38,7 +38,6 @@ ClusterBanksy <- function(bank, lambda = 0.25, pca = TRUE, npcs = 30,
                           kmeans.centers = NULL, kmeans.iter.max = 10,
                           seed = 42, ...) {
 
-  set.seed(seed)
   method <- checkMethod(method)
   checkArgs(bank, method, lambda, pca, npcs, match.call())
 
@@ -91,7 +90,7 @@ checkArgs <- function(bank, method, lambda, pca, npcs, call) {
       stop('Run PCA for lambda=', paste(lambda[id], collapse = ','))
     }
     pca.mats <- lapply(pca.names, function(nm) bank@reduction[[nm]]$x)
-    pca.ncols <- sapply(pca.mats, ncol)
+    pca.ncols <- vapply(pca.mats, ncol, FUN.VALUE = numeric(1))
     if (any(pca.ncols < npcs)) {
       id <- which(pca.ncols < npcs)
       stop('Not enough PCs for lambda=', paste(lambda[id], collapse = ','),
@@ -137,13 +136,13 @@ getGraph <- function(x, k) {
 
   snet <- sNN(kNN(x, k = k), k = k)
   from <- shared <- .N <- NULL
-  snet.dt = data.table(from = rep(1:nrow(snet$id), k),
+  snet.dt = data.table(from = rep(seq_len(nrow(snet$id)), k),
                        to = as.vector(snet$id),
                        weight = 1/(1 + as.vector(snet$dist)),
                        distance = as.vector(snet$dist),
                        shared = as.vector(snet$shared))
   data.table::setorder(snet.dt, from, -shared)
-  snet.dt[, rank := 1:.N, by = from]
+  snet.dt[, rank := seq_len(.N), by = from]
   snet.dt <- snet.dt[rank <= 3 | shared >= 5]
   graph <- graph_from_data_frame(snet.dt)
   return(graph)

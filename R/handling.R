@@ -99,11 +99,7 @@ SplitBanksy <- function(bank, by, names = NULL) {
     warning('SplitBanksy only operates on BanksyObjects with a single dataset')
     return(bank)
   }
-
-  if (!(by %in% names(bank@meta.data))) {
-    stop(paste0(by, ' not in metadata.'))
-  }
-
+  if (!(by %in% names(bank@meta.data)))  stop(by, ' not in metadata.')
   groups <- unique(bank@meta.data[[by]])
   nGroups <- length(groups)
 
@@ -116,11 +112,10 @@ SplitBanksy <- function(bank, by, names = NULL) {
   own.expr <- nbr.expr <- cell.locs <- vector('list', length = nGroups)
   if (is.null(bank@nbr.expr)) nbr.expr <- NULL
 
-
   for (i in seq_len(nGroups)) {
 
     currGroup <- groups[i]
-    message(paste0('Processing ', by, ' ', currGroup))
+    message('Processing ', by, ' ', currGroup)
     cells <- bank@meta.data$cell_ID[bank@meta.data[[by]] == currGroup]
     gcm <- bank@own.expr[, cells]
     ncm <- bank@nbr.expr[, cells]
@@ -131,7 +126,6 @@ SplitBanksy <- function(bank, by, names = NULL) {
     own.expr[[i]] <- gcm
     nbr.expr[[i]] <- ncm
     cell.locs[[i]] <- loc
-
   }
 
   names(own.expr)  <- names(cell.locs) <- names
@@ -140,7 +134,6 @@ SplitBanksy <- function(bank, by, names = NULL) {
   bank@own.expr <- own.expr
   bank@nbr.expr <- nbr.expr
   bank@cell.locs <- cell.locs
-
   bank@reduction <- bank@reduction
   bank@meta.data <- bank@meta.data
   bank@meta.data$cell_ID <- unlist(lapply(cell.locs, row.names))

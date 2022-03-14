@@ -17,7 +17,7 @@ A list with 3 entries:
 \url{https://bitbucket.org/qzhudfci/smfishhmrf-r/src}
 }
 \usage{
-visualcortex
+data(visualcortex)
 }
 \description{
 This dataset comprises SeqFISH profiling of cells in the mouse visual cortex

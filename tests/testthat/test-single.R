@@ -5,6 +5,7 @@ library(testthat)
 library(matrixStats)
 library(plyr)
 
+set.seed(1000)
 data <- Banksy::simulateDataset()
 gcm <- data$gcm
 locs <- data$locs
@@ -183,6 +184,7 @@ test_that('Mclust clustering unspec. parameters', {
 })
 
 
+set.seed(42)
 bank <- ClusterBanksy(bank, lambda = 0.25, pca = TRUE, npcs = 5, 
                       method = 'leiden', k.neighbors = 30, 
                       resolution = c(0.5, 1, 1.5))
@@ -459,4 +461,22 @@ test_that('Slots', {
     cell.locs(bank) <- bank@cell.locs
     meta.data(bank) <- bank@meta.data
     reduction(bank) <- bank@reduction
+})
+
+# SCE
+
+sce <- SingleCellExperiment::SingleCellExperiment(
+    assays = list(counts = own.expr(bank)),
+    colData = cell.locs(bank)
+)
+
+test_that('SCE conversion', {
+    
+    expect_error(asBanksyObject(sce, expr.assay = 'dummy'))
+    expect_error(asBanksyObject(sce, coord.colnames = c('sdimx')))
+    expect_warning(asBanksyObject(sce, features = 'hello'))
+    expect_s4_class(asBanksyObject(sce), 'BanksyObject')
+    
+    sce$cell_ID <- seq_len(dim(sce)[2])
+    expect_warning(asBanksyObject(sce))
 })
