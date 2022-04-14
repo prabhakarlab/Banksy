@@ -34,20 +34,38 @@ remotes::install_github("prabhakarlab/Banksy", dependencies = TRUE)
 ## Documentation
 
 Detailed description of *Banksy* functionality and example analyses are
-available at the [package webpage]().
+available at the [package
+webpage](https://prabhakarlab.github.io/Banksy/).
 
 *Banksy* comes installed with [documentation]() of main functions and
 their usage, along with several vignettes which detail different use
 cases:
 
--   [Working with Banksy objects](): Introduction to the *BanksyObject*
-    class which serves as a container for *Banksy*.
+-   [Working with Banksy
+    objects](https://prabhakarlab.github.io/Banksy/reference/index.html):
+    Introduction to the *BanksyObject* class which serves as a container
+    for *Banksy*.
 
--   [Mouse hippocampus MERFISH dataset](): Illustrates a grid search of
-    parameters which best cluster cells.
+-   [Mouse hippocampus MERFISH
+    dataset](https://prabhakarlab.github.io/Banksy/hippocampus-analysis.html):
+    Illustrates a grid search of parameters which best cluster cells.
 
--   [Human dorsolateral prefrontal cortex 10x Visium dataset]():
+-   [Human dorsolateral prefrontal cortex 10x Visium
+    dataset](https://prabhakarlab.github.io/Banksy/dlpfc-analysis.html):
     Illustrates analysis of multiple spatial transcriptomic datasets.
+
+-   [Mouse hypothalamus MERFISH
+    dataset](https://prabhakarlab.github.io/Banksy/hypothalamus-analysis.html):
+    Illustrates visualization functionality.
+
+-   [Interoperability with
+    SingleCellExperiment](https://prabhakarlab.github.io/Banksy/single-cell-exp.html):
+    Illustrates BANKSY interoperability with the Bioconductor
+    [SingleCellExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html)
+    framework for interfacing with packages like
+    [scran](https://bioconductor.org/packages/release/bioc/html/scran.html)
+    or
+    [scater](https://bioconductor.org/packages/release/bioc/html/scater.html).
 
 ## Quick start
 
@@ -147,9 +165,9 @@ parameters:
 -   `k.neighbours`. Number of k neighbours to use for constructing sNN.
 
 ``` r
+set.seed(42)
 bank <- ClusterBanksy(bank, lambda = c(0, 0.3), pca = TRUE, npcs = 20,
-                      method = 'leiden', k.neighbors = 50, resolution = 1.2, 
-                      seed = 42)
+                      method = 'leiden', k.neighbors = 50, resolution = 1.2)
 #> Iteration 1 out of 2
 #> Iteration 2 out of 2
 ```
