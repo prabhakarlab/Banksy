@@ -43,24 +43,25 @@ of main functions and their usage, along with several vignettes which
 detail different use cases:
 
 -   [Working with Banksy
-    objects](https://prabhakarlab.github.io/Banksy/reference/banksy-object.html):
+    objects](https://prabhakarlab.github.io/Banksy/articles/banksy-object.html):
     Introduction to the *BanksyObject* class which serves as a container
     for *Banksy*.
 
 -   [Mouse hippocampus MERFISH
-    dataset](https://prabhakarlab.github.io/Banksy/hippocampus-analysis.html):
+    dataset](https://prabhakarlab.github.io/Banksy/articles/hippocampus-analysis.html):
     Illustrates a grid search of parameters which best cluster cells.
 
 -   [Human dorsolateral prefrontal cortex 10x Visium
-    dataset](https://prabhakarlab.github.io/Banksy/dlpfc-analysis.html):
+    dataset](https://prabhakarlab.github.io/Banksy/articles/dlpfc-analysis.html):
     Illustrates analysis of multiple spatial transcriptomic datasets.
 
 -   [Mouse hypothalamus MERFISH
-    dataset](https://prabhakarlab.github.io/Banksy/hypothalamus-analysis.html):
-    Illustrates visualization functionality.
+    dataset](https://prabhakarlab.github.io/Banksy/articles/hypothalamus-analysis.html):
+    Illustrates visualization functionality with a dataset with 3
+    spatial dimensions.
 
 -   [Interoperability with
-    SingleCellExperiment](https://prabhakarlab.github.io/Banksy/single-cell-exp.html):
+    SingleCellExperiment](https://prabhakarlab.github.io/Banksy/articles/single-cell-exp.html):
     Illustrates BANKSY interoperability with the Bioconductor
     [SingleCellExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html)
     framework for interfacing with packages like
