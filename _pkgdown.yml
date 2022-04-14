@@ -1,11 +1,8 @@
-destination: docs
-
 url: https://prabhakarlab.github.io/Banksy
 
 development:
-  mode: release
-  version_label: default
-
+  mode: auto
+  
 template:
   params:
     bootswatch: simplex
