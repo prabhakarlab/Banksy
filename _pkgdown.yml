@@ -2,6 +2,10 @@ destination: docs
 
 url: https://prabhakarlab.github.io/Banksy
 
+development:
+  mode: release
+  version_label: default
+
 template:
   params:
     bootswatch: simplex
