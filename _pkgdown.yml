@@ -1,37 +1,75 @@
 destination: docs
 
-url: https://jleechung.github.io/Banksy
+url: https://prabhakarlab.github.io/Banksy
 
 template:
   params:
-    bootswatch: spacelab
+    bootswatch: simplex
 
 reference:
-  - title: Main functions
+  - title: BANKSY functions
     contents:
       - ComputeBanksy
-      - ClusterBanksy
-      - ConnectClusters
+      - getBanksyMatrix
+  - title: Processing
+    contents:
       - NormalizeBanksy
       - ScaleBanksy
       - SubsetBanksy
-      - getBanksyMatrix
+      - SplitBanksy
+  - title: Dimensionality reduction
+    contents:
+      - RunPCA
+      - RunUMAP
+  - title: Clustering
+    contents:
+      - ClusterBanksy
+      - ConnectClusters
+      - getARI
   - title: Visualisation
     contents:
-      - plotUMAP
-      - plotSpatialDims
+      - plotReduction
+      - plotSpatial
+      - plotSpatialFeatures
+      - plotHeatmap
+      - plotARI
+      - plotAlluvia
+      - plotScree
+  - title: Construction
+    contents:
+      - BanksyObject
+      - asBanksyObject
+  - title: Datasets
+    contents: 
+      - cerebellum
+      - dlpfc151673
+      - dlpfc151674
+      - dlpfc151675
+      - dlpfc151676
+      - hippocampus
+      - hypothalamus
+      - visualcortex
+
+news:
+  cran_dates: false
 
 navbar:
   title: ~
   type: default
   left:
-    - text: Documentation
+    - text: Functions and data
       href: reference/index.html
     - text: Vignettes
       menu:
       - text: Working with BanksyObjects
         href: articles/banksy-object.html
-      - text: Finding optimal clustering parameters
-        href: articles/grid-search.html
-      - text: Analysing multiple datasets
-        href: articles/multiple-datasets.html
+      - text: Grid search (Mouse hippocampus MERFISH)
+        href: articles/hippocampus-analysis.html
+      - text: Multiple datasets (Human DLPFC 10x Visium)
+        href: articles/dlpfc-analysis.html
+      - text: Visualization (Mouse hypothalamus MERFISH)
+        href: articles/hypothalamus-analysis.html
+      - text: SingleCellExperiment interoperability
+        href: articles/single-cell-exp.html
+    - text: News
+      href: news/index.html

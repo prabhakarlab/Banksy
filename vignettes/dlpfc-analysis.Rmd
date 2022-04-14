@@ -114,7 +114,7 @@ meta.data(bank)$clust_anno <- anno
 Here, we visualise the UMAP for the spots from all samples combined, overlayed
 with BANKSY clusters and manual annotation. 
 
-```{r umap, fig.width=7, fig.height=3.5, fig.align='center', warning=F, message=F}
+```{r umap, fig.width=9, fig.height=4, fig.align='center', warning=F, message=F}
 grid.arrange(
   plotReduction(bank, reduction = 'umap_0.2', by = 'clust_lam0.2_k40_res0.5', type = 'discrete',
                 main = 'BANKSY clusters', main.size = 10, pt.size = 0.25), 

@@ -113,8 +113,8 @@ bankDim <- SubsetBanksy(bank, dims = (sdimx < -4000 | sdimx > 10000) |
                                      (sdimy < 3000 | sdimy > 10000))
 
 gridExtra::grid.arrange(
-  plotSpatial(bank),
-  plotSpatial(bankDim),
+  plotSpatial(bank, pt.alpha = 0.4),
+  plotSpatial(bankDim, pt.alpha = 0.4),
   ncol = 2
 )
 ```
@@ -126,8 +126,8 @@ sample_cells <- sample(meta.data(bank)$cell_ID, 1000)
 bankCells <- SubsetBanksy(bank, cells = sample_cells)
 
 gridExtra::grid.arrange(
-  plotSpatial(bank),
-  plotSpatial(bankCells),
+  plotSpatial(bank, pt.alpha = 0.4),
+  plotSpatial(bankCells, pt.alpha = 0.4),
   ncol = 2
 )
 ```
@@ -141,8 +141,8 @@ select_clusters <- c(6,7,10)
 bankMeta <- SubsetBanksy(bank, metadata = clust_lam0.3_k50_res1.2 %in% select_clusters)
 
 gridExtra::grid.arrange(
-  plotSpatial(bank),
-  plotSpatial(bankMeta),
+  plotSpatial(bank, pt.alpha = 0.4),
+  plotSpatial(bankMeta, pt.alpha = 0.4),
   ncol = 2
 )
 ```

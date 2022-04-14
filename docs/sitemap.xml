@@ -1,48 +1,177 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://jleechung.github.io/Banksy/index.html</loc>
+    <loc>https://prabhakarlab.github.io/Banksy/404.html</loc>
   </url>
   <url>
-    <loc>https://jleechung.github.io/Banksy/reference/BanksyObject-class.html</loc>
+    <loc>https://prabhakarlab.github.io/Banksy/articles/banksy-object.html</loc>
   </url>
   <url>
-    <loc>https://jleechung.github.io/Banksy/reference/ClusterBanksy.html</loc>
+    <loc>https://prabhakarlab.github.io/Banksy/articles/dlpfc-analysis.html</loc>
   </url>
   <url>
-    <loc>https://jleechung.github.io/Banksy/reference/ComputeBanksy.html</loc>
+    <loc>https://prabhakarlab.github.io/Banksy/articles/grid-search.html</loc>
   </url>
   <url>
-    <loc>https://jleechung.github.io/Banksy/reference/ConnectClusters.html</loc>
+    <loc>https://prabhakarlab.github.io/Banksy/articles/hippocampus-analysis.html</loc>
   </url>
   <url>
-    <loc>https://jleechung.github.io/Banksy/reference/getBanksyMatrix.html</loc>
+    <loc>https://prabhakarlab.github.io/Banksy/articles/hypothalamus-analysis.html</loc>
   </url>
   <url>
-    <loc>https://jleechung.github.io/Banksy/reference/NormalizeBanksy.html</loc>
+    <loc>https://prabhakarlab.github.io/Banksy/articles/index.html</loc>
   </url>
   <url>
-    <loc>https://jleechung.github.io/Banksy/reference/plotSpatialDims.html</loc>
+    <loc>https://prabhakarlab.github.io/Banksy/articles/integrating-pkgs.html</loc>
   </url>
   <url>
-    <loc>https://jleechung.github.io/Banksy/reference/plotUMAP.html</loc>
+    <loc>https://prabhakarlab.github.io/Banksy/articles/multiple-datasets.html</loc>
   </url>
   <url>
-    <loc>https://jleechung.github.io/Banksy/reference/ScaleBanksy.html</loc>
+    <loc>https://prabhakarlab.github.io/Banksy/articles/single-cell-exp.html</loc>
   </url>
   <url>
-    <loc>https://jleechung.github.io/Banksy/reference/SubsetBanksy.html</loc>
+    <loc>https://prabhakarlab.github.io/Banksy/authors.html</loc>
   </url>
   <url>
-    <loc>https://jleechung.github.io/Banksy/articles/banksy-object.html</loc>
+    <loc>https://prabhakarlab.github.io/Banksy/index.html</loc>
   </url>
   <url>
-    <loc>https://jleechung.github.io/Banksy/articles/grid-search.html</loc>
+    <loc>https://prabhakarlab.github.io/Banksy/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>https://jleechung.github.io/Banksy/articles/integrating-pkgs.html</loc>
+    <loc>https://prabhakarlab.github.io/Banksy/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://jleechung.github.io/Banksy/articles/multiple-datasets.html</loc>
+    <loc>https://prabhakarlab.github.io/Banksy/news/index.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/news/news-0.0.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/news/news-0.1.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/asBanksyObject.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/BanksyObject-class.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/cerebellum.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/ClusterBanksy.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/ComputeBanksy.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/ConnectClusters.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/dlpfc151673.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/dlpfc151674.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/dlpfc151675.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/dlpfc151676.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/getARI.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/getBanksyMatrix.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/getMarkerGenes.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/gridConnect.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/hippocampus.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/hypothalamus.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/NormalizeBanksy.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/plotAlluvia.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/plotARI.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/plotHeatmap.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/plotHeatmap_banksy.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/plotMetaDataHeatmap_vs.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/plotReduction.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/plotScree.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/plotSpatDimPlots.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/plotSpatial.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/plotSpatialDims.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/plotSpatialFeatures.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/plotUMAP.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/reexports.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/RunBanksy.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/RunPCA.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/RunUMAP.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/ScaleBanksy.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/simulateDataset.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/SplitBanksy.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/SubsetBanksy.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/SweepBanksy.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/updateGobjectUmapClust.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/visualcortex.html</loc>
   </url>
 </urlset>
