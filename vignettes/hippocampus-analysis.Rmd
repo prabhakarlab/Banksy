@@ -159,7 +159,11 @@ plotAlluvia(bank)
 
 ## Session information
 
-```{r}
+<details>
+
+```{r, sess}
 sessionInfo()
 ```
+
+</details>
 

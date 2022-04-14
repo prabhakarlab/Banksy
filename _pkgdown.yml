@@ -64,9 +64,9 @@ navbar:
       menu:
       - text: Working with BanksyObjects
         href: articles/banksy-object.html
-      - text: Grid search (Mouse hippocampus MERFISH)
+      - text: Choosing parameters (Mouse hippocampus VeraFISH)
         href: articles/hippocampus-analysis.html
-      - text: Multiple datasets (Human DLPFC 10x Visium)
+      - text: Analysing multiple datasets (Human DLPFC 10x Visium)
         href: articles/dlpfc-analysis.html
       - text: Visualization (Mouse hypothalamus MERFISH)
         href: articles/hypothalamus-analysis.html

@@ -159,7 +159,11 @@ plotHeatmap(bank, assay = 'banksy', lambda = 0.2,
 
 ## Session information
 
-```{r}
+<details>
+
+```{r, sess}
 sessionInfo()
 ```
+
+</details>
 

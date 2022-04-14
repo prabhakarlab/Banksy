@@ -37,12 +37,13 @@ Detailed description of *Banksy* functionality and example analyses are
 available at the [package
 webpage](https://prabhakarlab.github.io/Banksy/).
 
-*Banksy* comes installed with [documentation]() of main functions and
-their usage, along with several vignettes which detail different use
-cases:
+*Banksy* comes installed with
+[documentation](https://prabhakarlab.github.io/Banksy/reference/index.html)
+of main functions and their usage, along with several vignettes which
+detail different use cases:
 
 -   [Working with Banksy
-    objects](https://prabhakarlab.github.io/Banksy/reference/index.html):
+    objects](https://prabhakarlab.github.io/Banksy/reference/banksy-object.html):
     Introduction to the *BanksyObject* class which serves as a container
     for *Banksy*.
 

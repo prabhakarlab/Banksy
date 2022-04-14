@@ -111,6 +111,10 @@ plotExpression(sce, features = features, x = 'BANKSY', colour_by = 'BANKSY',
 
 ## Session information
 
-```{r}
+<details>
+
+```{r, sess}
 sessionInfo()
 ```
+
+</details>

@@ -58,10 +58,10 @@
       <a href="articles/banksy-object.html">Working with BanksyObjects</a>
     </li>
     <li>
-      <a href="articles/hippocampus-analysis.html">Grid search (Mouse hippocampus MERFISH)</a>
+      <a href="articles/hippocampus-analysis.html">Choosing parameters (Mouse hippocampus VeraFISH)</a>
     </li>
     <li>
-      <a href="articles/dlpfc-analysis.html">Multiple datasets (Human DLPFC 10x Visium)</a>
+      <a href="articles/dlpfc-analysis.html">Analysing multiple datasets (Human DLPFC 10x Visium)</a>
     </li>
     <li>
       <a href="articles/hypothalamus-analysis.html">Visualization (Mouse hypothalamus MERFISH)</a>
@@ -117,12 +117,14 @@
 <div class="section level2">
 <h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
 </h2>
-<p>Detailed description of <em>Banksy</em> functionality and example analyses are available at the <a href="">package webpage</a>.</p>
-<p><em>Banksy</em> comes installed with <a href="">documentation</a> of main functions and their usage, along with several vignettes which detail different use cases:</p>
+<p>Detailed description of <em>Banksy</em> functionality and example analyses are available at the <a href="https://prabhakarlab.github.io/Banksy/">package webpage</a>.</p>
+<p><em>Banksy</em> comes installed with <a href="https://prabhakarlab.github.io/Banksy/reference/index.html">documentation</a> of main functions and their usage, along with several vignettes which detail different use cases:</p>
 <ul>
-<li><p><a href="">Working with Banksy objects</a>: Introduction to the <em>BanksyObject</em> class which serves as a container for <em>Banksy</em>.</p></li>
-<li><p><a href="">Mouse hippocampus MERFISH dataset</a>: Illustrates a grid search of parameters which best cluster cells.</p></li>
-<li><p><a href="">Human dorsolateral prefrontal cortex 10x Visium dataset</a>: Illustrates analysis of multiple spatial transcriptomic datasets.</p></li>
+<li><p><a href="https://prabhakarlab.github.io/Banksy/reference/banksy-object.html">Working with Banksy objects</a>: Introduction to the <em>BanksyObject</em> class which serves as a container for <em>Banksy</em>.</p></li>
+<li><p><a href="https://prabhakarlab.github.io/Banksy/hippocampus-analysis.html">Mouse hippocampus MERFISH dataset</a>: Illustrates a grid search of parameters which best cluster cells.</p></li>
+<li><p><a href="https://prabhakarlab.github.io/Banksy/dlpfc-analysis.html">Human dorsolateral prefrontal cortex 10x Visium dataset</a>: Illustrates analysis of multiple spatial transcriptomic datasets.</p></li>
+<li><p><a href="https://prabhakarlab.github.io/Banksy/hypothalamus-analysis.html">Mouse hypothalamus MERFISH dataset</a>: Illustrates visualization functionality.</p></li>
+<li><p><a href="https://prabhakarlab.github.io/Banksy/single-cell-exp.html">Interoperability with SingleCellExperiment</a>: Illustrates BANKSY interoperability with the Bioconductor <a href="https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html" class="external-link">SingleCellExperiment</a> framework for interfacing with packages like <a href="https://bioconductor.org/packages/release/bioc/html/scran.html" class="external-link">scran</a> or <a href="https://bioconductor.org/packages/release/bioc/html/scater.html" class="external-link">scater</a>.</p></li>
 </ul>
 </div>
 <div class="section level2">
@@ -195,9 +197,9 @@
 <code>k.neighbours</code>. Number of k neighbours to use for constructing sNN.</li>
 </ul>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ClusterBanksy.html">ClusterBanksy</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.3</span><span class="op">)</span>, pca <span class="op">=</span> <span class="cn">TRUE</span>, npcs <span class="op">=</span> <span class="fl">20</span>,
-                      method <span class="op">=</span> <span class="st">'leiden'</span>, k.neighbors <span class="op">=</span> <span class="fl">50</span>, resolution <span class="op">=</span> <span class="fl">1.2</span>, 
-                      seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span>
+<span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ClusterBanksy.html">ClusterBanksy</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.3</span><span class="op">)</span>, pca <span class="op">=</span> <span class="cn">TRUE</span>, npcs <span class="op">=</span> <span class="fl">20</span>,
+                      method <span class="op">=</span> <span class="st">'leiden'</span>, k.neighbors <span class="op">=</span> <span class="fl">50</span>, resolution <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span>
 <span class="co">#&gt; Iteration 1 out of 2</span>
 <span class="co">#&gt; Iteration 2 out of 2</span></code></pre></div>
 <p>Different clustering runs can be harmonised with <code>ConnectClusters</code>:</p>
@@ -238,7 +240,7 @@
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
-<li><small><a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
+<li><small>GPL (&gt;= 3)</small></li>
 </ul>
 </div>
 

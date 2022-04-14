@@ -160,7 +160,11 @@ will be returned.
 
 ## Session information
 
-```{r}
+<details>
+
+```{r, sess}
 sessionInfo()
 ```
+
+</details>
 

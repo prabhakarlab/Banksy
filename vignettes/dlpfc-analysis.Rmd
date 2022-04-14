@@ -13,12 +13,15 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Here, we demonstrate BANKSY analysis on the human dorsolateral prefrontal 
 cortex 10x Visium data from Maynard et al (2018). The data comprise 12 samples 
-obtained from 3 subjects, with manual annotation of the layers in each sample.
+obtained from 3 subjects, with manual annotation of the layers in each sample. 
+Here, we demonstrate BANKSY analysis on multiple datasets with 4 of the 12 
+samples in this dataset. 
 
 ## Loading the data
 
 The package provides gene expression and spot locations for the samples from 
-subject 3 (sample 151673 - 151676). We processed the raw data (obtained [here](http://research.libd.org/spatialLIBD/)) by first performing library size 
+subject 3 (sample 151673 - 151676). We processed the raw data (obtained 
+[here](http://research.libd.org/spatialLIBD/)) by first performing library size 
 normalization. Next, we identified the top 3000 highly variable genes for each 
 sample. The union of these genes were used as the gene set for downstream 
 analysis. See `?Banksy::dlpfc151673` for more details.
@@ -160,6 +163,10 @@ grid.arrange(
 
 ## Session information
 
-```{r sess}
+<details>
+
+```{r, sess}
 sessionInfo()
 ```
+
+</details>

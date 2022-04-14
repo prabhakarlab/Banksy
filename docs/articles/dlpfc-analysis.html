@@ -53,10 +53,10 @@
       <a href="../articles/banksy-object.html">Working with BanksyObjects</a>
     </li>
     <li>
-      <a href="../articles/hippocampus-analysis.html">Grid search (Mouse hippocampus MERFISH)</a>
+      <a href="../articles/hippocampus-analysis.html">Choosing parameters (Mouse hippocampus VeraFISH)</a>
     </li>
     <li>
-      <a href="../articles/dlpfc-analysis.html">Multiple datasets (Human DLPFC 10x Visium)</a>
+      <a href="../articles/dlpfc-analysis.html">Analysing multiple datasets (Human DLPFC 10x Visium)</a>
     </li>
     <li>
       <a href="../articles/hypothalamus-analysis.html">Visualization (Mouse hypothalamus MERFISH)</a>
@@ -100,7 +100,7 @@
 
     
     
-<p>Here, we demonstrate BANKSY analysis on the human dorsolateral prefrontal cortex 10x Visium data from Maynard et al (2018). The data comprise 12 samples obtained from 3 subjects, with manual annotation of the layers in each sample.</p>
+<p>Here, we demonstrate BANKSY analysis on the human dorsolateral prefrontal cortex 10x Visium data from Maynard et al (2018). The data comprise 12 samples obtained from 3 subjects, with manual annotation of the layers in each sample. Here, we demonstrate BANKSY analysis on multiple datasets with 4 of the 12 samples in this dataset.</p>
 <div class="section level2">
 <h2 id="loading-the-data">Loading the data<a class="anchor" aria-label="anchor" href="#loading-the-data"></a>
 </h2>
@@ -212,7 +212,7 @@
                 main <span class="op">=</span> <span class="st">'BANKSY clusters'</span>, main.size <span class="op">=</span> <span class="fl">10</span>, pt.size <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span>, 
   <span class="fu"><a href="../reference/plotReduction.html">plotReduction</a></span><span class="op">(</span><span class="va">bank</span>, reduction <span class="op">=</span> <span class="st">'umap_0.2'</span>, by <span class="op">=</span> <span class="st">'clust_anno'</span>, type <span class="op">=</span> <span class="st">'discrete'</span>,
                 main <span class="op">=</span> <span class="st">'Manual annotation'</span>, main.size <span class="op">=</span> <span class="fl">10</span>, pt.size <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span> <span class="op">+</span>
-    <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="va">layers</span>, values <span class="op">=</span> <span class="fu">Banksy</span><span class="fu">:::</span><span class="fu">getPalette</span><span class="op">(</span><span class="fl">8</span><span class="op">)</span><span class="op">)</span>,
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="va">layers</span>, values <span class="op">=</span> <span class="fu">Banksy</span><span class="fu">:::</span><span class="fu">getPalette</span><span class="op">(</span><span class="fl">8</span><span class="op">)</span><span class="op">)</span>,
   ncol <span class="op">=</span> <span class="fl">2</span>
 <span class="op">)</span></code></pre></div>
 <p><img src="dlpfc-analysis_files/figure-html/umap-1.png" width="864" style="display: block; margin: auto;"></p>
@@ -250,7 +250,7 @@
 <div class="section level2">
 <h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
 </h2>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<details><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## R version 4.1.2 (2021-11-01)</span>
 <span class="co">## Platform: x86_64-w64-mingw32/x64 (64-bit)</span>
@@ -323,6 +323,7 @@
 <span class="co">## [101] Matrix.utils_0.9.8          memoise_2.0.1              </span>
 <span class="co">## [103] IRanges_2.28.0              cluster_2.1.2              </span>
 <span class="co">## [105] ellipsis_0.3.2</span></code></pre>
+</details>
 </div>
   </div>
 
