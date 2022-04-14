@@ -171,12 +171,12 @@
 <span class="co">#&gt; cell_6954 cell_6954         116        29                     7</span>
 <span class="co">#&gt; cell_7074 cell_7074          28        17                     6</span>
 <span class="co">#&gt;           clust_lam0_k50_res1.2 clust_lam0.3_k50_res0.8 clust_lam0.3_k50_res1.2</span>
-<span class="co">#&gt; cell_1276                    10                      15                      17</span>
-<span class="co">#&gt; cell_691                      2                       8                       6</span>
-<span class="co">#&gt; cell_396                      7                      15                      17</span>
-<span class="co">#&gt; cell_68                      10                      15                      17</span>
-<span class="co">#&gt; cell_6954                     8                       6                       8</span>
-<span class="co">#&gt; cell_7074                     5                       6                       8</span></code></pre></div>
+<span class="co">#&gt; cell_1276                     9                      14                      17</span>
+<span class="co">#&gt; cell_691                      3                       8                       6</span>
+<span class="co">#&gt; cell_396                      6                      14                      17</span>
+<span class="co">#&gt; cell_68                       9                      14                      17</span>
+<span class="co">#&gt; cell_6954                     8                       7                       8</span>
+<span class="co">#&gt; cell_7074                     7                       7                       8</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="cluster-similarity">Cluster similarity<a class="anchor" aria-label="anchor" href="#cluster-similarity"></a>
@@ -185,15 +185,15 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/getARI.html">getARI</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span>
 <span class="co">#&gt;                         clust_lam0_k50_res0.8 clust_lam0_k50_res1.2</span>
-<span class="co">#&gt; clust_lam0_k50_res0.8                   1.000                 0.842</span>
-<span class="co">#&gt; clust_lam0_k50_res1.2                   0.842                 1.000</span>
-<span class="co">#&gt; clust_lam0.3_k50_res0.8                 0.645                 0.585</span>
-<span class="co">#&gt; clust_lam0.3_k50_res1.2                 0.635                 0.631</span>
+<span class="co">#&gt; clust_lam0_k50_res0.8                   1.000                 0.881</span>
+<span class="co">#&gt; clust_lam0_k50_res1.2                   0.881                 1.000</span>
+<span class="co">#&gt; clust_lam0.3_k50_res0.8                 0.692                 0.676</span>
+<span class="co">#&gt; clust_lam0.3_k50_res1.2                 0.634                 0.676</span>
 <span class="co">#&gt;                         clust_lam0.3_k50_res0.8 clust_lam0.3_k50_res1.2</span>
-<span class="co">#&gt; clust_lam0_k50_res0.8                     0.645                   0.635</span>
-<span class="co">#&gt; clust_lam0_k50_res1.2                     0.585                   0.631</span>
-<span class="co">#&gt; clust_lam0.3_k50_res0.8                   1.000                   0.871</span>
-<span class="co">#&gt; clust_lam0.3_k50_res1.2                   0.871                   1.000</span>
+<span class="co">#&gt; clust_lam0_k50_res0.8                     0.692                   0.634</span>
+<span class="co">#&gt; clust_lam0_k50_res1.2                     0.676                   0.676</span>
+<span class="co">#&gt; clust_lam0.3_k50_res0.8                   1.000                   0.818</span>
+<span class="co">#&gt; clust_lam0.3_k50_res1.2                   0.818                   1.000</span>
 
 <span class="fu"><a href="../reference/plotARI.html">plotARI</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span> </code></pre></div>
 <p><img src="hippocampus-analysis_files/figure-html/runari-1.png" width="480" style="display: block; margin: auto;"></p>
@@ -207,17 +207,17 @@
 
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/BanksyObject-class.html">meta.data</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;             cell_ID total_count num_genes clust_lam0_k50_res0.8</span>
-<span class="co">#&gt; cell_1276 cell_1276         266        51                    13</span>
+<span class="co">#&gt; cell_1276 cell_1276         266        51                    12</span>
 <span class="co">#&gt; cell_691   cell_691         132        36                     6</span>
 <span class="co">#&gt; cell_396   cell_396          95        27                     4</span>
-<span class="co">#&gt; cell_68     cell_68         579        72                    13</span>
+<span class="co">#&gt; cell_68     cell_68         579        72                    12</span>
 <span class="co">#&gt; cell_6954 cell_6954         116        29                     8</span>
 <span class="co">#&gt; cell_7074 cell_7074          28        17                     5</span>
 <span class="co">#&gt;           clust_lam0_k50_res1.2 clust_lam0.3_k50_res0.8 clust_lam0.3_k50_res1.2</span>
-<span class="co">#&gt; cell_1276                    13                      17                      17</span>
+<span class="co">#&gt; cell_1276                    12                      17                      17</span>
 <span class="co">#&gt; cell_691                      6                       6                       6</span>
 <span class="co">#&gt; cell_396                      4                      17                      17</span>
-<span class="co">#&gt; cell_68                      13                      17                      17</span>
+<span class="co">#&gt; cell_68                      12                      17                      17</span>
 <span class="co">#&gt; cell_6954                     8                       8                       8</span>
 <span class="co">#&gt; cell_7074                     5                       8                       8</span></code></pre></div>
 <p>This updates the <code>meta.data</code> slot with new cluster labels that can be used for visualisation. We can visualise connected output as follows.</p>
