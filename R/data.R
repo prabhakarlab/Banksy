@@ -8,7 +8,7 @@
 #' @format A list with 2 entries:
 #' \describe{
 #' \item{expression}{(matrix) gene expression matrix}
-#' \item{locations}{data.frame} cell centroids in 2D)
+#' \item{locations}{(data.frame) cell centroids in 2D}
 #' }
 #' 
 #' @usage data(hippocampus)
@@ -68,7 +68,7 @@
 #' In addition, the spatial genes used for HMRF analysis in the
 #' reference are included.
 #'
-#' @format A list with 3 entries:
+#' @format A list with 4 entries:
 #' \describe{
 #' \item{expression}{(matrix) gene expression matrix}
 #' \item{locations}{(data.frame) cell centroids in 2D}
@@ -91,7 +91,7 @@
 #' count normalized and subset to 7,319 genes obtained by taking the union of
 #' the top 3,000 genes in each sample for subject 3.
 #'
-#' @format A list with 3 entries:
+#' @format A list with 2 entries:
 #' \describe{
 #' \item{expression}{(matrix) gene expression matrix}
 #' \item{locations}{(data.frame) spot locations in 2D}
@@ -112,7 +112,7 @@
 #' count normalized and subset to 7,319 genes obtained by taking the union of
 #' the top 3,000 genes in each sample for subject 3.
 #'
-#' @format A list with 3 entries:
+#' @format A list with 2 entries:
 #' \describe{
 #' \item{expression}{(matrix) gene expression matrix}
 #' \item{locations}{(data.frame) spot locations in 2D}
@@ -133,7 +133,7 @@
 #' count normalized and subset to 7,319 genes obtained by taking the union of
 #' the top 3,000 genes in each sample for subject 3.
 #'
-#' @format A list with 3 entries:
+#' @format A list with 2 entries:
 #' \describe{
 #' \item{expression}{(matrix) gene expression matrix}
 #' \item{locations}{(data.frame) spot locations in 2D}
@@ -154,7 +154,7 @@
 #' count normalized and subset to 7,319 genes obtained by taking the union of
 #' the top 3,000 genes in each sample for subject 3.
 #'
-#' @format A list with 3 entries:
+#' @format A list with 2 entries:
 #' \describe{
 #' \item{expression}{(matrix) gene expression matrix}
 #' \item{locations}{(data.frame) spot locations in 2D}

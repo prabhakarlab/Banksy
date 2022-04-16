@@ -8,7 +8,7 @@
 A list with 2 entries:
 \describe{
 \item{expression}{(matrix) gene expression matrix}
-\item{locations}{data.frame} cell centroids in 2D)
+\item{locations}{(data.frame) cell centroids in 2D}
 }
 }
 \usage{

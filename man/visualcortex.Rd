@@ -5,7 +5,7 @@
 \alias{visualcortex}
 \title{Mouse visual cortex SeqFISH data}
 \format{
-A list with 3 entries:
+A list with 4 entries:
 \describe{
 \item{expression}{(matrix) gene expression matrix}
 \item{locations}{(data.frame) cell centroids in 2D}

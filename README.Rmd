@@ -58,7 +58,7 @@ usage, along with several vignettes which detail different use cases:
   Introduction to the *BanksyObject* class which serves as a container for 
   *Banksy*.  
   
-* [Mouse hippocampus MERFISH dataset](https://prabhakarlab.github.io/Banksy/articles/hippocampus-analysis.html):
+* [Mouse hippocampus VeraFISH dataset](https://prabhakarlab.github.io/Banksy/articles/hippocampus-analysis.html):
   Illustrates a grid search of parameters which best cluster cells.  
 
 * [Human dorsolateral prefrontal cortex 10x Visium dataset](https://prabhakarlab.github.io/Banksy/articles/dlpfc-analysis.html):

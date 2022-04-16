@@ -51,7 +51,7 @@ detail different use cases:
     Introduction to the *BanksyObject* class which serves as a container
     for *Banksy*.
 
--   [Mouse hippocampus MERFISH
+-   [Mouse hippocampus VeraFISH
     dataset](https://prabhakarlab.github.io/Banksy/articles/hippocampus-analysis.html):
     Illustrates a grid search of parameters which best cluster cells.
 

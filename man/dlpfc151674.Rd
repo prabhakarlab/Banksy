@@ -5,7 +5,7 @@
 \alias{dlpfc151674}
 \title{Human dorsolateral prefrontal cortex 10x Visium data (sample 151674)}
 \format{
-A list with 3 entries:
+A list with 2 entries:
 \describe{
 \item{expression}{(matrix) gene expression matrix}
 \item{locations}{(data.frame) spot locations in 2D}
