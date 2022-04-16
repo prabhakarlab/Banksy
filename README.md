@@ -21,8 +21,11 @@ neighborhood information for clustering, BANKSY is able to
 
 BANKSY is applicable to a wide array of spatial technologies (e.g. 10x
 Visium, Slide-seq, MERFISH) and scales well to large datasets. For more
-details on use-cases and methods, see the
+details, check out the
 [preprint](https://www.biorxiv.org/content/10.1101/2022.04.14.488259v1).
+A gentle introduction to BANKSY is also available
+[here](https://twitter.com/vipul1891/status/1515323372535644166?s=20&t=Bc6rz8VeWWptF67FejGYfQ)
+as a tweetorial.
 
 ## Installation
 
