@@ -104,7 +104,7 @@ features <- sapply(marker.info, function(m) {
     m <- m[order(m$mean.AUC, decreasing = TRUE),]
     head(rownames(m), n = 1)
 })
-plotExpression(sce, features = features, x = 'BANKSY', colour_by = 'BANKSY', 
+plotExpression(sce, features = unique(features), x = 'BANKSY', colour_by = 'BANKSY', 
                point_size = 0.1, ncol = 3)
 
 ```

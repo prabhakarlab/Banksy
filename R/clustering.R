@@ -188,7 +188,7 @@ runMclust <- function(bank, lambda, pca, npcs, mclust.G, ...) {
   return(bank)
 }
 
-#' @importFrom leidenAlg leiden.community
+#' @importFrom igraph cluster_leiden as.undirected
 runLeiden <- function(bank, lambda, pca, npcs,
                       k.neighbors, resolution, leiden.iter) {
 
@@ -198,11 +198,13 @@ runLeiden <- function(bank, lambda, pca, npcs,
   for (lam in lambda) {
     x <- getClusterMatrix(bank, lam, pca, npcs)
     for (k in k.neighbors) {
-      graph <- getGraph(x, k)
+      graph <- as.undirected(getGraph(x, k))
       for (res in resolution) {
-        out <- leiden.community(graph, resolution = res, n.iterations = leiden.iter)
+        out <- cluster_leiden(graph, resolution_parameter = res, 
+                              n_iterations = leiden.iter, 
+                              objective_function = 'modularity')
         clust.name <- paste0('clust_lam', lam, '_k', k, '_res', res)
-        bank@meta.data[[clust.name]] <- as.numeric(out$membership)
+        bank@meta.data[[clust.name]] <- as.numeric(membership(out))
         iter <- iter + 1
         if (iter <= max.iters) message('Iteration ', iter, ' out of ', max.iters)
       }

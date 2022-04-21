@@ -25,7 +25,6 @@ Imports:
     uwot,
     dbscan,
     igraph,
-    leidenAlg,
     mclust,
     ComplexHeatmap,
     circlize,
