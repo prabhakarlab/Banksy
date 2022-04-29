@@ -113,7 +113,7 @@ RunUMAP <- function(bank, lambda, ncomponents = 2, pca = TRUE, npcs = 20,
     if (!pca) {
 
       message('Computing UMAP on Banksy matrix')
-      x <- t(getBanksyMatrix(bank, lambda = lambda)$expr)
+      x <- t(getBanksyMatrix(bank, lambda = lam)$expr)
 
     } else {
 
