@@ -772,8 +772,6 @@ getDiscretePalette <- function(feature, col.discrete = NULL) {
   if (num) n <- max(feature)
   if (char) n <- length(unique(feature))
 
-  zz <<- list(n, feature, col.discrete)
-  
   if (is.null(col.discrete)) {
     pal <- getPalette(n)
     if (num) {
