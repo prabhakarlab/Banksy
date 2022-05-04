@@ -12,6 +12,7 @@ plotSpatialFeatures(
   nrow = NULL,
   ncol = NULL,
   return.plot = FALSE,
+  col.discrete = NULL,
   ...
 )
 }
@@ -30,7 +31,9 @@ plotSpatialFeatures(
 
 \item{return.plot}{return plots}
 
-\item{...}{parameters to pass to plotSpatial}
+\item{col.discrete}{for discrete labels - colors for groupings}
+
+\item{...}{other parameters to pass to plotSpatial}
 }
 \value{
 Spatial plots

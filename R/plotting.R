@@ -190,7 +190,8 @@ plotSpatial <- function(bank, dataset = NULL,
 #' @param nrow nrow for grob
 #' @param ncol ncol for grob
 #' @param return.plot return plots
-#' @param ... parameters to pass to plotSpatial
+#' @param col.discrete for discrete labels - colors for groupings
+#' @param ... other parameters to pass to plotSpatial
 #'
 #' @importFrom gridExtra grid.arrange
 #'
@@ -212,18 +213,27 @@ plotSpatial <- function(bank, dataset = NULL,
 #' 
 plotSpatialFeatures <- function(bank, by, type, dataset = NULL,
                                 nrow = NULL, ncol= NULL, return.plot = FALSE, 
+                                col.discrete = NULL,
                                 ...) {
 
   valid <- length(by) == length(type)
   if (!valid) stop('Ensure a 1-1 correspondence between features to plot (by)
                    and type of features (type)')
-
-  plots <- Map(f = function(feature, feature.type, ...) {
-    plotSpatial(bank, dataset = dataset, by = feature, type = feature.type, ...)
-  }, by, type, ...)
+  
+  if (is.null(col.discrete)) {
+      plots <- Map(f = function(feature, feature.type, ...) {
+          plotSpatial(bank, dataset = dataset, 
+                      by = feature, type = feature.type, ...)
+      }, by, type, ...)
+  } else {
+      plots <- Map(f = function(feature, feature.type, col.dis, ...) {
+          plotSpatial(bank, dataset = dataset, 
+                      by = feature, type = feature.type, 
+                      col.discrete = col.dis, ...)
+      }, by, type, list(col.discrete), ...)
+  }
 
   do.call(grid.arrange, c(plots, nrow = nrow, ncol = ncol))
-  
   if (return.plot) return(plots)
 }
 
@@ -762,6 +772,8 @@ getDiscretePalette <- function(feature, col.discrete = NULL) {
   if (num) n <- max(feature)
   if (char) n <- length(unique(feature))
 
+  zz <<- list(n, feature, col.discrete)
+  
   if (is.null(col.discrete)) {
     pal <- getPalette(n)
     if (num) {
@@ -780,10 +792,10 @@ getDiscretePalette <- function(feature, col.discrete = NULL) {
        Ensure that names(col.discrete) has all the cluster labels.')
 
     if (num) {
-      clust.as.char <- as.character(unique(feature))
+      clust.as.char <- as.character(sort(unique(feature)))
       pal <- col.discrete[clust.as.char]
     } else if (char) {
-      clust.as.char <- unique(feature)
+      clust.as.char <- sort(unique(feature))
       pal <- col.discrete[clust.as.char]
     }
   }
