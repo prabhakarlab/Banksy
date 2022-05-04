@@ -70,7 +70,7 @@ detail different use cases:
 
 -   [Interoperability with
     SingleCellExperiment](https://prabhakarlab.github.io/Banksy/articles/single-cell-exp.html):
-    Illustrates BANKSY interoperability with the Bioconductor
+    Illustrates BANKSY interoperability with Bioconductor
     [SingleCellExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html)
     framework for interfacing with packages like
     [scran](https://bioconductor.org/packages/release/bioc/html/scran.html)
