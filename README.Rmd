@@ -74,6 +74,10 @@ usage, along with several vignettes which detail different use cases:
   framework for interfacing with packages like [scran](https://bioconductor.org/packages/release/bioc/html/scran.html) 
   or [scater](https://bioconductor.org/packages/release/bioc/html/scater.html).
 
+*Banksy* is also interoperable with [Seurat](https://satijalab.org/seurat/) via
+*SeuratWrappers*. Documentation on how to run BANKSY on Seurat objects can be 
+found [here](https://github.com/satijalab/seurat-wrappers/blob/master/docs/banksy.md). 
+
 ## Quick start
 
 *Banksy* takes as input an expression matrix and cell centroids. Example 
