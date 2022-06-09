@@ -119,6 +119,7 @@ ScaleBanksy <- function(bank, assay = 'both', separate = TRUE) {
 #' @param kspatial rNN parameter - number of neighbors to use
 #' @param dimensions dimensions to use when computing neighborhood - one of
 #'   column name in cell.locs, or 'all'
+#' @param moment mean of neighborhood or gene-gene covariance of neighborhood
 #' @param verbose messages
 #'
 #' @importFrom data.table data.table setnames
@@ -141,7 +142,10 @@ ComputeBanksy <- function(bank,
                           sigma = 1.5, alpha = 0.05,
                           kspatial = 10,
                           dimensions = 'all',
+                          moment = 'mean',
                           verbose=FALSE) {
+    
+  slt <- ifelse(moment == 'mean', 'nbr.expr', 'custom.expr')
 
   if (is.list(bank@own.expr)) {
     locs <- lapply(bank@cell.locs, function(x) {
@@ -156,9 +160,10 @@ ComputeBanksy <- function(bank,
                              dimensions = dimensions,
                              spatialMode = spatialMode,
                              k_geom = k_geom,
+                             moment = moment,
                              verbose = verbose)},
       bank@own.expr, locs)
-    bank@nbr.expr <- nbr
+    slot(bank, slt) <- nbr
     names(bank@nbr.expr) <- names(bank@own.expr)
 
   } else {
@@ -171,8 +176,9 @@ ComputeBanksy <- function(bank,
                                   dimensions = dimensions,
                                   spatialMode = spatialMode ,
                                   k_geom = k_geom,
+                                  moment = moment,
                                   verbose = verbose)
-    bank@nbr.expr <- nbr
+    slot(bank, slt) <- nbr
   }
   return(bank)
 }
@@ -496,7 +502,8 @@ compute.banksyMatrices <- function(gcm, locs,
                                    kspatial=1000, k_geom = 10, n=2,
                                    dimensions = 'all',
                                    spatialMode = 'kNN_r',
-                                   verbose = FALSE){
+                                   verbose = FALSE, 
+                                   moment = 'mean'){
 
   if (any(dim(gcm)==0)) {
     return(NULL)
@@ -529,13 +536,33 @@ compute.banksyMatrices <- function(gcm, locs,
   } else {
     stop('Invalid spatialMode. One of rNN_gauss, kNN_rank, kNN_r, kNN_unif')
   }
-
-  message('Computing neighbor matrix...')
-  aggr <- knnDF[, gcm[,to, drop = FALSE] %*% weight, by = from]
-  ncm <- matrix(aggr$V1, nrow = nrow(gcm), ncol = ncol(gcm))
-  rownames(ncm) <- paste0(rownames(gcm), '.nbr')
+  
+  if (moment == 'mean') {
+      message('Computing neighbor matrix...')
+      aggr <- knnDF[, gcm[,to, drop = FALSE] %*% weight, by = from]
+      ncm <- matrix(aggr$V1, nrow = nrow(gcm), ncol = ncol(gcm))
+      rownames(ncm) <- paste0(rownames(gcm), '.nbr')
+  } else if (moment == 'covariance') {
+      aggr <- knnDF[, corvec(gcm[, to, drop = FALSE], weight), by = from]
+      ncm <- matrix(aggr$V1, ncol = ncol(gcm))
+      rownames(ncm) <- paste0('cov.', seq_len(nrow(ncm)))
+      rm(aggr)
+      gc()
+  }
   colnames(ncm) <- colnames(gcm)
   message('Done')
-
+  
   return(ncm)
 }
+
+
+#' @importFrom stats cov.wt
+corvec <- function(gcm, wt) {
+    cgm <- t(gcm)
+    cv <- cov.wt(cgm, wt = wt, cor = TRUE)$cor
+    cv[is.nan(cv)] <- 0
+    cv[lower.tri(cv, diag = TRUE)] <- NA
+    cv <- as.vector(cv)
+    cv[!is.na(cv)]
+}
+
