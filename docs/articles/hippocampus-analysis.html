@@ -171,12 +171,12 @@
 <span class="co">#&gt; cell_6954 cell_6954         116        29                     7</span>
 <span class="co">#&gt; cell_7074 cell_7074          28        17                     6</span>
 <span class="co">#&gt;           clust_lam0_k50_res1.2 clust_lam0.3_k50_res0.8 clust_lam0.3_k50_res1.2</span>
-<span class="co">#&gt; cell_1276                     9                      15                      17</span>
-<span class="co">#&gt; cell_691                      3                       8                       6</span>
+<span class="co">#&gt; cell_1276                    10                      15                      17</span>
+<span class="co">#&gt; cell_691                      2                       8                       6</span>
 <span class="co">#&gt; cell_396                      7                      15                      17</span>
-<span class="co">#&gt; cell_68                       9                      15                      17</span>
-<span class="co">#&gt; cell_6954                     8                       7                       8</span>
-<span class="co">#&gt; cell_7074                     6                       7                       8</span></code></pre></div>
+<span class="co">#&gt; cell_68                      10                      15                      17</span>
+<span class="co">#&gt; cell_6954                     8                       6                       8</span>
+<span class="co">#&gt; cell_7074                     6                       6                       8</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="cluster-similarity">Cluster similarity<a class="anchor" aria-label="anchor" href="#cluster-similarity"></a>
@@ -185,15 +185,15 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/getARI.html">getARI</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span>
 <span class="co">#&gt;                         clust_lam0_k50_res0.8 clust_lam0_k50_res1.2</span>
-<span class="co">#&gt; clust_lam0_k50_res0.8                   1.000                 0.890</span>
-<span class="co">#&gt; clust_lam0_k50_res1.2                   0.890                 1.000</span>
-<span class="co">#&gt; clust_lam0.3_k50_res0.8                 0.656                 0.641</span>
-<span class="co">#&gt; clust_lam0.3_k50_res1.2                 0.635                 0.677</span>
+<span class="co">#&gt; clust_lam0_k50_res0.8                   1.000                 0.833</span>
+<span class="co">#&gt; clust_lam0_k50_res1.2                   0.833                 1.000</span>
+<span class="co">#&gt; clust_lam0.3_k50_res0.8                 0.645                 0.586</span>
+<span class="co">#&gt; clust_lam0.3_k50_res1.2                 0.636                 0.632</span>
 <span class="co">#&gt;                         clust_lam0.3_k50_res0.8 clust_lam0.3_k50_res1.2</span>
-<span class="co">#&gt; clust_lam0_k50_res0.8                     0.656                   0.635</span>
-<span class="co">#&gt; clust_lam0_k50_res1.2                     0.641                   0.677</span>
-<span class="co">#&gt; clust_lam0.3_k50_res0.8                   1.000                   0.858</span>
-<span class="co">#&gt; clust_lam0.3_k50_res1.2                   0.858                   1.000</span>
+<span class="co">#&gt; clust_lam0_k50_res0.8                     0.645                   0.636</span>
+<span class="co">#&gt; clust_lam0_k50_res1.2                     0.586                   0.632</span>
+<span class="co">#&gt; clust_lam0.3_k50_res0.8                   1.000                   0.870</span>
+<span class="co">#&gt; clust_lam0.3_k50_res1.2                   0.870                   1.000</span>
 
 <span class="fu"><a href="../reference/plotARI.html">plotARI</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span> </code></pre></div>
 <p><img src="hippocampus-analysis_files/figure-html/runari-1.png" width="480" style="display: block; margin: auto;"></p>
@@ -207,17 +207,17 @@
 
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/BanksyObject-class.html">meta.data</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;             cell_ID total_count num_genes clust_lam0_k50_res0.8</span>
-<span class="co">#&gt; cell_1276 cell_1276         266        51                    13</span>
+<span class="co">#&gt; cell_1276 cell_1276         266        51                    12</span>
 <span class="co">#&gt; cell_691   cell_691         132        36                     6</span>
 <span class="co">#&gt; cell_396   cell_396          95        27                     4</span>
-<span class="co">#&gt; cell_68     cell_68         579        72                    13</span>
+<span class="co">#&gt; cell_68     cell_68         579        72                    12</span>
 <span class="co">#&gt; cell_6954 cell_6954         116        29                     8</span>
 <span class="co">#&gt; cell_7074 cell_7074          28        17                     5</span>
 <span class="co">#&gt;           clust_lam0_k50_res1.2 clust_lam0.3_k50_res0.8 clust_lam0.3_k50_res1.2</span>
-<span class="co">#&gt; cell_1276                    13                      17                      17</span>
+<span class="co">#&gt; cell_1276                    12                      17                      17</span>
 <span class="co">#&gt; cell_691                      6                       6                       6</span>
 <span class="co">#&gt; cell_396                      4                      17                      17</span>
-<span class="co">#&gt; cell_68                      13                      17                      17</span>
+<span class="co">#&gt; cell_68                      12                      17                      17</span>
 <span class="co">#&gt; cell_6954                     8                       8                       8</span>
 <span class="co">#&gt; cell_7074                     5                       8                       8</span></code></pre></div>
 <p>This updates the <code>meta.data</code> slot with new cluster labels that can be used for visualisation. We can visualise connected output as follows.</p>
@@ -264,12 +264,12 @@
 <span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; other attached packages:</span>
-<span class="co">#&gt; [1] gridExtra_2.3 ggplot2_3.3.5 Banksy_0.1.3 </span>
+<span class="co">#&gt; [1] gridExtra_2.3 ggplot2_3.3.6 Banksy_0.1.3 </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; loaded via a namespace (and not attached):</span>
 <span class="co">#&gt;   [1] bitops_1.0-7                matrixStats_0.61.0         </span>
 <span class="co">#&gt;   [3] fs_1.5.2                    doParallel_1.0.17          </span>
-<span class="co">#&gt;   [5] RColorBrewer_1.1-2          rprojroot_2.0.2            </span>
+<span class="co">#&gt;   [5] RColorBrewer_1.1-3          rprojroot_2.0.2            </span>
 <span class="co">#&gt;   [7] GenomeInfoDb_1.30.1         tools_4.1.2                </span>
 <span class="co">#&gt;   [9] bslib_0.3.1                 irlba_2.3.5                </span>
 <span class="co">#&gt;  [11] utf8_1.2.2                  R6_2.5.1                   </span>
@@ -280,11 +280,11 @@
 <span class="co">#&gt;  [21] textshaping_0.3.6           cli_3.1.0                  </span>
 <span class="co">#&gt;  [23] Biobase_2.54.0              desc_1.4.1                 </span>
 <span class="co">#&gt;  [25] DelayedArray_0.20.0         labeling_0.4.2             </span>
-<span class="co">#&gt;  [27] sass_0.4.0                  scales_1.1.1               </span>
+<span class="co">#&gt;  [27] sass_0.4.0                  scales_1.2.0               </span>
 <span class="co">#&gt;  [29] pkgdown_2.0.2               systemfonts_1.0.4          </span>
 <span class="co">#&gt;  [31] stringr_1.4.0               digest_0.6.29              </span>
 <span class="co">#&gt;  [33] dbscan_1.1-10               rmarkdown_2.13             </span>
-<span class="co">#&gt;  [35] XVector_0.34.0              dichromat_2.0-0            </span>
+<span class="co">#&gt;  [35] XVector_0.34.0              dichromat_2.0-0.1          </span>
 <span class="co">#&gt;  [37] pkgconfig_2.0.3             htmltools_0.5.2            </span>
 <span class="co">#&gt;  [39] MatrixGenerics_1.6.0        highr_0.9                  </span>
 <span class="co">#&gt;  [41] maps_3.4.0                  fastmap_1.1.0              </span>
@@ -302,9 +302,9 @@
 <span class="co">#&gt;  [65] yaml_2.2.1                  ggalluvial_0.12.3          </span>
 <span class="co">#&gt;  [67] SummarizedExperiment_1.24.0 zlibbioc_1.40.0            </span>
 <span class="co">#&gt;  [69] plyr_1.8.6                  grid_4.1.2                 </span>
-<span class="co">#&gt;  [71] parallel_4.1.2              crayon_1.5.0               </span>
+<span class="co">#&gt;  [71] parallel_4.1.2              crayon_1.5.1               </span>
 <span class="co">#&gt;  [73] lattice_0.20-45             sccore_1.0.1               </span>
-<span class="co">#&gt;  [75] mapproj_1.2.8               circlize_0.4.14            </span>
+<span class="co">#&gt;  [75] mapproj_1.2.8               circlize_0.4.15            </span>
 <span class="co">#&gt;  [77] knitr_1.37                  ComplexHeatmap_2.10.0      </span>
 <span class="co">#&gt;  [79] pillar_1.7.0                igraph_1.2.11              </span>
 <span class="co">#&gt;  [81] GenomicRanges_1.46.1        rjson_0.2.21               </span>

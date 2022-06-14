@@ -118,6 +118,16 @@
 <p>The <em>Banksy</em> package can be installed via <code>remotes</code>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"prabhakarlab/Banksy"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<p>Installation should take less than three minutes.</p>
+<p><strong>Known installation issues</strong></p>
+<ol style="list-style-type: decimal">
+<li>Installation of <code>leidenAlg</code> has non-zero exit status</li>
+</ol>
+<ul>
+<li>Refer to the <a href="https://github.com/kharchenkolab/leidenAlg#installation" class="external-link">package website</a> for <em>leidenAlg</em> installation details. Otherwise, users may also install a separate branch of <em>Banksy</em> with</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"prabhakarlab/Banksy@feat-igraph-leiden"</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
@@ -137,14 +147,14 @@
 <h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
 <p><em>Banksy</em> takes as input an expression matrix and cell centroids. Example datasets are provided with the package:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/prabhakarlab/Banksy" class="external-link">Banksy</a></span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">hippocampus</span><span class="op">)</span>
 <span class="va">expr</span> <span class="op">&lt;-</span> <span class="va">hippocampus</span><span class="op">$</span><span class="va">expression</span>
 <span class="va">locs</span> <span class="op">&lt;-</span> <span class="va">hippocampus</span><span class="op">$</span><span class="va">locations</span></code></pre></div>
 <p>The gene expression matrix for cells should be a <code>matrix</code>:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">expr</span><span class="op">)</span>
 <span class="co">#&gt; [1] "matrix" "array"</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">expr</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span>
@@ -156,7 +166,7 @@
 <span class="co">#&gt; Atp1a2          0         0        4        3         0</span>
 <span class="co">#&gt; Tnc             0         0        0        0         0</span></code></pre></div>
 <p>while cell locations should be supplied as a <code>data.frame</code>:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">locs</span><span class="op">)</span>
 <span class="co">#&gt; [1] "data.frame"</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">locs</span><span class="op">)</span>
@@ -168,21 +178,21 @@
 <span class="co">#&gt; cell_9818   11308.101 15846.37</span>
 <span class="co">#&gt; cell_11310  14894.101 15810.37</span></code></pre></div>
 <p>We store the total counts for each cell and the number of expressed genes as metadata <code>data.frame</code>, which can optionally be supplied:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">total_count</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">expr</span><span class="op">)</span>
 <span class="va">num_genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">expr</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>
 <span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>total_count <span class="op">=</span> <span class="va">total_count</span>, num_genes <span class="op">=</span> <span class="va">num_genes</span><span class="op">)</span></code></pre></div>
 <p>Next, create a <em>BanksyObject</em> with the expression matrix and cell locations (metadata is optional).</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">expr</span>,
                      cell.locs <span class="op">=</span> <span class="va">locs</span>,
                      meta.data <span class="op">=</span> <span class="va">meta</span><span class="op">)</span></code></pre></div>
 <p>Apply basic QC by keeping only cells with total counts within the 5th and 98th percentile:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/SubsetBanksy.html">SubsetBanksy</a></span><span class="op">(</span><span class="va">bank</span>, metadata <span class="op">=</span> <span class="va">total_count</span> <span class="op">&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">total_count</span>, <span class="fl">0.05</span><span class="op">)</span> <span class="op">&amp;</span>
                                       <span class="va">total_count</span> <span class="op">&lt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">total_count</span>, <span class="fl">0.98</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>We first normalize the expression matrix, compute the neighbor matrix, and scale the resulting matrices.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/NormalizeBanksy.html">NormalizeBanksy</a></span><span class="op">(</span><span class="va">bank</span>, normFactor <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
 <span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ComputeBanksy.html">ComputeBanksy</a></span><span class="op">(</span><span class="va">bank</span>, k_geom <span class="op">=</span> <span class="fl">10</span>, spatialMode <span class="op">=</span> <span class="st">'kNN_r'</span><span class="op">)</span>
 <span class="co">#&gt; Computing neighbors...</span>
@@ -190,7 +200,7 @@
 <span class="co">#&gt; Done</span>
 <span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ScaleBanksy.html">ScaleBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></code></pre></div>
 <p>Run PCA on the BANKSY matrix for <code>lambda = 0</code> (no spatial information) and <code>lambda = 0.3</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/RunPCA.html">RunPCA</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.3</span><span class="op">)</span>, npcs <span class="op">=</span> <span class="fl">30</span><span class="op">)</span>
 <span class="co">#&gt; Running PCA for lambda=0</span>
 <span class="co">#&gt; Running PCA for lambda=0.3</span></code></pre></div>
@@ -202,29 +212,29 @@
 <li>
 <code>k.neighbours</code>. Number of k neighbours to use for constructing sNN.</li>
 </ul>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span>
 <span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ClusterBanksy.html">ClusterBanksy</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.3</span><span class="op">)</span>, pca <span class="op">=</span> <span class="cn">TRUE</span>, npcs <span class="op">=</span> <span class="fl">20</span>,
                       method <span class="op">=</span> <span class="st">'leiden'</span>, k.neighbors <span class="op">=</span> <span class="fl">50</span>, resolution <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span>
 <span class="co">#&gt; Iteration 1 out of 2</span>
 <span class="co">#&gt; Iteration 2 out of 2</span></code></pre></div>
 <p>Different clustering runs can be harmonised with <code>ConnectClusters</code>:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ConnectClusters.html">ConnectClusters</a></span><span class="op">(</span><span class="va">bank</span>, map.to <span class="op">=</span> <span class="fu"><a href="reference/BanksyObject-class.html">clust.names</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></code></pre></div>
 <p>Visualise the clustering output for non-spatial clustering (<code>lambda=0</code>) and BANKSY clustering (<code>lambda = 0.3</code>).</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">features</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/BanksyObject-class.html">clust.names</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span>
 <span class="va">feature.types</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">'discrete'</span>, <span class="fl">2</span><span class="op">)</span>
 <span class="va">main</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Non-spatial'</span>, <span class="st">'BANKSY'</span><span class="op">)</span>
 <span class="fu"><a href="reference/plotSpatialFeatures.html">plotSpatialFeatures</a></span><span class="op">(</span><span class="va">bank</span>, by <span class="op">=</span> <span class="va">features</span>, type <span class="op">=</span> <span class="va">feature.types</span>, main <span class="op">=</span> <span class="va">main</span>, 
                     pt.size <span class="op">=</span> <span class="fl">1.5</span>, main.size <span class="op">=</span> <span class="fl">15</span>, nrow <span class="op">=</span> <span class="fl">1</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-13-1.png" width="100%"></p>
+<p><img src="reference/figures/README-unnamed-chunk-14-1.png" width="100%"></p>
 <p>For clarity, we can visualise each of the clusters separately with <code>wrap = TRUE</code>:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/plotSpatialFeatures.html">plotSpatialFeatures</a></span><span class="op">(</span><span class="va">bank</span>, by <span class="op">=</span> <span class="va">features</span>, type <span class="op">=</span> <span class="va">feature.types</span>, main <span class="op">=</span> <span class="va">main</span>, 
                     pt.size <span class="op">=</span> <span class="fl">0.5</span>, main.size <span class="op">=</span> <span class="fl">15</span>, nrow <span class="op">=</span> <span class="fl">1</span>, ncol <span class="op">=</span> <span class="fl">2</span>, 
                     wrap <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-14-1.png" width="100%"></p>
+<p><img src="reference/figures/README-unnamed-chunk-15-1.png" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
