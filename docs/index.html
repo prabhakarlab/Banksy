@@ -228,13 +228,86 @@
 <span class="va">main</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Non-spatial'</span>, <span class="st">'BANKSY'</span><span class="op">)</span>
 <span class="fu"><a href="reference/plotSpatialFeatures.html">plotSpatialFeatures</a></span><span class="op">(</span><span class="va">bank</span>, by <span class="op">=</span> <span class="va">features</span>, type <span class="op">=</span> <span class="va">feature.types</span>, main <span class="op">=</span> <span class="va">main</span>, 
                     pt.size <span class="op">=</span> <span class="fl">1.5</span>, main.size <span class="op">=</span> <span class="fl">15</span>, nrow <span class="op">=</span> <span class="fl">1</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-14-1.png" width="100%"></p>
+<p><img src="reference/figures/README-unnamed-chunk-15-1.png" width="100%"></p>
 <p>For clarity, we can visualise each of the clusters separately with <code>wrap = TRUE</code>:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/plotSpatialFeatures.html">plotSpatialFeatures</a></span><span class="op">(</span><span class="va">bank</span>, by <span class="op">=</span> <span class="va">features</span>, type <span class="op">=</span> <span class="va">feature.types</span>, main <span class="op">=</span> <span class="va">main</span>, 
                     pt.size <span class="op">=</span> <span class="fl">0.5</span>, main.size <span class="op">=</span> <span class="fl">15</span>, nrow <span class="op">=</span> <span class="fl">1</span>, ncol <span class="op">=</span> <span class="fl">2</span>, 
                     wrap <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-15-1.png" width="100%"></p>
+<p><img src="reference/figures/README-unnamed-chunk-16-1.png" width="100%"></p>
+<details><summary>
+Runtime for analysis
+</summary><div class="sourceCode" id="cb15"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Time difference of 45.54949 secs</span></span></code></pre></div>
+</details><details><summary>
+Session information
+</summary><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; R version 4.1.2 (2021-11-01)</span>
+<span class="co">#&gt; Platform: x86_64-w64-mingw32/x64 (64-bit)</span>
+<span class="co">#&gt; Running under: Windows 10 x64 (build 19043)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Matrix products: default</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; locale:</span>
+<span class="co">#&gt; [1] LC_COLLATE=English_Singapore.1252  LC_CTYPE=English_Singapore.1252   </span>
+<span class="co">#&gt; [3] LC_MONETARY=English_Singapore.1252 LC_NUMERIC=C                      </span>
+<span class="co">#&gt; [5] LC_TIME=English_Singapore.1252    </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; attached base packages:</span>
+<span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; other attached packages:</span>
+<span class="co">#&gt; [1] Banksy_0.1.3</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; loaded via a namespace (and not attached):</span>
+<span class="co">#&gt;  [1] bitops_1.0-7                matrixStats_0.61.0         </span>
+<span class="co">#&gt;  [3] doParallel_1.0.17           RColorBrewer_1.1-3         </span>
+<span class="co">#&gt;  [5] GenomeInfoDb_1.30.1         tools_4.1.2                </span>
+<span class="co">#&gt;  [7] utf8_1.2.2                  R6_2.5.1                   </span>
+<span class="co">#&gt;  [9] irlba_2.3.5                 uwot_0.1.11                </span>
+<span class="co">#&gt; [11] DBI_1.1.2                   BiocGenerics_0.40.0        </span>
+<span class="co">#&gt; [13] colorspace_2.0-2            GetoptLong_1.0.5           </span>
+<span class="co">#&gt; [15] tidyselect_1.1.2            gridExtra_2.3              </span>
+<span class="co">#&gt; [17] compiler_4.1.2              cli_3.1.0                  </span>
+<span class="co">#&gt; [19] Biobase_2.54.0              DelayedArray_0.20.0        </span>
+<span class="co">#&gt; [21] labeling_0.4.2              scales_1.2.0               </span>
+<span class="co">#&gt; [23] stringr_1.4.0               digest_0.6.29              </span>
+<span class="co">#&gt; [25] dbscan_1.1-10               rmarkdown_2.13             </span>
+<span class="co">#&gt; [27] XVector_0.34.0              dichromat_2.0-0.1          </span>
+<span class="co">#&gt; [29] pkgconfig_2.0.3             htmltools_0.5.2            </span>
+<span class="co">#&gt; [31] MatrixGenerics_1.6.0        highr_0.9                  </span>
+<span class="co">#&gt; [33] fastmap_1.1.0               maps_3.4.0                 </span>
+<span class="co">#&gt; [35] rlang_1.0.2                 GlobalOptions_0.1.2        </span>
+<span class="co">#&gt; [37] pals_1.7                    rstudioapi_0.13            </span>
+<span class="co">#&gt; [39] farver_2.1.0                shape_1.4.6                </span>
+<span class="co">#&gt; [41] generics_0.1.2              mclust_5.4.9               </span>
+<span class="co">#&gt; [43] dplyr_1.0.7                 RCurl_1.98-1.6             </span>
+<span class="co">#&gt; [45] magrittr_2.0.1              GenomeInfoDbData_1.2.7     </span>
+<span class="co">#&gt; [47] Matrix_1.3-4                Rcpp_1.0.7                 </span>
+<span class="co">#&gt; [49] munsell_0.5.0               S4Vectors_0.32.3           </span>
+<span class="co">#&gt; [51] fansi_0.5.0                 lifecycle_1.0.1            </span>
+<span class="co">#&gt; [53] stringi_1.7.6               leidenAlg_1.0.2            </span>
+<span class="co">#&gt; [55] yaml_2.2.1                  ggalluvial_0.12.3          </span>
+<span class="co">#&gt; [57] SummarizedExperiment_1.24.0 zlibbioc_1.40.0            </span>
+<span class="co">#&gt; [59] plyr_1.8.6                  grid_4.1.2                 </span>
+<span class="co">#&gt; [61] parallel_4.1.2              crayon_1.5.1               </span>
+<span class="co">#&gt; [63] lattice_0.20-45             sccore_1.0.1               </span>
+<span class="co">#&gt; [65] mapproj_1.2.8               circlize_0.4.15            </span>
+<span class="co">#&gt; [67] knitr_1.37                  ComplexHeatmap_2.10.0      </span>
+<span class="co">#&gt; [69] pillar_1.7.0                igraph_1.2.11              </span>
+<span class="co">#&gt; [71] GenomicRanges_1.46.1        rjson_0.2.21               </span>
+<span class="co">#&gt; [73] codetools_0.2-18            stats4_4.1.2               </span>
+<span class="co">#&gt; [75] glue_1.6.0                  evaluate_0.15              </span>
+<span class="co">#&gt; [77] data.table_1.14.2           png_0.1-7                  </span>
+<span class="co">#&gt; [79] vctrs_0.3.8                 foreach_1.5.2              </span>
+<span class="co">#&gt; [81] gtable_0.3.0                grr_0.9.5                  </span>
+<span class="co">#&gt; [83] purrr_0.3.4                 clue_0.3-60                </span>
+<span class="co">#&gt; [85] assertthat_0.2.1            ggplot2_3.3.6              </span>
+<span class="co">#&gt; [87] xfun_0.29                   tibble_3.1.6               </span>
+<span class="co">#&gt; [89] RcppHungarian_0.2           iterators_1.0.14           </span>
+<span class="co">#&gt; [91] Matrix.utils_0.9.8          IRanges_2.28.0             </span>
+<span class="co">#&gt; [93] cluster_2.1.2               ellipsis_0.3.2</span></code></pre></div>
+</details>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>

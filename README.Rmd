@@ -97,6 +97,10 @@ found [here](https://github.com/satijalab/seurat-wrappers/blob/master/docs/banks
 *Banksy* takes as input an expression matrix and cell centroids. Example 
 datasets are provided with the package:
 
+```{r, eval = T, include=FALSE}
+start.time <- Sys.time()
+```
+
 ```{r, eval = T}
 library(Banksy)
 
@@ -197,6 +201,24 @@ plotSpatialFeatures(bank, by = features, type = feature.types, main = main,
                     pt.size = 0.5, main.size = 15, nrow = 1, ncol = 2, 
                     wrap = TRUE)
 ``` 
+
+<details>
+    <summary>Runtime for analysis</summary>
+
+```{r, eval = T, echo=FALSE}
+Sys.time() - start.time
+```
+
+</details>
+
+<details>
+    <summary>Session information</summary>
+
+```{r, sess}
+sessionInfo()
+```
+
+</details>
 
 ## Contributing
 
