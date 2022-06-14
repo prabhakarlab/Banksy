@@ -47,6 +47,20 @@ The *Banksy* package can be installed via `remotes`:
 remotes::install_github("prabhakarlab/Banksy", dependencies = TRUE)
 ```
 
+Installation should take less than three minutes. 
+
+**Known installation issues**
+
+1. Installation of `leidenAlg` has non-zero exit status
+
+- Refer to the [package website](https://github.com/kharchenkolab/leidenAlg#installation) for 
+*leidenAlg* installation details. Otherwise, users may also install a separate branch
+of *Banksy* with 
+
+```{r, eval=F}
+remotes::install_github("prabhakarlab/Banksy@feat-igraph-leiden")
+```
+
 ## Documentation
 
 Detailed description of *Banksy* functionality and example analyses are available

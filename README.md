@@ -39,6 +39,21 @@ The *Banksy* package can be installed via `remotes`:
 remotes::install_github("prabhakarlab/Banksy", dependencies = TRUE)
 ```
 
+Installation should take less than three minutes.
+
+**Known installation issues**
+
+1.  Installation of `leidenAlg` has non-zero exit status
+
+-   Refer to the [package
+    website](https://github.com/kharchenkolab/leidenAlg#installation)
+    for *leidenAlg* installation details. Otherwise, users may also
+    install a separate branch of *Banksy* with
+
+``` r
+remotes::install_github("prabhakarlab/Banksy@feat-igraph-leiden")
+```
+
 ## Documentation
 
 Detailed description of *Banksy* functionality and example analyses are
@@ -204,7 +219,7 @@ plotSpatialFeatures(bank, by = features, type = feature.types, main = main,
                     pt.size = 1.5, main.size = 15, nrow = 1, ncol = 2)
 ```
 
-<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
 
 For clarity, we can visualise each of the clusters separately with
 `wrap = TRUE`:
@@ -215,7 +230,7 @@ plotSpatialFeatures(bank, by = features, type = feature.types, main = main,
                     wrap = TRUE)
 ```
 
-<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
 
 ## Contributing
 
