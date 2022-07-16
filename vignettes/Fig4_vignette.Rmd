@@ -22,6 +22,9 @@ where we identified cell types in the mouse hippocampus and nearby regions.
 
 ## Load packages and data
 
+```{r, eval=FALSE, echo=TRUE}
+# load libraries (install where needed)
+
 ```{r, echo=TRUE, eval=FALSE}
 library(Banksy)
 library(ggplot2)
@@ -37,8 +40,23 @@ library(Matrix)
 data(hippocampus)
 expr <- hippocampus$expression
 locs <- hippocampus$locations
-
 ```
+
+```{r, echo=FALSE}
+library(Banksy)
+library(ggplot2)
+library(gridExtra)
+library(scales)
+library(ComplexHeatmap)
+library(data.table)
+library(irlba)
+library(Matrix)
+
+# load data
+data(hippocampus)
+expr <- hippocampus$expression
+locs <- hippocampus$locations
+``` 
 
 ```{r, echo=FALSE}
 library(Banksy)
