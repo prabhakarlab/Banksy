@@ -75,59 +75,78 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">ComputeBanksy</span><span class="op">(</span>
-  <span class="va">bank</span>,
-  spatialMode <span class="op">=</span> <span class="st">"kNN_r"</span>,
-  k_geom <span class="op">=</span> <span class="fl">10</span>,
-  n <span class="op">=</span> <span class="fl">2</span>,
-  sigma <span class="op">=</span> <span class="fl">1.5</span>,
-  alpha <span class="op">=</span> <span class="fl">0.05</span>,
-  kspatial <span class="op">=</span> <span class="fl">10</span>,
-  dimensions <span class="op">=</span> <span class="st">"all"</span>,
-  verbose <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ComputeBanksy</span><span class="op">(</span></span>
+<span>  <span class="va">bank</span>,</span>
+<span>  spatialMode <span class="op">=</span> <span class="st">"kNN_r"</span>,</span>
+<span>  k_geom <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  n <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  sigma <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  kspatial <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  dimensions <span class="op">=</span> <span class="st">"all"</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>bank</dt>
 <dd><p>BanksyObject</p></dd>
+
+
 <dt>spatialMode</dt>
 <dd><p>spatial mode to use - one of kNN_r, kNN_rn, kNN_rank,
 kNN_unif, rNN_gauss</p></dd>
+
+
 <dt>k_geom</dt>
 <dd><p>kNN parameter - number of neighbors to use</p></dd>
+
+
 <dt>n</dt>
 <dd><p>kNN_rn parameter - exponent of radius</p></dd>
+
+
 <dt>sigma</dt>
 <dd><p>rNN parameter - standard deviation of Gaussian kernel</p></dd>
+
+
 <dt>alpha</dt>
 <dd><p>rNN parameter - determines radius used (larger alphas give
 smaller radii)</p></dd>
+
+
 <dt>kspatial</dt>
 <dd><p>rNN parameter - number of neighbors to use</p></dd>
+
+
 <dt>dimensions</dt>
 <dd><p>dimensions to use when computing neighborhood - one of
 column name in cell.locs, or 'all'</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>messages</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>BanksyObject</p>
+    
+
+<p>BanksyObject</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateDataset.html">simulateDataset</a></span><span class="op">(</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">gcm</span>, cell.locs <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">locs</span>, meta.data <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">meta</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="NormalizeBanksy.html">NormalizeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># Compute neighbors </span></span>
-<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu">ComputeBanksy</span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateDataset.html">simulateDataset</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">gcm</span>, cell.locs <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">locs</span>, meta.data <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">meta</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="NormalizeBanksy.html">NormalizeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Compute neighbors </span></span></span>
+<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu">ComputeBanksy</span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing neighbors...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing neighbor matrix...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -142,7 +161,7 @@ column name in cell.locs, or 'all'</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

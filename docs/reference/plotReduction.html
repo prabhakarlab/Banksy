@@ -75,87 +75,122 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">plotReduction</span><span class="op">(</span>
-  <span class="va">bank</span>,
-  <span class="va">reduction</span>,
-  components <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,
-  by <span class="op">=</span> <span class="cn">NULL</span>,
-  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"discrete"</span>, <span class="st">"continuous"</span><span class="op">)</span>,
-  pt.size <span class="op">=</span> <span class="fl">0.5</span>,
-  pt.alpha <span class="op">=</span> <span class="fl">0.7</span>,
-  col.midpoint <span class="op">=</span> <span class="cn">NULL</span>,
-  col.low <span class="op">=</span> <span class="st">"blue"</span>,
-  col.mid <span class="op">=</span> <span class="st">"gray95"</span>,
-  col.high <span class="op">=</span> <span class="st">"red"</span>,
-  col.discrete <span class="op">=</span> <span class="cn">NULL</span>,
-  main <span class="op">=</span> <span class="cn">NULL</span>,
-  main.size <span class="op">=</span> <span class="fl">5</span>,
-  legend <span class="op">=</span> <span class="cn">TRUE</span>,
-  legend.text.size <span class="op">=</span> <span class="fl">6</span>,
-  legend.pt.size <span class="op">=</span> <span class="fl">3</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plotReduction</span><span class="op">(</span></span>
+<span>  <span class="va">bank</span>,</span>
+<span>  <span class="va">reduction</span>,</span>
+<span>  components <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"discrete"</span>, <span class="st">"continuous"</span><span class="op">)</span>,</span>
+<span>  pt.size <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  pt.alpha <span class="op">=</span> <span class="fl">0.7</span>,</span>
+<span>  col.midpoint <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  col.low <span class="op">=</span> <span class="st">"blue"</span>,</span>
+<span>  col.mid <span class="op">=</span> <span class="st">"gray95"</span>,</span>
+<span>  col.high <span class="op">=</span> <span class="st">"red"</span>,</span>
+<span>  col.discrete <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  main <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  main.size <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  legend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  legend.text.size <span class="op">=</span> <span class="fl">6</span>,</span>
+<span>  legend.pt.size <span class="op">=</span> <span class="fl">3</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>bank</dt>
 <dd><p>BanksyObject</p></dd>
+
+
 <dt>reduction</dt>
 <dd><p>reduction to visualize</p></dd>
+
+
 <dt>components</dt>
 <dd><p>which components to visualize</p></dd>
+
+
 <dt>by</dt>
 <dd><p>groupings for cells</p></dd>
+
+
 <dt>type</dt>
 <dd><p>type of groupings (one of 'discrete' or 'continuous')</p></dd>
+
+
 <dt>pt.size</dt>
 <dd><p>size of points</p></dd>
+
+
 <dt>pt.alpha</dt>
 <dd><p>transparency of points</p></dd>
+
+
 <dt>col.midpoint</dt>
 <dd><p>for continuous labels - midpoint of color gradient</p></dd>
+
+
 <dt>col.low</dt>
 <dd><p>for continuous labels - color gradient low</p></dd>
+
+
 <dt>col.mid</dt>
 <dd><p>for continuous labels - color gradient mid</p></dd>
+
+
 <dt>col.high</dt>
 <dd><p>for continuous labels - color gradient high</p></dd>
+
+
 <dt>col.discrete</dt>
 <dd><p>for discrete labels - colors for groupings</p></dd>
+
+
 <dt>main</dt>
 <dd><p>title</p></dd>
+
+
 <dt>main.size</dt>
 <dd><p>size of title</p></dd>
+
+
 <dt>legend</dt>
 <dd><p>show legend</p></dd>
+
+
 <dt>legend.text.size</dt>
 <dd><p>size of legend text</p></dd>
+
+
 <dt>legend.pt.size</dt>
 <dd><p>size of legend point</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Dimensionality reduction plot</p>
+    
+
+<p>Dimensionality reduction plot</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Generate a simulated dataset</span></span>
-<span class="r-in"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateDataset.html">simulateDataset</a></span><span class="op">(</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">gcm</span>, cell.locs <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">locs</span>, meta.data <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">meta</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="NormalizeBanksy.html">NormalizeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ScaleBanksy.html">ScaleBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ComputeBanksy.html">ComputeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Generate a simulated dataset</span></span></span>
+<span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateDataset.html">simulateDataset</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">gcm</span>, cell.locs <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">locs</span>, meta.data <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">meta</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="NormalizeBanksy.html">NormalizeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ScaleBanksy.html">ScaleBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ComputeBanksy.html">ComputeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing neighbors...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing neighbor matrix...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
-<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunPCA.html">RunPCA</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunPCA.html">RunPCA</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running PCA for lambda=0.2</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="BanksyObject-class.html">reduction</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="BanksyObject-class.html">reduction</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "pca_0.2"</span>
-<span class="r-in"><span class="fu">plotReduction</span><span class="op">(</span><span class="va">bank</span>, reduction <span class="op">=</span> <span class="st">'pca_0.2'</span>, by <span class="op">=</span> <span class="st">'Label'</span>, type <span class="op">=</span> <span class="st">'discrete'</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">plotReduction</span><span class="op">(</span><span class="va">bank</span>, reduction <span class="op">=</span> <span class="st">'pca_0.2'</span>, by <span class="op">=</span> <span class="st">'Label'</span>, type <span class="op">=</span> <span class="st">'discrete'</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotReduction-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -170,7 +205,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

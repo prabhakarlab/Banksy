@@ -75,114 +75,171 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">plotHeatmap</span><span class="op">(</span>
-  <span class="va">bank</span>,
-  assay <span class="op">=</span> <span class="st">"own.expr"</span>,
-  dataset <span class="op">=</span> <span class="cn">NULL</span>,
-  lambda <span class="op">=</span> <span class="cn">NULL</span>,
-  cells <span class="op">=</span> <span class="cn">NULL</span>,
-  features <span class="op">=</span> <span class="cn">NULL</span>,
-  col <span class="op">=</span> <span class="cn">NULL</span>,
-  col.breaks <span class="op">=</span> <span class="cn">NULL</span>,
-  col.discrete <span class="op">=</span> <span class="cn">NULL</span>,
-  cluster.row <span class="op">=</span> <span class="cn">TRUE</span>,
-  cluster.column <span class="op">=</span> <span class="cn">FALSE</span>,
-  row.dend <span class="op">=</span> <span class="cn">FALSE</span>,
-  column.dend <span class="op">=</span> <span class="cn">FALSE</span>,
-  cex.row <span class="op">=</span> <span class="fl">4</span>,
-  annotate <span class="op">=</span> <span class="cn">FALSE</span>,
-  annotate.by <span class="op">=</span> <span class="cn">NULL</span>,
-  order.by <span class="op">=</span> <span class="cn">NULL</span>,
-  annotation.name <span class="op">=</span> <span class="cn">TRUE</span>,
-  annotation.size <span class="op">=</span> <span class="fl">6</span>,
-  annotation.pos <span class="op">=</span> <span class="st">"right"</span>,
-  name <span class="op">=</span> <span class="st">"Expression"</span>,
-  barplot.by <span class="op">=</span> <span class="cn">NULL</span>,
-  barplot.border <span class="op">=</span> <span class="cn">FALSE</span>,
-  barplot.width <span class="op">=</span> <span class="fl">0.6</span>,
-  max.cols <span class="op">=</span> <span class="cn">NULL</span>,
-  seed <span class="op">=</span> <span class="fl">42</span>,
-  rasterize <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plotHeatmap</span><span class="op">(</span></span>
+<span>  <span class="va">bank</span>,</span>
+<span>  assay <span class="op">=</span> <span class="st">"own.expr"</span>,</span>
+<span>  dataset <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  lambda <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cells <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  features <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  col <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  col.breaks <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  col.discrete <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cluster.row <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  cluster.column <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  row.dend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  column.dend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  cex.row <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  annotate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  annotate.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  order.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  annotation.name <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  annotation.size <span class="op">=</span> <span class="fl">6</span>,</span>
+<span>  annotation.pos <span class="op">=</span> <span class="st">"right"</span>,</span>
+<span>  name <span class="op">=</span> <span class="st">"Expression"</span>,</span>
+<span>  barplot.by <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  barplot.border <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  barplot.width <span class="op">=</span> <span class="fl">0.6</span>,</span>
+<span>  max.cols <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">42</span>,</span>
+<span>  rasterize <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>bank</dt>
 <dd><p>BanksyObject</p></dd>
+
+
 <dt>assay</dt>
 <dd><p>assay to plot heatmap (one of own.expr, nbr.expr or banksy)</p></dd>
+
+
 <dt>dataset</dt>
 <dd><p>dataset to plot heatmap</p></dd>
+
+
 <dt>lambda</dt>
 <dd><p>lambda if assay == banksy</p></dd>
+
+
 <dt>cells</dt>
 <dd><p>specific cells to plot</p></dd>
+
+
 <dt>features</dt>
 <dd><p>specific features to plot</p></dd>
+
+
 <dt>col</dt>
 <dd><p>colours to use in heatmap</p></dd>
+
+
 <dt>col.breaks</dt>
 <dd><p>color breaks to use in heatmap (same number as col is
 specified)</p></dd>
+
+
 <dt>col.discrete</dt>
 <dd><p>cluster colors, named color array, names are clusters,
 values are colors in hexadecimal</p></dd>
+
+
 <dt>cluster.row</dt>
 <dd><p>cluster rows</p></dd>
+
+
 <dt>cluster.column</dt>
 <dd><p>cluster columns</p></dd>
+
+
 <dt>row.dend</dt>
 <dd><p>draw row dendrograms</p></dd>
+
+
 <dt>column.dend</dt>
 <dd><p>draw column dendrograms</p></dd>
+
+
 <dt>cex.row</dt>
 <dd><p>row label size</p></dd>
+
+
 <dt>annotate</dt>
 <dd><p>add annotation for cells</p></dd>
+
+
 <dt>annotate.by</dt>
 <dd><p>metadata to annotate cells by</p></dd>
+
+
 <dt>order.by</dt>
 <dd><p>metadata to order cells by (one of annotate.by)</p></dd>
+
+
 <dt>annotation.name</dt>
 <dd><p>show annotation name</p></dd>
+
+
 <dt>annotation.size</dt>
 <dd><p>size of annotation labels</p></dd>
+
+
 <dt>annotation.pos</dt>
 <dd><p>position of annotation labels</p></dd>
+
+
 <dt>name</dt>
 <dd><p>name of heatmap legend</p></dd>
+
+
 <dt>barplot.by</dt>
 <dd><p>metadata to plot barplots (numeric)</p></dd>
+
+
 <dt>barplot.border</dt>
 <dd><p>show borders of barplot</p></dd>
+
+
 <dt>barplot.width</dt>
 <dd><p>barplot width</p></dd>
+
+
 <dt>max.cols</dt>
 <dd><p>max columns to display - will subsample if not NULL</p></dd>
+
+
 <dt>seed</dt>
 <dd><p>used for sampling</p></dd>
+
+
 <dt>rasterize</dt>
 <dd><p>rasterize if TRUE</p></dd>
+
+
 <dt>...</dt>
 <dd><p>parameters to pass to ComplexHeatmap::Heatmap</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Heatmap of class ComplexHeatmap</p>
+    
+
+<p>Heatmap of class ComplexHeatmap</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Generate a simulated dataset</span></span>
-<span class="r-in"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateDataset.html">simulateDataset</a></span><span class="op">(</span>n_cells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>,<span class="fl">20</span>,<span class="fl">20</span><span class="op">)</span>, n_genes <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">gcm</span>, cell.locs <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">locs</span>, meta.data <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">meta</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="NormalizeBanksy.html">NormalizeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ScaleBanksy.html">ScaleBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">plotHeatmap</span><span class="op">(</span><span class="va">bank</span>, annotate <span class="op">=</span> <span class="cn">TRUE</span>, annotate.by <span class="op">=</span> <span class="st">'Label'</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Generate a simulated dataset</span></span></span>
+<span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateDataset.html">simulateDataset</a></span><span class="op">(</span>n_cells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>,<span class="fl">20</span>,<span class="fl">20</span><span class="op">)</span>, n_genes <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">gcm</span>, cell.locs <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">locs</span>, meta.data <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">meta</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="NormalizeBanksy.html">NormalizeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ScaleBanksy.html">ScaleBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plotHeatmap</span><span class="op">(</span><span class="va">bank</span>, annotate <span class="op">=</span> <span class="cn">TRUE</span>, annotate.by <span class="op">=</span> <span class="st">'Label'</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotHeatmap-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -197,7 +254,7 @@ values are colors in hexadecimal</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

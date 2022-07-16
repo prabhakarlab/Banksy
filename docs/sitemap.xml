@@ -4,6 +4,15 @@
     <loc>https://prabhakarlab.github.io/Banksy/404.html</loc>
   </url>
   <url>
+    <loc>https://prabhakarlab.github.io/Banksy/LICENSE-text.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/LICENSE.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/articles/Fig4_vignette.html</loc>
+  </url>
+  <url>
     <loc>https://prabhakarlab.github.io/Banksy/articles/banksy-object.html</loc>
   </url>
   <url>
@@ -28,22 +37,10 @@
     <loc>https://prabhakarlab.github.io/Banksy/index.html</loc>
   </url>
   <url>
-    <loc>https://prabhakarlab.github.io/Banksy/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://prabhakarlab.github.io/Banksy/LICENSE.html</loc>
-  </url>
-  <url>
     <loc>https://prabhakarlab.github.io/Banksy/news/index.html</loc>
   </url>
   <url>
-    <loc>https://prabhakarlab.github.io/Banksy/reference/asBanksyObject.html</loc>
-  </url>
-  <url>
     <loc>https://prabhakarlab.github.io/Banksy/reference/BanksyObject-class.html</loc>
-  </url>
-  <url>
-    <loc>https://prabhakarlab.github.io/Banksy/reference/cerebellum.html</loc>
   </url>
   <url>
     <loc>https://prabhakarlab.github.io/Banksy/reference/ClusterBanksy.html</loc>
@@ -53,6 +50,30 @@
   </url>
   <url>
     <loc>https://prabhakarlab.github.io/Banksy/reference/ConnectClusters.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/NormalizeBanksy.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/RunPCA.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/RunUMAP.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/ScaleBanksy.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/SplitBanksy.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/SubsetBanksy.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/asBanksyObject.html</loc>
+  </url>
+  <url>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/cerebellum.html</loc>
   </url>
   <url>
     <loc>https://prabhakarlab.github.io/Banksy/reference/dlpfc151673.html</loc>
@@ -82,13 +103,10 @@
     <loc>https://prabhakarlab.github.io/Banksy/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://prabhakarlab.github.io/Banksy/reference/NormalizeBanksy.html</loc>
+    <loc>https://prabhakarlab.github.io/Banksy/reference/plotARI.html</loc>
   </url>
   <url>
     <loc>https://prabhakarlab.github.io/Banksy/reference/plotAlluvia.html</loc>
-  </url>
-  <url>
-    <loc>https://prabhakarlab.github.io/Banksy/reference/plotARI.html</loc>
   </url>
   <url>
     <loc>https://prabhakarlab.github.io/Banksy/reference/plotHeatmap.html</loc>
@@ -106,22 +124,7 @@
     <loc>https://prabhakarlab.github.io/Banksy/reference/plotSpatialFeatures.html</loc>
   </url>
   <url>
-    <loc>https://prabhakarlab.github.io/Banksy/reference/RunPCA.html</loc>
-  </url>
-  <url>
-    <loc>https://prabhakarlab.github.io/Banksy/reference/RunUMAP.html</loc>
-  </url>
-  <url>
-    <loc>https://prabhakarlab.github.io/Banksy/reference/ScaleBanksy.html</loc>
-  </url>
-  <url>
     <loc>https://prabhakarlab.github.io/Banksy/reference/simulateDataset.html</loc>
-  </url>
-  <url>
-    <loc>https://prabhakarlab.github.io/Banksy/reference/SplitBanksy.html</loc>
-  </url>
-  <url>
-    <loc>https://prabhakarlab.github.io/Banksy/reference/SubsetBanksy.html</loc>
   </url>
   <url>
     <loc>https://prabhakarlab.github.io/Banksy/reference/visualcortex.html</loc>

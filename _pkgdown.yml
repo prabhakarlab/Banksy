@@ -50,6 +50,9 @@ reference:
       - hippocampus
       - hypothalamus
       - visualcortex
+  - title: Misc.
+    contents:
+      - simulateDataset
 
 news:
   cran_dates: false

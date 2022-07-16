@@ -98,14 +98,14 @@ grid.arrange(
 We can find markers for each BANKSY cluster with *scran*:
 
 ```{r, fig.align='center', fig.width=9, fig.height=7}
-colLabels(sce) <- sce$BANKSY
-marker.info <- scoreMarkers(sce, colLabels(sce))
-features <- sapply(marker.info, function(m) {
-    m <- m[order(m$mean.AUC, decreasing = TRUE),]
-    head(rownames(m), n = 1)
-})
-plotExpression(sce, features = features, x = 'BANKSY', colour_by = 'BANKSY', 
-               point_size = 0.1, ncol = 3)
+# colLabels(sce) <- sce$BANKSY
+# marker.info <- scoreMarkers(sce, colLabels(sce))
+# features <- sapply(marker.info, function(m) {
+#     m <- m[order(m$mean.AUC, decreasing = TRUE),]
+#     head(rownames(m), n = 1)
+# })
+# plotExpression(sce, features = features, x = 'BANKSY', colour_by = 'BANKSY', 
+#                point_size = 0.1, ncol = 3)
 
 ```
 

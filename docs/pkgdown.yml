@@ -1,13 +1,14 @@
-pandoc: 2.14.0.3
-pkgdown: 2.0.2
+pandoc: 2.7.3
+pkgdown: 2.0.5
 pkgdown_sha: ~
 articles:
+  Fig4_vignette: Fig4_vignette.html
   banksy-object: banksy-object.html
   dlpfc-analysis: dlpfc-analysis.html
   hippocampus-analysis: hippocampus-analysis.html
   hypothalamus-analysis: hypothalamus-analysis.html
   single-cell-exp: single-cell-exp.html
-last_built: 2022-06-14T16:36Z
+last_built: 2022-07-16T10:23Z
 urls:
   reference: https://prabhakarlab.github.io/Banksy/reference
   article: https://prabhakarlab.github.io/Banksy/articles
