@@ -1,6 +1,5 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/jleechung/Banksy/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jleechung/Banksy/actions/workflows/R-CMD-check.yaml)
@@ -15,21 +14,21 @@ augmenting the transcriptomic profile of each cell with an average of
 the transcriptomes of its spatial neighbors. By incorporating
 neighborhood information for clustering, BANKSY is able to
 
-  - improve cell-type assignment in noisy data
-  - distinguish subtly different cell-types stratified by
+-   improve cell-type assignment in noisy data
+-   distinguish subtly different cell-types stratified by
     microenvironment
-  - identify spatial zones sharing the same microenvironment
+-   identify spatial zones sharing the same microenvironment
 
 BANKSY is applicable to a wide array of spatial technologies (e.g. 10x
 Visium, Slide-seq, MERFISH) and scales well to large datasets. For more
 details, check out:
 
-  - the
+-   the
     [preprint](https://www.biorxiv.org/content/10.1101/2022.04.14.488259v1),
-  - a
+-   a
     [tweetorial](https://twitter.com/vipul1891/status/1515323372535644166?s=20&t=Bc6rz8VeWWptF67FejGYfQ)
     on BANKSY,
-  - and a [Python version](https://github.com/prabhakarlab/Banksy_py) of
+-   and a [Python version](https://github.com/prabhakarlab/Banksy_py) of
     this package.
 
 ## Installation
@@ -46,14 +45,10 @@ Installation should take less than three minutes.
 
 1.  Installation of `leidenAlg` has non-zero exit status
 
-<!-- end list -->
-
-  - Refer to the [package
+-   Refer to the [package
     website](https://github.com/kharchenkolab/leidenAlg#installation)
     for *leidenAlg* installation details. Otherwise, users may also
     install a separate branch of *Banksy* with
-
-<!-- end list -->
 
 ``` r
 remotes::install_github("prabhakarlab/Banksy@feat-igraph-leiden")
@@ -70,25 +65,25 @@ webpage](https://prabhakarlab.github.io/Banksy/).
 of main functions and their usage, along with several vignettes which
 detail different use cases:
 
-  - [Working with Banksy
+-   [Working with Banksy
     objects](https://prabhakarlab.github.io/Banksy/articles/banksy-object.html):
     Introduction to the *BanksyObject* class which serves as a container
     for *Banksy*.
 
-  - [Mouse hippocampus VeraFISH
+-   [Mouse hippocampus VeraFISH
     dataset](https://prabhakarlab.github.io/Banksy/articles/hippocampus-analysis.html):
     Illustrates a grid search of parameters which best cluster cells.
 
-  - [Human dorsolateral prefrontal cortex 10x Visium
+-   [Human dorsolateral prefrontal cortex 10x Visium
     dataset](https://prabhakarlab.github.io/Banksy/articles/dlpfc-analysis.html):
     Illustrates analysis of multiple spatial transcriptomic datasets.
 
-  - [Mouse hypothalamus MERFISH
+-   [Mouse hypothalamus MERFISH
     dataset](https://prabhakarlab.github.io/Banksy/articles/hypothalamus-analysis.html):
     Illustrates visualization functionality with a dataset with 3
     spatial dimensions.
 
-  - [Interoperability with
+-   [Interoperability with
     SingleCellExperiment](https://prabhakarlab.github.io/Banksy/articles/single-cell-exp.html):
     Illustrates BANKSY interoperability with Bioconductor
     [SingleCellExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html)
@@ -97,8 +92,8 @@ detail different use cases:
     or
     [scater](https://bioconductor.org/packages/release/bioc/html/scater.html).
 
-  - [Figure 4 data
-    analysis](https://prabhakarlab.github.io/Banksy/articles/Fig4-vignette.html):
+-   [Figure 4 data
+    analysis](https://prabhakarlab.github.io/Banksy/articles/Fig4_vignette.html):
     Shows how the results shown in Fig. 4 of the paper were generated.
 
 *Banksy* is also interoperable with
@@ -200,10 +195,8 @@ Next, we obtain cluster assignments using graph-based clustering with
 the Leiden algorithm on the first 20 PCs. Specify the following
 parameters:
 
-  - `resolution`. Leiden clustering resolution.  
-  - `k.neighbours`. Number of k neighbours to use for constructing sNN.
-
-<!-- end list -->
+-   `resolution`. Leiden clustering resolution.  
+-   `k.neighbours`. Number of k neighbours to use for constructing sNN.
 
 ``` r
 set.seed(42)
@@ -232,8 +225,8 @@ plotSpatialFeatures(bank, by = features, type = feature.types, main = main,
 
 <img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
 
-For clarity, we can visualise each of the clusters separately with `wrap
-= TRUE`:
+For clarity, we can visualise each of the clusters separately with
+`wrap = TRUE`:
 
 ``` r
 plotSpatialFeatures(bank, by = features, type = feature.types, main = main, 
@@ -244,32 +237,30 @@ plotSpatialFeatures(bank, by = features, type = feature.types, main = main,
 <img src="man/figures/README-unnamed-chunk-16-1.png" width="100%" />
 
 <details>
+<summary>
+Runtime for analysis
+</summary>
 
-<summary>Runtime for analysis</summary>
-
-    #> Time difference of 34.56732 secs
+    #> Time difference of 41.99911 secs
 
 </details>
-
 <details>
-
-<summary>Session information</summary>
+<summary>
+Session information
+</summary>
 
 ``` r
 sessionInfo()
-#> R version 4.0.2 (2020-06-22)
-#> Platform: x86_64-pc-linux-gnu (64-bit)
-#> Running under: Ubuntu 18.04.6 LTS
+#> R version 4.1.2 (2021-11-01)
+#> Platform: x86_64-w64-mingw32/x64 (64-bit)
+#> Running under: Windows 10 x64 (build 19043)
 #> 
 #> Matrix products: default
-#> BLAS:   /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
-#> LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
 #> 
 #> locale:
-#>  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       
-#>  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   
-#>  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          
-#> [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   
+#> [1] LC_COLLATE=English_Singapore.1252  LC_CTYPE=English_Singapore.1252   
+#> [3] LC_MONETARY=English_Singapore.1252 LC_NUMERIC=C                      
+#> [5] LC_TIME=English_Singapore.1252    
 #> 
 #> attached base packages:
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
@@ -278,51 +269,53 @@ sessionInfo()
 #> [1] Banksy_0.1.3
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] bitops_1.0-6                matrixStats_0.59.0         
-#>  [3] RColorBrewer_1.1-2          GenomeInfoDb_1.26.7        
-#>  [5] tools_4.0.2                 utf8_1.2.1                 
-#>  [7] R6_2.5.0                    irlba_2.3.3                
-#>  [9] uwot_0.1.10                 DBI_1.1.0                  
-#> [11] BiocGenerics_0.36.1         colorspace_2.0-2           
-#> [13] GetoptLong_1.0.5            tidyselect_1.1.1           
-#> [15] gridExtra_2.3               compiler_4.0.2             
-#> [17] Biobase_2.50.0              Cairo_1.5-12.2             
-#> [19] DelayedArray_0.16.3         labeling_0.4.2             
-#> [21] scales_1.1.1                stringr_1.4.0              
-#> [23] digest_0.6.27               dbscan_1.1-8               
-#> [25] rmarkdown_2.3               XVector_0.30.0             
-#> [27] dichromat_2.0-0             pkgconfig_2.0.3            
-#> [29] htmltools_0.5.0             MatrixGenerics_1.2.1       
-#> [31] highr_0.8                   maps_3.3.0                 
-#> [33] rlang_0.4.11                GlobalOptions_0.1.2        
-#> [35] pals_1.7                    shape_1.4.6                
-#> [37] generics_0.1.0              farver_2.1.0               
-#> [39] mclust_5.4.7                dplyr_1.0.7                
-#> [41] RCurl_1.98-1.2              magrittr_2.0.1             
-#> [43] GenomeInfoDbData_1.2.4      Matrix_1.3-4               
-#> [45] Rcpp_1.0.7                  munsell_0.5.0              
-#> [47] S4Vectors_0.28.1            fansi_0.5.0                
-#> [49] lifecycle_1.0.0             stringi_1.4.6              
-#> [51] leidenAlg_0.1.1             yaml_2.2.1                 
-#> [53] ggalluvial_0.12.3           SummarizedExperiment_1.20.0
-#> [55] zlibbioc_1.36.0             plyr_1.8.6                 
-#> [57] grid_4.0.2                  blob_1.2.1                 
-#> [59] parallel_4.0.2              crayon_1.4.1               
-#> [61] lattice_0.20-41             sccore_0.1.3               
-#> [63] mapproj_1.2.7               circlize_0.4.13            
-#> [65] knitr_1.36                  ComplexHeatmap_2.6.2       
-#> [67] pillar_1.6.1                igraph_1.2.6               
-#> [69] GenomicRanges_1.42.0        rjson_0.2.20               
-#> [71] stats4_4.0.2                glue_1.4.2                 
-#> [73] evaluate_0.14               data.table_1.14.0          
-#> [75] png_0.1-7                   vctrs_0.3.8                
-#> [77] gtable_0.3.0                grr_0.9.5                  
-#> [79] purrr_0.3.4                 clue_0.3-59                
-#> [81] assertthat_0.2.1            ggplot2_3.3.5              
-#> [83] xfun_0.28                   tibble_3.1.3               
-#> [85] RcppHungarian_0.1           Matrix.utils_0.9.8         
-#> [87] IRanges_2.24.1              cluster_2.1.0              
-#> [89] ellipsis_0.3.2
+#>  [1] bitops_1.0-7                matrixStats_0.61.0         
+#>  [3] doParallel_1.0.17           RColorBrewer_1.1-3         
+#>  [5] GenomeInfoDb_1.30.1         tools_4.1.2                
+#>  [7] utf8_1.2.2                  R6_2.5.1                   
+#>  [9] irlba_2.3.5                 uwot_0.1.11                
+#> [11] DBI_1.1.2                   BiocGenerics_0.40.0        
+#> [13] colorspace_2.0-2            GetoptLong_1.0.5           
+#> [15] tidyselect_1.1.2            gridExtra_2.3              
+#> [17] compiler_4.1.2              cli_3.1.0                  
+#> [19] Biobase_2.54.0              DelayedArray_0.20.0        
+#> [21] labeling_0.4.2              scales_1.2.0               
+#> [23] stringr_1.4.0               digest_0.6.29              
+#> [25] dbscan_1.1-10               rmarkdown_2.13             
+#> [27] XVector_0.34.0              dichromat_2.0-0.1          
+#> [29] pkgconfig_2.0.3             htmltools_0.5.2            
+#> [31] MatrixGenerics_1.6.0        highr_0.9                  
+#> [33] fastmap_1.1.0               maps_3.4.0                 
+#> [35] rlang_1.0.2                 GlobalOptions_0.1.2        
+#> [37] pals_1.7                    rstudioapi_0.13            
+#> [39] farver_2.1.0                shape_1.4.6                
+#> [41] generics_0.1.2              mclust_5.4.9               
+#> [43] dplyr_1.0.7                 RCurl_1.98-1.6             
+#> [45] magrittr_2.0.1              GenomeInfoDbData_1.2.7     
+#> [47] Matrix_1.3-4                Rcpp_1.0.7                 
+#> [49] munsell_0.5.0               S4Vectors_0.32.3           
+#> [51] fansi_0.5.0                 lifecycle_1.0.1            
+#> [53] stringi_1.7.6               leidenAlg_1.0.2            
+#> [55] yaml_2.2.1                  ggalluvial_0.12.3          
+#> [57] SummarizedExperiment_1.24.0 zlibbioc_1.40.0            
+#> [59] plyr_1.8.6                  grid_4.1.2                 
+#> [61] parallel_4.1.2              crayon_1.5.1               
+#> [63] lattice_0.20-45             sccore_1.0.1               
+#> [65] mapproj_1.2.8               circlize_0.4.15            
+#> [67] knitr_1.37                  ComplexHeatmap_2.10.0      
+#> [69] pillar_1.7.0                igraph_1.2.11              
+#> [71] GenomicRanges_1.46.1        rjson_0.2.21               
+#> [73] codetools_0.2-18            stats4_4.1.2               
+#> [75] glue_1.6.0                  evaluate_0.15              
+#> [77] data.table_1.14.2           png_0.1-7                  
+#> [79] vctrs_0.3.8                 foreach_1.5.2              
+#> [81] gtable_0.3.0                grr_0.9.5                  
+#> [83] purrr_0.3.4                 clue_0.3-60                
+#> [85] assertthat_0.2.1            ggplot2_3.3.6              
+#> [87] xfun_0.29                   tibble_3.1.6               
+#> [89] RcppHungarian_0.2           iterators_1.0.14           
+#> [91] Matrix.utils_0.9.8          IRanges_2.28.0             
+#> [93] cluster_2.1.2               ellipsis_0.3.2
 ```
 
 </details>

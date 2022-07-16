@@ -88,7 +88,7 @@ usage, along with several vignettes which detail different use cases:
   framework for interfacing with packages like [scran](https://bioconductor.org/packages/release/bioc/html/scran.html) 
   or [scater](https://bioconductor.org/packages/release/bioc/html/scater.html).
 
-* [Figure 4 data analysis](https://prabhakarlab.github.io/Banksy/articles/Fig4-vignette.html):
+* [Figure 4 data analysis](https://prabhakarlab.github.io/Banksy/articles/Fig4_vignette.html):
   Shows how the results shown in Fig. 4 of the paper were generated. 
   
 *Banksy* is also interoperable with [Seurat](https://satijalab.org/seurat/) via
