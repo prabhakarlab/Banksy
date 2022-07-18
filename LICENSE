@@ -1,2 +1,59 @@
-YEAR: 2021
-COPYRIGHT HOLDER: Vipul Singhal
+
+USER LICENSE for the software suite BANKSY
+
+Authorship and Copyright (c) 
+2022, Vipul Singhal 
+
+References of associated scientific publications
+1) Vipul Singhal, Nigel Chou, Joseph Lee, Jinyue Liu, Wan Kee Chock, Li Lin, Yun-Ching Chang, Erica Teo, Hwee Kuan Lee, Kok Hao Chen, Shyam Prabhakar. BANKSY: A Spatial Omics Algorithm that Unifies Cell Type Clustering and Tissue Domain Segmentation. bioRxiv. doi: 10.1101/2022.04.14.488259 (2022).
+
+***
+
+Vipul Singhal
+vipul_singhal@gis.a-star.edu.sg
+Genome Institute of Singapore, 60 Biopolis Street, Singapore 138672
+
+***
+
+License conditions
+
+1. Definitions
+
+“Author” refers to the person(s) that hold the authors’ rights or to an organization that has been entitled by them or their employer during the work on the software suite to protect the respective rights and to issue user licenses. 
+
+“Software” includes all program or database files as well as associated documentation files together with this license document. 
+
+This license refers to the software suite in the title of this document with all its author’s versions. This includes the newest one and any preceding version - be it in “source code form” (the preferred form of the work for making modifications to it) or “object form” (any compiled/executable version of it). This license covers both the whole software as well as any part of it. It is applicable to the standalone versions of this software as well as its incorporation as integral part into other software packages. 
+
+“User” is the licensee of this software. 
+
+2. Copyright notice
+
+All rights are reserved, whether the whole or part of the software is concerned. The software may not be used or distributed without specific, prior written permission of the author beyond the exceptions described in this license. 
+
+This especially concerns respecting the authors’ rights. The user will always refer to the authors, their publications and this software package when communicating about this software, any of its modifications or about results obtained with this software. 
+
+The copyright messages (if any) will not be modified or suppressed. The software package will always remain associated with this license agreement.
+
+3. Academic (non-commercial) usage
+
+Permission is hereby granted, free of charge for academic purposes, to obtaining a copy of this software, to use, copy, modify it and to integrate it into other software within the same research team and its immediate collaborators, to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission/license notice shall be included in all copies or substantial portions of the Software. 
+
+The user will not redistribute this software beyond the range allowed in this academic license exception but refer the interested party to the author and/or its distribution site. 
+
+4. Commercial usage
+
+The usage of this software in commercial activities is not allowed without a prior written commercial licence agreement issued by the author. 
+
+Any software package that contains this software or parts of it can only be commercialized with a license agreement issued by the author. 
+
+5. Bugs and other erroneous behaviour of the software
+
+The user will report bugs and errors observed in using the software to the author as soon as possible, without delay. 
+
+The author will provide software user support, maintenance and software updates on a good will basis. 
+
+6. Warranty and liability
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, ANY SPECIAL, INCIDENTAL, INDIRECT OR CONSEQUENTIAL DAMAGES OF ANY KIND, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING OUT OF OR IN CONNECTION WITH THE USE, PERFORMANCE OF THIS SOFTWARE OR ANY OTHER DEALINGS WITH IT, WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER OR NOT ADVISED OF THE POSSIBILITY OF DAMAGE, AND ON ANY THEORY OF LIABILITY. 
