@@ -183,8 +183,8 @@
 <span class="co">#&gt; cell_11310  14894.101 15810.37</span></code></pre></div>
 <p>We store the total counts for each cell and the number of expressed genes as metadata <code>data.frame</code>, which can optionally be supplied:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">total_count</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">expr</span><span class="op">)</span>
-<span class="va">num_genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">expr</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">total_count</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">expr</span><span class="op">)</span>
+<span class="va">num_genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">expr</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>
 <span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>total_count <span class="op">=</span> <span class="va">total_count</span>, num_genes <span class="op">=</span> <span class="va">num_genes</span><span class="op">)</span></code></pre></div>
 <p>Next, create a <em>BanksyObject</em> with the expression matrix and cell locations (metadata is optional).</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">

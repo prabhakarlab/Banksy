@@ -453,6 +453,7 @@ plotARI <- function(bank, col.low = 'white', col.high = 'red', label = TRUE, dig
 #' bank <- RunPCA(bank, lambda = 0.2)
 #' bank <- ClusterBanksy(bank, lambda = 0.2, npcs = 20, k.neighbors = 50, resolution = c(0.5,1.5))
 #' plotAlluvia(bank, max.cells = 20)
+#' plotAlluvia(bank, max.cells = 20, cluster.order = rev(clust.names(bank)))
 #' 
 plotAlluvia <- function(bank, max.cells = 500, seed = 42, flow.colors = NULL,
                         cluster.order = NULL) {
