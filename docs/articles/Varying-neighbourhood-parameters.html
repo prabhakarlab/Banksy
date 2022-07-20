@@ -93,7 +93,7 @@
 
       
 
-      </header><script src="Varying-neighbourhood-parameters_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Varying Neighboughood Size and Kernel Shape</h1>
@@ -106,7 +106,13 @@
 
     
     
-<p>In this vignette, we explore how variation in the size of the spatial neighbourhood affects the clustering results. Recall that a cell’s microenvironment signature is computed as a weighted average of the expression of that cell’s neighbours. This weighting can be done using a kernel, such as <span class="math inline">\(1/r^n\)</span> for <span class="math inline">\(n \in \{1, 2\}\)</span>, where <span class="math inline">\(r\)</span> is the distance of a given neighbour cell from the index cell. Other kernels include the Gaussian kernel, or the rank-Gaussian kernel; see the manuscript for details.</p>
+<p>In this vignette, we explore how variation in the size of the spatial
+neighbourhood affects the clustering results. Recall that a cell’s
+microenvironment signature is computed as a weighted average of the
+expression of that cell’s neighbours. This weighting can be done using a
+kernel, such as <span class="math inline">\(1/r^n\)</span> for <span class="math inline">\(n \in \{1, 2\}\)</span>, where <span class="math inline">\(r\)</span> is the distance of a given neighbour
+cell from the index cell. Other kernels include the Gaussian kernel, or
+the rank-Gaussian kernel; see the manuscript for details.</p>
 <div class="section level2">
 <h2 id="load-packages-data-and-set-parameters">Load packages, data and set parameters<a class="anchor" aria-label="anchor" href="#load-packages-data-and-set-parameters"></a>
 </h2>
@@ -131,7 +137,8 @@
 <span><span class="co"># For eg., with num_nbd = 2, we try k_geom = 5 and 10. </span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="process-data-and-perform-clustering-with-different-neighbourhood-kernels">Process data and perform clustering with different neighbourhood kernels<a class="anchor" aria-label="anchor" href="#process-data-and-perform-clustering-with-different-neighbourhood-kernels"></a>
+<h2 id="process-data-and-perform-clustering-with-different-neighbourhood-kernels">Process data and perform clustering with different neighbourhood
+kernels<a class="anchor" aria-label="anchor" href="#process-data-and-perform-clustering-with-different-neighbourhood-kernels"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">subsamp</span> <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># set to FALSE if you don't want to subsample cells. </span></span>
@@ -209,7 +216,8 @@
 <span>  </span>
 <span><span class="op">}</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="st">"grid.arrange"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">spatdims</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Varying-neighbourhood-parameters_files/figure-html/unnamed-chunk-4-1.png" width="1920"> Alluvial plot showing the relationship between the clusterings.</p>
+<p><img src="Varying-neighbourhood-parameters_files/figure-html/unnamed-chunk-4-1.png" width="1920">
+Alluvial plot showing the relationship between the clusterings.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotAlluvia.html">plotAlluvia</a></span><span class="op">(</span><span class="va">bank_kNN_r</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Varying-neighbourhood-parameters_files/figure-html/unnamed-chunk-5-1.png" width="1440"></p>
@@ -239,89 +247,126 @@
 <p>Alluvial plot showing the relationship between the clusterings.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotAlluvia.html">plotAlluvia</a></span><span class="op">(</span><span class="va">bank_kNN_r2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Varying-neighbourhood-parameters_files/figure-html/unnamed-chunk-7-1.png" width="1440"> ##</p>
+<p><img src="Varying-neighbourhood-parameters_files/figure-html/unnamed-chunk-7-1.png" width="1440"></p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># bank_test&lt;-copy(bank_kNN_r2)</span></span>
+<span><span class="co"># df &lt;- meta.data(bank_test)[, clust.names(bank_test), drop = FALSE]</span></span>
+<span><span class="co"># max.cells = 500; seed = 42; flow.colors = NULL</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># if (ncol(df) &lt; 2) {</span></span>
+<span><span class="co">#   stop("Alluvia will only be plotted for at least 2 clustering runs.")</span></span>
+<span><span class="co"># }</span></span>
+<span><span class="co"># if (!is.null(max.cells)) {</span></span>
+<span><span class="co">#   df &lt;- df[sample(seq_len(nrow(df)), max.cells), ]</span></span>
+<span><span class="co"># }</span></span>
+<span><span class="co"># cell &lt;- rep(seq_len(nrow(df)), times = ncol(df))</span></span>
+<span><span class="co"># run &lt;- rep(names(df), each = nrow(df))</span></span>
+<span><span class="co"># cluster &lt;- factor(unlist(df))</span></span>
+<span><span class="co"># plotdf &lt;- data.frame(cell = cell, run = run, cluster = cluster)</span></span>
+<span><span class="co"># nclust &lt;- length(levels(cluster))</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># flow.colors &lt;- Banksy:::getPalette(nclust)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># StatStratum &lt;- ggalluvial::StatStratum</span></span>
+<span><span class="co"># alluvia &lt;- ggplot(plotdf, aes(axis1 = clust_lam0_k50_res1.5, </span></span>
+<span><span class="co">#                               axis2 = clust_lam0.25_k50_res1.5_kNN_rn_kg5, </span></span>
+<span><span class="co">#                               axis3 = clust_lam0.25_k50_res1.5_kNN_rn_kg10, </span></span>
+<span><span class="co">#                               axis4 = clust_lam0.25_k50_res1.5_kNN_rn_kg20, </span></span>
+<span><span class="co">#                               axis5 = clust_lam0.25_k50_res1.5_kNN_rn_kg50, </span></span>
+<span><span class="co">#                               axis6 = clust_lam0.25_k50_res1.5_kNN_rn_kg100, </span></span>
+<span><span class="co">#                               stratum = cluster, </span></span>
+<span><span class="co">#                               alluvium = cell, fill = cluster, label = cluster)) + </span></span>
+<span><span class="co">#   ggalluvial::geom_flow(stat = "alluvium", lode.guidance = "forward", </span></span>
+<span><span class="co">#             color = "transparent", alpha = 0.4) + ggalluvial::geom_stratum(alpha = 0.75) + </span></span>
+<span><span class="co">#   theme_minimal() + theme(panel.grid = element_blank(), </span></span>
+<span><span class="co">#                           axis.line = element_line(color = "grey40"), axis.text.x = element_text(angle = 90), </span></span>
+<span><span class="co">#                           axis.title.x = element_blank()) + scale_x_discrete(expand = c(0.05, </span></span>
+<span><span class="co">#                                                                                         0.05)) + scale_fill_manual(values = flow.colors)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># print(alluvia)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="section"></h2>
 </div>
 <div class="section level2">
 <h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
 </h2>
-<details><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<details><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; R version 4.0.2 (2020-06-22)</span></span>
-<span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu (64-bit)</span></span>
-<span><span class="co">#&gt; Running under: Ubuntu 18.04.6 LTS</span></span>
+<span><span class="co">#&gt; R version 4.2.1 (2022-06-23 ucrt)</span></span>
+<span><span class="co">#&gt; Platform: x86_64-w64-mingw32/x64 (64-bit)</span></span>
+<span><span class="co">#&gt; Running under: Windows 10 x64 (build 19043)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Matrix products: default</span></span>
-<span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3</span></span>
-<span><span class="co">#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; locale:</span></span>
-<span><span class="co">#&gt;  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       </span></span>
-<span><span class="co">#&gt;  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   </span></span>
-<span><span class="co">#&gt;  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          </span></span>
-<span><span class="co">#&gt; [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   </span></span>
+<span><span class="co">#&gt; [1] LC_COLLATE=English_Singapore.utf8  LC_CTYPE=English_Singapore.utf8   </span></span>
+<span><span class="co">#&gt; [3] LC_MONETARY=English_Singapore.utf8 LC_NUMERIC=C                      </span></span>
+<span><span class="co">#&gt; [5] LC_TIME=English_Singapore.utf8    </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attached base packages:</span></span>
 <span><span class="co">#&gt; [1] grid      stats     graphics  grDevices utils     datasets  methods  </span></span>
 <span><span class="co">#&gt; [8] base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt; [1] MERINGUE_1.0         irlba_2.3.5          Matrix_1.4-1        </span></span>
-<span><span class="co">#&gt; [4] data.table_1.14.2    ComplexHeatmap_2.6.2 scales_1.2.0        </span></span>
-<span><span class="co">#&gt; [7] gridExtra_2.3        ggplot2_3.3.6        Banksy_0.1.3        </span></span>
+<span><span class="co">#&gt; [1] MERINGUE_1.0          irlba_2.3.5           Matrix_1.4-1         </span></span>
+<span><span class="co">#&gt; [4] data.table_1.14.2     ComplexHeatmap_2.12.0 scales_1.2.0         </span></span>
+<span><span class="co">#&gt; [7] gridExtra_2.3         ggplot2_3.3.6         Banksy_0.1.3         </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;   [1] colorspace_2.0-3            grr_0.9.5                  </span></span>
 <span><span class="co">#&gt;   [3] rjson_0.2.21                ellipsis_0.3.2             </span></span>
 <span><span class="co">#&gt;   [5] mclust_5.4.10               rprojroot_2.0.3            </span></span>
-<span><span class="co">#&gt;   [7] circlize_0.4.15             XVector_0.30.0             </span></span>
-<span><span class="co">#&gt;   [9] GenomicRanges_1.42.0        GlobalOptions_0.1.2        </span></span>
+<span><span class="co">#&gt;   [7] circlize_0.4.15             XVector_0.36.0             </span></span>
+<span><span class="co">#&gt;   [9] GenomicRanges_1.48.0        GlobalOptions_0.1.2        </span></span>
 <span><span class="co">#&gt;  [11] fs_1.5.2                    dichromat_2.0-0.1          </span></span>
 <span><span class="co">#&gt;  [13] clue_0.3-61                 rstudioapi_0.13            </span></span>
 <span><span class="co">#&gt;  [15] farver_2.1.1                RSpectra_0.16-1            </span></span>
-<span><span class="co">#&gt;  [17] fansi_1.0.3                 codetools_0.2-16           </span></span>
-<span><span class="co">#&gt;  [19] splines_4.0.2               cachem_1.0.6               </span></span>
-<span><span class="co">#&gt;  [21] knitr_1.39                  jsonlite_1.8.0             </span></span>
-<span><span class="co">#&gt;  [23] Cairo_1.6-0                 cluster_2.1.0              </span></span>
+<span><span class="co">#&gt;  [17] fansi_1.0.3                 codetools_0.2-18           </span></span>
+<span><span class="co">#&gt;  [19] splines_4.2.1               doParallel_1.0.17          </span></span>
+<span><span class="co">#&gt;  [21] cachem_1.0.6                knitr_1.39                 </span></span>
+<span><span class="co">#&gt;  [23] jsonlite_1.8.0              cluster_2.1.3              </span></span>
 <span><span class="co">#&gt;  [25] png_0.1-7                   uwot_0.1.11                </span></span>
-<span><span class="co">#&gt;  [27] mapproj_1.2.8               compiler_4.0.2             </span></span>
+<span><span class="co">#&gt;  [27] mapproj_1.2.8               compiler_4.2.1             </span></span>
 <span><span class="co">#&gt;  [29] assertthat_0.2.1            fastmap_1.1.0              </span></span>
-<span><span class="co">#&gt;  [31] cli_3.3.0                   htmltools_0.5.2            </span></span>
-<span><span class="co">#&gt;  [33] tools_4.0.2                 igraph_1.3.3               </span></span>
+<span><span class="co">#&gt;  [31] cli_3.3.0                   htmltools_0.5.3            </span></span>
+<span><span class="co">#&gt;  [33] tools_4.2.1                 igraph_1.3.4               </span></span>
 <span><span class="co">#&gt;  [35] gtable_0.3.0                glue_1.6.2                 </span></span>
-<span><span class="co">#&gt;  [37] GenomeInfoDbData_1.2.4      dplyr_1.0.9                </span></span>
+<span><span class="co">#&gt;  [37] GenomeInfoDbData_1.2.8      dplyr_1.0.9                </span></span>
 <span><span class="co">#&gt;  [39] maps_3.4.0                  Rcpp_1.0.9                 </span></span>
-<span><span class="co">#&gt;  [41] Biobase_2.50.0              jquerylib_0.1.4            </span></span>
-<span><span class="co">#&gt;  [43] pkgdown_2.0.5               vctrs_0.4.1                </span></span>
-<span><span class="co">#&gt;  [45] nlme_3.1-147                ggalluvial_0.12.3          </span></span>
-<span><span class="co">#&gt;  [47] sccore_1.0.1                xfun_0.31                  </span></span>
-<span><span class="co">#&gt;  [49] stringr_1.4.0               lifecycle_1.0.1            </span></span>
-<span><span class="co">#&gt;  [51] zlibbioc_1.36.0             ragg_0.3.1                 </span></span>
-<span><span class="co">#&gt;  [53] MatrixGenerics_1.2.1        parallel_4.0.2             </span></span>
-<span><span class="co">#&gt;  [55] SummarizedExperiment_1.20.0 RColorBrewer_1.1-3         </span></span>
-<span><span class="co">#&gt;  [57] yaml_2.3.5                  memoise_2.0.1              </span></span>
-<span><span class="co">#&gt;  [59] Matrix.utils_0.9.8          sass_0.4.2                 </span></span>
-<span><span class="co">#&gt;  [61] stringi_1.7.8               RcppHungarian_0.2          </span></span>
-<span><span class="co">#&gt;  [63] highr_0.9                   S4Vectors_0.28.1           </span></span>
-<span><span class="co">#&gt;  [65] desc_1.4.1                  BiocGenerics_0.36.1        </span></span>
-<span><span class="co">#&gt;  [67] shape_1.4.6                 GenomeInfoDb_1.26.7        </span></span>
-<span><span class="co">#&gt;  [69] pals_1.7                    rlang_1.0.4                </span></span>
-<span><span class="co">#&gt;  [71] pkgconfig_2.0.3             systemfonts_1.0.4          </span></span>
-<span><span class="co">#&gt;  [73] matrixStats_0.62.0          bitops_1.0-7               </span></span>
-<span><span class="co">#&gt;  [75] evaluate_0.15               lattice_0.20-41            </span></span>
-<span><span class="co">#&gt;  [77] purrr_0.3.4                 leidenAlg_1.0.3            </span></span>
-<span><span class="co">#&gt;  [79] labeling_0.4.2              tidyselect_1.1.2           </span></span>
-<span><span class="co">#&gt;  [81] RcppAnnoy_0.0.19            plyr_1.8.7                 </span></span>
-<span><span class="co">#&gt;  [83] magrittr_2.0.3              R6_2.5.1                   </span></span>
-<span><span class="co">#&gt;  [85] IRanges_2.24.1              generics_0.1.3             </span></span>
-<span><span class="co">#&gt;  [87] DelayedArray_0.16.3         DBI_1.1.3                  </span></span>
-<span><span class="co">#&gt;  [89] pillar_1.7.0                withr_2.5.0                </span></span>
-<span><span class="co">#&gt;  [91] mgcv_1.8-31                 RCurl_1.98-1.7             </span></span>
-<span><span class="co">#&gt;  [93] tibble_3.1.7                crayon_1.5.1               </span></span>
-<span><span class="co">#&gt;  [95] utf8_1.2.2                  rmarkdown_2.14             </span></span>
-<span><span class="co">#&gt;  [97] GetoptLong_1.0.5            digest_0.6.29              </span></span>
-<span><span class="co">#&gt;  [99] tidyr_1.2.0                 dbscan_1.1-10              </span></span>
-<span><span class="co">#&gt; [101] stats4_4.0.2                munsell_0.5.0              </span></span>
-<span><span class="co">#&gt; [103] bslib_0.3.1</span></span></code></pre></div>
+<span><span class="co">#&gt;  [41] Biobase_2.56.0              jquerylib_0.1.4            </span></span>
+<span><span class="co">#&gt;  [43] pkgdown_2.0.6               vctrs_0.4.1                </span></span>
+<span><span class="co">#&gt;  [45] nlme_3.1-157                iterators_1.0.14           </span></span>
+<span><span class="co">#&gt;  [47] ggalluvial_0.12.3           sccore_1.0.1               </span></span>
+<span><span class="co">#&gt;  [49] xfun_0.31                   stringr_1.4.0              </span></span>
+<span><span class="co">#&gt;  [51] lifecycle_1.0.1             zlibbioc_1.42.0            </span></span>
+<span><span class="co">#&gt;  [53] ragg_1.2.2                  MatrixGenerics_1.8.1       </span></span>
+<span><span class="co">#&gt;  [55] parallel_4.2.1              SummarizedExperiment_1.26.1</span></span>
+<span><span class="co">#&gt;  [57] RColorBrewer_1.1-3          yaml_2.3.5                 </span></span>
+<span><span class="co">#&gt;  [59] memoise_2.0.1               Matrix.utils_0.9.8         </span></span>
+<span><span class="co">#&gt;  [61] sass_0.4.1                  stringi_1.7.8              </span></span>
+<span><span class="co">#&gt;  [63] highr_0.9                   RcppHungarian_0.2          </span></span>
+<span><span class="co">#&gt;  [65] S4Vectors_0.34.0            desc_1.4.1                 </span></span>
+<span><span class="co">#&gt;  [67] foreach_1.5.2               BiocGenerics_0.42.0        </span></span>
+<span><span class="co">#&gt;  [69] shape_1.4.6                 GenomeInfoDb_1.32.2        </span></span>
+<span><span class="co">#&gt;  [71] pals_1.7                    rlang_1.0.4                </span></span>
+<span><span class="co">#&gt;  [73] pkgconfig_2.0.3             systemfonts_1.0.4          </span></span>
+<span><span class="co">#&gt;  [75] matrixStats_0.62.0          bitops_1.0-7               </span></span>
+<span><span class="co">#&gt;  [77] evaluate_0.15               lattice_0.20-45            </span></span>
+<span><span class="co">#&gt;  [79] purrr_0.3.4                 labeling_0.4.2             </span></span>
+<span><span class="co">#&gt;  [81] leidenAlg_1.0.3             tidyselect_1.1.2           </span></span>
+<span><span class="co">#&gt;  [83] RcppAnnoy_0.0.19            plyr_1.8.7                 </span></span>
+<span><span class="co">#&gt;  [85] magrittr_2.0.3              R6_2.5.1                   </span></span>
+<span><span class="co">#&gt;  [87] IRanges_2.30.0              generics_0.1.3             </span></span>
+<span><span class="co">#&gt;  [89] DelayedArray_0.22.0         DBI_1.1.3                  </span></span>
+<span><span class="co">#&gt;  [91] pillar_1.8.0                withr_2.5.0                </span></span>
+<span><span class="co">#&gt;  [93] mgcv_1.8-40                 RCurl_1.98-1.7             </span></span>
+<span><span class="co">#&gt;  [95] tibble_3.1.7                crayon_1.5.1               </span></span>
+<span><span class="co">#&gt;  [97] utf8_1.2.2                  rmarkdown_2.14             </span></span>
+<span><span class="co">#&gt;  [99] GetoptLong_1.0.5            digest_0.6.29              </span></span>
+<span><span class="co">#&gt; [101] tidyr_1.2.0                 dbscan_1.1-10              </span></span>
+<span><span class="co">#&gt; [103] textshaping_0.3.6           stats4_4.2.1               </span></span>
+<span><span class="co">#&gt; [105] munsell_0.5.0               bslib_0.4.0</span></span></code></pre></div>
 </details>
 </div>
   </div>
@@ -343,7 +388,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

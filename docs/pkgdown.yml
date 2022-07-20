@@ -1,0 +1,16 @@
+pandoc: '2.18'
+pkgdown: 2.0.6
+pkgdown_sha: ~
+articles:
+  banksy-object: banksy-object.html
+  dlpfc-analysis: dlpfc-analysis.html
+  Fig4_vignette: Fig4_vignette.html
+  hippocampus-analysis: hippocampus-analysis.html
+  hypothalamus-analysis: hypothalamus-analysis.html
+  single-cell-exp: single-cell-exp.html
+  Varying-neighbourhood-parameters: Varying-neighbourhood-parameters.html
+last_built: 2022-07-20T05:29Z
+urls:
+  reference: https://prabhakarlab.github.io/Banksy/reference
+  article: https://prabhakarlab.github.io/Banksy/articles
+

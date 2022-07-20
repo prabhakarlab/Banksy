@@ -93,7 +93,7 @@
 
       
 
-      </header><script src="Fig4_vignette_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Figure 4 data analysis</h1>
@@ -106,7 +106,9 @@
 
     
     
-<p>In this vignette, we reproduce the the results shown in Figure 4 of the paper, where we identified cell types in the mouse hippocampus and nearby regions.</p>
+<p>In this vignette, we reproduce the the results shown in Figure 4 of
+the paper, where we identified cell types in the mouse hippocampus and
+nearby regions.</p>
 <div class="section level2">
 <h2 id="load-packages-and-data">Load packages and data<a class="anchor" aria-label="anchor" href="#load-packages-and-data"></a>
 </h2>
@@ -130,7 +132,8 @@
 <div class="section level2">
 <h2 id="process-data-and-perform-clustering-with-different-methods">Process data and perform clustering with different methods<a class="anchor" aria-label="anchor" href="#process-data-and-perform-clustering-with-different-methods"></a>
 </h2>
-<p>Next, we preprocess the data and run the non-spatial and BANKSY runs:</p>
+<p>Next, we preprocess the data and run the non-spatial and BANKSY
+runs:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># banksy parameters to use</span></span>
 <span><span class="va">lam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.25</span><span class="op">)</span> <span class="co"># lambda</span></span>
@@ -167,8 +170,9 @@
 <span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ClusterBanksy.html">ClusterBanksy</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="va">lam</span>, pca <span class="op">=</span> <span class="cn">TRUE</span>, npcs <span class="op">=</span> <span class="va">npcs</span>,</span>
 <span>                      method <span class="op">=</span> <span class="st">'leiden'</span>, k.neighbors <span class="op">=</span> <span class="va">knbr</span>, resolution <span class="op">=</span> <span class="va">res</span><span class="op">)</span></span></code></pre></div>
 <p>Next, run MERINGUE:</p>
-<details><p><summary><strong>Note</strong></summary></p>
-<p>For brevity, the code chunk below for MERINGUE is not run as it takes a few hours.</p>
+<details><summary><strong>Note</strong>
+</summary><p>For brevity, the code chunk below for MERINGUE is not run as it takes
+a few hours.</p>
 </details><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">w</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/MERINGUE/man/getSpatialNeighbors.html" class="external-link">getSpatialNeighbors</a></span><span class="op">(</span><span class="va">bank</span><span class="op">@</span><span class="va">cell.locs</span>, filterDist <span class="op">=</span> <span class="fl">750</span>, verbose<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
@@ -389,7 +393,7 @@ VeraFISH clustering
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>
