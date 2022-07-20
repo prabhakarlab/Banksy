@@ -24,7 +24,6 @@ where we identified cell types in the mouse hippocampus and nearby regions.
 
 ```{r, eval=FALSE, echo=TRUE}
 # load libraries (install where needed)
-
 ```{r, echo=TRUE, eval=FALSE}
 library(Banksy)
 library(ggplot2)
@@ -35,7 +34,6 @@ library(data.table)
 library(irlba)
 library(MERINGUE)
 library(Matrix)
-
 # load data
 data(hippocampus)
 expr <- hippocampus$expression
@@ -51,7 +49,6 @@ library(ComplexHeatmap)
 library(data.table)
 library(irlba)
 library(Matrix)
-
 # load data
 data(hippocampus)
 expr <- hippocampus$expression
@@ -67,7 +64,6 @@ library(ComplexHeatmap)
 library(data.table)
 library(irlba)
 library(Matrix)
-
 # load data
 data(hippocampus)
 expr <- hippocampus$expression
