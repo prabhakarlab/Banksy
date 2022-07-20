@@ -137,3 +137,51 @@ generateLocs <- function(n_buds, n_circles, n_thickness, n_cells,
     return(res)
     
 }
+
+#' @importFrom stats median aggregate
+#' @importFrom data.table data.table setkey key 
+binerize <- function(gcm, loc, mdist = NULL, normalize=TRUE) {
+    
+    if (is.null(mdist)) {
+        knn <- kNN(loc, k = 1)
+        mdist <- median(knn$dist) 
+        message('Bin distance: ', mdist)
+    }
+    
+    grp.x <- cut(loc$sdimx, 
+                 breaks = c(min(loc$sdimx)-mdist, 
+                            seq(min(loc$sdimx), max(loc$sdimx), by = mdist), 
+                            max(loc$sdimx)+mdist), 
+                 dig.lab = 10)
+    grp.y <- cut(loc$sdimy, 
+                 breaks = c(min(loc$sdimy)-mdist, 
+                            seq(min(loc$sdimy), max(loc$sdimy), by = mdist), 
+                            max(loc$sdimy)+mdist), 
+                 dig.lab = 10)
+    dloc <- data.table(loc,grp.x,grp.y)
+    dloc$id <- seq_len(nrow(dloc))
+    setkey(dloc, grp.x, grp.y)
+    
+    i <- .GRP <- NULL
+    dloc[, i := .GRP, by = key(dloc)]
+    dloc$grid_x <- as.numeric(gsub('\\(|,.*', '', dloc$grp.x))
+    dloc$grid_y <- as.numeric(gsub('\\(|,.*', '', dloc$grp.y))
+    dloc <- dloc[order(id),]
+    
+    message('Getting bin locations')
+    if (!normalize) mdist <- 1
+    sloc <- data.frame(sdimx = dloc$grid_x/mdist, sdimy = dloc$grid_y/mdist)
+    sloc <- sloc[!duplicated(sloc),]
+    rownames(sloc) <- paste0('spot_', unique(dloc$i))
+    
+    message('Aggregating bin features')
+    gcm <- t(gcm)
+    gcm <- data.frame(cbind(grp=dloc$i, gcm))
+    gsm <- aggregate(gcm[,2:ncol(gcm)], list(gcm$grp), mean)
+    gsm <- t(gsm) 
+    colnames(gsm) <- paste0('spot_', gsm[1,])
+    gsm <- gsm[-1,]
+    
+    return(list(expression=gsm, locations=sloc, binstats=dloc))
+    
+}

@@ -433,6 +433,7 @@ plotARI <- function(bank, col.low = 'white', col.high = 'red', label = TRUE, dig
 #' @param max.cells Number of cells to display
 #' @param seed Seed for sampling cells if max.cells is not NULL
 #' @param flow.colors Colors for alluvial flow
+#' @param cluster.order Order for clustering runs in horizontal axis
 #'
 #' @importFrom ggplot2 ggplot aes theme theme_minimal element_blank
 #'   element_line element_text scale_x_discrete scale_fill_manual
@@ -452,8 +453,10 @@ plotARI <- function(bank, col.low = 'white', col.high = 'red', label = TRUE, dig
 #' bank <- RunPCA(bank, lambda = 0.2)
 #' bank <- ClusterBanksy(bank, lambda = 0.2, npcs = 20, k.neighbors = 50, resolution = c(0.5,1.5))
 #' plotAlluvia(bank, max.cells = 20)
+#' plotAlluvia(bank, max.cells = 20, cluster.order = rev(clust.names(bank)))
 #' 
-plotAlluvia <- function(bank, max.cells = 500, seed = 42, flow.colors = NULL) {
+plotAlluvia <- function(bank, max.cells = 500, seed = 42, flow.colors = NULL,
+                        cluster.order = NULL) {
 
   df <- meta.data(bank)[,clust.names(bank),drop=FALSE]
 
@@ -470,6 +473,13 @@ plotAlluvia <- function(bank, max.cells = 500, seed = 42, flow.colors = NULL) {
   cluster <- factor(unlist(df))
   plotdf <- data.frame(cell = cell, run = run, cluster = cluster)
   nclust <- length(levels(cluster))
+  
+  if (!is.null(cluster.order)) {
+      if (!(all(plotdf$run %in% clust.names(bank)))) {
+          stop('Not all clustering runs represented in cluster.order')
+      }
+      plotdf$run <- factor(plotdf$run, levels = cluster.order)
+  }
 
   if (!is.null(flow.colors)) {
     if (length(flow.colors) < nclust) {
