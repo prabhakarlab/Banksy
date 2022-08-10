@@ -1,5 +1,5 @@
 pandoc: '2.18'
-pkgdown: 2.0.6
+pkgdown: 2.0.2
 pkgdown_sha: ~
 articles:
   banksy-object: banksy-object.html
@@ -9,7 +9,7 @@ articles:
   hypothalamus-analysis: hypothalamus-analysis.html
   single-cell-exp: single-cell-exp.html
   Varying-neighbourhood-parameters: Varying-neighbourhood-parameters.html
-last_built: 2022-07-20T05:29Z
+last_built: 2022-08-10T09:47Z
 urls:
   reference: https://prabhakarlab.github.io/Banksy/reference
   article: https://prabhakarlab.github.io/Banksy/articles

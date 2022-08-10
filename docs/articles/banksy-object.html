@@ -113,17 +113,17 @@ how to interact with it.</p>
 </h2>
 <p>We use data attached with the package:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/prabhakarlab/Banksy" class="external-link">Banksy</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">hippocampus</span><span class="op">)</span></span>
-<span><span class="va">expr</span> <span class="op">&lt;-</span> <span class="va">hippocampus</span><span class="op">$</span><span class="va">expression</span></span>
-<span><span class="va">locs</span> <span class="op">&lt;-</span> <span class="va">hippocampus</span><span class="op">$</span><span class="va">locations</span></span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/prabhakarlab/Banksy" class="external-link">Banksy</a></span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">hippocampus</span><span class="op">)</span>
+<span class="va">expr</span> <span class="op">&lt;-</span> <span class="va">hippocampus</span><span class="op">$</span><span class="va">expression</span>
+<span class="va">locs</span> <span class="op">&lt;-</span> <span class="va">hippocampus</span><span class="op">$</span><span class="va">locations</span></code></pre></div>
 <p>We store the total counts and the number of expressed genes for each
 cell:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">total_count</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">expr</span><span class="op">)</span></span>
-<span><span class="va">num_genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">expr</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>total_count <span class="op">=</span> <span class="va">total_count</span>, num_genes <span class="op">=</span> <span class="va">num_genes</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span class="va">total_count</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">expr</span><span class="op">)</span>
+<span class="va">num_genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">expr</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>
+<span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>total_count <span class="op">=</span> <span class="va">total_count</span>, num_genes <span class="op">=</span> <span class="va">num_genes</span><span class="op">)</span></code></pre></div>
 <p>The <em>BanksyObject</em> can be constructed by supplying the
 gene-cell expression matrix and cell locations. Optionally, metadata can
 be provided. Calling <em>BanksyObject</em> populates metadata and
@@ -131,24 +131,24 @@ performs gene filtering in the case of multiple datasets. This should be
 the default method of construction - avoid setter methods for
 construction.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">expr</span>, cell.locs <span class="op">=</span> <span class="va">locs</span>, meta.data <span class="op">=</span> <span class="va">meta</span><span class="op">)</span></span>
-<span><span class="co"># Filter cells based on total count </span></span>
-<span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SubsetBanksy.html">SubsetBanksy</a></span><span class="op">(</span><span class="va">bank</span>, metadata <span class="op">=</span> <span class="va">total_count</span> <span class="op">&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">total_count</span>, <span class="fl">0.05</span><span class="op">)</span> <span class="op">&amp;</span></span>
-<span>                                      <span class="va">total_count</span> <span class="op">&lt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">total_count</span>, <span class="fl">0.98</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">bank</span></span>
-<span><span class="co">#&gt; Object of class BanksyObject </span></span>
-<span><span class="co">#&gt; Assay with 10205 cells 120 features</span></span>
-<span><span class="co">#&gt; Spatial dimensions: sdimx sdimy </span></span>
-<span><span class="co">#&gt; Metadata names: cell_ID total_count num_genes </span></span>
-<span><span class="co">#&gt; Dimension reductions:</span></span></code></pre></div>
+<code class="sourceCode R"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">expr</span>, cell.locs <span class="op">=</span> <span class="va">locs</span>, meta.data <span class="op">=</span> <span class="va">meta</span><span class="op">)</span>
+<span class="co"># Filter cells based on total count </span>
+<span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SubsetBanksy.html">SubsetBanksy</a></span><span class="op">(</span><span class="va">bank</span>, metadata <span class="op">=</span> <span class="va">total_count</span> <span class="op">&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">total_count</span>, <span class="fl">0.05</span><span class="op">)</span> <span class="op">&amp;</span>
+                                      <span class="va">total_count</span> <span class="op">&lt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">total_count</span>, <span class="fl">0.98</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">bank</span>
+<span class="co">#&gt; Object of class BanksyObject </span>
+<span class="co">#&gt; Assay with 10205 cells 120 features</span>
+<span class="co">#&gt; Spatial dimensions: sdimx sdimy </span>
+<span class="co">#&gt; Metadata names: cell_ID total_count num_genes </span>
+<span class="co">#&gt; Dimension reductions:</span></code></pre></div>
 <p>The filtered dataset consists of 10,205 cells and 129 genes in 2
 spatial dimensions.</p>
 <p><em>BanksyObject</em> has the following slots:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">slotNames</span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "own.expr"    "nbr.expr"    "custom.expr" "cell.locs"   "meta.data"  </span></span>
-<span><span class="co">#&gt; [6] "reduction"</span></span></code></pre></div>
+<code class="sourceCode R"><span class="fu">slotNames</span><span class="op">(</span><span class="va">bank</span><span class="op">)</span>
+<span class="co">#&gt; [1] "own.expr"    "nbr.expr"    "custom.expr" "cell.locs"   "meta.data"  </span>
+<span class="co">#&gt; [6] "reduction"</span></code></pre></div>
 <ul>
 <li>
 <code>own.expr</code> stores the raw gene*cell expression
@@ -175,67 +175,67 @@ or colours for visualisation<br>
 <p>Calling <em>ComputeBanksy</em> computes the neighbour feature-cell
 expression matrix, populating the <code>nbr.expr</code> slot:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NormalizeBanksy.html">NormalizeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
-<span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ComputeBanksy.html">ComputeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Computing neighbors...</span></span>
-<span><span class="co">#&gt; Computing neighbor matrix...</span></span>
-<span><span class="co">#&gt; Done</span></span>
-<span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ScaleBanksy.html">ScaleBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
-<span><span class="co">#&gt; own expression:</span></span>
-<span><span class="co">#&gt;          cell_1276    cell_691    cell_396     cell_68  cell_6954</span></span>
-<span><span class="co">#&gt; Sparcl1  0.5349718 -0.48647526  1.27757129 -0.55326857 -0.9651902</span></span>
-<span><span class="co">#&gt; Slc1a2   0.3135863 -0.03720587  0.09921329 -0.01482276  0.7374041</span></span>
-<span><span class="co">#&gt; Map     -0.2166933  0.57887150  1.73550031  0.02126095 -0.1344814</span></span>
-<span><span class="co">#&gt; Sqstm1   2.5702194 -1.01024005 -0.23906418  0.63466876  1.5160257</span></span>
-<span><span class="co">#&gt; Atp1a2  -0.9050812 -0.45856672 -0.43976611 -0.42154998 -0.9050812</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; neighbour expression:</span></span>
-<span><span class="co">#&gt;              cell_1276   cell_691   cell_396    cell_68   cell_6954</span></span>
-<span><span class="co">#&gt; Sparcl1.nbr -0.4505180 -0.1142916 -0.6856877 -0.5872564 -1.55495187</span></span>
-<span><span class="co">#&gt; Slc1a2.nbr   0.4789988  0.2090078 -0.2984144  0.9668693 -0.85208653</span></span>
-<span><span class="co">#&gt; Map.nbr      1.0105295  1.1516670  0.4696628  0.9202905  0.04827298</span></span>
-<span><span class="co">#&gt; Sqstm1.nbr   1.1857809  0.2137205  1.1679591  0.9755809  1.67015285</span></span>
-<span><span class="co">#&gt; Atp1a2.nbr  -0.7972215 -0.6712724 -0.6749556 -1.0283418 -1.16372173</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; cell locations:</span></span>
-<span><span class="co">#&gt;                sdimx    sdimy</span></span>
-<span><span class="co">#&gt; cell_1276 -13372.899 15776.37</span></span>
-<span><span class="co">#&gt; cell_691  -14882.899 15896.37</span></span>
-<span><span class="co">#&gt; cell_396  -15492.899 15835.37</span></span>
-<span><span class="co">#&gt; cell_68   -16185.899 15768.37</span></span>
-<span><span class="co">#&gt; cell_6954   3130.101 15792.37</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; metadata:</span></span>
-<span><span class="co">#&gt;             cell_ID total_count num_genes</span></span>
-<span><span class="co">#&gt; cell_1276 cell_1276         266        51</span></span>
-<span><span class="co">#&gt; cell_691   cell_691         132        36</span></span>
-<span><span class="co">#&gt; cell_396   cell_396          95        27</span></span>
-<span><span class="co">#&gt; cell_68     cell_68         579        72</span></span>
-<span><span class="co">#&gt; cell_6954 cell_6954         116        29</span></span></code></pre></div>
+<code class="sourceCode R"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/NormalizeBanksy.html">NormalizeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span>
+<span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ComputeBanksy.html">ComputeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span>
+<span class="co">#&gt; Computing neighbors...</span>
+<span class="co">#&gt; Computing neighbor matrix...</span>
+<span class="co">#&gt; Done</span>
+<span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ScaleBanksy.html">ScaleBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span>
+<span class="co">#&gt; own expression:</span>
+<span class="co">#&gt;          cell_1276    cell_691    cell_396     cell_68  cell_6954</span>
+<span class="co">#&gt; Sparcl1  0.5349718 -0.48647526  1.27757129 -0.55326857 -0.9651902</span>
+<span class="co">#&gt; Slc1a2   0.3135863 -0.03720587  0.09921329 -0.01482276  0.7374041</span>
+<span class="co">#&gt; Map     -0.2166933  0.57887150  1.73550031  0.02126095 -0.1344814</span>
+<span class="co">#&gt; Sqstm1   2.5702194 -1.01024005 -0.23906418  0.63466876  1.5160257</span>
+<span class="co">#&gt; Atp1a2  -0.9050812 -0.45856672 -0.43976611 -0.42154998 -0.9050812</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; neighbour expression:</span>
+<span class="co">#&gt;              cell_1276   cell_691   cell_396    cell_68   cell_6954</span>
+<span class="co">#&gt; Sparcl1.nbr -0.4505180 -0.1142916 -0.6856877 -0.5872564 -1.55495187</span>
+<span class="co">#&gt; Slc1a2.nbr   0.4789988  0.2090078 -0.2984144  0.9668693 -0.85208653</span>
+<span class="co">#&gt; Map.nbr      1.0105295  1.1516670  0.4696628  0.9202905  0.04827298</span>
+<span class="co">#&gt; Sqstm1.nbr   1.1857809  0.2137205  1.1679591  0.9755809  1.67015285</span>
+<span class="co">#&gt; Atp1a2.nbr  -0.7972215 -0.6712724 -0.6749556 -1.0283418 -1.16372173</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; cell locations:</span>
+<span class="co">#&gt;                sdimx    sdimy</span>
+<span class="co">#&gt; cell_1276 -13372.899 15776.37</span>
+<span class="co">#&gt; cell_691  -14882.899 15896.37</span>
+<span class="co">#&gt; cell_396  -15492.899 15835.37</span>
+<span class="co">#&gt; cell_68   -16185.899 15768.37</span>
+<span class="co">#&gt; cell_6954   3130.101 15792.37</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; metadata:</span>
+<span class="co">#&gt;             cell_ID total_count num_genes</span>
+<span class="co">#&gt; cell_1276 cell_1276         266        51</span>
+<span class="co">#&gt; cell_691   cell_691         132        36</span>
+<span class="co">#&gt; cell_396   cell_396          95        27</span>
+<span class="co">#&gt; cell_68     cell_68         579        72</span>
+<span class="co">#&gt; cell_6954 cell_6954         116        29</span></code></pre></div>
 <p>Dimensionality reduction with <em>RunPCA</em> or <em>RunUMAP</em>
 populates the <code>reduction</code> slot:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunPCA.html">RunPCA</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="../reference/BanksyObject-class.html">reduction</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "pca_0.3"</span></span></code></pre></div>
+<code class="sourceCode R"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunPCA.html">RunPCA</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="../reference/BanksyObject-class.html">reduction</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; [1] "pca_0.3"</span></code></pre></div>
 <p>Perform clustering with <em>ClusterBanksy</em>. This popluates the
 <code>meta.data</code> slot with cluster labels.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ClusterBanksy.html">ClusterBanksy</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.3</span>, pca <span class="op">=</span> <span class="cn">TRUE</span>, npcs <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>                      method <span class="op">=</span> <span class="st">'leiden'</span>, resolution <span class="op">=</span> <span class="fl">1.2</span>, k.neighbors <span class="op">=</span> <span class="fl">50</span>,</span>
-<span>                      seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Iteration 1 out of 1</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/BanksyObject-class.html">meta.data</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;             cell_ID total_count num_genes clust_lam0.3_k50_res1.2</span></span>
-<span><span class="co">#&gt; cell_1276 cell_1276         266        51                      16</span></span>
-<span><span class="co">#&gt; cell_691   cell_691         132        36                       7</span></span>
-<span><span class="co">#&gt; cell_396   cell_396          95        27                      16</span></span>
-<span><span class="co">#&gt; cell_68     cell_68         579        72                      16</span></span>
-<span><span class="co">#&gt; cell_6954 cell_6954         116        29                       6</span></span>
-<span><span class="co">#&gt; cell_7074 cell_7074          28        17                       6</span></span></code></pre></div>
+<code class="sourceCode R"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ClusterBanksy.html">ClusterBanksy</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.3</span>, pca <span class="op">=</span> <span class="cn">TRUE</span>, npcs <span class="op">=</span> <span class="fl">20</span>,
+                      method <span class="op">=</span> <span class="st">'leiden'</span>, resolution <span class="op">=</span> <span class="fl">1.2</span>, k.neighbors <span class="op">=</span> <span class="fl">50</span>,
+                      seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span>
+<span class="co">#&gt; Iteration 1 out of 1</span>
+
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/BanksyObject-class.html">meta.data</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt;             cell_ID total_count num_genes clust_lam0.3_k50_res1.2</span>
+<span class="co">#&gt; cell_1276 cell_1276         266        51                      15</span>
+<span class="co">#&gt; cell_691   cell_691         132        36                       8</span>
+<span class="co">#&gt; cell_396   cell_396          95        27                      15</span>
+<span class="co">#&gt; cell_68     cell_68         579        72                      15</span>
+<span class="co">#&gt; cell_6954 cell_6954         116        29                       6</span>
+<span class="co">#&gt; cell_7074 cell_7074          28        17                       6</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="subsetting">Subsetting<a class="anchor" aria-label="anchor" href="#subsetting"></a>
@@ -246,45 +246,45 @@ by dimension, genes, cells, and metadata columns. The
 conditions. The variables here (e.g. <code>sdimx</code>) must correspond
 to the columns names of the <code>cell.locs(bank)</code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bankDim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SubsetBanksy.html">SubsetBanksy</a></span><span class="op">(</span><span class="va">bank</span>, dims <span class="op">=</span> <span class="op">(</span><span class="va">sdimx</span> <span class="op">&lt;</span> <span class="op">-</span><span class="fl">4000</span> <span class="op">|</span> <span class="va">sdimx</span> <span class="op">&gt;</span> <span class="fl">10000</span><span class="op">)</span> <span class="op">|</span> </span>
-<span>                                     <span class="op">(</span><span class="va">sdimy</span> <span class="op">&lt;</span> <span class="fl">3000</span> <span class="op">|</span> <span class="va">sdimy</span> <span class="op">&gt;</span> <span class="fl">10000</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="../reference/plotSpatial.html">plotSpatial</a></span><span class="op">(</span><span class="va">bank</span>, pt.alpha <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/plotSpatial.html">plotSpatial</a></span><span class="op">(</span><span class="va">bankDim</span>, pt.alpha <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,</span>
-<span>  ncol <span class="op">=</span> <span class="fl">2</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span class="va">bankDim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SubsetBanksy.html">SubsetBanksy</a></span><span class="op">(</span><span class="va">bank</span>, dims <span class="op">=</span> <span class="op">(</span><span class="va">sdimx</span> <span class="op">&lt;</span> <span class="op">-</span><span class="fl">4000</span> <span class="op">|</span> <span class="va">sdimx</span> <span class="op">&gt;</span> <span class="fl">10000</span><span class="op">)</span> <span class="op">|</span> 
+                                     <span class="op">(</span><span class="va">sdimy</span> <span class="op">&lt;</span> <span class="fl">3000</span> <span class="op">|</span> <span class="va">sdimy</span> <span class="op">&gt;</span> <span class="fl">10000</span><span class="op">)</span><span class="op">)</span>
+
+<span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span>
+  <span class="fu"><a href="../reference/plotSpatial.html">plotSpatial</a></span><span class="op">(</span><span class="va">bank</span>, pt.alpha <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,
+  <span class="fu"><a href="../reference/plotSpatial.html">plotSpatial</a></span><span class="op">(</span><span class="va">bankDim</span>, pt.alpha <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,
+  ncol <span class="op">=</span> <span class="fl">2</span>
+<span class="op">)</span></code></pre></div>
 <p><img src="banksy-object_files/figure-html/subset1-1.png" width="960" style="display: block; margin: auto;"></p>
 <p>The object can also be subset by cells:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sample_cells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="../reference/BanksyObject-class.html">meta.data</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">$</span><span class="va">cell_ID</span>, <span class="fl">1000</span><span class="op">)</span></span>
-<span><span class="va">bankCells</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SubsetBanksy.html">SubsetBanksy</a></span><span class="op">(</span><span class="va">bank</span>, cells <span class="op">=</span> <span class="va">sample_cells</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="../reference/plotSpatial.html">plotSpatial</a></span><span class="op">(</span><span class="va">bank</span>, pt.alpha <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/plotSpatial.html">plotSpatial</a></span><span class="op">(</span><span class="va">bankCells</span>, pt.alpha <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,</span>
-<span>  ncol <span class="op">=</span> <span class="fl">2</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span class="va">sample_cells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="../reference/BanksyObject-class.html">meta.data</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">$</span><span class="va">cell_ID</span>, <span class="fl">1000</span><span class="op">)</span>
+<span class="va">bankCells</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SubsetBanksy.html">SubsetBanksy</a></span><span class="op">(</span><span class="va">bank</span>, cells <span class="op">=</span> <span class="va">sample_cells</span><span class="op">)</span>
+
+<span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span>
+  <span class="fu"><a href="../reference/plotSpatial.html">plotSpatial</a></span><span class="op">(</span><span class="va">bank</span>, pt.alpha <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,
+  <span class="fu"><a href="../reference/plotSpatial.html">plotSpatial</a></span><span class="op">(</span><span class="va">bankCells</span>, pt.alpha <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,
+  ncol <span class="op">=</span> <span class="fl">2</span>
+<span class="op">)</span></code></pre></div>
 <p><img src="banksy-object_files/figure-html/subset2-1.png" width="960" style="display: block; margin: auto;"></p>
 <p>Similarly, the object can also be subset by any metadata column with
 logical unquoted conditions. Here, we select cells in in certain
 clusters based on the clustering with <code>lam=0.3</code>,
 <code>k=50</code>, <code>res=1.2</code>.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">select_clusters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>,<span class="fl">7</span>,<span class="fl">10</span><span class="op">)</span></span>
-<span><span class="va">bankMeta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SubsetBanksy.html">SubsetBanksy</a></span><span class="op">(</span><span class="va">bank</span>, metadata <span class="op">=</span> <span class="va">clust_lam0.3_k50_res1.2</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">select_clusters</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="../reference/plotSpatial.html">plotSpatial</a></span><span class="op">(</span><span class="va">bank</span>, pt.alpha <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/plotSpatial.html">plotSpatial</a></span><span class="op">(</span><span class="va">bankMeta</span>, pt.alpha <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,</span>
-<span>  ncol <span class="op">=</span> <span class="fl">2</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span class="va">select_clusters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>,<span class="fl">7</span>,<span class="fl">10</span><span class="op">)</span>
+<span class="va">bankMeta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SubsetBanksy.html">SubsetBanksy</a></span><span class="op">(</span><span class="va">bank</span>, metadata <span class="op">=</span> <span class="va">clust_lam0.3_k50_res1.2</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">select_clusters</span><span class="op">)</span>
+
+<span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span>
+  <span class="fu"><a href="../reference/plotSpatial.html">plotSpatial</a></span><span class="op">(</span><span class="va">bank</span>, pt.alpha <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,
+  <span class="fu"><a href="../reference/plotSpatial.html">plotSpatial</a></span><span class="op">(</span><span class="va">bankMeta</span>, pt.alpha <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,
+  ncol <span class="op">=</span> <span class="fl">2</span>
+<span class="op">)</span></code></pre></div>
 <p><img src="banksy-object_files/figure-html/subset3-1.png" width="960" style="display: block; margin: auto;"></p>
 <p>Subsetting by genes can be achieved by supplying a character vector
 of genes to the <code>features</code> argument:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="fu"><a href="../reference/BanksyObject-class.html">own.expr</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="va">bankFeatures</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SubsetBanksy.html">SubsetBanksy</a></span><span class="op">(</span><span class="va">bank</span>, features <span class="op">=</span> <span class="va">genes</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span class="va">genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="fu"><a href="../reference/BanksyObject-class.html">own.expr</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span>
+<span class="va">bankFeatures</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SubsetBanksy.html">SubsetBanksy</a></span><span class="op">(</span><span class="va">bank</span>, features <span class="op">=</span> <span class="va">genes</span><span class="op">)</span></code></pre></div>
 <p>If multiple subsetting features are supplied, the intersection of all
 conditions will be returned.</p>
 </div>
@@ -292,79 +292,79 @@ conditions will be returned.</p>
 <h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
 </h2>
 <details><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; R version 4.2.1 (2022-06-23 ucrt)</span></span>
-<span><span class="co">#&gt; Platform: x86_64-w64-mingw32/x64 (64-bit)</span></span>
-<span><span class="co">#&gt; Running under: Windows 10 x64 (build 19043)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Matrix products: default</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; locale:</span></span>
-<span><span class="co">#&gt; [1] LC_COLLATE=English_Singapore.utf8  LC_CTYPE=English_Singapore.utf8   </span></span>
-<span><span class="co">#&gt; [3] LC_MONETARY=English_Singapore.utf8 LC_NUMERIC=C                      </span></span>
-<span><span class="co">#&gt; [5] LC_TIME=English_Singapore.utf8    </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; attached base packages:</span></span>
-<span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt; [1] Banksy_0.1.3</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;   [1] bitops_1.0-7                matrixStats_0.62.0         </span></span>
-<span><span class="co">#&gt;   [3] fs_1.5.2                    doParallel_1.0.17          </span></span>
-<span><span class="co">#&gt;   [5] RColorBrewer_1.1-3          rprojroot_2.0.3            </span></span>
-<span><span class="co">#&gt;   [7] GenomeInfoDb_1.32.2         tools_4.2.1                </span></span>
-<span><span class="co">#&gt;   [9] bslib_0.4.0                 irlba_2.3.5                </span></span>
-<span><span class="co">#&gt;  [11] utf8_1.2.2                  R6_2.5.1                   </span></span>
-<span><span class="co">#&gt;  [13] uwot_0.1.11                 DBI_1.1.3                  </span></span>
-<span><span class="co">#&gt;  [15] BiocGenerics_0.42.0         colorspace_2.0-3           </span></span>
-<span><span class="co">#&gt;  [17] GetoptLong_1.0.5            gridExtra_2.3              </span></span>
-<span><span class="co">#&gt;  [19] tidyselect_1.1.2            compiler_4.2.1             </span></span>
-<span><span class="co">#&gt;  [21] textshaping_0.3.6           cli_3.3.0                  </span></span>
-<span><span class="co">#&gt;  [23] Biobase_2.56.0              desc_1.4.1                 </span></span>
-<span><span class="co">#&gt;  [25] DelayedArray_0.22.0         labeling_0.4.2             </span></span>
-<span><span class="co">#&gt;  [27] sass_0.4.1                  scales_1.2.0               </span></span>
-<span><span class="co">#&gt;  [29] pkgdown_2.0.6               systemfonts_1.0.4          </span></span>
-<span><span class="co">#&gt;  [31] stringr_1.4.0               digest_0.6.29              </span></span>
-<span><span class="co">#&gt;  [33] dbscan_1.1-10               rmarkdown_2.14             </span></span>
-<span><span class="co">#&gt;  [35] XVector_0.36.0              dichromat_2.0-0.1          </span></span>
-<span><span class="co">#&gt;  [37] pkgconfig_2.0.3             htmltools_0.5.3            </span></span>
-<span><span class="co">#&gt;  [39] MatrixGenerics_1.8.1        highr_0.9                  </span></span>
-<span><span class="co">#&gt;  [41] maps_3.4.0                  fastmap_1.1.0              </span></span>
-<span><span class="co">#&gt;  [43] rlang_1.0.4                 GlobalOptions_0.1.2        </span></span>
-<span><span class="co">#&gt;  [45] pals_1.7                    rstudioapi_0.13            </span></span>
-<span><span class="co">#&gt;  [47] farver_2.1.1                shape_1.4.6                </span></span>
-<span><span class="co">#&gt;  [49] jquerylib_0.1.4             generics_0.1.3             </span></span>
-<span><span class="co">#&gt;  [51] jsonlite_1.8.0              mclust_5.4.10              </span></span>
-<span><span class="co">#&gt;  [53] dplyr_1.0.9                 RCurl_1.98-1.7             </span></span>
-<span><span class="co">#&gt;  [55] magrittr_2.0.3              GenomeInfoDbData_1.2.8     </span></span>
-<span><span class="co">#&gt;  [57] Matrix_1.4-1                Rcpp_1.0.9                 </span></span>
-<span><span class="co">#&gt;  [59] munsell_0.5.0               S4Vectors_0.34.0           </span></span>
-<span><span class="co">#&gt;  [61] fansi_1.0.3                 lifecycle_1.0.1            </span></span>
-<span><span class="co">#&gt;  [63] leidenAlg_1.0.3             stringi_1.7.8              </span></span>
-<span><span class="co">#&gt;  [65] yaml_2.3.5                  ggalluvial_0.12.3          </span></span>
-<span><span class="co">#&gt;  [67] SummarizedExperiment_1.26.1 zlibbioc_1.42.0            </span></span>
-<span><span class="co">#&gt;  [69] plyr_1.8.7                  grid_4.2.1                 </span></span>
-<span><span class="co">#&gt;  [71] parallel_4.2.1              crayon_1.5.1               </span></span>
-<span><span class="co">#&gt;  [73] lattice_0.20-45             sccore_1.0.1               </span></span>
-<span><span class="co">#&gt;  [75] mapproj_1.2.8               circlize_0.4.15            </span></span>
-<span><span class="co">#&gt;  [77] knitr_1.39                  ComplexHeatmap_2.12.0      </span></span>
-<span><span class="co">#&gt;  [79] pillar_1.8.0                igraph_1.3.4               </span></span>
-<span><span class="co">#&gt;  [81] GenomicRanges_1.48.0        rjson_0.2.21               </span></span>
-<span><span class="co">#&gt;  [83] codetools_0.2-18            stats4_4.2.1               </span></span>
-<span><span class="co">#&gt;  [85] glue_1.6.2                  evaluate_0.15              </span></span>
-<span><span class="co">#&gt;  [87] data.table_1.14.2           png_0.1-7                  </span></span>
-<span><span class="co">#&gt;  [89] vctrs_0.4.1                 foreach_1.5.2              </span></span>
-<span><span class="co">#&gt;  [91] grr_0.9.5                   gtable_0.3.0               </span></span>
-<span><span class="co">#&gt;  [93] purrr_0.3.4                 assertthat_0.2.1           </span></span>
-<span><span class="co">#&gt;  [95] clue_0.3-61                 cachem_1.0.6               </span></span>
-<span><span class="co">#&gt;  [97] ggplot2_3.3.6               xfun_0.31                  </span></span>
-<span><span class="co">#&gt;  [99] ragg_1.2.2                  tibble_3.1.7               </span></span>
-<span><span class="co">#&gt; [101] RcppHungarian_0.2           iterators_1.0.14           </span></span>
-<span><span class="co">#&gt; [103] Matrix.utils_0.9.8          memoise_2.0.1              </span></span>
-<span><span class="co">#&gt; [105] IRanges_2.30.0              cluster_2.1.3              </span></span>
-<span><span class="co">#&gt; [107] ellipsis_0.3.2</span></span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; R version 4.1.2 (2021-11-01)</span>
+<span class="co">#&gt; Platform: x86_64-w64-mingw32/x64 (64-bit)</span>
+<span class="co">#&gt; Running under: Windows 10 x64 (build 19043)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Matrix products: default</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; locale:</span>
+<span class="co">#&gt; [1] LC_COLLATE=English_Singapore.1252  LC_CTYPE=English_Singapore.1252   </span>
+<span class="co">#&gt; [3] LC_MONETARY=English_Singapore.1252 LC_NUMERIC=C                      </span>
+<span class="co">#&gt; [5] LC_TIME=English_Singapore.1252    </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; attached base packages:</span>
+<span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; other attached packages:</span>
+<span class="co">#&gt; [1] Banksy_0.1.3</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; loaded via a namespace (and not attached):</span>
+<span class="co">#&gt;   [1] bitops_1.0-7                matrixStats_0.61.0         </span>
+<span class="co">#&gt;   [3] fs_1.5.2                    doParallel_1.0.17          </span>
+<span class="co">#&gt;   [5] RColorBrewer_1.1-3          rprojroot_2.0.2            </span>
+<span class="co">#&gt;   [7] GenomeInfoDb_1.30.1         tools_4.1.2                </span>
+<span class="co">#&gt;   [9] bslib_0.3.1                 irlba_2.3.5                </span>
+<span class="co">#&gt;  [11] utf8_1.2.2                  R6_2.5.1                   </span>
+<span class="co">#&gt;  [13] uwot_0.1.11                 DBI_1.1.2                  </span>
+<span class="co">#&gt;  [15] BiocGenerics_0.40.0         colorspace_2.0-2           </span>
+<span class="co">#&gt;  [17] GetoptLong_1.0.5            gridExtra_2.3              </span>
+<span class="co">#&gt;  [19] tidyselect_1.1.2            compiler_4.1.2             </span>
+<span class="co">#&gt;  [21] textshaping_0.3.6           cli_3.1.0                  </span>
+<span class="co">#&gt;  [23] Biobase_2.54.0              desc_1.4.1                 </span>
+<span class="co">#&gt;  [25] DelayedArray_0.20.0         labeling_0.4.2             </span>
+<span class="co">#&gt;  [27] sass_0.4.0                  scales_1.2.0               </span>
+<span class="co">#&gt;  [29] pkgdown_2.0.2               systemfonts_1.0.4          </span>
+<span class="co">#&gt;  [31] stringr_1.4.0               digest_0.6.29              </span>
+<span class="co">#&gt;  [33] dbscan_1.1-10               rmarkdown_2.13             </span>
+<span class="co">#&gt;  [35] XVector_0.34.0              dichromat_2.0-0.1          </span>
+<span class="co">#&gt;  [37] pkgconfig_2.0.3             htmltools_0.5.2            </span>
+<span class="co">#&gt;  [39] MatrixGenerics_1.6.0        highr_0.9                  </span>
+<span class="co">#&gt;  [41] maps_3.4.0                  fastmap_1.1.0              </span>
+<span class="co">#&gt;  [43] rlang_1.0.2                 GlobalOptions_0.1.2        </span>
+<span class="co">#&gt;  [45] pals_1.7                    rstudioapi_0.13            </span>
+<span class="co">#&gt;  [47] farver_2.1.0                shape_1.4.6                </span>
+<span class="co">#&gt;  [49] jquerylib_0.1.4             generics_0.1.2             </span>
+<span class="co">#&gt;  [51] jsonlite_1.8.0              mclust_5.4.9               </span>
+<span class="co">#&gt;  [53] dplyr_1.0.7                 RCurl_1.98-1.6             </span>
+<span class="co">#&gt;  [55] magrittr_2.0.1              GenomeInfoDbData_1.2.7     </span>
+<span class="co">#&gt;  [57] Matrix_1.3-4                Rcpp_1.0.9                 </span>
+<span class="co">#&gt;  [59] munsell_0.5.0               S4Vectors_0.32.3           </span>
+<span class="co">#&gt;  [61] fansi_0.5.0                 lifecycle_1.0.1            </span>
+<span class="co">#&gt;  [63] leidenAlg_1.0.3             stringi_1.7.6              </span>
+<span class="co">#&gt;  [65] yaml_2.2.1                  ggalluvial_0.12.3          </span>
+<span class="co">#&gt;  [67] SummarizedExperiment_1.24.0 zlibbioc_1.40.0            </span>
+<span class="co">#&gt;  [69] plyr_1.8.6                  grid_4.1.2                 </span>
+<span class="co">#&gt;  [71] parallel_4.1.2              crayon_1.5.1               </span>
+<span class="co">#&gt;  [73] lattice_0.20-45             sccore_1.0.1               </span>
+<span class="co">#&gt;  [75] mapproj_1.2.8               circlize_0.4.15            </span>
+<span class="co">#&gt;  [77] knitr_1.37                  ComplexHeatmap_2.10.0      </span>
+<span class="co">#&gt;  [79] pillar_1.7.0                igraph_1.3.4               </span>
+<span class="co">#&gt;  [81] GenomicRanges_1.46.1        rjson_0.2.21               </span>
+<span class="co">#&gt;  [83] codetools_0.2-18            stats4_4.1.2               </span>
+<span class="co">#&gt;  [85] glue_1.6.0                  evaluate_0.15              </span>
+<span class="co">#&gt;  [87] data.table_1.14.2           png_0.1-7                  </span>
+<span class="co">#&gt;  [89] vctrs_0.3.8                 foreach_1.5.2              </span>
+<span class="co">#&gt;  [91] grr_0.9.5                   gtable_0.3.0               </span>
+<span class="co">#&gt;  [93] purrr_0.3.4                 assertthat_0.2.1           </span>
+<span class="co">#&gt;  [95] clue_0.3-60                 cachem_1.0.6               </span>
+<span class="co">#&gt;  [97] ggplot2_3.3.6               xfun_0.29                  </span>
+<span class="co">#&gt;  [99] ragg_1.2.2                  tibble_3.1.6               </span>
+<span class="co">#&gt; [101] RcppHungarian_0.2           iterators_1.0.14           </span>
+<span class="co">#&gt; [103] Matrix.utils_0.9.8          memoise_2.0.1              </span>
+<span class="co">#&gt; [105] IRanges_2.28.0              cluster_2.1.2              </span>
+<span class="co">#&gt; [107] ellipsis_0.3.2</span></code></pre></div>
 </details>
 </div>
   </div>
@@ -386,7 +386,8 @@ conditions will be returned.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>

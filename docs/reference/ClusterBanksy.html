@@ -81,100 +81,73 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ClusterBanksy</span><span class="op">(</span></span>
-<span>  <span class="va">bank</span>,</span>
-<span>  lambda <span class="op">=</span> <span class="fl">0.25</span>,</span>
-<span>  pca <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  npcs <span class="op">=</span> <span class="fl">30</span>,</span>
-<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"leiden"</span>, <span class="st">"louvain"</span>, <span class="st">"mclust"</span>, <span class="st">"kmeans"</span><span class="op">)</span>,</span>
-<span>  k.neighbors <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  resolution <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  leiden.iter <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,</span>
-<span>  mclust.G <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  kmeans.centers <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  kmeans.iter.max <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  seed <span class="op">=</span> <span class="fl">42</span>,</span>
-<span>  <span class="va">...</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">ClusterBanksy</span><span class="op">(</span>
+  <span class="va">bank</span>,
+  lambda <span class="op">=</span> <span class="fl">0.25</span>,
+  pca <span class="op">=</span> <span class="cn">TRUE</span>,
+  npcs <span class="op">=</span> <span class="fl">30</span>,
+  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"leiden"</span>, <span class="st">"louvain"</span>, <span class="st">"mclust"</span>, <span class="st">"kmeans"</span><span class="op">)</span>,
+  k.neighbors <span class="op">=</span> <span class="cn">NULL</span>,
+  resolution <span class="op">=</span> <span class="cn">NULL</span>,
+  leiden.iter <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,
+  mclust.G <span class="op">=</span> <span class="cn">NULL</span>,
+  kmeans.centers <span class="op">=</span> <span class="cn">NULL</span>,
+  kmeans.iter.max <span class="op">=</span> <span class="fl">10</span>,
+  seed <span class="op">=</span> <span class="fl">42</span>,
+  <span class="va">...</span>
+<span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>bank</dt>
 <dd><p>BanksyObject</p></dd>
-
-
 <dt>lambda</dt>
 <dd><p>weighting parameter</p></dd>
-
-
 <dt>pca</dt>
 <dd><p>if TRUE, runs clustering on PCA, else runs on Banksy matrix</p></dd>
-
-
 <dt>npcs</dt>
 <dd><p>number of pcs to use for clustering</p></dd>
-
-
 <dt>method</dt>
 <dd><p>one of leiden, louvain, mclust, kmeans</p></dd>
-
-
 <dt>k.neighbors</dt>
 <dd><p>leiden / louvain - parameter for constructing shared nearest neighbor network</p></dd>
-
-
 <dt>resolution</dt>
 <dd><p>leiden - parameter used for clustering</p></dd>
-
-
 <dt>leiden.iter</dt>
 <dd><p>leiden - number of leiden iterations</p></dd>
-
-
 <dt>mclust.G</dt>
 <dd><p>mclust - number of mixture components G</p></dd>
-
-
 <dt>kmeans.centers</dt>
 <dd><p>kmeans - number of clusters</p></dd>
-
-
 <dt>kmeans.iter.max</dt>
 <dd><p>kmeans - max number of iterations</p></dd>
-
-
 <dt>seed</dt>
 <dd><p>seed</p></dd>
-
-
 <dt>...</dt>
 <dd><p>to pass to methods</p></dd>
-
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>BanksyObject with cluster labels in meta.data</p>
+    <p>BanksyObject with cluster labels in meta.data</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Generate a simulated dataset</span></span></span>
-<span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateDataset.html">simulateDataset</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">gcm</span>, cell.locs <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">locs</span>, meta.data <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">meta</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="NormalizeBanksy.html">NormalizeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ComputeBanksy.html">ComputeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Generate a simulated dataset</span></span>
+<span class="r-in"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateDataset.html">simulateDataset</a></span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">gcm</span>, cell.locs <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">locs</span>, meta.data <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">meta</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="NormalizeBanksy.html">NormalizeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ComputeBanksy.html">ComputeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing neighbors...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing neighbor matrix...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
-<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ScaleBanksy.html">ScaleBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunPCA.html">RunPCA</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span></span>
+<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ScaleBanksy.html">ScaleBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunPCA.html">RunPCA</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running PCA for lambda=0.3</span>
-<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu">ClusterBanksy</span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.3</span>, npcs <span class="op">=</span> <span class="fl">20</span>, k.neighbors <span class="op">=</span> <span class="fl">50</span>, resolution <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
+<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu">ClusterBanksy</span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.3</span>, npcs <span class="op">=</span> <span class="fl">20</span>, k.neighbors <span class="op">=</span> <span class="fl">50</span>, resolution <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Iteration 1 out of 1</span>
-<span class="r-in"><span></span></span>
+<span class="r-in"></span>
 </code></pre></div>
     </div>
   </div>
@@ -189,7 +162,8 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer></div>

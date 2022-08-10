@@ -81,41 +81,34 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">SplitBanksy</span><span class="op">(</span><span class="va">bank</span>, <span class="va">by</span>, names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">SplitBanksy</span><span class="op">(</span><span class="va">bank</span>, <span class="va">by</span>, names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>bank</dt>
 <dd><p>BanksyObject</p></dd>
-
-
 <dt>by</dt>
 <dd><p>metadata column</p></dd>
-
-
 <dt>names</dt>
 <dd><p>names for new datasets</p></dd>
-
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>BanksyObject</p>
+    <p>BanksyObject</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Generate a simulated dataset</span></span></span>
-<span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateDataset.html">simulateDataset</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">gcm</span>, cell.locs <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">locs</span>, meta.data <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">meta</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Split BanksyObject into multiple datasets based on label</span></span></span>
-<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu">SplitBanksy</span><span class="op">(</span><span class="va">bank</span>, by <span class="op">=</span> <span class="st">'Label'</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Generate a simulated dataset</span></span>
+<span class="r-in"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateDataset.html">simulateDataset</a></span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">gcm</span>, cell.locs <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">locs</span>, meta.data <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">meta</span><span class="op">)</span></span>
+<span class="r-in"><span class="co"># Split BanksyObject into multiple datasets based on label</span></span>
+<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu">SplitBanksy</span><span class="op">(</span><span class="va">bank</span>, by <span class="op">=</span> <span class="st">'Label'</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Processing Label 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Processing Label 2</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Processing Label 3</span>
-<span class="r-in"><span><span class="va">bank</span></span></span>
+<span class="r-in"><span class="va">bank</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Object of class BanksyObject </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of assays: 3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Label_1: 184 cells 100 features</span>
@@ -127,7 +120,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> Label_3: sdimx sdimy</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Metadata names: cell_ID Label </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Dimension reductions: </span>
-<span class="r-in"><span></span></span>
+<span class="r-in"></span>
 </code></pre></div>
     </div>
   </div>
@@ -142,7 +135,8 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer></div>

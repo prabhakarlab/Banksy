@@ -81,83 +81,64 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plotSpatialFeatures</span><span class="op">(</span></span>
-<span>  <span class="va">bank</span>,</span>
-<span>  <span class="va">by</span>,</span>
-<span>  <span class="va">type</span>,</span>
-<span>  dataset <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  nrow <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  ncol <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  return.plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  col.discrete <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  <span class="va">...</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">plotSpatialFeatures</span><span class="op">(</span>
+  <span class="va">bank</span>,
+  <span class="va">by</span>,
+  <span class="va">type</span>,
+  dataset <span class="op">=</span> <span class="cn">NULL</span>,
+  nrow <span class="op">=</span> <span class="cn">NULL</span>,
+  ncol <span class="op">=</span> <span class="cn">NULL</span>,
+  return.plot <span class="op">=</span> <span class="cn">FALSE</span>,
+  col.discrete <span class="op">=</span> <span class="cn">NULL</span>,
+  <span class="va">...</span>
+<span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>bank</dt>
 <dd><p>BanksyObject</p></dd>
-
-
 <dt>by</dt>
 <dd><p>features to plot</p></dd>
-
-
 <dt>type</dt>
 <dd><p>type corresponding to features</p></dd>
-
-
 <dt>dataset</dt>
 <dd><p>if multiple datasets are used</p></dd>
-
-
 <dt>nrow</dt>
 <dd><p>nrow for grob</p></dd>
-
-
 <dt>ncol</dt>
 <dd><p>ncol for grob</p></dd>
-
-
 <dt>return.plot</dt>
 <dd><p>return plots</p></dd>
-
-
 <dt>col.discrete</dt>
 <dd><p>for discrete labels - colors for groupings</p></dd>
-
-
 <dt>...</dt>
 <dd><p>other parameters to pass to plotSpatial</p></dd>
-
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>Spatial plots</p>
+    <p>Spatial plots</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Generate a simulated dataset</span></span></span>
-<span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateDataset.html">simulateDataset</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">gcm</span>, cell.locs <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">locs</span>, meta.data <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">meta</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="NormalizeBanksy.html">NormalizeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ScaleBanksy.html">ScaleBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ComputeBanksy.html">ComputeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Generate a simulated dataset</span></span>
+<span class="r-in"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateDataset.html">simulateDataset</a></span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">gcm</span>, cell.locs <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">locs</span>, meta.data <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">meta</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="NormalizeBanksy.html">NormalizeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ScaleBanksy.html">ScaleBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
+<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ComputeBanksy.html">ComputeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing neighbors...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing neighbor matrix...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
-<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunPCA.html">RunPCA</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></span>
+<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunPCA.html">RunPCA</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running PCA for lambda=0.2</span>
-<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ClusterBanksy.html">ClusterBanksy</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.2</span>, npcs <span class="op">=</span> <span class="fl">20</span>, k.neighbors <span class="op">=</span> <span class="fl">50</span>, resolution <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span></span>
+<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ClusterBanksy.html">ClusterBanksy</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.2</span>, npcs <span class="op">=</span> <span class="fl">20</span>, k.neighbors <span class="op">=</span> <span class="fl">50</span>, resolution <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Iteration 1 out of 1</span>
-<span class="r-in"><span><span class="fu">plotSpatialFeatures</span><span class="op">(</span><span class="va">bank</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Label'</span>, <span class="fu"><a href="BanksyObject-class.html">clust.names</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">)</span>, </span></span>
-<span class="r-in"><span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">'discrete'</span>, <span class="fl">2</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">1</span>, ncol <span class="op">=</span> <span class="fl">2</span>, pt.size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span class="fu">plotSpatialFeatures</span><span class="op">(</span><span class="va">bank</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Label'</span>, <span class="fu"><a href="BanksyObject-class.html">clust.names</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">)</span>, </span>
+<span class="r-in">  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">'discrete'</span>, <span class="fl">2</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">1</span>, ncol <span class="op">=</span> <span class="fl">2</span>, pt.size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span class="r-plt img"><img src="plotSpatialFeatures-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
+<span class="r-in"></span>
 </code></pre></div>
     </div>
   </div>
@@ -172,7 +153,8 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer></div>
