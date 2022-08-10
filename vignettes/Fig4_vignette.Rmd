@@ -40,22 +40,7 @@ expr <- hippocampus$expression
 locs <- hippocampus$locations
 ```
 
-```{r, echo=FALSE}
-library(Banksy)
-library(ggplot2)
-library(gridExtra)
-library(scales)
-library(ComplexHeatmap)
-library(data.table)
-library(irlba)
-library(Matrix)
-# load data
-data(hippocampus)
-expr <- hippocampus$expression
-locs <- hippocampus$locations
-``` 
-
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval=TRUE, include=FALSE}
 library(Banksy)
 library(ggplot2)
 library(gridExtra)
@@ -160,21 +145,8 @@ cnms <- clust.names(bank)
 num_clusters<-max(bank@meta.data[,cnms])
 hippo.cols<-Banksy:::getPalette(num_clusters)
 names(hippo.cols)<-1:num_clusters
-cluster.colors = c('14' = 'coral3', 
-                   '13' = '#8C7E6C', 
-                   '3' = 'goldenrod1', 
-                   '11' = 'chocolate4', 
-                   '15' = 'darkorange',
-                   '12' = '#ED1B89',
-                   '7' = '#8E55A2', 
-                   '10' = '#008856', 
-                   '16' = 'aquamarine', 
-                   '6' = 'cornflowerblue', 
-                   '17' = '#8DB73F', 
-                   '8' = '#243E90', 
-                   '2' = 'darkolivegreen4')
-cluster.colors.names <- names(cluster.colors)
-cluster.colors <- gplots::col2hex(cluster.colors)
+cluster.colors.names <- c(14,13,3,11,15,12,7,10,16,6,17,8,2)
+cluster.colors <- c("#CD5B45", "#8C7E6C", "#FFC125", "#8B4513", "#FF8C00", "#ED1B89", "#8E55A2", "#008856", "#7FFFD4", "#6495ED", "#8DB73F", "#243E90", "#6E8B3D")
 names(cluster.colors) <- cluster.colors.names
 hippo.cols[cluster.colors.names] <- cluster.colors
 
@@ -188,14 +160,14 @@ hippo.cols[cluster.colors.names] <- cluster.colors
 # [6] "clust_spicemix"              # SPICEMIX (HMRF)
 ```
 
-Write out the plot:
+Visualize the spatial plot:
 
 ```{r, echo=TRUE, fig.cap="VeraFISH clustering", fig.height=7, fig.width=8}
 clustering_name <- cnms[2] # change this
 plotSpatial(bank, 
             by = clustering_name, 
             col.discrete = hippo.cols,
-            pt.size = 1, 
+            pt.size = 0.1, 
             type = 'discrete') + facet_wrap(~feature, ncol = 4)
 ```
 
@@ -257,7 +229,7 @@ multiple.annots<-c(nonspatial = nonspatial.annot,
 
 ```
 
-```{r, fig.height=20, fig.width=16, eval=FALSE}
+```{r, fig.height=20, fig.width=16, eval=TRUE}
 plotHeatmap(bank,features = rownames(bank@own.expr),
             assay = 'banksy', 
             lambda = 0.25,
@@ -321,7 +293,7 @@ bank.subset.all.mk@nbr.expr <- bank.subset.all.mk@nbr.expr[hc_gene.all.mk$order,
 ```
 
 
-```{r, echo=TRUE, fig.height=20, fig.width=16, eval=FALSE}
+```{r, echo=TRUE, fig.height=20, fig.width=16, eval=TRUE}
 plotHeatmap(bank.subset.all.mk, 
                         features = all.mk,
                         assay = 'banksy', 
@@ -341,16 +313,14 @@ plotHeatmap(bank.subset.all.mk,
 
 Plot the gene expression spatial maps
 
-```{r, echo=TRUE, fig.height=40, fig.width=16, eval=FALSE}
+```{r, echo=TRUE, fig.height=40, fig.width=16, eval=TRUE}
 plotSpatialFeatures(bank, by = all.mk, main = all.mk, main.size = 20,
                     col.highpoint=apply(bank@own.expr[all.mk,], 1, quantile, probs = 0.995),
                     col.lowpoint=apply(bank@own.expr[all.mk,], 1, quantile, probs = 0),
                     col.midpoint=apply(bank@own.expr[all.mk,], 1, quantile, probs = 0.5),
                     type = rep('continuous', length(all.mk)), 
-                    nrow = 13, ncol = 5, pt.size = 0.1, legend.text.size = 12)
+                    ncol = 5, pt.size = 0.1, legend.text.size = 12)
 
 ```
-
-
 
 Note: vera_plot_0728_r1.5_L0.2_seed42_may27.R

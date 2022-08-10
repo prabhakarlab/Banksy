@@ -25,12 +25,7 @@ In this vignette, we explore how variation in the size of the spatial neighbourh
 library(Banksy)
 library(ggplot2)
 library(gridExtra)
-library(scales)
-library(ComplexHeatmap)
 library(data.table)
-library(irlba)
-library(MERINGUE)
-library(Matrix)
 
 # load data
 data(hippocampus)
@@ -40,7 +35,6 @@ locs <- hippocampus$locations
 k_geom_list = rep(c(5, 10, 20, 50, 100)) # number of cells in spatial neighbourhood
 num_nbd = 5 # set to an integer between 1 and 5 to select which elements of k_geom_list to try. 
 # For eg., with num_nbd = 2, we try k_geom = 5 and 10. 
-
 ```
 
 
@@ -125,10 +119,10 @@ do.call("grid.arrange", c(spatdims, ncol = 2))
 
 
 ```
+
 Alluvial plot showing the relationship between the clusterings. 
 ```{r, fig.height=7, fig.width=15}
 plotAlluvia(bank_kNN_r)
-
 ```
 
 
@@ -152,8 +146,6 @@ for (i in 1:length(cnms)){
   
 }
 do.call("grid.arrange", c(spatdims, ncol = 2))
-
-
 ```
 
 Alluvial plot showing the relationship between the clusterings. 
@@ -195,7 +187,6 @@ plotAlluvia(bank_kNN_r2)
 # 
 # print(alluvia)
 ```
-## 
 
 ## Session information
 
