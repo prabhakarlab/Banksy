@@ -49,7 +49,7 @@ jobs:
           
       - name: Install igraphr
         run: |
-          install.packages("igraph")
+          install.packages("igraph", type='binary')
         shell: Rscript {0}        
           
       - uses: r-lib/actions/setup-r-dependencies@v1

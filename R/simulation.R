@@ -162,7 +162,7 @@ binerize <- function(gcm, loc, mdist = NULL, normalize=TRUE) {
     dloc$id <- seq_len(nrow(dloc))
     setkey(dloc, grp.x, grp.y)
     
-    i <- .GRP <- NULL
+    i <- .GRP <- id <- NULL
     dloc[, i := .GRP, by = key(dloc)]
     dloc$grid_x <- as.numeric(gsub('\\(|,.*', '', dloc$grp.x))
     dloc$grid_y <- as.numeric(gsub('\\(|,.*', '', dloc$grp.y))
