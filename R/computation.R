@@ -155,7 +155,7 @@ ComputeBanksy <- function(bank,
                              kspatial = kspatial,
                              dimensions = dimensions,
                              spatialMode = spatialMode,
-                             k_geom = k_geom,
+                             k_geom = k_geom, n = n, 
                              verbose = verbose)},
       bank@own.expr, locs)
     bank@nbr.expr <- nbr
@@ -170,7 +170,7 @@ ComputeBanksy <- function(bank,
                                   kspatial=kspatial,
                                   dimensions = dimensions,
                                   spatialMode = spatialMode ,
-                                  k_geom = k_geom,
+                                  k_geom = k_geom, n = n,
                                   verbose = verbose)
     bank@nbr.expr <- nbr
   }
