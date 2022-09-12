@@ -4,14 +4,14 @@
 \alias{RunPCA}
 \title{Run PCA}
 \usage{
-RunPCA(bank, lambda, npcs = 20)
+RunPCA(bank, lambda, npcs = 30)
 }
 \arguments{
 \item{bank}{BanksyObject}
 
-\item{lambda}{numeric vector - weighting parameter}
+\item{lambda}{(numeric vector) spatial weighting parameter}
 
-\item{npcs}{number of principal components to compute}
+\item{npcs}{(numeric) number of principal components to compute}
 }
 \value{
 BanksyObject with PCA

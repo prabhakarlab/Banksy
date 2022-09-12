@@ -8,6 +8,8 @@
 \alias{own.expr,BanksyObject-method}
 \alias{nbr.expr}
 \alias{nbr.expr,BanksyObject-method}
+\alias{harmonics}
+\alias{harmonics,BanksyObject-method}
 \alias{custom.expr}
 \alias{custom.expr,BanksyObject-method}
 \alias{cell.locs}
@@ -22,6 +24,8 @@
 \alias{own.expr<-,BanksyObject,assay-method}
 \alias{nbr.expr<-}
 \alias{nbr.expr<-,BanksyObject,assay-method}
+\alias{harmonics<-}
+\alias{harmonics<-,BanksyObject,assay-method}
 \alias{custom.expr<-}
 \alias{custom.expr<-,BanksyObject,assay-method}
 \alias{cell.locs<-}
@@ -37,6 +41,7 @@
 BanksyObject(
   own.expr = NULL,
   nbr.expr = NULL,
+  harmonics = NULL,
   custom.expr = NULL,
   cell.locs = NULL,
   meta.data = NULL,
@@ -52,6 +57,10 @@ own.expr(object)
 nbr.expr(object)
 
 \S4method{nbr.expr}{BanksyObject}(object)
+
+harmonics(object)
+
+\S4method{harmonics}{BanksyObject}(object)
 
 custom.expr(object)
 
@@ -81,6 +90,10 @@ nbr.expr(object) <- value
 
 \S4method{nbr.expr}{BanksyObject,assay}(object) <- value
 
+harmonics(object) <- value
+
+\S4method{harmonics}{BanksyObject,assay}(object) <- value
+
 custom.expr(object) <- value
 
 \S4method{custom.expr}{BanksyObject,assay}(object) <- value
@@ -105,6 +118,8 @@ reduction(object) <- value
 \item{own.expr}{own expression}
 
 \item{nbr.expr}{neighbour expression}
+
+\item{harmonics}{azimuthal fourier harmonics}
 
 \item{custom.expr}{custom expression}
 
@@ -143,6 +158,10 @@ S4 class BanksyObject
 
 \item \code{nbr.expr,BanksyObject-method}: getter nbr.expr
 
+\item \code{harmonics}: getter harmonics
+
+\item \code{harmonics,BanksyObject-method}: getter harmonics
+
 \item \code{custom.expr}: getter custom.expr
 
 \item \code{custom.expr,BanksyObject-method}: getter custom.expr
@@ -170,6 +189,10 @@ S4 class BanksyObject
 \item \code{nbr.expr<-}: setter for nbr.expr
 
 \item \code{nbr.expr<-,BanksyObject,assay-method}: setter for nbr.expr
+
+\item \code{harmonics<-}: setter for harmonics
+
+\item \code{harmonics<-,BanksyObject,assay-method}: setter for harmonics
 
 \item \code{custom.expr<-}: setter for custom.expr
 
@@ -199,6 +222,8 @@ S4 class BanksyObject
 
 \item{\code{nbr.expr}}{neighbour expression}
 
+\item{\code{harmonics}}{azimuthal fourier harmonics}
+
 \item{\code{custom.expr}}{custom expression}
 
 \item{\code{cell.locs}}{cell locations}
@@ -221,6 +246,9 @@ mat <- own.expr(bank)
 d <- simulateDataset()
 bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
 mat <- own.expr(bank)
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+lst <- harmonics(bank)
 d <- simulateDataset()
 bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
 mat <- nbr.expr(bank)

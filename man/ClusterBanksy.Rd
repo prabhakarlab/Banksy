@@ -6,12 +6,12 @@
 \usage{
 ClusterBanksy(
   bank,
-  lambda = 0.25,
+  lambda,
   pca = TRUE,
   npcs = 30,
   method = c("leiden", "louvain", "mclust", "kmeans"),
-  k.neighbors = NULL,
-  resolution = NULL,
+  k.neighbors = 50,
+  resolution = 1,
   leiden.iter = -1,
   mclust.G = NULL,
   kmeans.centers = NULL,
@@ -23,25 +23,25 @@ ClusterBanksy(
 \arguments{
 \item{bank}{BanksyObject}
 
-\item{lambda}{weighting parameter}
+\item{lambda}{(numeric) weighting parameter}
 
-\item{pca}{if TRUE, runs clustering on PCA, else runs on Banksy matrix}
+\item{pca}{(logical) runs clustering on PCs (TRUE) or BANKSY matrix (FALSE)}
 
-\item{npcs}{number of pcs to use for clustering}
+\item{npcs}{(numeric) number of pcs to use for clustering}
 
-\item{method}{one of leiden, louvain, mclust, kmeans}
+\item{method}{(character) one of leiden, louvain, mclust, kmeans}
 
-\item{k.neighbors}{leiden / louvain - parameter for constructing shared nearest neighbor network}
+\item{k.neighbors}{(numeric) parameter for constructing sNN (for louvain / leiden)}
 
-\item{resolution}{leiden - parameter used for clustering}
+\item{resolution}{(numeric) parameter used for clustering (leiden)}
 
-\item{leiden.iter}{leiden - number of leiden iterations}
+\item{leiden.iter}{(numeric) number of leiden iterations (leiden)}
 
-\item{mclust.G}{mclust - number of mixture components G}
+\item{mclust.G}{(numeric) number of mixture components (mclust)}
 
-\item{kmeans.centers}{kmeans - number of clusters}
+\item{kmeans.centers}{(numeric) number of clusters (kmeans)}
 
-\item{kmeans.iter.max}{kmeans - max number of iterations}
+\item{kmeans.iter.max}{(numeric) max number of iterations (kmeans)}
 
 \item{seed}{seed}
 

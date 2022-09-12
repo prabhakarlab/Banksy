@@ -4,13 +4,12 @@
 \alias{getBanksyMatrix}
 \title{Returns the Banksy matrix (own + nbr)}
 \usage{
-getBanksyMatrix(bank, lambda = 0.25)
+getBanksyMatrix(bank, lambda = 0.15)
 }
 \arguments{
 \item{bank}{Banksy Object}
 
-\item{lambda}{weighting parameter - larger values incorporate more spatial
-information}
+\item{lambda}{(numeric) spatial weighting parameter}
 }
 \value{
 BanksyMatrix

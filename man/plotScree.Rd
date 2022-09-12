@@ -9,7 +9,7 @@ plotScree(bank, lambda)
 \arguments{
 \item{bank}{BanksyObject}
 
-\item{lambda}{numeric}
+\item{lambda}{(numeric) spatial weighting parameter}
 }
 \value{
 Scree plot

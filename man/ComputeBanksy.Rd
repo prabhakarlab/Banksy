@@ -6,35 +6,48 @@
 \usage{
 ComputeBanksy(
   bank,
-  spatialMode = "kNN_r",
+  k = 1,
+  spatial_mode = "kNN_r",
   k_geom = 10,
   n = 2,
   sigma = 1.5,
   alpha = 0.05,
-  kspatial = 10,
+  k_spatial = 100,
   dimensions = "all",
-  verbose = FALSE
+  verbose = TRUE
 )
 }
 \arguments{
 \item{bank}{BanksyObject}
 
-\item{spatialMode}{spatial mode to use - one of kNN_r, kNN_rn, kNN_rank,
-kNN_unif, rNN_gauss}
+\item{k}{(numeric vector) compute up to the k-th azimuthal fourier harmonic (default: 1)}
 
-\item{k_geom}{kNN parameter - number of neighbors to use}
+\item{spatial_mode}{(character) 
+\itemize{
+ \item{kNN_r: k-nearest neighbors with $1/r$ kernel (default)}
+ \item{kNN_rn: k-nearest neighbors with $1/r^n$ kernel}
+ \item{kNN_rank: k-nearest neighbors with rank Gaussian kernel}
+ \item{kNN_unif: k-nearest neighbors wth uniform kernel}
+ \item{kNN_median: k-nearest neighbors with median-scaled Gaussian kernel}
+ \item{rNN_gauss: radial nearest neighbors with Gaussian kernel}
+}}
 
-\item{n}{kNN_rn parameter - exponent of radius}
+\item{k_geom}{(numeric) number of neighbors to use (for kNN)}
 
-\item{sigma}{rNN parameter - standard deviation of Gaussian kernel}
+\item{n}{(numeric) exponent of radius (for kNN_rn)}
 
-\item{alpha}{rNN parameter - determines radius used (larger alphas give
-smaller radii)}
+\item{sigma}{(numeric) std. dev. of Gaussian kernel (for rNN_gauss)}
 
-\item{kspatial}{rNN parameter - number of neighbors to use}
+\item{alpha}{(numeric) determines radius used: larger alphas give
+smaller radii (for rNN_gauss)}
 
-\item{dimensions}{dimensions to use when computing neighborhood - one of
-column name in cell.locs, or 'all'}
+\item{k_spatial}{(numeric) initial number of neighbors to use (for rNN_gauss)}
+
+\item{dimensions}{(character vector) dimensions to use when computing neighborhood
+\itemize{
+ \item{subset of colnames of cell.locs}
+ \item{all}{Uses all colnames of cell.locs to compute (default)}
+}}
 
 \item{verbose}{messages}
 }

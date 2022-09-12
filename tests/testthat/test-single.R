@@ -10,7 +10,6 @@ data <- Banksy::simulateDataset()
 gcm <- data$gcm
 locs <- data$locs
 mdata <- data$meta
-mdata$total_count <- colSums(gcm)
 
 ## Construction
 
@@ -52,14 +51,14 @@ test_that('Head', {
 
 # Normalization own
 
-bank <- NormalizeBanksy(bank, normFactor = 100)
+bank <- NormalizeBanksy(bank, norm_factor = 100)
 
 test_that('Normalization for own', {
     
     expect_error(NormalizeBanksy(bank, assay = 'hello'))
     
     expect_equal(as.numeric(round(colSums(bank@own.expr))), rep(100,501))
-    expect_equal(class(NormalizeBanksy(bank, logNorm = TRUE)@own.expr), 
+    expect_equal(class(NormalizeBanksy(bank, log_norm = TRUE)@own.expr), 
                  c('matrix', 'array'))
     
     bankOwn <- NormalizeBanksy(bank, assay = 'own')
@@ -73,13 +72,11 @@ bank <- ComputeBanksy(bank, verbose = TRUE)
 test_that('Compute neighbors', {
     
     expect_equal(dim(bank@nbr.expr), c(100, 501))
-    bank <- ComputeBanksy(bank, spatialMode = 'kNN_rank', verbose = TRUE)
+    bank <- ComputeBanksy(bank, spatial_mode = 'kNN_rank', verbose = TRUE)
     expect_equal(dim(bank@nbr.expr), c(100, 501))
-    bank <- ComputeBanksy(bank, spatialMode = 'kNN_unif', verbose = TRUE)
+    bank <- ComputeBanksy(bank, spatial_mode = 'kNN_unif', verbose = TRUE)
     expect_equal(dim(bank@nbr.expr), c(100, 501))
-    bank <- ComputeBanksy(bank, spatialMode = 'rNN_gauss', verbose = TRUE)
-    expect_equal(dim(bank@nbr.expr), c(100, 501))
-    bank <- ComputeBanksy(bank, spatialMode = 'kNN_rn', verbose = TRUE)
+    bank <- ComputeBanksy(bank, spatial_mode = 'kNN_rn', verbose = TRUE)
     expect_equal(dim(bank@nbr.expr), c(100, 501))
 })
 
@@ -257,7 +254,7 @@ test_that('Plot reduction', {
                                      type = 'discrete')), 
                  c('gg', 'ggplot'))
     expect_equal(class(plotReduction(bank, reduction = 'pca_0.25',
-                                     by = 'total_count', type = 'continuous')), 
+                                     by = 'NODG', type = 'continuous')), 
                  c('gg', 'ggplot'))
     
     expect_equal(class(plotReduction(bank, reduction = 'umap_0.25')), 
@@ -276,8 +273,8 @@ test_that('Plot spatial', {
                  c('gg', 'ggplot'))
     
     
-    palette <- seq_len(3)
-    names(palette) <- seq_len(3)
+    palette <- seq_len(20)
+    names(palette) <- seq_len(20)
     expect_equal(class(plotSpatial(bank, by = cnm, 
                                    type = 'discrete', col.discrete = palette)), 
                  c('gg', 'ggplot'))
@@ -305,7 +302,7 @@ test_that('Plot spatial', {
                                    type = 'discrete', col.discrete = palette)), 
                  c('gg', 'ggplot'))
     
-    expect_equal(class(plotSpatial(bank, by = 'total_count', 
+    expect_equal(class(plotSpatial(bank, by = 'NODG', 
                                    type = 'continuous')), 
                  c('gg', 'ggplot'))
     expect_equal(class(plotSpatial(bank, by = cnm, 
@@ -368,7 +365,7 @@ test_that('Plot heatmap', {
     expect_s4_class(plotHeatmap(bank,
                                 annotate = TRUE,
                                 annotate.by = c('Label', clust.names(bank)),
-                                barplot.by = 'total_count'), 'HeatmapList')
+                                barplot.by = 'NODG'), 'HeatmapList')
 })
 
 test_that('Plot ARI', {
@@ -383,7 +380,7 @@ test_that('Plot alluvia', {
     
     
     expect_equal(class(plotAlluvia(bank, max.cells = NULL)), c('gg', 'ggplot'))
-    expect_equal(class(plotAlluvia(bank, max.cells = 100, flow.colors = 1:8)), 
+    expect_equal(class(plotAlluvia(bank, max.cells = 100, flow.colors = 1:9)), 
                  c('gg', 'ggplot'))
     expect_equal(class(plotAlluvia(bank)), c('gg', 'ggplot'))
 })

@@ -9,7 +9,7 @@ getARI(bank, digits = 3)
 \arguments{
 \item{bank}{BanksyObject with harmonized clusters}
 
-\item{digits}{number of digits to round ARI to}
+\item{digits}{(numeric) number of digits to round ARI to}
 }
 \value{
 matrix of ARI

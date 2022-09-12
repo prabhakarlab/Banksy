@@ -3,8 +3,8 @@
 #' Run PCA
 #'
 #' @param bank BanksyObject
-#' @param lambda numeric vector - weighting parameter
-#' @param npcs number of principal components to compute
+#' @param lambda (numeric vector) spatial weighting parameter
+#' @param npcs (numeric) number of principal components to compute
 #'
 #' @importFrom irlba prcomp_irlba
 #'
@@ -21,7 +21,7 @@
 #' bank <- ComputeBanksy(bank)
 #' bank <- RunPCA(bank, lambda = 0.2)
 #' 
-RunPCA <- function(bank, lambda, npcs = 20) {
+RunPCA <- function(bank, lambda, npcs = 30) {
 
   for (lam in lambda) {
 
@@ -43,7 +43,7 @@ RunPCA <- function(bank, lambda, npcs = 20) {
 #' Plots scree plot for PCA
 #'
 #' @param bank BanksyObject
-#' @param lambda numeric
+#' @param lambda (numeric) spatial weighting parameter
 #'
 #' @importFrom ggplot2 ggplot aes geom_point theme element_blank element_line
 #'
@@ -79,14 +79,14 @@ plotScree <- function(bank, lambda) {
 #' Run UMAP
 #'
 #' @param bank BanksyObject
-#' @param lambda numeric vector - weighting parameter
-#' @param ncomponents number of umap components to compute
-#' @param pca if TRUE, run UMAP on pca, if not runs on Banksy matrix
-#' @param npcs number of principal components to use for umap
-#' @param nneighbors number of neighbors to use for umap
-#' @param spread effective scale of embedded points
-#' @param mindist effective min. dist. between embedded points
-#' @param nepochs number of epochs to run umap optimization
+#' @param lambda (numeric vector) spatial weighting parameter
+#' @param ncomponents (numeric) number of umap components to compute
+#' @param pca (logical) run UMAP on PCs (TRUE) or BANKSY matrix (FALSE)
+#' @param npcs (numeric) number of principal components to use for umap
+#' @param nneighbors (numeric) number of neighbors to use for umap
+#' @param spread (numeric) effective scale of embedded points
+#' @param mindist (numeric) effective min. dist. between embedded points
+#' @param nepochs (numeric) number of epochs to run umap optimization
 #' @param ... parameters to pass to uwot::umap
 #'
 #' @importFrom uwot umap
@@ -105,7 +105,7 @@ plotScree <- function(bank, lambda) {
 #' bank <- RunUMAP(bank, lambda = 0.2)
 #' 
 RunUMAP <- function(bank, lambda, ncomponents = 2, pca = TRUE, npcs = 20,
-                    nneighbors = 30, spread = 3, mindist = 0.3, nepochs = 300,
+                    nneighbors = 30, spread = 3, mindist = 0.1, nepochs = 300,
                     ...) {
 
   for (lam in lambda) {

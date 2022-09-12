@@ -9,7 +9,7 @@ ConnectClusters(bank, map.to = NULL)
 \arguments{
 \item{bank}{Banksy Object}
 
-\item{map.to}{specify a cluster to map to}
+\item{map.to}{(character) specify a cluster to map to}
 }
 \value{
 BanksyObject with harmonized cluster labels

@@ -2,6 +2,7 @@
 #'
 #' @slot own.expr own expression
 #' @slot nbr.expr neighbour expression
+#' @slot harmonics azimuthal fourier harmonics
 #' @slot custom.expr custom expression
 #' @slot cell.locs cell locations
 #' @slot meta.data metadata
@@ -17,15 +18,17 @@ setClassUnion('assay', c('data.frame', 'matrix', 'list', 'NULL'))
 setClass('BanksyObject',
             slots = list(own.expr = 'assay',
                         nbr.expr = 'assay',
+                        harmonics = 'assay',
                         custom.expr = 'assay',
                         cell.locs = 'assay',
                         meta.data = 'data.frame',
-                        reduction = 'assay'
+                        reduction = 'list'
         ))
 
 ## Constructor -----------------------------------------------------------------
 #' @param own.expr own expression
 #' @param nbr.expr neighbour expression
+#' @param harmonics azimuthal fourier harmonics
 #' @param custom.expr custom expression
 #' @param cell.locs cell locations
 #' @param meta.data metadata
@@ -50,9 +53,10 @@ setClass('BanksyObject',
 #'     cell.locs = d$locs, 
 #'     meta.data = d$meta
 #'     )
-BanksyObject <- function(own.expr = NULL, nbr.expr = NULL, custom.expr = NULL,
-                        cell.locs = NULL, meta.data = NULL, reduction = NULL,
-                        genes.filter = 'intersect', min.cells.expressed = -1) {
+BanksyObject <- function(own.expr = NULL, nbr.expr = NULL, harmonics = NULL, 
+                         custom.expr = NULL, cell.locs = NULL, meta.data = NULL,
+                         reduction = NULL, genes.filter = 'intersect', 
+                         min.cells.expressed = -1) {
 
     dimnames <- paste0('sdim', c('x', 'y','z'))
     object <- new('BanksyObject')
@@ -95,8 +99,11 @@ BanksyObject <- function(own.expr = NULL, nbr.expr = NULL, custom.expr = NULL,
         # Metadata
         cells <- unlist(lapply(own.expr, colnames))
         ncells <- vapply(own.expr, ncol, FUN.VALUE = numeric(1))
+        nCount <- unlist(lapply(own.expr, colSums))
+        NODG <- unlist(lapply(own.expr, function(x) colSums(x > 0)))
         dnames <- rep(names(own.expr), ncells)
-        mdata <- data.frame(cell_ID = cells, dataset = dnames)
+        mdata <- data.frame(cell_ID = cells, dataset = dnames, nCount = nCount, NODG = NODG)
+        
     } else if (!is.null(own.expr)) {
         if (is.null(cell.locs)) stop('Provide cell location assay')
     
@@ -109,7 +116,9 @@ BanksyObject <- function(own.expr = NULL, nbr.expr = NULL, custom.expr = NULL,
         if (!identical(colnames(own.expr), rownames(cell.locs))) {
             stop('Ensure cell locations correspond to gene-cell matrix.')
         }
-        mdata <- data.frame(cell_ID = colnames(own.expr))
+        mdata <- data.frame(cell_ID = colnames(own.expr),
+                            nCount = colSums(own.expr),
+                            NODG = colSums(own.expr > 0))
 
     } else {
         return(object)
@@ -135,10 +144,11 @@ setValidity('BanksyObject', function(object) {
     check <- TRUE
     if (!is(object@own.expr, 'assay')) check <- FALSE
     if (!is(object@nbr.expr, 'assay')) check <- FALSE
+    if (!is(object@harmonics, 'assay')) check <- FALSE
     if (!is(object@custom.expr, 'assay')) check <- FALSE
     if (!is(object@cell.locs, 'assay')) check <- FALSE
     if (!is(object@meta.data, 'data.frame')) check <- FALSE
-    if (!is(object@reduction, 'assay')) check <- FALSE
+    if (!is(object@reduction, 'list')) check <- FALSE
     return(check)
 })
 
@@ -167,6 +177,17 @@ setGeneric('nbr.expr', function(object) standardGeneric('nbr.expr'))
 #' @describeIn BanksyObject-class getter nbr.expr
 setMethod('nbr.expr', signature(object = 'BanksyObject'),
             function(object) return(object@nbr.expr))
+
+#' @describeIn BanksyObject-class getter harmonics
+#' @exportMethod harmonics
+#' @examples 
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' lst <- harmonics(bank)
+setGeneric('harmonics', function(object) standardGeneric('harmonics'))
+#' @describeIn BanksyObject-class getter harmonics
+setMethod('harmonics', signature(object = 'BanksyObject'),
+          function(object) return(object@harmonics))
 
 #' @describeIn BanksyObject-class getter custom.expr
 #' @exportMethod custom.expr
@@ -254,6 +275,19 @@ setReplaceMethod('nbr.expr', signature(object = 'BanksyObject', value = 'assay')
                     validObject(object)
                     return(object)
                 })
+
+#' @importFrom methods validObject
+#' @describeIn BanksyObject-class setter for harmonics
+#' @exportMethod harmonics<-
+setGeneric('harmonics<-',
+           function(object, value) standardGeneric('harmonics<-'))
+#' @describeIn BanksyObject-class setter for harmonics
+setReplaceMethod('harmonics', signature(object = 'BanksyObject', value = 'assay'),
+                 function(object, value) {
+                     object@harmonics <- value
+                     validObject(object)
+                     return(object)
+                 })
 
 #' @importFrom methods validObject
 #' @describeIn BanksyObject-class setter for custom.expr
@@ -390,6 +424,7 @@ setMethod('head', signature(x = 'BanksyObject'),
                 rd <- min(nrow(x@own.expr), n)
                 cd <- min(ncol(x@own.expr), n)
                 print(x@own.expr[seq_len(rd),seq_len(cd),drop=FALSE])
+                
                 cat('\nneighbour expression:\n')
                 rd <- min(nrow(x@nbr.expr), n)
                 cd <- min(ncol(x@nbr.expr), n)

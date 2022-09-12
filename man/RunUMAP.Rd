@@ -12,7 +12,7 @@ RunUMAP(
   npcs = 20,
   nneighbors = 30,
   spread = 3,
-  mindist = 0.3,
+  mindist = 0.1,
   nepochs = 300,
   ...
 )
@@ -20,21 +20,21 @@ RunUMAP(
 \arguments{
 \item{bank}{BanksyObject}
 
-\item{lambda}{numeric vector - weighting parameter}
+\item{lambda}{(numeric vector) spatial weighting parameter}
 
-\item{ncomponents}{number of umap components to compute}
+\item{ncomponents}{(numeric) number of umap components to compute}
 
-\item{pca}{if TRUE, run UMAP on pca, if not runs on Banksy matrix}
+\item{pca}{(logical) run UMAP on PCs (TRUE) or BANKSY matrix (FALSE)}
 
-\item{npcs}{number of principal components to use for umap}
+\item{npcs}{(numeric) number of principal components to use for umap}
 
-\item{nneighbors}{number of neighbors to use for umap}
+\item{nneighbors}{(numeric) number of neighbors to use for umap}
 
-\item{spread}{effective scale of embedded points}
+\item{spread}{(numeric) effective scale of embedded points}
 
-\item{mindist}{effective min. dist. between embedded points}
+\item{mindist}{(numeric) effective min. dist. between embedded points}
 
-\item{nepochs}{number of epochs to run umap optimization}
+\item{nepochs}{(numeric) number of epochs to run umap optimization}
 
 \item{...}{parameters to pass to uwot::umap}
 }

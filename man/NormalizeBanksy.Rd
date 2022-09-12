@@ -7,21 +7,29 @@
 NormalizeBanksy(
   bank,
   assay = "both",
-  normFactor = 100,
-  logNorm = FALSE,
-  pseudocount = 0.1
+  norm_factor = 100,
+  log_norm = FALSE,
+  pseudocount = 0.1,
+  base = 10
 )
 }
 \arguments{
 \item{bank}{BanksyObject}
 
-\item{assay}{assay to scale - one of both, own, nbr (default: both)}
+\item{assay}{(character) assay to scale
+\itemize{
+ \item{own: Scales own.expr}
+ \item{nbr: Scales nbr.expr}
+ \item{both: Scales own.expr and nbr.expr (default)}
+}}
 
-\item{normFactor}{normalization factor}
+\item{norm_factor}{(numeric) normalization factor (default: 100)}
 
-\item{logNorm}{if TRUE, log transforms data}
+\item{log_norm}{(logical) log transforms data (default: FALSE)}
 
-\item{pseudocount}{for log normalization}
+\item{pseudocount}{(numeric) pseudocount for log transform (default: 0.1)}
+
+\item{base}{(numeric) base for log transform (default: 10)}
 }
 \value{
 normalized Banksy object

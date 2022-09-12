@@ -4,16 +4,16 @@
 #' Cluster based on joint expression matrix
 #'
 #' @param bank BanksyObject
-#' @param lambda weighting parameter
-#' @param pca if TRUE, runs clustering on PCA, else runs on Banksy matrix
-#' @param npcs number of pcs to use for clustering
-#' @param method one of leiden, louvain, mclust, kmeans
-#' @param k.neighbors leiden / louvain - parameter for constructing shared nearest neighbor network
-#' @param resolution leiden - parameter used for clustering
-#' @param leiden.iter leiden - number of leiden iterations
-#' @param mclust.G mclust - number of mixture components G
-#' @param kmeans.centers kmeans - number of clusters
-#' @param kmeans.iter.max kmeans - max number of iterations
+#' @param lambda (numeric) weighting parameter
+#' @param pca (logical) runs clustering on PCs (TRUE) or BANKSY matrix (FALSE)
+#' @param npcs (numeric) number of pcs to use for clustering
+#' @param method (character) one of leiden, louvain, mclust, kmeans
+#' @param k.neighbors (numeric) parameter for constructing sNN (for louvain / leiden)
+#' @param resolution (numeric) parameter used for clustering (leiden)
+#' @param leiden.iter (numeric) number of leiden iterations (leiden)
+#' @param mclust.G (numeric) number of mixture components (mclust)
+#' @param kmeans.centers (numeric) number of clusters (kmeans)
+#' @param kmeans.iter.max (numeric) max number of iterations (kmeans)
 #' @param seed seed
 #' @param ... to pass to methods
 #'
@@ -31,15 +31,16 @@
 #' bank <- RunPCA(bank, lambda = 0.3)
 #' bank <- ClusterBanksy(bank, lambda = 0.3, npcs = 20, k.neighbors = 50, resolution = 0.5)
 #'
-ClusterBanksy <- function(bank, lambda = 0.25, pca = TRUE, npcs = 30,
+ClusterBanksy <- function(bank, lambda, pca = TRUE, npcs = 30,
                           method = c('leiden', 'louvain', 'mclust', 'kmeans'),
-                          k.neighbors = NULL, resolution = NULL,
+                          k.neighbors = 50, resolution = 1,
                           leiden.iter = -1, mclust.G = NULL,
                           kmeans.centers = NULL, kmeans.iter.max = 10,
                           seed = 42, ...) {
 
   method <- checkMethod(method)
-  checkArgs(bank, method, lambda, pca, npcs, match.call())
+  params <- c(as.list(environment(), list(...)))
+  checkArgs(bank, method, lambda, pca, npcs, params)
 
   if (method == 'kmeans') {
     bank <- runKmeans(bank, lambda, pca, npcs,
@@ -78,6 +79,7 @@ checkMethod <- function(method) {
 
 checkArgs <- function(bank, method, lambda, pca, npcs, call) {
 
+  call <- call[!sapply(call, is.null)]
   args <- names(call)
 
   if (pca) {
@@ -234,7 +236,7 @@ runLouvain <- function(bank, lambda, pca, npcs, k.neighbors) {
 #' Harmonize cluster labels among parameter runs
 #'
 #' @param bank Banksy Object
-#' @param map.to specify a cluster to map to
+#' @param map.to (character) specify a cluster to map to
 #'
 #' @return BanksyObject with harmonized cluster labels
 #'
@@ -322,7 +324,7 @@ mapToSeed <- function(val, seed) {
 #' Calculate adjusted rand index for harmonized clusters
 #'
 #' @param bank BanksyObject with harmonized clusters
-#' @param digits number of digits to round ARI to
+#' @param digits (numeric) number of digits to round ARI to
 #'
 #' @return matrix of ARI
 #'

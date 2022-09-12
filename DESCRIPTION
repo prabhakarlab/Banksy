@@ -1,6 +1,6 @@
 Package: Banksy
 Title: Spatial transcriptomic clustering
-Version: 0.1.3
+Version: 0.1.3-aft
 Authors@R: c(
     person(given = "Vipul",
            family = "Singhal",
