@@ -339,6 +339,7 @@ plotSpatialFeatures <- function(bank,
 #' @param assay assay to plot heatmap (one of own.expr, nbr.expr or banksy)
 #' @param dataset dataset to plot heatmap
 #' @param lambda lambda if assay == banksy
+#' @param K maximum azimuthal Fourier transform to plot
 #' @param cells specific cells to plot
 #' @param features specific features to plot
 #' @param col colours to use in heatmap
@@ -391,6 +392,7 @@ plotHeatmap <-
              assay = 'own.expr',
              dataset = NULL,
              lambda = NULL,
+             K = NULL,
              cells = NULL,
              features = NULL,
              
@@ -428,20 +430,19 @@ plotHeatmap <-
              seed = 42,
              name = 'Expression',
              ...) {
-        mat <- getAssay(bank, assay, dataset, lambda, cells, features)
+        
+        out <- getAssay(bank, assay, dataset, lambda, K, cells, features)
+        mat <- out$mat
+        row_chunks <- out$row_chunks
+        
         if (!is.null(max.cols))
             mat <- sampleMatrix(mat, max.cols, seed)
         col.fun <- getHeatmapPalette(mat, col, col.breaks)
         
         if (assay == 'banksy') {
-            suffix <- gsub('.*\\.', '', rownames(mat))
-            suffix <- names(table(suffix)[table(suffix) > 1])
-            group <- rep('own', nrow(mat))
-            for (suf in suffix)
-                group[grepl(sprintf('.%s$', suf), rownames(mat))] <- suf
-            group <- gsub('nbr', 'F0', group)
-            group <- gsub('k', 'F', group)
-            group <- factor(group, levels = unique(group))
+            ugroups <- c('own', paste0('F', seq(0, row_chunks-2)))
+            group <- rep(ugroups, each = nrow(mat) / length(ugroups))
+            group <- factor(group, levels = ugroups)
         } else {
             group <- NULL
         }
@@ -691,6 +692,7 @@ getAssay <-
              assay,
              dataset,
              lambda,
+             K,
              cells,
              features) {
         if (!is.na(pmatch(assay, c(
@@ -717,6 +719,11 @@ getAssay <-
             if (is.null(lambda))
                 stop('Lambda not specified.')
             
+            if (is.null(K)) {
+                warning('K not specified. Setting K=0')
+                K <- 0
+            }
+                
             if (is.list(bank@own.expr)) {
                 if (is.null(dataset)) {
                     message('Dataset not specified. Choosing first dataset.')
@@ -726,12 +733,11 @@ getAssay <-
                     stop('Dataset', dataset, ' not found.')
                 }
                 
-                dataset = 'd1'
-                lambda = 0.15
                 own <- bank@own.expr[[dataset]]
                 nbr <- bank@nbr.expr[[dataset]]
                 har <- bank@harmonics[[dataset]]
                 mat <- c(list(own, nbr), har)
+                mat <- mat[seq_len(min(K + 2, length(mat)))]
                 mat <-
                     Map(function(lam, mat)
                         mat * lam,
@@ -740,21 +746,25 @@ getAssay <-
                 mat <- do.call(rbind, mat)
                 
             } else {
-                mat <- getBanksyMatrix(bank, lambda)$expr
+                mat <- getBanksyMatrix(bank, lambda, K)$expr
             }
             
         } else {
             stop('Specify a valid assay.')
             
         }
-        if (is.null(features))
+        if (is.null(features)) {
             features <- rownames(mat)
+        } else {
+            features <- features[features %in% rownames(mat)]
+            pattern <- paste0(paste0(features, '[$|\\.]'), collapse = '|')
+            features <- c(features, rownames(mat)[grep(pattern, rownames(mat))])
+        }
         if (is.null(cells))
             cells <- colnames(mat)
-        features <- c(features, paste0(features, '.nbr'))
         mat <-
             mat[rownames(mat) %in% features, colnames(mat) %in% cells, drop = FALSE]
-        return(mat)
+        return(list(mat = mat, row_chunks = K + 2))
     }
 
 #' @importFrom circlize colorRamp2

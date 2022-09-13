@@ -9,6 +9,7 @@ plotHeatmap(
   assay = "own.expr",
   dataset = NULL,
   lambda = NULL,
+  K = NULL,
   cells = NULL,
   features = NULL,
   col = NULL,
@@ -50,6 +51,8 @@ plotHeatmap(
 \item{dataset}{dataset to plot heatmap}
 
 \item{lambda}{lambda if assay == banksy}
+
+\item{K}{maximum azimuthal Fourier transform to plot}
 
 \item{cells}{specific cells to plot}
 

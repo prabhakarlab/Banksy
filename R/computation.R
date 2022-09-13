@@ -355,6 +355,7 @@ getBanksyMatrix <- function(bank, lambda = 0.15, K = 1) {
     
     # Optimize this
     if (is.list(bank@own.expr)) {
+        # Multiple dataset case
         own <- do.call(cbind, bank@own.expr)
         nbr <- do.call(cbind, bank@nbr.expr)
         harmonics <- names(bank@harmonics[[1]])
@@ -362,7 +363,9 @@ getBanksyMatrix <- function(bank, lambda = 0.15, K = 1) {
             do.call(cbind, lapply(bank@harmonics, function(x) x[[k]]))
         })
         assays <- c(list(own, nbr), out)
-        assays <- assays[seq_len(K + 2)]
+        assays <- assays[seq_len(min(K + 2, length(assays)))]
+        message('BANKSY matrix with own.expr, ', 
+                paste0('F', seq(0, length(assays)-2), collapse = ', '))
         lambdas <- getLambdas(lambda, n_harmonics = length(assays)-1)
         assays <- Map(function(lam, mat) lam * mat, lambdas, assays)
         joint <- do.call(rbind, assays)
@@ -371,17 +374,23 @@ getBanksyMatrix <- function(bank, lambda = 0.15, K = 1) {
         rownames(locs) <- colnames(joint)
         
     } else {
+        # Single dataset case
+        # Consolidate own, F0, and higher harmonics
         assays <- c(list(bank@own.expr, bank@nbr.expr), bank@harmonics)
-        assays <- assays[seq_len(K + 2)]
+        assays <- assays[seq_len(min(K + 2, length(assays)))]
+        message('BANKSY matrix with own.expr, ', 
+                paste0('F', seq(0, length(assays)-2), collapse = ', '))
+        # Compute lambdas
         lambdas <- getLambdas(lambda, n_harmonics = length(assays)-1)
+        # Multiple by lambdas
         assays <- Map(function(lam, mat) lam * mat, lambdas, assays)
+        # Row concatenate
         joint <- do.call(rbind, assays)
         locs <- bank@cell.locs
     }
     
     return(list(expr = joint, locs = locs))
 }
-
 
 getSpatialDims <- function(locs, dimensions, alpha) {
 
