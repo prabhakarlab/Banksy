@@ -74,6 +74,6 @@ bank <- ScaleBanksy(bank)
 bank <- ComputeBanksy(bank)
 bank <- RunPCA(bank, lambda = 0.2)
 names(reduction(bank))
-plotReduction(bank, reduction = 'pca_0.2', by = 'Label', type = 'discrete')
+plotReduction(bank, reduction = 'pca_K1_lam0.2', by = 'Label', type = 'discrete')
 
 }

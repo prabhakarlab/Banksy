@@ -4,12 +4,14 @@
 \alias{RunPCA}
 \title{Run PCA}
 \usage{
-RunPCA(bank, lambda, npcs = 30)
+RunPCA(bank, lambda, K = 1, npcs = 30)
 }
 \arguments{
 \item{bank}{BanksyObject}
 
 \item{lambda}{(numeric vector) spatial weighting parameter}
+
+\item{K}{(numeric vector) run PCA using up to the k-th azimuthal fourier harmonic (default: 1)}
 
 \item{npcs}{(numeric) number of principal components to compute}
 }

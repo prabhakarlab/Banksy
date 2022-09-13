@@ -245,6 +245,17 @@ setMethod('clust.names', signature(object = 'BanksyObject'),
             function(object) return(names(object@meta.data)[
                                     grepl('^clust', names(object@meta.data))]))
 
+#' @describeIn BanksyObject-class getter reduction.names
+#' @exportMethod reduction.names
+#' @examples 
+#' d <- simulateDataset()
+#' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+#' vec <- reduction.names(bank)
+setGeneric('reduction.names', function(object) standardGeneric('reduction.names'))
+#' @describeIn BanksyObject-class getter reduction.names
+setMethod('reduction.names', signature(object = 'BanksyObject'),
+          function(object) return(names(object@reduction)))
+
 ## Setters ---------------------------------------------------------------------
 
 #' @param object BanksyObject

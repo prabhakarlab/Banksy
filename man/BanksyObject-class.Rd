@@ -20,6 +20,8 @@
 \alias{reduction,BanksyObject-method}
 \alias{clust.names}
 \alias{clust.names,BanksyObject-method}
+\alias{reduction.names}
+\alias{reduction.names,BanksyObject-method}
 \alias{own.expr<-}
 \alias{own.expr<-,BanksyObject,assay-method}
 \alias{nbr.expr<-}
@@ -81,6 +83,10 @@ reduction(object)
 clust.names(object)
 
 \S4method{clust.names}{BanksyObject}(object)
+
+reduction.names(object)
+
+\S4method{reduction.names}{BanksyObject}(object)
 
 own.expr(object) <- value
 
@@ -182,6 +188,10 @@ S4 class BanksyObject
 
 \item \code{clust.names,BanksyObject-method}: getter clust.names
 
+\item \code{reduction.names}: getter reduction.names
+
+\item \code{reduction.names,BanksyObject-method}: getter reduction.names
+
 \item \code{own.expr<-}: setter for own.expr
 
 \item \code{own.expr<-,BanksyObject,assay-method}: setter for own.expr
@@ -264,4 +274,7 @@ lst <- reduction(bank)
 d <- simulateDataset()
 bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
 vec <- clust.names(bank)
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+vec <- reduction.names(bank)
 }

@@ -5,6 +5,7 @@
 #'
 #' @param bank BanksyObject
 #' @param lambda (numeric) weighting parameter
+#' @param K (numeric) compute up to the k-th azimuthal fourier harmonic (default: 1) 
 #' @param pca (logical) runs clustering on PCs (TRUE) or BANKSY matrix (FALSE)
 #' @param npcs (numeric) number of pcs to use for clustering
 #' @param method (character) one of leiden, louvain, mclust, kmeans
@@ -31,7 +32,7 @@
 #' bank <- RunPCA(bank, lambda = 0.3)
 #' bank <- ClusterBanksy(bank, lambda = 0.3, npcs = 20, k.neighbors = 50, resolution = 0.5)
 #'
-ClusterBanksy <- function(bank, lambda, pca = TRUE, npcs = 30,
+ClusterBanksy <- function(bank, lambda, K = 1, pca = TRUE, npcs = 30,
                           method = c('leiden', 'louvain', 'mclust', 'kmeans'),
                           k.neighbors = 50, resolution = 1,
                           leiden.iter = -1, mclust.G = NULL,
@@ -40,24 +41,24 @@ ClusterBanksy <- function(bank, lambda, pca = TRUE, npcs = 30,
 
   method <- checkMethod(method)
   params <- c(as.list(environment(), list(...)))
-  checkArgs(bank, method, lambda, pca, npcs, params)
+  checkArgs(bank, method, lambda, K, pca, npcs, params)
 
   if (method == 'kmeans') {
-    bank <- runKmeans(bank, lambda, pca, npcs,
+    bank <- runKmeans(bank, lambda, K, pca, npcs,
                       kmeans.centers, kmeans.iter.max, ...)
   }
 
   if (method == 'mclust') {
-    bank <- runMclust(bank, lambda, pca, npcs, mclust.G, ...)
+    bank <- runMclust(bank, lambda, K, pca, npcs, mclust.G, ...)
   }
 
   if (method == 'leiden') {
-    bank <- runLeiden(bank, lambda, pca, npcs,
+    bank <- runLeiden(bank, lambda, K, pca, npcs,
                       k.neighbors, resolution, leiden.iter, ...)
   }
 
   if (method == 'louvain') {
-    bank <- runLouvain(bank, lambda, pca, npcs, k.neighbors)
+    bank <- runLouvain(bank, lambda, K, pca, npcs, k.neighbors)
   }
 
   return(bank)
@@ -77,26 +78,29 @@ checkMethod <- function(method) {
   return(method)
 }
 
-checkArgs <- function(bank, method, lambda, pca, npcs, call) {
+checkArgs <- function(bank, method, lambda, K, pca, npcs, call) {
 
   call <- call[!sapply(call, is.null)]
   args <- names(call)
 
   if (pca) {
     # Check if pca has been run for lambda
-    pca.names <- paste0('pca_', lambda)
+    params <- expand.grid(K, lambda)
+    pca.names <- paste0('pca_K', params[,1], '_lam', params[,2])
     check <- pca.names %in% names(bank@reduction)
     # Check if enough pcs
     if (any(check == FALSE)) {
       id <- which(check == FALSE)
-      stop('Run PCA for lambda=', paste(lambda[id], collapse = ','))
+      stop('Run PCA for K=', paste(params[id,][,1], collapse=','), 
+           ' lambda=', paste(params[id,][,2], collapse = ','))
     }
     pca.mats <- lapply(pca.names, function(nm) bank@reduction[[nm]]$x)
     pca.ncols <- vapply(pca.mats, ncol, FUN.VALUE = numeric(1))
     if (any(pca.ncols < npcs)) {
       id <- which(pca.ncols < npcs)
-      stop('Not enough PCs for lambda=', paste(lambda[id], collapse = ','),
-           '\nCall RunPCA and increase npcs for these lambdas.')
+      stop('Not enough PCs for K=', paste(params[id,][,1], collapse=','), 
+           ' lambda=', paste(params[id,][,2], collapse = ','),
+           '\nCall RunPCA and increase npcs for these (K,lambdas).')
     }
 
   }
@@ -120,13 +124,13 @@ checkArgs <- function(bank, method, lambda, pca, npcs, call) {
 
 }
 
-getClusterMatrix <- function(bank, lambda, pca, npcs) {
+getClusterMatrix <- function(bank, lambda, K, pca, npcs) {
 
   if (pca) {
-    pca.name <- paste0('pca_', lambda)
+    pca.name <- paste0('pca_K', K, '_lam', lambda)
     x <- bank@reduction[[pca.name]]$x[,seq_len(npcs)]
   } else {
-    x <- t(getBanksyMatrix(bank, lambda = lambda)$expr)
+    x <- t(getBanksyMatrix(bank, lambda = lambda, K = K)$expr)
   }
   return(x)
 }
@@ -152,82 +156,101 @@ getGraph <- function(x, k) {
 }
 
 #' @importFrom stats kmeans
-runKmeans <- function(bank, lambda, pca, npcs,
+runKmeans <- function(bank, lambda, K, pca, npcs,
                       kmeans.centers, kmeans.iter.max, ...) {
 
-  max.iters <- prod(length(lambda), length(kmeans.centers))
+  max.iters <- prod(length(lambda), length(kmeans.centers), length(K))
   iter <- 1
   message('Iteration ', iter, ' out of ', max.iters)
-  for (lam in lambda) {
-    x <- getClusterMatrix(bank, lam, pca, npcs)
-    for (k in kmeans.centers) {
-      out <- kmeans(x, centers = k, iter.max = kmeans.iter.max, ...)
-      clust.name <- paste0('clust_lam', lam, '_kmeans', k)
-      bank@meta.data[[clust.name]] <- out$cluster
-      iter <- iter + 1
-      if (iter <= max.iters) message('Iteration ', iter, ' out of ', max.iters)
-    }
+  for (har in K) {
+      for (lam in lambda) {
+          x <- getClusterMatrix(bank, lam, har, pca, npcs)
+          for (k in kmeans.centers) {
+              out <- kmeans(x, centers = k, iter.max = kmeans.iter.max, ...)
+              clust.name <-
+                  paste0('clust_K', har, '_lam', lam, '_kmeans', k)
+              bank@meta.data[[clust.name]] <- out$cluster
+              iter <- iter + 1
+              if (iter <= max.iters)
+                  message('Iteration ', iter, ' out of ', max.iters)
+          }
+      }
   }
   return(bank)
 }
 
 #' @importFrom mclust Mclust mclustBIC
-runMclust <- function(bank, lambda, pca, npcs, mclust.G, ...) {
+runMclust <- function(bank, lambda, K, pca, npcs, mclust.G, ...) {
 
-  max.iters <- prod(length(lambda), length(mclust.G))
+  max.iters <- prod(length(lambda), length(mclust.G), length(K))
   iter <- 1
   message('Iteration ', iter, ' out of ', max.iters)
-  for (lam in lambda) {
-    x <- getClusterMatrix(bank, lam, pca, npcs)
-    for (G in mclust.G) {
-      out <- Mclust(x, G = G, ...)
-      clust.name <- paste0('clust_lam', lam, '_mclust', G)
-      bank@meta.data[[clust.name]] <- out$classification
-      iter <- iter + 1
-      if (iter <= max.iters) message('Iteration ', iter, ' out of ', max.iters)
-    }
+  for (har in K) {
+      for (lam in lambda) {
+          x <- getClusterMatrix(bank, lam, har, pca, npcs)
+          for (G in mclust.G) {
+              out <- Mclust(x, G = G, ...)
+              clust.name <-
+                  paste0('clust_K', har, '_lam', lam, '_mclust', G)
+              bank@meta.data[[clust.name]] <- out$classification
+              iter <- iter + 1
+              if (iter <= max.iters)
+                  message('Iteration ', iter, ' out of ', max.iters)
+          }
+      }
   }
   return(bank)
 }
 
 #' @importFrom leidenAlg leiden.community
-runLeiden <- function(bank, lambda, pca, npcs,
+runLeiden <- function(bank, lambda, K, pca, npcs,
                       k.neighbors, resolution, leiden.iter) {
 
-  max.iters <- prod(length(lambda), length(k.neighbors), length(resolution))
+  max.iters <- prod(length(lambda), length(k.neighbors), length(resolution), length(K))
   iter <- 1
   message('Iteration ', iter, ' out of ', max.iters)
-  for (lam in lambda) {
-    x <- getClusterMatrix(bank, lam, pca, npcs)
-    for (k in k.neighbors) {
-      graph <- getGraph(x, k)
-      for (res in resolution) {
-        out <- leiden.community(graph, resolution = res, n.iterations = leiden.iter)
-        clust.name <- paste0('clust_lam', lam, '_k', k, '_res', res)
-        bank@meta.data[[clust.name]] <- as.numeric(out$membership)
-        iter <- iter + 1
-        if (iter <= max.iters) message('Iteration ', iter, ' out of ', max.iters)
+  for (har in K) {
+      for (lam in lambda) {
+          x <- getClusterMatrix(bank, lam, har, pca, npcs)
+          for (k in k.neighbors) {
+              graph <- getGraph(x, k)
+              for (res in resolution) {
+                  out <-
+                      leiden.community(graph,
+                                       resolution = res,
+                                       n.iterations = leiden.iter)
+                  clust.name <-
+                      paste0('clust_K', har, '_lam', lam, '_k', k, '_res', res)
+                  bank@meta.data[[clust.name]] <- as.numeric(out$membership)
+                  iter <- iter + 1
+                  if (iter <= max.iters)
+                      message('Iteration ', iter, ' out of ', max.iters)
+              }
+          }
       }
-    }
   }
   return(bank)
 }
 
 #' @importFrom igraph cluster_louvain membership as.undirected
-runLouvain <- function(bank, lambda, pca, npcs, k.neighbors) {
-  max.iters <- prod(length(lambda), length(k.neighbors))
+runLouvain <- function(bank, lambda, K, pca, npcs, k.neighbors) {
+  max.iters <- prod(length(lambda), length(k.neighbors), length(K))
   iter <- 1
   message('Iteration ', iter, ' out of ', max.iters)
-  for (lam in lambda) {
-    x <- getClusterMatrix(bank, lam, pca, npcs)
-    for (k in k.neighbors) {
-      graph <- as.undirected(getGraph(x, k))
-      out <- membership(cluster_louvain(graph))
-      clust.name <- paste0('clust_lam', lam, '_k', k, '_louvain')
-      bank@meta.data[[clust.name]] <- as.numeric(out)
-      iter <- iter + 1
-      if (iter <= max.iters) message('Iteration ', iter, ' out of ', max.iters)
-    }
+  for (har in K) {
+      for (lam in lambda) {
+          x <- getClusterMatrix(bank, lam, har, pca, npcs)
+          for (k in k.neighbors) {
+              graph <- as.undirected(getGraph(x, k))
+              out <- membership(cluster_louvain(graph))
+              clust.name <-
+                  paste0('clust_K', har, '_lam', lam, '_k', k, '_louvain')
+              bank@meta.data[[clust.name]] <- as.numeric(out)
+              iter <- iter + 1
+              if (iter <= max.iters)
+                  message('Iteration ', iter, ' out of ', max.iters)
+          }
+      }
   }
   return(bank)
 }

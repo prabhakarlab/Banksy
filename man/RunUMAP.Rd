@@ -7,6 +7,7 @@
 RunUMAP(
   bank,
   lambda,
+  K = 1,
   ncomponents = 2,
   pca = TRUE,
   npcs = 20,
@@ -21,6 +22,8 @@ RunUMAP(
 \item{bank}{BanksyObject}
 
 \item{lambda}{(numeric vector) spatial weighting parameter}
+
+\item{K}{(numeric) compute up to the k-th azimuthal fourier harmonic (default: 1)}
 
 \item{ncomponents}{(numeric) number of umap components to compute}
 
