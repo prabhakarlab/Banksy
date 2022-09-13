@@ -146,7 +146,7 @@ RunUMAP <- function(bank, lambda, K = 1, ncomponents = 2, pca = TRUE, npcs = 20,
                 )
             rownames(umap) <- rownames(x)
             colnames(umap) <- paste0('UMAP_', seq_len(ncol(umap)))
-            umap.name <- paste0('umap_', lam)
+            umap.name <- paste0('umap_K', k, '_lam', lam)
             bank@reduction[[umap.name]] <- umap
             
         }
