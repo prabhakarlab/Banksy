@@ -928,7 +928,7 @@ getFeature <- function(bank, by, dataset) {
         found.own <- by %in% rownames(bank@own.expr)
         found.nbr <- by %in% rownames(bank@nbr.expr)
         found.k <- sapply(bank@harmonics, function(x) { by %in% rownames(x) })
-        found <- c(found.meta, found.own, found.nbr, found.k)
+        found <- unlist(c(found.meta, found.own, found.nbr, found.k))
         if (all(!found))
             stop('Invalid parameter to plot by.')
         if (found.meta)
