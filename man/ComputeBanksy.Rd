@@ -7,13 +7,14 @@
 ComputeBanksy(
   bank,
   K = 1,
-  spatial_mode = "kNN_r",
+  spatial_mode = "kNN_median",
   k_geom = 10,
   n = 2,
   sigma = 1.5,
   alpha = 0.05,
   k_spatial = 100,
   dimensions = "all",
+  center = TRUE,
   verbose = TRUE
 )
 }
@@ -24,11 +25,11 @@ ComputeBanksy(
 
 \item{spatial_mode}{(character) 
 \itemize{
- \item{kNN_r: k-nearest neighbors with $1/r$ kernel (default)}
+ \item{kNN_r: k-nearest neighbors with $1/r$ kernel}
  \item{kNN_rn: k-nearest neighbors with $1/r^n$ kernel}
  \item{kNN_rank: k-nearest neighbors with rank Gaussian kernel}
  \item{kNN_unif: k-nearest neighbors wth uniform kernel}
- \item{kNN_median: k-nearest neighbors with median-scaled Gaussian kernel}
+ \item{kNN_median: k-nearest neighbors with median-scaled Gaussian kernel (default)}
  \item{rNN_gauss: radial nearest neighbors with Gaussian kernel}
 }}
 
@@ -48,6 +49,8 @@ smaller radii (for rNN_gauss)}
  \item{subset of colnames of cell.locs}
  \item{all}{Uses all colnames of cell.locs to compute (default)}
 }}
+
+\item{center}{(logical) center higher order harmonics in local neighborhoods}
 
 \item{verbose}{messages}
 }

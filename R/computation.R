@@ -138,11 +138,11 @@ ScaleBanksy <- function(bank, assay = 'both', separate = TRUE) {
 #' @param K (numeric) compute up to the k-th azimuthal fourier harmonic (default: 1) 
 #' @param spatial_mode (character) 
 #' \itemize{
-#'  \item{kNN_r: k-nearest neighbors with $1/r$ kernel (default)}
+#'  \item{kNN_r: k-nearest neighbors with $1/r$ kernel}
 #'  \item{kNN_rn: k-nearest neighbors with $1/r^n$ kernel}
 #'  \item{kNN_rank: k-nearest neighbors with rank Gaussian kernel}
 #'  \item{kNN_unif: k-nearest neighbors wth uniform kernel}
-#'  \item{kNN_median: k-nearest neighbors with median-scaled Gaussian kernel}
+#'  \item{kNN_median: k-nearest neighbors with median-scaled Gaussian kernel (default)}
 #'  \item{rNN_gauss: radial nearest neighbors with Gaussian kernel}
 #' }
 #' @param k_geom (numeric) number of neighbors to use (for kNN)
@@ -156,6 +156,7 @@ ScaleBanksy <- function(bank, assay = 'both', separate = TRUE) {
 #'  \item{subset of colnames of cell.locs}
 #'  \item{all}{Uses all colnames of cell.locs to compute (default)}
 #' }
+#' @param center (logical) center higher order harmonics in local neighborhoods
 #' @param verbose messages
 #'
 #' @importFrom data.table data.table setnames
@@ -172,9 +173,9 @@ ScaleBanksy <- function(bank, assay = 'both', separate = TRUE) {
 #' bank <- ComputeBanksy(bank)
 #' 
 ComputeBanksy <- function(bank, K = 1,
-                          spatial_mode = 'kNN_r', k_geom = 10, n = 2,
+                          spatial_mode = 'kNN_median', k_geom = 10, n = 2,
                           sigma = 1.5, alpha = 0.05, k_spatial = 100,
-                          dimensions = 'all', verbose=TRUE) {
+                          dimensions = 'all', center = TRUE, verbose=TRUE) {
     
     K <- seq(0, K)
     if (is.list(bank@own.expr)) {
@@ -190,12 +191,12 @@ ComputeBanksy <- function(bank, K = 1,
                              dimensions = dimensions, verbose = verbose)
         })
         nbr_lst <- Map(function(expr, knn_df) {
-            computeHarmonics(expr, knn_df, K = 0)
+            computeHarmonics(expr, knn_df, K = 0, center = FALSE)
         }, bank@own.expr, knn_lst)
         
         har_lst <- Map(function(expr, knn_df) {
             har <- lapply(setdiff(K, 0), function(k) {
-                computeHarmonics(expr, knn_df, K = k)
+                computeHarmonics(expr, knn_df, K = k, center = center)
             })
             if (length(har) > 0) names(har) <- paste0('k', setdiff(K, 0))
             har
@@ -213,9 +214,9 @@ ComputeBanksy <- function(bank, K = 1,
                                    spatial_mode = spatial_mode, k_geom = k_geom, n = n,
                                    sigma=sigma, alpha=alpha, k_spatial=k_spatial,
                                    dimensions = dimensions, verbose = verbose)
-        nbr <- computeHarmonics(bank@own.expr, knn_df, K = 0)
+        nbr <- computeHarmonics(bank@own.expr, knn_df, K = 0, center = FALSE)
         har <- lapply(setdiff(K, 0), function(k) {
-            computeHarmonics(bank@own.expr, knn_df, K = k)
+            computeHarmonics(bank@own.expr, knn_df, K = k, center = center)
         })
         if (length(har) > 0) names(har) <- paste0('k', setdiff(K, 0))
         bank@nbr.expr <- nbr
@@ -297,6 +298,12 @@ scaler <- function(x) {
   x <- (x - rm) / rsd
   x[is.nan(x)] <- 0
   return(x)
+}
+
+fscale <- function(x) {
+    rm <- rowMeans(x)
+    x <- (x - rm) 
+    return(x)
 }
 
 #' @importFrom matrixStats rowVars
@@ -460,19 +467,24 @@ computeNeighbors <- function(locs,
 }
 
 
-computeHarmonics <- function(gcm, knn_df, K){
+computeHarmonics <- function(gcm, knn_df, K, center){
     from <- to <- weight <- phi <- NULL 
     j = sqrt(as.complex(-1))
     
-    if (any(dim(gcm)==0)) {
-        return(NULL)
-    }
+    if (any(dim(gcm)==0)) return(NULL)
+    
     suffix <- ifelse(K == 0, '.nbr', paste0('.k', K))
     
     message('Computing harmonic k = ', K)
-    aggr <- knn_df[, abs(
-        gcm[, to, drop=FALSE] %*% (weight * exp(j*K*phi))
-    ), by = from]
+    if (center) {
+        aggr <- knn_df[, abs(
+            fscale(gcm[, to, drop=FALSE]) %*% (weight * exp(j*K*phi))
+        ), by = from]
+    } else {
+        aggr <- knn_df[, abs(
+            gcm[, to, drop=FALSE] %*% (weight * exp(j*K*phi))
+        ), by = from]
+    }
     ncm <- matrix(aggr$V1, nrow = nrow(gcm), ncol = ncol(gcm))
     rownames(ncm) <- paste0(rownames(gcm), suffix)
     colnames(ncm) <- colnames(gcm)
