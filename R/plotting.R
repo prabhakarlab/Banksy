@@ -240,9 +240,9 @@ plotSpatial <- function(bank,
     if (wrap.z & wrap)
         plot <- plot + facet_grid(sdimz ~ feature)
     else if (wrap)
-        plot <- plot + facet_wrap(~ feature)
+        plot <- plot + facet_wrap( ~ feature)
     else if (wrap.z)
-        plot <- plot + facet_wrap(~ sdimz)
+        plot <- plot + facet_wrap( ~ sdimz)
     
     return(plot)
 }
@@ -430,7 +430,6 @@ plotHeatmap <-
              seed = 42,
              name = 'Expression',
              ...) {
-        
         out <- getAssay(bank, assay, dataset, lambda, K, cells, features)
         mat <- out$mat
         row_chunks <- out$row_chunks
@@ -440,8 +439,9 @@ plotHeatmap <-
         col.fun <- getHeatmapPalette(mat, col, col.breaks)
         
         if (assay == 'banksy') {
-            ugroups <- c('own', paste0('F', seq(0, row_chunks-2)))
-            group <- rep(ugroups, each = nrow(mat) / length(ugroups))
+            ugroups <- c('own', paste0('F', seq(0, row_chunks - 2)))
+            group <-
+                rep(ugroups, each = nrow(mat) / length(ugroups))
             group <- factor(group, levels = ugroups)
         } else {
             group <- NULL
@@ -617,7 +617,7 @@ plotAlluvia <-
         }
         
         if (!is.null(max.cells)) {
-            df <- df[sample(seq_len(nrow(df)), max.cells), ]
+            df <- df[sample(seq_len(nrow(df)), max.cells),]
         }
         
         cell <- rep(seq_len(nrow(df)), times = ncol(df))
@@ -723,7 +723,7 @@ getAssay <-
                 warning('K not specified. Setting K=0')
                 K <- 0
             }
-                
+            
             if (is.list(bank@own.expr)) {
                 if (is.null(dataset)) {
                     message('Dataset not specified. Choosing first dataset.')
@@ -758,7 +758,10 @@ getAssay <-
         } else {
             features <- features[features %in% rownames(mat)]
             pattern <- paste0(paste0(features, '[$|\\.]'), collapse = '|')
-            features <- c(features, rownames(mat)[grep(pattern, rownames(mat))])
+            features_add <- rownames(mat)[grep(pattern, rownames(mat))]
+            features_add <-
+                features_add[match(features, rownames(mat)[rownames(mat) %in% features])]
+            features <- c(features, features_add)
         }
         if (is.null(cells))
             cells <- colnames(mat)
@@ -832,8 +835,8 @@ getCellAnnotation <- function(bank,
     
     ## Order by clusters
     mdata <- bank@meta.data
-    mdata <- mdata[order(mdata[[order.by]]),]
-    mdata <- mdata[mdata$cell_ID %in% colnames(mat), ]
+    mdata <- mdata[order(mdata[[order.by]]), ]
+    mdata <- mdata[mdata$cell_ID %in% colnames(mat),]
     cell.order <- mdata$cell_ID
     mdata <- mdata[, annotate.by, drop = FALSE]
     cell.split <- mdata[[order.by]]
@@ -875,7 +878,7 @@ appendBarplots <- function(bank,
     }
     
     mdata <- bank@meta.data
-    mdata <- mdata[match(cell.order, mdata$cell_ID), ]
+    mdata <- mdata[match(cell.order, mdata$cell_ID),]
     
     nbar <- length(barplot.by)
     for (i in seq_len(nbar)) {
@@ -926,19 +929,23 @@ getFeature <- function(bank, by, dataset) {
         found.meta <- by %in% names(bank@meta.data)
         found.own <- by %in% rownames(bank@own.expr)
         found.nbr <- by %in% rownames(bank@nbr.expr)
-        found.k <- sapply(bank@harmonics, function(x) { by %in% rownames(x) })
-        found <- unlist(c(found.meta, found.own, found.nbr, found.k))
+        found.k <-
+            sapply(bank@harmonics, function(x) {
+                by %in% rownames(x)
+            })
+        found <-
+            unlist(c(found.meta, found.own, found.nbr, found.k))
         if (all(!found))
             stop('Invalid parameter to plot by.')
         if (found.meta)
             return(bank@meta.data[[by]])
         if (found.own)
-            return(bank@own.expr[by,])
+            return(bank@own.expr[by, ])
         if (found.nbr)
-            return(bank@nbr.expr[by,])
+            return(bank@nbr.expr[by, ])
         if (any(found.k)) {
             har <- names(found.k[which(found.k)])
-            return(bank@harmonics[[har]][by,])
+            return(bank@harmonics[[har]][by, ])
         }
         
     } else {
@@ -952,9 +959,9 @@ getFeature <- function(bank, by, dataset) {
             return(bank@meta.data[[by]][bank@meta.data[['dataset']] ==
                                             dataset])
         if (found.own)
-            return(bank@own.expr[[dataset]][by,])
+            return(bank@own.expr[[dataset]][by, ])
         if (found.nbr)
-            return(bank@nbr.expr[[dataset]][by,])
+            return(bank@nbr.expr[[dataset]][by, ])
     }
 }
 
