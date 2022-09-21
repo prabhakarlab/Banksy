@@ -762,8 +762,7 @@ getAssay <-
         }
         if (is.null(cells))
             cells <- colnames(mat)
-        mat <-
-            mat[rownames(mat) %in% features, colnames(mat) %in% cells, drop = FALSE]
+        mat <- mat[features, colnames(mat) %in% cells, drop = FALSE]
         return(list(mat = mat, row_chunks = K + 2))
     }
 
