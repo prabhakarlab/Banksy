@@ -28,6 +28,8 @@
 #'   \item{gene: marker name}
 #' }
 #'
+#' @export
+#' 
 #' @examples
 #' # Generate a simulated dataset
 #' d <- simulateDataset()
@@ -114,7 +116,9 @@ RunWilcox <- function(bank,
 #'   \item{gene: marker name}
 #'   \item{cluster: cluster for marker}
 #' }
-#'
+#' 
+#' @export
+#' 
 #' @examples
 #' # Generate a simulated dataset
 #' d <- simulateDataset()
