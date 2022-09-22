@@ -332,10 +332,18 @@ scalerAll <- function(x) {
   return(x)
 }
 
-getLambdas <- function(lambda, n_harmonics) {
+getLambdasDeprecate <- function(lambda, n_harmonics) {
     lam = c(lambda, lambda * (2^-seq_len(n_harmonics-1)))
     lam = c(1 - sum(lam), lam)
     message('Squared lambdas: ', paste0(lam, collapse = ', '))
+    sqrt(lam)
+}
+
+getLambdas <- function(lambda, n_harmonics) {
+    weights = lambda * (2^-seq(0, n_harmonics-1))
+    weights = weights / sum(weights / lambda)
+    lam = c(1 - sum(weights), weights)
+    message('Squared lambdas: ', paste0(round(lam,4), collapse = ', '))
     sqrt(lam)
 }
 
@@ -676,7 +684,7 @@ withKNNmedian <- function(locs, k_geom, verbose) {
     knnDF <- data.table(from = rep(seq_len(nrow(knn$id)), k_geom),
                         to = as.vector(knn$id),
                         distance = as.vector(knn$dist))
-    knnDF[, weight := exp(-distance^2 / distance[floor(k_geom/2)]^2), by=from]
+    knnDF[, weight := exp(-distance^2 / median(distance)^2), by=from]
     knnDF[, norm.weight := weight / sum(weight), by = from]
     knnDF <- knnDF[,-c(3,4),with=FALSE]
     setnames(knnDF, 'norm.weight', 'weight')
