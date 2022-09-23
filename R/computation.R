@@ -341,7 +341,7 @@ getLambdasDeprecate <- function(lambda, n_harmonics) {
 
 getLambdas <- function(lambda, n_harmonics) {
     weights = lambda * (2^-seq(0, n_harmonics-1))
-    weights = weights / sum(weights / lambda)
+    weights = weights / sum(2^-seq(0, n_harmonics-1))
     lam = c(1 - sum(weights), weights)
     message('Squared lambdas: ', paste0(round(lam,4), collapse = ', '))
     sqrt(lam)
