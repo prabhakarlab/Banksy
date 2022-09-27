@@ -6,7 +6,7 @@
 \usage{
 ComputeBanksy(
   bank,
-  K = 1,
+  M = 1,
   spatial_mode = "kNN_median",
   k_geom = 10,
   n = 2,
@@ -21,7 +21,7 @@ ComputeBanksy(
 \arguments{
 \item{bank}{BanksyObject}
 
-\item{K}{(numeric) compute up to the k-th azimuthal fourier harmonic (default: 1)}
+\item{M}{(numeric) compute up to the k-th azimuthal fourier harmonic (default: 1)}
 
 \item{spatial_mode}{(character) 
 \itemize{

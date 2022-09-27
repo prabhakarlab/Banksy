@@ -4,7 +4,7 @@
 #'
 #' @param bank BanksyObject
 #' @param lambda (numeric vector) spatial weighting parameter
-#' @param K (numeric vector) run PCA using up to the k-th azimuthal fourier harmonic (default: 1) 
+#' @param M (numeric vector) run PCA using up to the m-th azimuthal fourier harmonic (default: 1) 
 #' @param npcs (numeric) number of principal components to compute
 #'
 #' @importFrom irlba prcomp_irlba
@@ -22,19 +22,19 @@
 #' bank <- ComputeBanksy(bank)
 #' bank <- RunPCA(bank, lambda = 0.2)
 #' 
-RunPCA <- function(bank, lambda, K = 1, npcs = 30) {
+RunPCA <- function(bank, lambda, M = 1, npcs = 30) {
     
-    for (k in K) {
+    for (m in M) {
         for (lam in lambda) {
-            message('Running PCA for K=', k, ' lambda=', lam)
+            message('Running PCA for M=', m, ' lambda=', lam)
             
-            x <- getBanksyMatrix(bank, lambda = lam, K = k)$expr
+            x <- getBanksyMatrix(bank, lambda = lam, M = m)$expr
             cell.names <- colnames(x)
             
             pca <- prcomp_irlba(t(x), n = npcs)
             pca$var <- pca$sdev ^ 2 / sum(pca$sdev ^ 2) * 100
             rownames(pca$x) <- cell.names
-            pca.name <- paste0('pca_K', k, '_lam', lam)
+            pca.name <- paste0('pca_M', m, '_lam', lam)
             bank@reduction[[pca.name]] <- pca
             
         }
@@ -46,7 +46,7 @@ RunPCA <- function(bank, lambda, K = 1, npcs = 30) {
 #'
 #' @param bank BanksyObject
 #' @param lambda (numeric) spatial weighting parameter
-#' @param K (numeric) compute up to the k-th azimuthal fourier harmonic (default: 1) 
+#' @param M (numeric) compute up to the k-th azimuthal fourier harmonic (default: 1) 
 #'
 #' @importFrom ggplot2 ggplot aes geom_point theme element_blank element_line
 #'
@@ -65,11 +65,11 @@ RunPCA <- function(bank, lambda, K = 1, npcs = 30) {
 #' scree <- plotScree(bank, lambda = 0.2)
 #' scree
 #' 
-plotScree <- function(bank, lambda, K = 1) {
+plotScree <- function(bank, lambda, M = 1) {
 
-  pca.name <- paste0('pca_K', K, '_lam', lambda)
+  pca.name <- paste0('pca_M', M, '_lam', lambda)
   found <- pca.name %in% names(bank@reduction)
-  if (!found) stop('Run PCA with K=', K, ' lambda=', lambda)
+  if (!found) stop('Run PCA with M=', M, ' lambda=', lambda)
   x <- bank@reduction[[pca.name]]$var
   data <- data.frame(PCs = seq_len(length(x)), Variance = x)
   PCs <- Variance <- NULL
@@ -83,7 +83,7 @@ plotScree <- function(bank, lambda, K = 1) {
 #'
 #' @param bank BanksyObject
 #' @param lambda (numeric vector) spatial weighting parameter
-#' @param K (numeric) compute up to the k-th azimuthal fourier harmonic (default: 1) 
+#' @param M (numeric) compute up to the k-th azimuthal fourier harmonic (default: 1) 
 #' @param ncomponents (numeric) number of umap components to compute
 #' @param pca (logical) run UMAP on PCs (TRUE) or BANKSY matrix (FALSE)
 #' @param npcs (numeric) number of principal components to use for umap
@@ -108,23 +108,23 @@ plotScree <- function(bank, lambda, K = 1) {
 #' bank <- RunPCA(bank, lambda = 0.2)
 #' bank <- RunUMAP(bank, lambda = 0.2)
 #' 
-RunUMAP <- function(bank, lambda, K = 1, ncomponents = 2, pca = TRUE, npcs = 20,
+RunUMAP <- function(bank, lambda, M = 1, ncomponents = 2, pca = TRUE, npcs = 20,
                     nneighbors = 30, spread = 3, mindist = 0.1, nepochs = 300,
                     ...) {
     
-    for (k in K) {
+    for (m in M) {
         for (lam in lambda) {
             if (!pca) {
                 message('Computing UMAP on Banksy matrix')
-                x <- t(getBanksyMatrix(bank, lambda = lam, K = k)$expr)
+                x <- t(getBanksyMatrix(bank, lambda = lam, M = m)$expr)
                 
             } else {
                 if (npcs < 2)
                     stop('Require more than 2 PCs')
-                pca.name <- paste0('pca_K', k, '_lam', lam)
+                pca.name <- paste0('pca_M', m, '_lam', lam)
                 found <- pca.name %in% names(bank@reduction)
                 if (!found)
-                    stop('Compute PCA with K=', k, ' lambda=', lam, ' before running UMAP')
+                    stop('Compute PCA with M=', m, ' lambda=', lam, ' before running UMAP')
                 x <- bank@reduction[[pca.name]]$x
                 nc <- min(ncol(x), npcs)
                 if (nc < npcs)
@@ -133,7 +133,7 @@ RunUMAP <- function(bank, lambda, K = 1, ncomponents = 2, pca = TRUE, npcs = 20,
                 x <- x[, seq_len(nc)]
             }
             
-            message('Running UMAP for K=', k, ' lambda=', lam)
+            message('Running UMAP for M=', m, ' lambda=', lam)
             umap <-
                 umap(
                     x,
@@ -146,7 +146,7 @@ RunUMAP <- function(bank, lambda, K = 1, ncomponents = 2, pca = TRUE, npcs = 20,
                 )
             rownames(umap) <- rownames(x)
             colnames(umap) <- paste0('UMAP_', seq_len(ncol(umap)))
-            umap.name <- paste0('umap_K', k, '_lam', lam)
+            umap.name <- paste0('umap_M', m, '_lam', lam)
             bank@reduction[[umap.name]] <- umap
             
         }

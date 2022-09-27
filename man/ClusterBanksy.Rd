@@ -7,7 +7,7 @@
 ClusterBanksy(
   bank,
   lambda,
-  K = 1,
+  M = 1,
   pca = TRUE,
   npcs = 30,
   method = c("leiden", "louvain", "mclust", "kmeans"),
@@ -26,7 +26,7 @@ ClusterBanksy(
 
 \item{lambda}{(numeric) weighting parameter}
 
-\item{K}{(numeric) compute up to the k-th azimuthal fourier harmonic (default: 1)}
+\item{M}{(numeric) compute up to the k-th azimuthal fourier harmonic (default: 1)}
 
 \item{pca}{(logical) runs clustering on PCs (TRUE) or BANKSY matrix (FALSE)}
 

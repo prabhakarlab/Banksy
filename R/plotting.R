@@ -38,7 +38,7 @@
 #' bank <- ComputeBanksy(bank)
 #' bank <- RunPCA(bank, lambda = 0.2)
 #' names(reduction(bank))
-#' plotReduction(bank, reduction = 'pca_K1_lam0.2', by = 'Label', type = 'discrete')
+#' plotReduction(bank, by = 'Label', type = 'discrete')
 #'
 plotReduction <-
     function(bank,
@@ -240,9 +240,9 @@ plotSpatial <- function(bank,
     if (wrap.z & wrap)
         plot <- plot + facet_grid(sdimz ~ feature)
     else if (wrap)
-        plot <- plot + facet_wrap( ~ feature)
+        plot <- plot + facet_wrap(~ feature)
     else if (wrap.z)
-        plot <- plot + facet_wrap( ~ sdimz)
+        plot <- plot + facet_wrap(~ sdimz)
     
     return(plot)
 }
@@ -339,7 +339,7 @@ plotSpatialFeatures <- function(bank,
 #' @param assay assay to plot heatmap (one of own.expr, nbr.expr or banksy)
 #' @param dataset dataset to plot heatmap
 #' @param lambda lambda if assay == banksy
-#' @param K maximum azimuthal Fourier transform to plot
+#' @param M maximum azimuthal Fourier transform to plot
 #' @param cells specific cells to plot
 #' @param features specific features to plot
 #' @param col colours to use in heatmap
@@ -392,7 +392,7 @@ plotHeatmap <-
              assay = 'own.expr',
              dataset = NULL,
              lambda = NULL,
-             K = NULL,
+             M = NULL,
              cells = NULL,
              features = NULL,
              
@@ -430,7 +430,7 @@ plotHeatmap <-
              seed = 42,
              name = 'Expression',
              ...) {
-        out <- getAssay(bank, assay, dataset, lambda, K, cells, features)
+        out <- getAssay(bank, assay, dataset, lambda, M, cells, features)
         mat <- out$mat
         row_chunks <- out$row_chunks
         
@@ -617,7 +617,7 @@ plotAlluvia <-
         }
         
         if (!is.null(max.cells)) {
-            df <- df[sample(seq_len(nrow(df)), max.cells),]
+            df <- df[sample(seq_len(nrow(df)), max.cells), ]
         }
         
         cell <- rep(seq_len(nrow(df)), times = ncol(df))
@@ -692,7 +692,7 @@ getAssay <-
              assay,
              dataset,
              lambda,
-             K,
+             M,
              cells,
              features) {
         if (!is.na(pmatch(assay, c(
@@ -719,9 +719,9 @@ getAssay <-
             if (is.null(lambda))
                 stop('Lambda not specified.')
             
-            if (is.null(K)) {
-                warning('K not specified. Setting K=0')
-                K <- 0
+            if (is.null(M)) {
+                warning('M not specified. Setting M=0')
+                M <- 0
             }
             
             if (is.list(bank@own.expr)) {
@@ -737,7 +737,7 @@ getAssay <-
                 nbr <- bank@nbr.expr[[dataset]]
                 har <- bank@harmonics[[dataset]]
                 mat <- c(list(own, nbr), har)
-                mat <- mat[seq_len(min(K + 2, length(mat)))]
+                mat <- mat[seq_len(min(M + 2, length(mat)))]
                 mat <-
                     Map(function(lam, mat)
                         mat * lam,
@@ -746,7 +746,7 @@ getAssay <-
                 mat <- do.call(rbind, mat)
                 
             } else {
-                mat <- getBanksyMatrix(bank, lambda, K)$expr
+                mat <- getBanksyMatrix(bank, lambda, M)$expr
             }
             
         } else {
@@ -757,16 +757,23 @@ getAssay <-
             features <- rownames(mat)
         } else {
             features <- features[features %in% rownames(mat)]
-            pattern <- paste0(paste0(features, '[$|\\.]'), collapse = '|')
-            features_add <- rownames(mat)[grep(pattern, rownames(mat))]
+            n_features <- length(features)
+            pattern <-
+                paste0(paste0(features, '[$|\\.]'), collapse = '|')
             features_add <-
-                features_add[match(features, rownames(mat)[rownames(mat) %in% features])]
+                rownames(mat)[grep(pattern, rownames(mat))]
+            feature_order <-
+                match(features, rownames(mat)[rownames(mat) %in% features])
+            feature_order <- rep(feature_order, M + 1)
+            feature_order <-
+                feature_order + rep(seq(0, by = n_features, length = M + 1), each = n_features)
+            features_add <- features_add[feature_order]
             features <- c(features, features_add)
         }
         if (is.null(cells))
             cells <- colnames(mat)
         mat <- mat[features, colnames(mat) %in% cells, drop = FALSE]
-        return(list(mat = mat, row_chunks = K + 2))
+        return(list(mat = mat, row_chunks = M + 2))
     }
 
 #' @importFrom circlize colorRamp2
@@ -835,8 +842,8 @@ getCellAnnotation <- function(bank,
     
     ## Order by clusters
     mdata <- bank@meta.data
-    mdata <- mdata[order(mdata[[order.by]]), ]
-    mdata <- mdata[mdata$cell_ID %in% colnames(mat),]
+    mdata <- mdata[order(mdata[[order.by]]),]
+    mdata <- mdata[mdata$cell_ID %in% colnames(mat), ]
     cell.order <- mdata$cell_ID
     mdata <- mdata[, annotate.by, drop = FALSE]
     cell.split <- mdata[[order.by]]
@@ -878,7 +885,7 @@ appendBarplots <- function(bank,
     }
     
     mdata <- bank@meta.data
-    mdata <- mdata[match(cell.order, mdata$cell_ID),]
+    mdata <- mdata[match(cell.order, mdata$cell_ID), ]
     
     nbar <- length(barplot.by)
     for (i in seq_len(nbar)) {
@@ -940,12 +947,12 @@ getFeature <- function(bank, by, dataset) {
         if (found.meta)
             return(bank@meta.data[[by]])
         if (found.own)
-            return(bank@own.expr[by, ])
+            return(bank@own.expr[by,])
         if (found.nbr)
-            return(bank@nbr.expr[by, ])
+            return(bank@nbr.expr[by,])
         if (any(found.k)) {
             har <- names(found.k[which(found.k)])
-            return(bank@harmonics[[har]][by, ])
+            return(bank@harmonics[[har]][by,])
         }
         
     } else {
@@ -959,9 +966,9 @@ getFeature <- function(bank, by, dataset) {
             return(bank@meta.data[[by]][bank@meta.data[['dataset']] ==
                                             dataset])
         if (found.own)
-            return(bank@own.expr[[dataset]][by, ])
+            return(bank@own.expr[[dataset]][by,])
         if (found.nbr)
-            return(bank@nbr.expr[[dataset]][by, ])
+            return(bank@nbr.expr[[dataset]][by,])
     }
 }
 

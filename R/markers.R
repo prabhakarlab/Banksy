@@ -16,6 +16,8 @@
 #' @param pseudocount.use pseudocount for fold change computation
 #'
 #' @importFrom qvalue qvalue
+#' @importFrom methods slot
+#' @importFrom stats wilcox.test
 #'
 #' @return dataframe of markers
 #' @details returns six columns:

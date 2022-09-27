@@ -58,6 +58,6 @@ returns seven columns:
 # Generate a simulated dataset
 d <- simulateDataset()
 bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
-markers <- RunWilcox(bank, by = 'Label')
+markers <- RunAllWilcox(bank, by = 'Label')
 
 }

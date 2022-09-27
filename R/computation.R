@@ -135,7 +135,7 @@ ScaleBanksy <- function(bank, assay = 'both', separate = TRUE) {
 
 #' Compute Banksy Matrices
 #' @param bank BanksyObject
-#' @param K (numeric) compute up to the k-th azimuthal fourier harmonic (default: 1) 
+#' @param M (numeric) compute up to the k-th azimuthal fourier harmonic (default: 1) 
 #' @param spatial_mode (character) 
 #' \itemize{
 #'  \item{kNN_r: k-nearest neighbors with $1/r$ kernel}
@@ -172,12 +172,12 @@ ScaleBanksy <- function(bank, assay = 'both', separate = TRUE) {
 #' # Compute neighbors 
 #' bank <- ComputeBanksy(bank)
 #' 
-ComputeBanksy <- function(bank, K = 1,
+ComputeBanksy <- function(bank, M = 1,
                           spatial_mode = 'kNN_median', k_geom = 10, n = 2,
                           sigma = 1.5, alpha = 0.05, k_spatial = 100,
                           dimensions = 'all', center = TRUE, verbose=TRUE) {
     
-    K <- seq(0, K)
+    M <- seq(0, M)
     if (is.list(bank@own.expr)) {
         # Multi-dataset case
         locs <- lapply(bank@cell.locs, function(x) {
@@ -191,14 +191,14 @@ ComputeBanksy <- function(bank, K = 1,
                              dimensions = dimensions, verbose = verbose)
         })
         nbr_lst <- Map(function(expr, knn_df) {
-            computeHarmonics(expr, knn_df, K = 0, center = FALSE)
+            computeHarmonics(expr, knn_df, M = 0, center = FALSE)
         }, bank@own.expr, knn_lst)
         
         har_lst <- Map(function(expr, knn_df) {
-            har <- lapply(setdiff(K, 0), function(k) {
-                computeHarmonics(expr, knn_df, K = k, center = center)
+            har <- lapply(setdiff(M, 0), function(m) {
+                computeHarmonics(expr, knn_df, M = m, center = center)
             })
-            if (length(har) > 0) names(har) <- paste0('k', setdiff(K, 0))
+            if (length(har) > 0) names(har) <- paste0('m', setdiff(M, 0))
             har
         }, bank@own.expr, knn_lst)
         
@@ -214,11 +214,11 @@ ComputeBanksy <- function(bank, K = 1,
                                    spatial_mode = spatial_mode, k_geom = k_geom, n = n,
                                    sigma=sigma, alpha=alpha, k_spatial=k_spatial,
                                    dimensions = dimensions, verbose = verbose)
-        nbr <- computeHarmonics(bank@own.expr, knn_df, K = 0, center = FALSE)
-        har <- lapply(setdiff(K, 0), function(k) {
-            computeHarmonics(bank@own.expr, knn_df, K = k, center = center)
+        nbr <- computeHarmonics(bank@own.expr, knn_df, M = 0, center = FALSE)
+        har <- lapply(setdiff(M, 0), function(m) {
+            computeHarmonics(bank@own.expr, knn_df, M = m, center = center)
         })
-        if (length(har) > 0) names(har) <- paste0('k', setdiff(K, 0))
+        if (length(har) > 0) names(har) <- paste0('m', setdiff(M, 0))
         bank@nbr.expr <- nbr
         bank@harmonics <- har
         
@@ -351,7 +351,7 @@ getLambdas <- function(lambda, n_harmonics) {
 #'
 #' @param bank Banksy Object
 #' @param lambda (numeric) spatial weighting parameter
-#' @param K (numeric) compute up to the k-th azimuthal fourier harmonic (default: 1) 
+#' @param M (numeric) compute up to the k-th azimuthal fourier harmonic (default: 1) 
 #'
 #' @return BanksyMatrix
 #'
@@ -366,7 +366,7 @@ getLambdas <- function(lambda, n_harmonics) {
 #' # Compute BANKSY matrix
 #' bank <- ComputeBanksy(bank)
 #' bm <- getBanksyMatrix(bank)
-getBanksyMatrix <- function(bank, lambda = 0.15, K = 1) {
+getBanksyMatrix <- function(bank, lambda = 0.15, M = 1) {
     
     # Optimize this
     if (is.list(bank@own.expr)) {
@@ -374,11 +374,11 @@ getBanksyMatrix <- function(bank, lambda = 0.15, K = 1) {
         own <- do.call(cbind, bank@own.expr)
         nbr <- do.call(cbind, bank@nbr.expr)
         harmonics <- names(bank@harmonics[[1]])
-        out <- lapply(harmonics, function(k) {
-            do.call(cbind, lapply(bank@harmonics, function(x) x[[k]]))
+        out <- lapply(harmonics, function(m) {
+            do.call(cbind, lapply(bank@harmonics, function(x) x[[m]]))
         })
         assays <- c(list(own, nbr), out)
-        assays <- assays[seq_len(min(K + 2, length(assays)))]
+        assays <- assays[seq_len(min(M + 2, length(assays)))]
         message('BANKSY matrix with own.expr, ', 
                 paste0('F', seq(0, length(assays)-2), collapse = ', '))
         lambdas <- getLambdas(lambda, n_harmonics = length(assays)-1)
@@ -392,7 +392,7 @@ getBanksyMatrix <- function(bank, lambda = 0.15, K = 1) {
         # Single dataset case
         # Consolidate own, F0, and higher harmonics
         assays <- c(list(bank@own.expr, bank@nbr.expr), bank@harmonics)
-        assays <- assays[seq_len(min(K + 2, length(assays)))]
+        assays <- assays[seq_len(min(M + 2, length(assays)))]
         message('BANKSY matrix with own.expr, ', 
                 paste0('F', seq(0, length(assays)-2), collapse = ', '))
         # Compute lambdas
@@ -475,22 +475,22 @@ computeNeighbors <- function(locs,
 }
 
 
-computeHarmonics <- function(gcm, knn_df, K, center){
+computeHarmonics <- function(gcm, knn_df, M, center){
     from <- to <- weight <- phi <- NULL 
     j = sqrt(as.complex(-1))
     
     if (any(dim(gcm)==0)) return(NULL)
     
-    suffix <- ifelse(K == 0, '.nbr', paste0('.k', K))
+    suffix <- ifelse(M == 0, '.nbr', paste0('.m', M))
     
-    message('Computing harmonic k = ', K)
+    message('Computing harmonic m = ', M)
     if (center) {
         aggr <- knn_df[, abs(
-            fscale(gcm[, to, drop=FALSE]) %*% (weight * exp(j*K*phi))
+            fscale(gcm[, to, drop=FALSE]) %*% (weight * exp(j*M*phi))
         ), by = from]
     } else {
         aggr <- knn_df[, abs(
-            gcm[, to, drop=FALSE] %*% (weight * exp(j*K*phi))
+            gcm[, to, drop=FALSE] %*% (weight * exp(j*M*phi))
         ), by = from]
     }
     ncm <- matrix(aggr$V1, nrow = nrow(gcm), ncol = ncol(gcm))
