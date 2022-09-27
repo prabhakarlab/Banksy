@@ -173,7 +173,7 @@ ScaleBanksy <- function(bank, assay = 'both', separate = TRUE) {
 #' bank <- ComputeBanksy(bank)
 #' 
 ComputeBanksy <- function(bank, M = 1,
-                          spatial_mode = 'kNN_median', k_geom = 10, n = 2,
+                          spatial_mode = 'kNN_median', k_geom = 15, n = 2,
                           sigma = 1.5, alpha = 0.05, k_spatial = 100,
                           dimensions = 'all', center = TRUE, verbose=TRUE) {
     
@@ -210,18 +210,25 @@ ComputeBanksy <- function(bank, M = 1,
         # Single dataset case
         locs <- data.table(bank@cell.locs, keep.rownames = TRUE)
         setnames(locs, 'rn', 'cell_ID')
-        knn_df <- computeNeighbors(locs,
-                                   spatial_mode = spatial_mode, k_geom = k_geom, n = n,
-                                   sigma=sigma, alpha=alpha, k_spatial=k_spatial,
-                                   dimensions = dimensions, verbose = verbose)
-        nbr <- computeHarmonics(bank@own.expr, knn_df, M = 0, center = FALSE)
-        har <- lapply(setdiff(M, 0), function(m) {
-            computeHarmonics(bank@own.expr, knn_df, M = m, center = center)
+        knn_list <- lapply(k_geom, function(kg) {
+            computeNeighbors(locs,
+                             spatial_mode = spatial_mode, k_geom = kg, n = n,
+                             sigma=sigma, alpha=alpha, k_spatial=k_spatial,
+                             dimensions = dimensions, verbose = verbose)
         })
+        # Compute harmonics with different k_geoms
+        center <- rep(TRUE, length(M))
+        # Only center higher harmonics
+        center[1] <- FALSE
+        har <- Map(function(knn_df, M, center) {
+            computeHarmonics(bank@own.expr, knn_df, M, center)
+        }, knn_list, M, center)
+        nbr <- har[[1]]
+        har <- har[-1]
+        names(har) <- NULL
         if (length(har) > 0) names(har) <- paste0('m', setdiff(M, 0))
         bank@nbr.expr <- nbr
         bank@harmonics <- har
-        
     }
     
     return(bank)
@@ -484,7 +491,9 @@ computeHarmonics <- function(gcm, knn_df, M, center){
     suffix <- ifelse(M == 0, '.nbr', paste0('.m', M))
     
     message('Computing harmonic m = ', M)
+    message('Using ', nrow(knn_df[from==1]), ' neighbors')
     if (center) {
+        message('Centering')
         aggr <- knn_df[, abs(
             fscale(gcm[, to, drop=FALSE]) %*% (weight * exp(j*M*phi))
         ), by = from]
@@ -517,7 +526,6 @@ mmult <- function(mat, vec) {
 #' @importFrom stats dnorm
 withRNNgauss <- function(locs, sigma, kspatial, kernelRadius, verbose) {
     
-    if (verbose) message('Computing Banksy matrix')
     if (verbose) message('Spatial mode is rNN gaussian')
     if (verbose) message('Parameters: sigma = ', sigma, ', kspatial = ', kspatial)
     
@@ -557,7 +565,6 @@ withRNNgauss <- function(locs, sigma, kspatial, kernelRadius, verbose) {
 #' @importFrom data.table data.table setnames `:=`
 withKNNrank <- function(locs, k_geom, verbose) {
     
-    if (verbose) message('Computing Banksy matrix')
     if (verbose) message('Spatial mode is kNNrank')
     if (verbose) message('Parameters: k_geom = ', k_geom)
     
@@ -584,7 +591,6 @@ withKNNrank <- function(locs, k_geom, verbose) {
 #' @importFrom data.table data.table setnames `:=`
 withKNNr <- function(locs, k_geom, verbose) {
     
-    if (verbose) message('Computing Banksy matrix')
     if (verbose) message('Spatial mode is kNNr')
     if (verbose) message('Parameters: k_geom = ', k_geom)
     
@@ -612,7 +618,6 @@ withKNNr <- function(locs, k_geom, verbose) {
 #' @importFrom data.table data.table setnames `:=`
 withKNNrn <- function(locs, k_geom, n, verbose) {
     
-    if (verbose) message('Computing Banksy matrix')
     if (verbose) message('Spatial mode is kNNrn')
     if (verbose) message('Parameters: k_geom = ', k_geom, ', n = ', n)
     
@@ -640,7 +645,6 @@ withKNNrn <- function(locs, k_geom, n, verbose) {
 #' @importFrom data.table data.table setnames `:=`
 withKNNunif <- function(locs, k_geom, verbose) {
     
-    if (verbose) message('Computing Banksy matrix')
     if (verbose) message('Spatial mode is kNNunif')
     if (verbose) message('Parameters: k_geom = ', k_geom)
     
@@ -668,7 +672,6 @@ withKNNunif <- function(locs, k_geom, verbose) {
 #' @importFrom data.table data.table setnames `:=`
 withKNNmedian <- function(locs, k_geom, verbose) {
     
-    if (verbose) message('Computing Banksy matrix')
     if (verbose) message('Spatial mode is kNN median')
     if (verbose) message('Parameters: k_geom = ', k_geom)
     

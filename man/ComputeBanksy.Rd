@@ -8,7 +8,7 @@ ComputeBanksy(
   bank,
   M = 1,
   spatial_mode = "kNN_median",
-  k_geom = 10,
+  k_geom = 15,
   n = 2,
   sigma = 1.5,
   alpha = 0.05,
