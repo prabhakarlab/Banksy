@@ -179,27 +179,41 @@ ComputeBanksy <- function(bank, M = 1,
     
     M <- seq(0, M)
     if (is.list(bank@own.expr)) {
+        
+        if (length(k_geom) == 1) k_geom = rep_len(k_geom, max(M)+1)
+        if (length(k_geom)!=length(M)) stop('Specify a single k_geom or ensure sufficient k_geoms specified for each harmonic.')
+        
         # Multi-dataset case
         locs <- lapply(bank@cell.locs, function(x) {
             x <- data.table(x, keep.rownames = TRUE)
             setnames(x, 'rn', 'cell_ID')
         })
+        
+        # Compute knn list for all datasets
         knn_lst <- lapply(locs, function(dlocs) {
-            computeNeighbors(dlocs,
-                             spatial_mode = spatial_mode, k_geom = k_geom, n = n,
-                             sigma=sigma, alpha=alpha, k_spatial=k_spatial,
-                             dimensions = dimensions, verbose = verbose)
+            lapply(k_geom, function(kg) {
+                computeNeighbors(dlocs,
+                                 spatial_mode = spatial_mode, k_geom = kg, n = n,
+                                 sigma=sigma, alpha=alpha, k_spatial=k_spatial,
+                                 dimensions = dimensions, verbose = verbose)
+            })
         })
+        
+        # Compute weighted average
         nbr_lst <- Map(function(expr, knn_df) {
-            computeHarmonics(expr, knn_df, M = 0, center = FALSE)
+            computeHarmonics(expr, knn_df[[1]], M = 0, center = FALSE)
         }, bank@own.expr, knn_lst)
         
-        har_lst <- Map(function(expr, knn_df) {
-            har <- lapply(setdiff(M, 0), function(m) {
-                computeHarmonics(expr, knn_df, M = m, center = center)
-            })
-            if (length(har) > 0) names(har) <- paste0('m', setdiff(M, 0))
-            har
+        # Remove knn df for the M=0
+        knn_lst <- lapply(knn_lst, function(x) {x[[1]]=NULL;x})
+        
+        # Compute harmonics M>0
+        har_lst = Map(function(expr, knn_df_lst) {
+            out = Map(function(knn_df, har) {
+                computeHarmonics(expr, knn_df, M = har, center = TRUE)
+            }, knn_df_lst, seq_len(length(knn_df_lst)))
+            names(out) = paste0('m', seq_len(length(knn_df_lst)))
+            out
         }, bank@own.expr, knn_lst)
         
         bank@nbr.expr <- nbr_lst
