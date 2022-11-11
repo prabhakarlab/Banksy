@@ -626,7 +626,7 @@ plotAlluvia <-
         plotdf <- data.frame(cell = cell,
                              run = run,
                              cluster = cluster)
-        nclust <- length(levels(cluster))
+        nclust <- max(as.numeric(levels(cluster)))
         
         if (!is.null(cluster.order)) {
             if (!(all(plotdf$run %in% clust.names(bank)))) {
