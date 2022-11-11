@@ -46,6 +46,7 @@ ClusterBanksy <-
              kmeans.centers = NULL,
              kmeans.iter.max = 10,
              seed = 42,
+             verbose = TRUE,
              ...) {
         method <- checkMethod(method)
         params <- c(as.list(environment(), list(...)))
@@ -62,7 +63,7 @@ ClusterBanksy <-
         
         if (method == 'leiden') {
             bank <- runLeiden(bank, lambda, M, pca, npcs, 
-                              k.neighbors, resolution, leiden.iter, ...)
+                              k.neighbors, resolution, leiden.iter, verbose, ...)
         }
         
         if (method == 'louvain') {
@@ -231,6 +232,7 @@ runMclust <- function(bank, lambda, M, pca, npcs, mclust.G, ...) {
 }
 
 #' @importFrom leidenAlg leiden.community
+#' @importFrom progress progress_bar
 runLeiden <- function(bank,
                       lambda,
                       M,
@@ -238,20 +240,23 @@ runLeiden <- function(bank,
                       npcs,
                       k.neighbors,
                       resolution,
-                      leiden.iter) {
+                      leiden.iter,
+                      verbose) {
     max.iters <-
         prod(length(lambda),
              length(k.neighbors),
              length(resolution),
              length(M))
-    iter <- 1
-    message('Iteration ', iter, ' out of ', max.iters)
+    pb <- progress_bar$new(
+        format = " [:bar] :percent eta: :eta",
+        total = max.iters, clear = FALSE, width = 60)
     for (har in M) {
         for (lam in lambda) {
             x <- getClusterMatrix(bank, lam, har, pca, npcs)
             for (k in k.neighbors) {
                 graph <- getGraph(x, k)
                 for (res in resolution) {
+                    if (verbose) pb$tick()
                     out <-
                         leiden.community(graph,
                                          resolution = res,
@@ -259,9 +264,7 @@ runLeiden <- function(bank,
                     clust.name <- paste0('clust_M', har, '_lam', lam, '_k', k, '_res', res)
                     bank@meta.data[[clust.name]] <-
                         as.numeric(out$membership)
-                    iter <- iter + 1
-                    if (iter <= max.iters)
-                        message('Iteration ', iter, ' out of ', max.iters)
+                    # iter <- iter + 1
                 }
             }
         }
