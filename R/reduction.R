@@ -6,6 +6,7 @@
 #' @param lambda (numeric vector) spatial weighting parameter
 #' @param M (numeric vector) run PCA using up to the m-th azimuthal fourier harmonic (default: 1) 
 #' @param npcs (numeric) number of principal components to compute
+#' @param verbose (logical) print messages
 #'
 #' @importFrom irlba prcomp_irlba
 #'
@@ -20,13 +21,13 @@
 #' bank <- NormalizeBanksy(bank)
 #' bank <- ScaleBanksy(bank)
 #' bank <- ComputeBanksy(bank)
-#' bank <- RunPCA(bank, lambda = 0.2)
+#' bank <- RunBanksyPCA(bank, lambda = 0.2)
 #' 
-RunPCA <- function(bank, lambda, M = 1, npcs = 30) {
+RunBanksyPCA <- function(bank, lambda = 0.2, M = 1, npcs = 20, verbose = TRUE) {
     
     for (m in M) {
         for (lam in lambda) {
-            message('Running PCA for M=', m, ' lambda=', lam)
+            if (verbose) message('Running PCA for M=', m, ' lambda=', lam)
             
             x <- getBanksyMatrix(bank, lambda = lam, M = m)$expr
             cell.names <- colnames(x)
@@ -61,7 +62,7 @@ RunPCA <- function(bank, lambda, M = 1, npcs = 30) {
 #' bank <- NormalizeBanksy(bank)
 #' bank <- ScaleBanksy(bank)
 #' bank <- ComputeBanksy(bank)
-#' bank <- RunPCA(bank, lambda = 0.2)
+#' bank <- RunBanksyPCA(bank, lambda = 0.2)
 #' scree <- plotScree(bank, lambda = 0.2)
 #' scree
 #' 
@@ -91,6 +92,7 @@ plotScree <- function(bank, lambda, M = 1) {
 #' @param spread (numeric) effective scale of embedded points
 #' @param mindist (numeric) effective min. dist. between embedded points
 #' @param nepochs (numeric) number of epochs to run umap optimization
+#' @param verbose (logical) print messages
 #' @param ... parameters to pass to uwot::umap
 #'
 #' @importFrom uwot umap
@@ -105,17 +107,17 @@ plotScree <- function(bank, lambda, M = 1) {
 #' bank <- NormalizeBanksy(bank)
 #' bank <- ScaleBanksy(bank)
 #' bank <- ComputeBanksy(bank)
-#' bank <- RunPCA(bank, lambda = 0.2)
-#' bank <- RunUMAP(bank, lambda = 0.2)
+#' bank <- RunBanksyPCA(bank, lambda = 0.2)
+#' bank <- RunBanksyUMAP(bank, lambda = 0.2)
 #' 
-RunUMAP <- function(bank, lambda, M = 1, ncomponents = 2, pca = TRUE, npcs = 20,
+RunBanksyUMAP <- function(bank, lambda = 0.2, M = 1, ncomponents = 2, pca = TRUE, npcs = 20,
                     nneighbors = 30, spread = 3, mindist = 0.1, nepochs = 300,
-                    ...) {
+                    verbose = TRUE, ...) {
     
     for (m in M) {
         for (lam in lambda) {
             if (!pca) {
-                message('Computing UMAP on Banksy matrix')
+                if (verbose) message('Computing UMAP on Banksy matrix')
                 x <- t(getBanksyMatrix(bank, lambda = lam, M = m)$expr)
                 
             } else {
@@ -133,7 +135,7 @@ RunUMAP <- function(bank, lambda, M = 1, ncomponents = 2, pca = TRUE, npcs = 20,
                 x <- x[, seq_len(nc)]
             }
             
-            message('Running UMAP for M=', m, ' lambda=', lam)
+            if (verbose) message('Running UMAP for M=', m, ' lambda=', lam)
             umap <-
                 umap(
                     x,

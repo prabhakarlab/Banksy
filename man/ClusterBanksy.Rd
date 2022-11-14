@@ -6,10 +6,10 @@
 \usage{
 ClusterBanksy(
   bank,
-  lambda,
+  lambda = 0.2,
   M = 1,
   pca = TRUE,
-  npcs = 30,
+  npcs = 20,
   method = c("leiden", "louvain", "mclust", "kmeans"),
   k.neighbors = 50,
   resolution = 1,
@@ -18,6 +18,7 @@ ClusterBanksy(
   kmeans.centers = NULL,
   kmeans.iter.max = 10,
   seed = 42,
+  verbose = TRUE,
   ...
 )
 }
@@ -63,7 +64,7 @@ bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
 bank <- NormalizeBanksy(bank)
 bank <- ComputeBanksy(bank)
 bank <- ScaleBanksy(bank)
-bank <- RunPCA(bank, lambda = 0.3)
+bank <- RunBanksyPCA(bank, lambda = 0.3)
 bank <- ClusterBanksy(bank, lambda = 0.3, npcs = 20, k.neighbors = 50, resolution = 0.5)
 
 }

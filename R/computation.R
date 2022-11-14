@@ -201,7 +201,8 @@ ComputeBanksy <- function(bank, M = 1,
         
         # Compute weighted average
         nbr_lst <- Map(function(expr, knn_df) {
-            computeHarmonics(expr, knn_df[[1]], M = 0, center = FALSE)
+            computeHarmonics(expr, knn_df[[1]], M = 0, center = FALSE, 
+                             verbose = verbose)
         }, bank@own.expr, knn_lst)
         
         # Remove knn df for the M=0
@@ -210,7 +211,8 @@ ComputeBanksy <- function(bank, M = 1,
         # Compute harmonics M>0
         har_lst = Map(function(expr, knn_df_lst) {
             out = Map(function(knn_df, har) {
-                computeHarmonics(expr, knn_df, M = har, center = TRUE)
+                computeHarmonics(expr, knn_df, M = har, center = TRUE, 
+                                 verbose = verbose)
             }, knn_df_lst, seq_len(length(knn_df_lst)))
             names(out) = paste0('m', seq_len(length(knn_df_lst)))
             out
@@ -235,7 +237,8 @@ ComputeBanksy <- function(bank, M = 1,
         # Only center higher harmonics
         center[1] <- FALSE
         har <- Map(function(knn_df, M, center) {
-            computeHarmonics(bank@own.expr, knn_df, M, center)
+            computeHarmonics(bank@own.expr, knn_df, M, center, 
+                             verbose = verbose)
         }, knn_list, M, center)
         nbr <- har[[1]]
         har <- har[-1]
@@ -387,7 +390,7 @@ getLambdas <- function(lambda, n_harmonics) {
 #' # Compute BANKSY matrix
 #' bank <- ComputeBanksy(bank)
 #' bm <- getBanksyMatrix(bank)
-getBanksyMatrix <- function(bank, lambda = 0.15, M = 1) {
+getBanksyMatrix <- function(bank, lambda = 0.2, M = 1) {
     
     # Optimize this
     if (is.list(bank@own.expr)) {
@@ -457,7 +460,7 @@ getSpatialDims <- function(locs, dimensions, alpha) {
 
 #' @importFrom data.table `:=`
 computeNeighbors <- function(locs,
-                             spatial_mode = 'kNN_r', k_geom = 10, n = 2,
+                             spatial_mode = 'kNN_median', k_geom = 15, n = 2,
                              sigma = 1.5, alpha = 0.05, k_spatial = 100, 
                              dimensions = 'all', verbose = FALSE){
     from <- to <- phi <- NULL
@@ -496,7 +499,7 @@ computeNeighbors <- function(locs,
 }
 
 
-computeHarmonics <- function(gcm, knn_df, M, center){
+computeHarmonics <- function(gcm, knn_df, M, center, verbose){
     from <- to <- weight <- phi <- NULL 
     j = sqrt(as.complex(-1))
     
@@ -504,10 +507,10 @@ computeHarmonics <- function(gcm, knn_df, M, center){
     
     suffix <- ifelse(M == 0, '.nbr', paste0('.m', M))
     
-    message('Computing harmonic m = ', M)
-    message('Using ', nrow(knn_df[from==1]), ' neighbors')
+    if (verbose) message('Computing harmonic m = ', M)
+    if (verbose) message('Using ', nrow(knn_df[from==1]), ' neighbors')
     if (center) {
-        message('Centering')
+        if (verbose) message('Centering')
         aggr <- knn_df[, abs(
             fscale(gcm[, to, drop=FALSE]) %*% (weight * exp(j*M*phi))
         ), by = from]
@@ -519,7 +522,7 @@ computeHarmonics <- function(gcm, knn_df, M, center){
     ncm <- matrix(aggr$V1, nrow = nrow(gcm), ncol = ncol(gcm))
     rownames(ncm) <- paste0(rownames(gcm), suffix)
     colnames(ncm) <- colnames(gcm)
-    message('Done')
+    if (verbose) message('Done')
     
     return(ncm)
 }

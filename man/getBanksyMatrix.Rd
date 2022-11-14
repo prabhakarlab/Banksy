@@ -4,7 +4,7 @@
 \alias{getBanksyMatrix}
 \title{Returns the Banksy matrix (own + nbr)}
 \usage{
-getBanksyMatrix(bank, lambda = 0.15, M = 1)
+getBanksyMatrix(bank, lambda = 0.2, M = 1)
 }
 \arguments{
 \item{bank}{Banksy Object}

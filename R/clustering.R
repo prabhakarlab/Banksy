@@ -29,15 +29,15 @@
 #' bank <- NormalizeBanksy(bank)
 #' bank <- ComputeBanksy(bank)
 #' bank <- ScaleBanksy(bank)
-#' bank <- RunPCA(bank, lambda = 0.3)
+#' bank <- RunBanksyPCA(bank, lambda = 0.3)
 #' bank <- ClusterBanksy(bank, lambda = 0.3, npcs = 20, k.neighbors = 50, resolution = 0.5)
 #'
 ClusterBanksy <-
     function(bank,
-             lambda,
+             lambda = 0.2,
              M = 1,
              pca = TRUE,
-             npcs = 30,
+             npcs = 20,
              method = c('leiden', 'louvain', 'mclust', 'kmeans'),
              k.neighbors = 50,
              resolution = 1,
@@ -117,7 +117,7 @@ checkArgs <- function(bank, method, lambda, M, pca, npcs, call) {
                 paste(params[id, ][, 1], collapse = ','),
                 ' lambda=',
                 paste(params[id, ][, 2], collapse = ','),
-                '\nCall RunPCA and increase npcs for these (M,lambdas).'
+                '\nCall RunBanksyPCA and increase npcs for these (M,lambdas).'
             )
         }
     }
@@ -324,7 +324,7 @@ runLouvain <-
 #' bank <- NormalizeBanksy(bank)
 #' bank <- ScaleBanksy(bank)
 #' bank <- ComputeBanksy(bank)
-#' bank <- RunPCA(bank, lambda = 0.2)
+#' bank <- RunBanksyPCA(bank, lambda = 0.2)
 #' bank <- ClusterBanksy(bank, lambda = 0.2, npcs = 20, k.neighbors = 50, resolution = c(0.5,1.5))
 #' bank <- ConnectClusters(bank)
 #'
@@ -364,21 +364,9 @@ getSeed <- function(clusters, map.to) {
 #' @importFrom plyr mapvalues
 #' @importFrom RcppHungarian HungarianSolver
 mapToSeed <- function(val, seed) {
-    # ----- commenting out old version to test new. ------
-    #   con.mat <- table(val, seed)
-    #   cost.mat <- max(con.mat) - con.mat
-    #   matching <- HungarianSolver(cost.mat)$pairs
-    
-    #   ## Mapping fr more clusters to fewer
-    #   unmapped <- which(matching[,2] == 0)
-    #   impute <- max(seed) + seq_len(length(unmapped))
-    #   matching[,2][matching[,2] == 0] <- impute
-    
-    #   new.val <- mapvalues(x = val, from = matching[,1], to = matching[,2])
-    #   return(new.val)
-    
-    # ------ new version --------
-    # seed and val must be numeric for this to work (because max(seed) is used for assigning unmatched values)
+ 
+    # seed and val must be numeric for this to work (because max(seed) is used 
+    # for assigning unmatched values)
     con.mat <- table(val, seed)
     cost.mat <- max(con.mat) - con.mat
     matching <- HungarianSolver(cost.mat)$pairs
@@ -422,7 +410,7 @@ mapToSeed <- function(val, seed) {
 #' bank <- NormalizeBanksy(bank)
 #' bank <- ScaleBanksy(bank)
 #' bank <- ComputeBanksy(bank)
-#' bank <- RunPCA(bank, lambda = 0.2)
+#' bank <- RunBanksyPCA(bank, lambda = 0.2)
 #' bank <- ClusterBanksy(bank, lambda = 0.2, npcs = 20, k.neighbors = 50, resolution = c(0.5,1.5))
 #' ari <- getARI(bank)
 #' ari
