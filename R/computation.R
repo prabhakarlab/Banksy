@@ -214,7 +214,8 @@ ComputeBanksy <- function(bank, M = 1,
                 computeHarmonics(expr, knn_df, M = har, center = TRUE, 
                                  verbose = verbose)
             }, knn_df_lst, seq_len(length(knn_df_lst)))
-            names(out) = paste0('m', seq_len(length(knn_df_lst)))
+            if (length(out) > 0)
+                names(out) = paste0('m', seq_len(length(knn_df_lst)))
             out
         }, bank@own.expr, knn_lst)
         
