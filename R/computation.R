@@ -12,7 +12,7 @@
 #'  \item{nbr: Scales nbr.expr}
 #'  \item{both: Scales own.expr and nbr.expr (default)}
 #' }
-#' @param norm_factor (numeric) normalization factor (default: 100)
+#' @param norm_factor (numeric) normalization factor (default: median ncount)
 #' @param log_norm (logical) log transforms data (default: FALSE)
 #' @param pseudocount (numeric) pseudocount for log transform (default: 0.1)
 #' @param base (numeric) base for log transform (default: 10)
@@ -28,7 +28,7 @@
 #' # Normalize the own.expr matrix
 #' bank <- NormalizeBanksy(bank)
 #' 
-NormalizeBanksy <- function(bank, assay = 'both', norm_factor = 100,
+NormalizeBanksy <- function(bank, assay = 'both', norm_factor = NULL,
                             log_norm = FALSE, pseudocount = 0.1, base = 10) {
 
   scaleOwn <- TRUE
@@ -39,6 +39,10 @@ NormalizeBanksy <- function(bank, assay = 'both', norm_factor = 100,
     scaleOwn <- FALSE
   } else if (assay != 'both'){
     stop('Specify a valid assay. One of both, own, or nbr.')
+  }
+  
+  if (is.null(norm_factor)) {
+      norm_factor = median(colSums(bank@own.expr))
   }
 
   if (!is.null(bank@own.expr) & scaleOwn) {

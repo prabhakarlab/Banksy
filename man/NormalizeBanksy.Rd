@@ -7,7 +7,7 @@
 NormalizeBanksy(
   bank,
   assay = "both",
-  norm_factor = 100,
+  norm_factor = NULL,
   log_norm = FALSE,
   pseudocount = 0.1,
   base = 10
@@ -23,7 +23,7 @@ NormalizeBanksy(
  \item{both: Scales own.expr and nbr.expr (default)}
 }}
 
-\item{norm_factor}{(numeric) normalization factor (default: 100)}
+\item{norm_factor}{(numeric) normalization factor (default: median ncount)}
 
 \item{log_norm}{(logical) log transforms data (default: FALSE)}
 
