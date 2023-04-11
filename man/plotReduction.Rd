@@ -72,7 +72,7 @@ bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
 bank <- NormalizeBanksy(bank)
 bank <- ScaleBanksy(bank)
 bank <- ComputeBanksy(bank)
-bank <- RunPCA(bank, lambda = 0.2)
+bank <- RunBanksyPCA(bank, lambda = 0.2)
 names(reduction(bank))
 plotReduction(bank, by = 'Label', type = 'discrete')
 

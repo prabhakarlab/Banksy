@@ -178,10 +178,11 @@ ComputeBanksy <- function(bank, M = 1,
                           dimensions = 'all', center = TRUE, verbose=TRUE) {
     
     M <- seq(0, M)
+    if (length(k_geom) == 1) k_geom = rep_len(k_geom, max(M)+1)
+    if (length(k_geom)!=length(M)) stop('Specify a single k_geom or ensure sufficient k_geoms specified for each of ', length(M), ' harmonics.')
+
     if (is.list(bank@own.expr)) {
         
-        if (length(k_geom) == 1) k_geom = rep_len(k_geom, max(M)+1)
-        if (length(k_geom)!=length(M)) stop('Specify a single k_geom or ensure sufficient k_geoms specified for each harmonic.')
         
         # Multi-dataset case
         locs <- lapply(bank@cell.locs, function(x) {

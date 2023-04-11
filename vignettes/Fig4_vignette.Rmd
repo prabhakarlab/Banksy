@@ -40,7 +40,7 @@ expr <- hippocampus$expression
 locs <- hippocampus$locations
 ```
 
-```{r, echo=FALSE, eval=TRUE, include=FALSE}
+```{r, echo=FALSE, eval=F, include=FALSE}
 library(Banksy)
 library(ggplot2)
 library(gridExtra)
@@ -59,7 +59,7 @@ locs <- hippocampus$locations
 
 Next, we preprocess the data and run the non-spatial and BANKSY runs: 
 
-```{r}
+```{r, eval=F}
 # banksy parameters to use
 lam <- c(0, 0.25) # lambda
 res <- 1.5 # leiden clustering resolution
@@ -103,7 +103,7 @@ Next, run MERINGUE:
   
 For brevity, the code chunk below for MERINGUE is not run as it takes a few hours.
 
-```{r, echo=FALSE}
+```{r, eval=F, echo=FALSE}
 com8 = readRDS(system.file('extdata/vfish_meringue.rds', package = 'Banksy')) #vfish_meringue.rds
 ```
 
@@ -120,14 +120,14 @@ print(proc.time() - ptm)
 
 Add MERINGUE spatial clustering to the BanksyObject:
 
-```{r, echo=TRUE}
+```{r, eval=F, echo=TRUE}
 # in either case, run this: 
 bank@meta.data<-cbind(bank@meta.data, clust_dist750_k8 = as.numeric(com8))
 ```
 
 Add Giotto, FICT and SpiceMix spatial clustering results:
 
-```{r, echo=TRUE}
+```{r, eval=F, echo=TRUE}
 alt_methods_bank <- readRDS(system.file('extdata/vfish_giotto_fict_spicemix.rds', package = 'Banksy'))
 
 bank@meta.data<-cbind(bank@meta.data,
@@ -139,7 +139,7 @@ bank <- ConnectClusters(bank, map.to = 'clust_lam0.25_k50_res1.5')
 
 Plot spatial plots and fix the colors of the clusters. 
 
-```{r, echo=TRUE, out.width="30%", fig.cap="VeraFISH clustering"}
+```{r, eval=F, echo=TRUE, out.width="30%", fig.cap="VeraFISH clustering"}
 cnms <- clust.names(bank)
 
 num_clusters<-max(bank@meta.data[,cnms])
@@ -162,7 +162,7 @@ hippo.cols[cluster.colors.names] <- cluster.colors
 
 Visualize the spatial plot:
 
-```{r, echo=TRUE, fig.cap="VeraFISH clustering", fig.height=7, fig.width=8}
+```{r, eval=F, echo=TRUE, fig.cap="VeraFISH clustering", fig.height=7, fig.width=8}
 clustering_name <- cnms[2] # change this
 plotSpatial(bank, 
             by = clustering_name, 
@@ -173,7 +173,7 @@ plotSpatial(bank,
 
 Reorder genes, and plot heatmap. 
 
-```{r, echo=TRUE}
+```{r, eval=F, echo=TRUE}
 reorder_genes <- function(bank, normalize_cols = FALSE, 
                           scale_rows = FALSE){
   # the data in bank must be unnormalized and unscaled. 
@@ -229,7 +229,7 @@ multiple.annots<-c(nonspatial = nonspatial.annot,
 
 ```
 
-```{r, fig.height=20, fig.width=16, eval=TRUE}
+```{r, fig.height=20, fig.width=16, eval=F}
 plotHeatmap(bank,features = rownames(bank@own.expr),
             assay = 'banksy', 
             lambda = 0.25,
@@ -247,7 +247,7 @@ plotHeatmap(bank,features = rownames(bank@own.expr),
 
 DE gene analysis
 
-```{r, echo=TRUE, fig.height=20, fig.width=16}
+```{r, eval=F, echo=TRUE, fig.height=20, fig.width=16}
 mk_banksy_w_pair <- scran::pairwiseWilcox(bank@own.expr, groups = bank@meta.data$clust_lam0.25_k50_res1.5)
 mk_banksy_t_pair <- scran::pairwiseTTests(bank@own.expr, groups = bank@meta.data$clust_lam0.25_k50_res1.5)
 topmk_w<-scran::getTopMarkers(mk_banksy_w_pair$statistics, pairs = mk_banksy_w_pair$pairs)
@@ -293,7 +293,7 @@ bank.subset.all.mk@nbr.expr <- bank.subset.all.mk@nbr.expr[hc_gene.all.mk$order,
 ```
 
 
-```{r, echo=TRUE, fig.height=20, fig.width=16, eval=TRUE}
+```{r, echo=TRUE, fig.height=20, fig.width=16, eval=F}
 plotHeatmap(bank.subset.all.mk, 
                         features = all.mk,
                         assay = 'banksy', 
@@ -313,7 +313,7 @@ plotHeatmap(bank.subset.all.mk,
 
 Plot the gene expression spatial maps
 
-```{r, echo=TRUE, fig.height=40, fig.width=16, eval=TRUE}
+```{r, echo=TRUE, fig.height=40, fig.width=16, eval=F}
 plotSpatialFeatures(bank, by = all.mk, main = all.mk, main.size = 20,
                     col.highpoint=apply(bank@own.expr[all.mk,], 1, quantile, probs = 0.995),
                     col.lowpoint=apply(bank@own.expr[all.mk,], 1, quantile, probs = 0),
@@ -323,4 +323,3 @@ plotSpatialFeatures(bank, by = all.mk, main = all.mk, main.size = 20,
 
 ```
 
-Note: vera_plot_0728_r1.5_L0.2_seed42_may27.R

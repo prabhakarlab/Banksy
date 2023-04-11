@@ -77,11 +77,11 @@ run PCA on the BANKSY matrix with 20 PCs for each `lambda`. Clustering is then
 performed on the PCs (by default):
 
 ```{r params, eval=T}
-lam <- c(0, 0.3)
+lam <- c(0, 0.2)
 res <- c(0.8, 1.2)
 knbr <- 50
 
-bank <- RunPCA(bank, lambda = c(0, 0.3), npcs = 20)
+bank <- RunBanksyPCA(bank, lambda = lam, npcs = 20)
 set.seed(42)
 bank <- ClusterBanksy(bank, lambda = lam, pca = TRUE, npcs = 20, 
                       method = 'leiden', k.neighbors = knbr, resolution = res)
@@ -115,7 +115,7 @@ parameters (a parameter run), the package implements *ConnectClusters* which
 performs a mapping to harmonise cluster labels between different parameter runs.
 
 ```{r connect, eval=T}
-bank <- ConnectClusters(bank, map.to = 'clust_lam0.3_k50_res1.2')
+bank <- ConnectClusters(bank, map.to = 'clust_M1_lam0.2_k50_res1.2')
 
 head(meta.data(bank))
 ```

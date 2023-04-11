@@ -47,7 +47,9 @@ ClusterBanksy(
 
 \item{kmeans.iter.max}{(numeric) max number of iterations (kmeans)}
 
-\item{seed}{seed}
+\item{seed}{(numeric) seed}
+
+\item{verbose}{(logical) show progress bar}
 
 \item{...}{to pass to methods}
 }

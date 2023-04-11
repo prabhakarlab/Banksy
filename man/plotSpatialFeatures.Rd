@@ -48,7 +48,7 @@ bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
 bank <- NormalizeBanksy(bank)
 bank <- ScaleBanksy(bank)
 bank <- ComputeBanksy(bank)
-bank <- RunPCA(bank, lambda = 0.2)
+bank <- RunBanksyPCA(bank, lambda = 0.2)
 bank <- ClusterBanksy(bank, lambda = 0.2, npcs = 20, k.neighbors = 50, resolution = 0.8)
 plotSpatialFeatures(bank, by = c('Label', clust.names(bank)),
   type = rep('discrete', 2), nrow = 1, ncol = 2, pt.size = 2)

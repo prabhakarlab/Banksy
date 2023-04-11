@@ -43,7 +43,7 @@ sce <- scater::logNormCounts(sce)
 
 We convert the *SingleCellExperiment* object to a *BanksyObject*, and run the
 BANKSY pipeline. In summary, we run BANKSY with `lam=0` corresponding to 
-non-spatial clustering, and `lam=0.3` which incorporates spatial information. 
+non-spatial clustering, and `lam=0.2` which incorporates spatial information. 
 We compute 20 PCs, construct a shared nearest neighbor graph and cluster the
 graph with Leiden clustering. 
 
@@ -52,13 +52,13 @@ graph with Leiden clustering.
 bank <- asBanksyObject(sce, expr.assay = 'counts', 
                        coord.colnames = c('sdimx', 'sdimy'))
 # Run pipeline
-bank <- NormalizeBanksy(bank, normFactor = 100)
-bank <- ComputeBanksy(bank, k_geom = 10, spatialMode = 'kNN_r')
+bank <- NormalizeBanksy(bank)
+bank <- ComputeBanksy(bank)
 bank <- ScaleBanksy(bank)
-bank <- RunPCA(bank, lambda = c(0,0.3), npcs = 20)
-bank <- RunUMAP(bank, lambda = c(0,0.3), pca = TRUE, npcs = 20)
+bank <- RunBanksyPCA(bank, lambda = c(0,0.2), npcs = 20)
+bank <- RunBanksyUMAP(bank, lambda = c(0,0.2), pca = TRUE, npcs = 20)
 set.seed(42)
-bank <- ClusterBanksy(bank, lambda = c(0,0.3), npcs = 20, 
+bank <- ClusterBanksy(bank, lambda = c(0,0.2), npcs = 20, 
                       method = 'leiden', k.neighbors = 50, resolution = 1)
 bank <- ConnectClusters(bank, map.to = clust.names(bank)[1])
 ```
@@ -70,12 +70,12 @@ object. Here, we add the cluster labels and the PCA and UMAP cell embeddings.
 
 ```{r}
 # Add data to SCE
-sce$non_spatial <- factor(meta.data(bank)$clust_lam0_k50_res1)
-sce$BANKSY <- factor(meta.data(bank)$clust_lam0.3_k50_res1)
-reducedDims(sce) <- list(UMAP_nsp = reduction(bank)$umap_0,
-                         UMAP_bky = reduction(bank)$umap_0.3,
-                         PCA_nsp = reduction(bank)$pca_0$x,
-                         PCA_bky = reduction(bank)$pca_0.3$x)
+sce$non_spatial <- factor(meta.data(bank)$clust_M1_lam0_k50_res1)
+sce$BANKSY <- factor(meta.data(bank)$clust_M1_lam0.2_k50_res1)
+reducedDims(sce) <- list(UMAP_nsp = reduction(bank)$umap_M1_lam0,
+                         UMAP_bky = reduction(bank)$umap_M1_lam0.2,
+                         PCA_nsp = reduction(bank)$pca_M1_lam0$x,
+                         PCA_bky = reduction(bank)$pca_M1_lam0.2$x)
 ```
 
 Visualise the cells in UMAP and spatial dimensions:

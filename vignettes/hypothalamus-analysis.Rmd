@@ -72,7 +72,7 @@ Process the data:
 
 ```{r, process}
 bank <- NormalizeBanksy(bank)
-bank <- ComputeBanksy(bank, k_geom = 15, spatialMode = 'kNN_r')
+bank <- ComputeBanksy(bank)
 bank <- ScaleBanksy(bank)
 ``` 
 
@@ -104,16 +104,16 @@ visualise the proportion of variance explained by each PC, and determine
 how many PCs are used in downstream analyses.
 
 ```{r, pca, fig.width=7, fig.height=3.5, fig.align='center'}
-bank <- RunPCA(bank, lambda = 0.2, npcs = 30)
-plotReduction(bank, reduction = 'pca_0.2', by = 'Cell_class', type = 'discrete')
+bank <- RunBanksyPCA(bank, lambda = 0.2, npcs = 30)
+plotReduction(bank, reduction = 'pca_M1_lam0.2', by = 'Cell_class', type = 'discrete')
 plotScree(bank, lambda = 0.2)
 ```
 
 Next, we run UMAP and visualise the projection:
 
 ```{r, umap, fig.width=7, fig.height=3.5, fig.align='center'}
-bank <- RunUMAP(bank, lambda = 0.2, npcs = 20)
-p1 <- plotReduction(bank, reduction = 'umap_0.2', by = 'Cell_class', 
+bank <- RunBanksyUMAP(bank, lambda = 0.2, npcs = 20)
+p1 <- plotReduction(bank, reduction = 'umap_M1_lam0.2', by = 'Cell_class', 
                     type = 'discrete', pt.size = 0.25)
 ```
 
@@ -123,7 +123,7 @@ cell class annotation:
 ```{r, cluster, fig.width=9, fig.height=4, fig.align='center'}
 bank <- ClusterBanksy(bank, lambda = 0.2, pca = TRUE, npcs = 20,
                       method = 'leiden', k.neighbors = 50, resolution = 1)
-p2 <- plotReduction(bank, reduction = 'umap_0.2', by = clust.names(bank), 
+p2 <- plotReduction(bank, reduction = 'umap_M1_lam0.2', by = clust.names(bank), 
                     type = 'discrete', pt.size = 0.25)
 
 gridExtra::grid.arrange(

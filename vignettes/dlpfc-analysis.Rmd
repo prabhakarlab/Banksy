@@ -85,7 +85,7 @@ Finally, we perform Leiden clustering on 25 PCs:
 
 ```{r cluster,eval=F}
 set.seed(1000)
-bank <- ClusterBanksy(bank, lambda = 0.2, pca = TRUE, npcs = 25,
+bank <- ClusterBanksy(bank, M=0, lambda = 0.2, pca = TRUE, npcs = 25,
                       k.neighbors = 40, resolution = 0.5)
 ```
 
@@ -93,8 +93,8 @@ bank <- ClusterBanksy(bank, lambda = 0.2, pca = TRUE, npcs = 25,
 banksy <- readRDS(system.file('extdata/dlpfc_clusters.rds', package = 'Banksy'))
 umap <- readRDS(system.file('extdata/dlpfc_umap.rds', package = 'Banksy'))
 
-reduction(bank)$umap_0.2 <- umap
-meta.data(bank)$clust_lam0.2_k40_res0.5 <- banksy
+reduction(bank)$umap_M0_lam0.2 <- umap
+meta.data(bank)$clust_M0_lam0.2_k40_res0.5 <- banksy
 ```
 
 ## Assessing clustering output
@@ -119,9 +119,9 @@ with BANKSY clusters and manual annotation.
 
 ```{r umap, fig.width=9, fig.height=4, fig.align='center', warning=F, message=F}
 grid.arrange(
-  plotReduction(bank, reduction = 'umap_0.2', by = 'clust_lam0.2_k40_res0.5', type = 'discrete',
+  plotReduction(bank, reduction = 'umap_M0_lam0.2', by = 'clust_M0_lam0.2_k40_res0.5', type = 'discrete',
                 main = 'BANKSY clusters', main.size = 10, pt.size = 0.25), 
-  plotReduction(bank, reduction = 'umap_0.2', by = 'clust_anno', type = 'discrete',
+  plotReduction(bank, reduction = 'umap_M0_lam0.2', by = 'clust_anno', type = 'discrete',
                 main = 'Manual annotation', main.size = 10, pt.size = 0.25) +
     scale_color_manual(labels = layers, values = Banksy:::getPalette(8)),
   ncol = 2
@@ -135,7 +135,7 @@ adjusted Rand index for each sample and visualising the spatial plots:
 sample_names <- unique(meta.data(bank)$dataset)
 
 # Get labels for each sample separately
-sample_banksy <- split(meta.data(bank)$clust_lam0.2_k40_res0.5, meta.data(bank)$dataset)
+sample_banksy <- split(meta.data(bank)$clust_M0_lam0.2_k40_res0.5, meta.data(bank)$dataset)
 sample_anno <- split(meta.data(bank)$clust_anno, meta.data(bank)$dataset)
 
 # Compute the ARI for each sample
@@ -147,7 +147,7 @@ sample_plots <- Map(function(x,y) {
     p1 <- plotSpatial(bank, dataset = x, by = 'clust_anno', type = 'discrete',
                 main = sprintf('Sample %s', gsub('sample_', '', x)),
                 main.size = 10, pt.size = 1, legend = FALSE)
-    p2 <- plotSpatial(bank, dataset = x, by = 'clust_lam0.2_k40_res0.5', type = 'discrete',
+    p2 <- plotSpatial(bank, dataset = x, by = 'clust_M0_lam0.2_k40_res0.5', type = 'discrete',
                 main = sprintf('BANKSY ARI: %s', y),
                 main.size = 10, pt.size = 1, legend = FALSE)
     list(p1, p2)

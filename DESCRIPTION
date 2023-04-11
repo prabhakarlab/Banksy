@@ -41,7 +41,6 @@ Imports:
     SummarizedExperiment,
     stats,
     utils,
-    qvalue,
     progress
 License: file LICENSE
 Encoding: UTF-8

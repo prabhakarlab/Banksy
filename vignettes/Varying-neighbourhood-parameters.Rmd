@@ -1,8 +1,8 @@
 ---
-title: "Varying Neighboughood Size and Kernel Shape"
+title: "Varying Neighbourhood Size and Kernel Shape"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Varying Neighboughood Size and Kernel Shape}
+  %\VignetteIndexEntry{Varying Neighbourhood Size and Kernel Shape}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -15,7 +15,6 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-#pkgdown::build_site_github_pages()
 ```
 
 In this vignette, we explore how variation in the size of the spatial neighbourhood affects the clustering results. Recall that a cell's microenvironment signature is computed as a weighted average of the expression of that cell's neighbours. This weighting can be done using a kernel, such as $1/r^n$ for $n \in \{1, 2\}$, where $r$ is the distance of a given neighbour cell from the index cell. Other kernels include the Gaussian kernel, or the rank-Gaussian kernel; see the manuscript for details. 
@@ -55,44 +54,44 @@ bank_raw <- SubsetBanksy(bank_raw, cells = cells_sample,
                        total_count < quantile(total_count, 0.98))
 bank_raw <- NormalizeBanksy(bank_raw)
 
-clusterDiffNbdSizes<-function(bank, spatialMode_list, k_geom_list){
+clusterDiffNbdSizes<-function(bank, spatial_mode_list, k_geom_list){
   bankc<-copy(bank)
-  clustering_results<-function(spatialMode, k_geom){
-    bankc <- ComputeBanksy(bank=bankc, spatialMode = spatialMode, k_geom = k_geom)
+  clustering_results<-function(spatial_mode, k_geom){
+    bankc <- ComputeBanksy(bank=bankc, spatial_mode = spatial_mode, k_geom = k_geom)
     bankc <- ScaleBanksy(bankc)
-    bankc <- Banksy:::RunPCA(bankc, lambda = 0.25, npcs = 20)
+    bankc <- Banksy:::RunBanksyPCA(bankc, lambda = 0.2, npcs = 20)
     set.seed(42)
-    bankc <- ClusterBanksy(bankc, lambda = 0.25, pca = TRUE, npcs = 20,
+    bankc <- ClusterBanksy(bankc, lambda = 0.2, pca = TRUE, npcs = 20,
                           method = 'leiden', k.neighbors = 50, resolution = 1.5)
-    return(bankc@meta.data$clust_lam0.25_k50_res1.5) 
+    return(bankc@meta.data$clust_M1_lam0.2_k50_res1.5) 
   }
-  clustering_list <- mapply(clustering_results, spatialMode_list, k_geom_list)
+  clustering_list <- mapply(clustering_results, spatial_mode_list, k_geom_list)
   clustering_df<-as.data.frame(clustering_list)
-  colnames(clustering_df)<-paste0('clust_lam0.25_k50_res1.5', '_', spatialMode_list, '_kg', k_geom_list)
+  colnames(clustering_df)<-paste0('clust_M1_lam0.25_k50_res1.5', '_', spatial_mode_list, '_kg', k_geom_list)
   return(clustering_df)
 }
 
 bank <- copy(bank_raw) 
 
-clust_kNN_r <- clusterDiffNbdSizes(bank = bank, spatialMode_list = rep('kNN_r', num_nbd), 
+clust_kNN_r <- clusterDiffNbdSizes(bank = bank, spatial_mode_list = rep('kNN_r', num_nbd), 
                                   k_geom_list = k_geom_list[1:num_nbd])
-clust_kNN_r2 <- clusterDiffNbdSizes(bank = bank, spatialMode_list = rep('kNN_rn', num_nbd), 
+clust_kNN_r2 <- clusterDiffNbdSizes(bank = bank, spatial_mode_list = rep('kNN_rn', num_nbd), 
                                   k_geom_list = k_geom_list[1:num_nbd])
 
 # default banksy object
-bank <- ComputeBanksy(bank, spatialMode = 'kNN_r', k_geom = 10)
+bank <- ComputeBanksy(bank, spatial_mode = 'kNN_r', k_geom = 10)
 bank <- ScaleBanksy(bank)
-bank <- Banksy:::RunPCA(bank, lambda = 0, npcs = 20)
-bank <- Banksy:::RunUMAP(bank, lambda = 0, npcs = 20, nneighbors = 50)
+bank <- Banksy:::RunBanksyPCA(bank, lambda = 0, npcs = 20)
+bank <- Banksy:::RunBanksyUMAP(bank, lambda = 0, npcs = 20, nneighbors = 50)
 set.seed(42)
 bank <- ClusterBanksy(bank, lambda = 0, pca = TRUE, npcs = 20,
                       method = 'leiden', k.neighbors = 50, resolution = 1.5)
 bank_kNN_r <- copy(bank)
 bank_kNN_r2 <- copy(bank)
 bank_kNN_r@meta.data<-cbind(bank@meta.data, clust_kNN_r)
-bank_kNN_r<-ConnectClusters(bank = bank_kNN_r, map.to = 'clust_lam0.25_k50_res1.5_kNN_r_kg10')
+bank_kNN_r<-ConnectClusters(bank = bank_kNN_r, map.to = 'clust_M1_lam0.25_k50_res1.5_kNN_r_kg10')
 bank_kNN_r2@meta.data<-cbind(bank@meta.data, clust_kNN_r2)
-bank_kNN_r2<-ConnectClusters(bank = bank_kNN_r2, map.to = 'clust_lam0.25_k50_res1.5_kNN_rn_kg10')
+bank_kNN_r2<-ConnectClusters(bank = bank_kNN_r2, map.to = 'clust_M1_lam0.25_k50_res1.5_kNN_rn_kg10')
 ```
 
 

@@ -15,7 +15,8 @@
 #' @param mclust.G (numeric) number of mixture components (mclust)
 #' @param kmeans.centers (numeric) number of clusters (kmeans)
 #' @param kmeans.iter.max (numeric) max number of iterations (kmeans)
-#' @param seed seed
+#' @param seed (numeric) seed
+#' @param verbose (logical) show progress bar
 #' @param ... to pass to methods
 #'
 #' @return BanksyObject with cluster labels in meta.data
