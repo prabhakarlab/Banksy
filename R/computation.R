@@ -42,7 +42,11 @@ NormalizeBanksy <- function(bank, assay = 'both', norm_factor = NULL,
   }
   
   if (is.null(norm_factor)) {
-      norm_factor = median(colSums(bank@own.expr))
+      if (is.list(bank@own.expr)) {
+          norm_factor = median(sapply(bank@own.expr, function(x) median(colSums(x))))
+      } else {
+          norm_factor = median(colSums(bank@own.expr))
+      }
   }
 
   if (!is.null(bank@own.expr) & scaleOwn) {
