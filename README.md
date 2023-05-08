@@ -100,6 +100,11 @@ detail different use cases:
 [Seurat](https://satijalab.org/seurat/) via *SeuratWrappers*.
 Documentation on how to run BANKSY on Seurat objects can be found
 [here](https://github.com/satijalab/seurat-wrappers/blob/master/docs/banksy.md).
+For installation of *SeuratWrappers* with the latest BANKSY version, run
+
+``` r
+remotes::install_github('jleechung/seurat-wrappers')
+```
 
 ## Quick start
 
@@ -253,7 +258,7 @@ plotSpatialFeatures(bank, by = features, type = feature.types, main = main,
                     pt.size = 1.5, main.size = 15, nrow = 1, ncol = 2)
 ```
 
-<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
 
 For clarity, we can visualise each of the clusters separately with
 `wrap = TRUE`:
@@ -264,14 +269,14 @@ plotSpatialFeatures(bank, by = features, type = feature.types, main = main,
                     wrap = TRUE)
 ```
 
-<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-16-1.png" width="100%" />
 
 <details>
 <summary>
 Runtime for analysis
 </summary>
 
-    #> Time difference of 46.51171 secs
+    #> Time difference of 39.63754 secs
 
 </details>
 <details>
@@ -281,16 +286,16 @@ Session information
 
 ``` r
 sessionInfo()
-#> R version 4.1.2 (2021-11-01)
+#> R version 4.2.1 (2022-06-23 ucrt)
 #> Platform: x86_64-w64-mingw32/x64 (64-bit)
-#> Running under: Windows 10 x64 (build 19045)
+#> Running under: Windows 10 x64 (build 19043)
 #> 
 #> Matrix products: default
 #> 
 #> locale:
-#> [1] LC_COLLATE=English_Singapore.1252  LC_CTYPE=English_Singapore.1252   
-#> [3] LC_MONETARY=English_Singapore.1252 LC_NUMERIC=C                      
-#> [5] LC_TIME=English_Singapore.1252    
+#> [1] LC_COLLATE=English_Singapore.utf8  LC_CTYPE=English_Singapore.utf8   
+#> [3] LC_MONETARY=English_Singapore.utf8 LC_NUMERIC=C                      
+#> [5] LC_TIME=English_Singapore.utf8    
 #> 
 #> attached base packages:
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
@@ -299,55 +304,54 @@ sessionInfo()
 #> [1] Banksy_0.1.4
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] bitops_1.0-7                matrixStats_0.61.0         
-#>  [3] progress_1.2.2              doParallel_1.0.17          
-#>  [5] RColorBrewer_1.1-3          GenomeInfoDb_1.30.1        
-#>  [7] tools_4.1.2                 utf8_1.2.2                 
-#>  [9] R6_2.5.1                    irlba_2.3.5                
-#> [11] uwot_0.1.11                 DBI_1.1.2                  
-#> [13] BiocGenerics_0.40.0         colorspace_2.0-2           
-#> [15] GetoptLong_1.0.5            prettyunits_1.1.1          
-#> [17] tidyselect_1.1.2            gridExtra_2.3              
-#> [19] compiler_4.1.2              cli_3.1.0                  
-#> [21] Biobase_2.54.0              DelayedArray_0.20.0        
-#> [23] labeling_0.4.2              scales_1.2.0               
-#> [25] stringr_1.4.0               digest_0.6.29              
-#> [27] dbscan_1.1-10               rmarkdown_2.13             
-#> [29] XVector_0.34.0              dichromat_2.0-0.1          
-#> [31] pkgconfig_2.0.3             htmltools_0.5.2            
-#> [33] MatrixGenerics_1.6.0        highr_0.9                  
-#> [35] fastmap_1.1.0               maps_3.4.0                 
-#> [37] rlang_1.0.2                 GlobalOptions_0.1.2        
-#> [39] pals_1.7                    rstudioapi_0.13            
-#> [41] farver_2.1.0                shape_1.4.6                
-#> [43] generics_0.1.2              mclust_5.4.9               
-#> [45] dplyr_1.0.7                 RCurl_1.98-1.6             
-#> [47] magrittr_2.0.1              GenomeInfoDbData_1.2.7     
-#> [49] Matrix_1.3-4                Rcpp_1.0.9                 
-#> [51] munsell_0.5.0               S4Vectors_0.32.3           
-#> [53] fansi_0.5.0                 lifecycle_1.0.1            
-#> [55] stringi_1.7.6               leidenAlg_1.0.3            
-#> [57] yaml_2.2.1                  ggalluvial_0.12.3          
-#> [59] SummarizedExperiment_1.24.0 zlibbioc_1.40.0            
-#> [61] plyr_1.8.6                  grid_4.1.2                 
-#> [63] parallel_4.1.2              crayon_1.5.1               
-#> [65] lattice_0.20-45             sccore_1.0.1               
-#> [67] hms_1.1.1                   mapproj_1.2.8              
-#> [69] circlize_0.4.15             knitr_1.37                 
-#> [71] ComplexHeatmap_2.10.0       pillar_1.7.0               
-#> [73] igraph_1.3.4                GenomicRanges_1.46.1       
-#> [75] rjson_0.2.21                codetools_0.2-18           
-#> [77] stats4_4.1.2                glue_1.6.0                 
-#> [79] evaluate_0.15               data.table_1.14.2          
-#> [81] png_0.1-7                   vctrs_0.3.8                
-#> [83] foreach_1.5.2               gtable_0.3.0               
-#> [85] grr_0.9.5                   purrr_0.3.4                
-#> [87] clue_0.3-60                 assertthat_0.2.1           
-#> [89] ggplot2_3.3.6               xfun_0.29                  
-#> [91] tibble_3.1.6                RcppHungarian_0.2          
-#> [93] iterators_1.0.14            Matrix.utils_0.9.8         
-#> [95] IRanges_2.28.0              cluster_2.1.2              
-#> [97] ellipsis_0.3.2
+#>  [1] bitops_1.0-7                matrixStats_0.62.0         
+#>  [3] doParallel_1.0.17           RColorBrewer_1.1-3         
+#>  [5] progress_1.2.2              GenomeInfoDb_1.34.4        
+#>  [7] tools_4.2.1                 utf8_1.2.2                 
+#>  [9] R6_2.5.1                    irlba_2.3.5.1              
+#> [11] uwot_0.1.14                 DBI_1.1.3                  
+#> [13] BiocGenerics_0.44.0         colorspace_2.0-3           
+#> [15] GetoptLong_1.0.5            withr_2.5.0                
+#> [17] tidyselect_1.2.0            gridExtra_2.3              
+#> [19] prettyunits_1.1.1           compiler_4.2.1             
+#> [21] cli_3.4.1                   Biobase_2.58.0             
+#> [23] DelayedArray_0.24.0         labeling_0.4.2             
+#> [25] scales_1.2.1                stringr_1.5.0              
+#> [27] digest_0.6.30               dbscan_1.1-11              
+#> [29] rmarkdown_2.19              XVector_0.38.0             
+#> [31] dichromat_2.0-0.1           pkgconfig_2.0.3            
+#> [33] htmltools_0.5.4             MatrixGenerics_1.10.0      
+#> [35] highr_0.10                  fastmap_1.1.0              
+#> [37] maps_3.4.1                  rlang_1.0.6                
+#> [39] GlobalOptions_0.1.2         pals_1.7                   
+#> [41] rstudioapi_0.14             farver_2.1.1               
+#> [43] shape_1.4.6                 generics_0.1.3             
+#> [45] mclust_6.0.0                dplyr_1.0.10               
+#> [47] RCurl_1.98-1.9              magrittr_2.0.3             
+#> [49] GenomeInfoDbData_1.2.9      Matrix_1.5-3               
+#> [51] Rcpp_1.0.9                  munsell_0.5.0              
+#> [53] S4Vectors_0.36.0            fansi_1.0.3                
+#> [55] lifecycle_1.0.3             stringi_1.7.8              
+#> [57] leidenAlg_1.0.5             yaml_2.3.6                 
+#> [59] ggalluvial_0.12.3           SummarizedExperiment_1.28.0
+#> [61] zlibbioc_1.44.0             plyr_1.8.8                 
+#> [63] grid_4.2.1                  parallel_4.2.1             
+#> [65] crayon_1.5.2                lattice_0.20-45            
+#> [67] sccore_1.0.2                mapproj_1.2.9              
+#> [69] circlize_0.4.15             hms_1.1.2                  
+#> [71] knitr_1.41                  ComplexHeatmap_2.14.0      
+#> [73] pillar_1.8.1                igraph_1.3.5               
+#> [75] GenomicRanges_1.50.1        rjson_0.2.21               
+#> [77] codetools_0.2-18            stats4_4.2.1               
+#> [79] glue_1.6.2                  evaluate_0.19              
+#> [81] data.table_1.14.6           png_0.1-7                  
+#> [83] vctrs_0.5.1                 foreach_1.5.2              
+#> [85] gtable_0.3.1                clue_0.3-62                
+#> [87] assertthat_0.2.1            ggplot2_3.4.0              
+#> [89] xfun_0.36                   tibble_3.1.8               
+#> [91] RcppHungarian_0.2           iterators_1.0.14           
+#> [93] IRanges_2.32.0              cluster_2.1.4              
+#> [95] ellipsis_0.3.2
 ```
 
 </details>

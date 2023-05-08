@@ -94,6 +94,10 @@ usage, along with several vignettes which detail different use cases:
 *Banksy* is also interoperable with [Seurat](https://satijalab.org/seurat/) via
 *SeuratWrappers*. Documentation on how to run BANKSY on Seurat objects can be 
 found [here](https://github.com/satijalab/seurat-wrappers/blob/master/docs/banksy.md). 
+For installation of *SeuratWrappers* with the latest BANKSY version, run
+```{r, eval=F}
+remotes::install_github('jleechung/seurat-wrappers')
+```
 
 ## Quick start
 
