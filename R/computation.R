@@ -186,7 +186,10 @@ ComputeBanksy <- function(bank, M = 1,
                           dimensions = 'all', center = TRUE, verbose=TRUE) {
     
     M <- seq(0, M)
-    if (length(k_geom) == 1) k_geom = rep_len(k_geom, max(M)+1)
+    if (length(k_geom) == 1) {
+        k_geom <- rep_len(k_geom, max(M)+1)
+        k_geom <- k_geom * seq(length(k_geom))
+    }
     if (length(k_geom)!=length(M)) stop('Specify a single k_geom or ensure sufficient k_geoms specified for each of ', length(M), ' harmonics.')
 
     if (is.list(bank@own.expr)) {
@@ -454,7 +457,7 @@ getSpatialDims <- function(locs, dimensions, alpha) {
 
   # Set kernel radius based on number of dimensions
   ndims <- ncol(locs)
-  nz <- length(unique(locs$dimz))
+  nz <- length(unique(locs$sdimz))
   if (ndims < 2) {
     stop('Must have at least 2 spatial locations.')
   } else if (nz == 1) {
@@ -542,10 +545,6 @@ getPhi <- function(locs, from, to) {
     out = sweep(locs[to,], 2, locs[from,], '-')
     phi = atan2(out[,2], out[,1]) 
     phi + as.integer(phi < 0) * 2*pi
-}
-
-mmult <- function(mat, vec) {
-    t(t(mat)*vec)
 }
 
 #' @importFrom dbscan kNN
