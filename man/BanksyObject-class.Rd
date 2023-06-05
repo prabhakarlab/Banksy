@@ -156,75 +156,75 @@ S4 class BanksyObject
 }
 \section{Functions}{
 \itemize{
-\item \code{own.expr}: getter own.expr
+\item \code{own.expr()}: getter own.expr
 
-\item \code{own.expr,BanksyObject-method}: getter own.expr
+\item \code{own.expr(BanksyObject)}: getter own.expr
 
-\item \code{nbr.expr}: getter nbr.expr
+\item \code{nbr.expr()}: getter nbr.expr
 
-\item \code{nbr.expr,BanksyObject-method}: getter nbr.expr
+\item \code{nbr.expr(BanksyObject)}: getter nbr.expr
 
-\item \code{harmonics}: getter harmonics
+\item \code{harmonics()}: getter harmonics
 
-\item \code{harmonics,BanksyObject-method}: getter harmonics
+\item \code{harmonics(BanksyObject)}: getter harmonics
 
-\item \code{custom.expr}: getter custom.expr
+\item \code{custom.expr()}: getter custom.expr
 
-\item \code{custom.expr,BanksyObject-method}: getter custom.expr
+\item \code{custom.expr(BanksyObject)}: getter custom.expr
 
-\item \code{cell.locs}: getter cell.locs
+\item \code{cell.locs()}: getter cell.locs
 
-\item \code{cell.locs,BanksyObject-method}: getter cell.locs
+\item \code{cell.locs(BanksyObject)}: getter cell.locs
 
-\item \code{meta.data}: getter meta.data
+\item \code{meta.data()}: getter meta.data
 
-\item \code{meta.data,BanksyObject-method}: getter meta.data
+\item \code{meta.data(BanksyObject)}: getter meta.data
 
-\item \code{reduction}: getter reduction
+\item \code{reduction()}: getter reduction
 
-\item \code{reduction,BanksyObject-method}: getter reduction
+\item \code{reduction(BanksyObject)}: getter reduction
 
-\item \code{clust.names}: getter clust.names
+\item \code{clust.names()}: getter clust.names
 
-\item \code{clust.names,BanksyObject-method}: getter clust.names
+\item \code{clust.names(BanksyObject)}: getter clust.names
 
-\item \code{reduction.names}: getter reduction.names
+\item \code{reduction.names()}: getter reduction.names
 
-\item \code{reduction.names,BanksyObject-method}: getter reduction.names
+\item \code{reduction.names(BanksyObject)}: getter reduction.names
 
-\item \code{own.expr<-}: setter for own.expr
+\item \code{own.expr(object) <- value}: setter for own.expr
 
-\item \code{own.expr<-,BanksyObject,assay-method}: setter for own.expr
+\item \code{own.expr(object = BanksyObject) <- value}: setter for own.expr
 
-\item \code{nbr.expr<-}: setter for nbr.expr
+\item \code{nbr.expr(object) <- value}: setter for nbr.expr
 
-\item \code{nbr.expr<-,BanksyObject,assay-method}: setter for nbr.expr
+\item \code{nbr.expr(object = BanksyObject) <- value}: setter for nbr.expr
 
-\item \code{harmonics<-}: setter for harmonics
+\item \code{harmonics(object) <- value}: setter for harmonics
 
-\item \code{harmonics<-,BanksyObject,assay-method}: setter for harmonics
+\item \code{harmonics(object = BanksyObject) <- value}: setter for harmonics
 
-\item \code{custom.expr<-}: setter for custom.expr
+\item \code{custom.expr(object) <- value}: setter for custom.expr
 
-\item \code{custom.expr<-,BanksyObject,assay-method}: setter for custom.expr
+\item \code{custom.expr(object = BanksyObject) <- value}: setter for custom.expr
 
-\item \code{cell.locs<-}: setter for cell.locs
+\item \code{cell.locs(object) <- value}: setter for cell.locs
 
-\item \code{cell.locs<-,BanksyObject,assay-method}: setter for cell.locs
+\item \code{cell.locs(object = BanksyObject) <- value}: setter for cell.locs
 
-\item \code{meta.data<-}: setter for meta.data
+\item \code{meta.data(object) <- value}: setter for meta.data
 
-\item \code{meta.data<-,BanksyObject,data.frame-method}: setter for meta.data
+\item \code{meta.data(object = BanksyObject) <- value}: setter for meta.data
 
-\item \code{reduction<-}: setter for reduction
+\item \code{reduction(object) <- value}: setter for reduction
 
-\item \code{reduction<-,BanksyObject,list-method}: setter for reduction
+\item \code{reduction(object = BanksyObject) <- value}: setter for reduction
 
-\item \code{show,BanksyObject-method}: show BanksyObject
+\item \code{show(BanksyObject)}: show BanksyObject
 
-\item \code{head,BanksyObject-method}: header for BanksyObject
+\item \code{head(BanksyObject)}: header for BanksyObject
+
 }}
-
 \section{Slots}{
 
 \describe{
@@ -255,13 +255,13 @@ bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
 mat <- own.expr(bank)
 d <- simulateDataset()
 bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
-mat <- own.expr(bank)
+mat <- nbr.expr(bank)
 d <- simulateDataset()
 bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
 lst <- harmonics(bank)
 d <- simulateDataset()
 bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
-mat <- nbr.expr(bank)
+mat <- custom.expr(bank)
 d <- simulateDataset()
 bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
 df <- cell.locs(bank)

@@ -172,7 +172,7 @@ setMethod('own.expr', signature(object = 'BanksyObject'),
 #' @examples 
 #' d <- simulateDataset()
 #' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
-#' mat <- own.expr(bank)
+#' mat <- nbr.expr(bank)
 setGeneric('nbr.expr', function(object) standardGeneric('nbr.expr'))
 #' @describeIn BanksyObject-class getter nbr.expr
 setMethod('nbr.expr', signature(object = 'BanksyObject'),
@@ -194,7 +194,7 @@ setMethod('harmonics', signature(object = 'BanksyObject'),
 #' @examples 
 #' d <- simulateDataset()
 #' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
-#' mat <- nbr.expr(bank)
+#' mat <- custom.expr(bank)
 setGeneric('custom.expr', function(object) standardGeneric('custom.expr'))
 #' @describeIn BanksyObject-class getter custom.expr
 setMethod('custom.expr', signature(object = 'BanksyObject'),

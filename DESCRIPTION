@@ -45,7 +45,7 @@ Imports:
 License: file LICENSE
 Encoding: UTF-8
 URL: https://github.com/prabhakarlab/Banksy
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Suggests: 
     covr,
     knitr,
