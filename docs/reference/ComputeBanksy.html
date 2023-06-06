@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Banksy</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
       </span>
     </div>
 
@@ -45,12 +45,6 @@
     </li>
     <li>
       <a href="../articles/single-cell-exp.html">SingleCellExperiment interoperability</a>
-    </li>
-    <li>
-      <a href="../articles/Fig4_vignette.html">Fig. 4 analysis</a>
-    </li>
-    <li>
-      <a href="../articles/Varying-neighbourhood-parameters.html">Varying Neighboughood Size and Kernel Shape</a>
     </li>
   </ul></li>
 <li>
@@ -81,59 +75,106 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">ComputeBanksy</span><span class="op">(</span>
-  <span class="va">bank</span>,
-  spatialMode <span class="op">=</span> <span class="st">"kNN_r"</span>,
-  k_geom <span class="op">=</span> <span class="fl">10</span>,
-  n <span class="op">=</span> <span class="fl">2</span>,
-  sigma <span class="op">=</span> <span class="fl">1.5</span>,
-  alpha <span class="op">=</span> <span class="fl">0.05</span>,
-  kspatial <span class="op">=</span> <span class="fl">10</span>,
-  dimensions <span class="op">=</span> <span class="st">"all"</span>,
-  verbose <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ComputeBanksy</span><span class="op">(</span></span>
+<span>  <span class="va">bank</span>,</span>
+<span>  M <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  spatial_mode <span class="op">=</span> <span class="st">"kNN_median"</span>,</span>
+<span>  k_geom <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>  n <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  sigma <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  k_spatial <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  dimensions <span class="op">=</span> <span class="st">"all"</span>,</span>
+<span>  center <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>bank</dt>
 <dd><p>BanksyObject</p></dd>
-<dt>spatialMode</dt>
-<dd><p>spatial mode to use - one of kNN_r, kNN_rn, kNN_rank,
-kNN_unif, rNN_gauss</p></dd>
+
+
+<dt>M</dt>
+<dd><p>(numeric) compute up to the k-th azimuthal fourier harmonic (default: 1)</p></dd>
+
+
+<dt>spatial_mode</dt>
+<dd><p>(character)</p><ul><li><p>kNN_r: k-nearest neighbors with $1/r$ kernel</p></li>
+<li><p>kNN_rn: k-nearest neighbors with $1/r^n$ kernel</p></li>
+<li><p>kNN_rank: k-nearest neighbors with rank Gaussian kernel</p></li>
+<li><p>kNN_unif: k-nearest neighbors wth uniform kernel</p></li>
+<li><p>kNN_median: k-nearest neighbors with median-scaled Gaussian kernel (default)</p></li>
+<li><p>rNN_gauss: radial nearest neighbors with Gaussian kernel</p></li>
+</ul></dd>
+
+
 <dt>k_geom</dt>
-<dd><p>kNN parameter - number of neighbors to use</p></dd>
+<dd><p>(numeric) number of neighbors to use (for kNN)</p></dd>
+
+
 <dt>n</dt>
-<dd><p>kNN_rn parameter - exponent of radius</p></dd>
+<dd><p>(numeric) exponent of radius (for kNN_rn)</p></dd>
+
+
 <dt>sigma</dt>
-<dd><p>rNN parameter - standard deviation of Gaussian kernel</p></dd>
+<dd><p>(numeric) std. dev. of Gaussian kernel (for rNN_gauss)</p></dd>
+
+
 <dt>alpha</dt>
-<dd><p>rNN parameter - determines radius used (larger alphas give
-smaller radii)</p></dd>
-<dt>kspatial</dt>
-<dd><p>rNN parameter - number of neighbors to use</p></dd>
+<dd><p>(numeric) determines radius used: larger alphas give
+smaller radii (for rNN_gauss)</p></dd>
+
+
+<dt>k_spatial</dt>
+<dd><p>(numeric) initial number of neighbors to use (for rNN_gauss)</p></dd>
+
+
 <dt>dimensions</dt>
-<dd><p>dimensions to use when computing neighborhood - one of
-column name in cell.locs, or 'all'</p></dd>
+<dd><p>(character vector) dimensions to use when computing neighborhood</p><ul><li><p>subset of colnames of cell.locs</p></li>
+<li><p>allUses all colnames of cell.locs to compute (default)</p></li>
+</ul></dd>
+
+
+<dt>center</dt>
+<dd><p>(logical) center higher order harmonics in local neighborhoods</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>messages</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>BanksyObject</p>
+    
+
+<p>BanksyObject</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateDataset.html">simulateDataset</a></span><span class="op">(</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">gcm</span>, cell.locs <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">locs</span>, meta.data <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">meta</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="NormalizeBanksy.html">NormalizeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># Compute neighbors </span></span>
-<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu">ComputeBanksy</span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateDataset.html">simulateDataset</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">gcm</span>, cell.locs <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">locs</span>, meta.data <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">meta</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="NormalizeBanksy.html">NormalizeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Compute neighbors </span></span></span>
+<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu">ComputeBanksy</span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing neighbors...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing neighbor matrix...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Spatial mode is kNN median</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Parameters: k_geom = 15</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
-<span class="r-in"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing neighbors...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Spatial mode is kNN median</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Parameters: k_geom = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing harmonic m = 0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 15 neighbors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing harmonic m = 1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 30 neighbors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Centering</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -148,8 +189,7 @@ column name in cell.locs, or 'all'</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

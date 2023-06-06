@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Banksy</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
       </span>
     </div>
 
@@ -45,12 +45,6 @@
     </li>
     <li>
       <a href="../articles/single-cell-exp.html">SingleCellExperiment interoperability</a>
-    </li>
-    <li>
-      <a href="../articles/Fig4_vignette.html">Fig. 4 analysis</a>
-    </li>
-    <li>
-      <a href="../articles/Varying-neighbourhood-parameters.html">Varying Neighboughood Size and Kernel Shape</a>
     </li>
   </ul></li>
 <li>
@@ -81,37 +75,46 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">asBanksyObject</span><span class="op">(</span>
-  <span class="va">se</span>,
-  expr.assay <span class="op">=</span> <span class="st">"counts"</span>,
-  features <span class="op">=</span> <span class="cn">NULL</span>,
-  coord.colnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sdimx"</span>, <span class="st">"sdimy"</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">asBanksyObject</span><span class="op">(</span></span>
+<span>  <span class="va">se</span>,</span>
+<span>  expr.assay <span class="op">=</span> <span class="st">"counts"</span>,</span>
+<span>  features <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  coord.colnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sdimx"</span>, <span class="st">"sdimy"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>se</dt>
 <dd><p>object of class SingleCellExperiment or SpatialExperiment</p></dd>
+
+
 <dt>expr.assay</dt>
 <dd><p>expression assay to extract</p></dd>
+
+
 <dt>features</dt>
 <dd><p>features to extract from expression assay</p></dd>
+
+
 <dt>coord.colnames</dt>
 <dd><p>colnames of expression in metadata from SCE</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>BanksyObject</p>
+    
+
+<p>BanksyObject</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateDataset.html">simulateDataset</a></span><span class="op">(</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu">SingleCellExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/SingleCellExperiment.html" class="external-link">SingleCellExperiment</a></span><span class="op">(</span></span>
-<span class="r-in">    assays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">gcm</span><span class="op">)</span>, colData <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">locs</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu">asBanksyObject</span><span class="op">(</span><span class="va">sce</span>, expr.assay <span class="op">=</span> <span class="st">'counts'</span>, </span>
-<span class="r-in">                            coord.colnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x'</span>, <span class="st">'y'</span><span class="op">)</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateDataset.html">simulateDataset</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sce</span> <span class="op">&lt;-</span> <span class="fu">SingleCellExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/SingleCellExperiment.html" class="external-link">SingleCellExperiment</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    assays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">gcm</span><span class="op">)</span>, colData <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">locs</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu">asBanksyObject</span><span class="op">(</span><span class="va">sce</span>, expr.assay <span class="op">=</span> <span class="st">'counts'</span>, </span></span>
+<span class="r-in"><span>                            coord.colnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x'</span>, <span class="st">'y'</span><span class="op">)</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -126,8 +129,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

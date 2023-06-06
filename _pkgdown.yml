@@ -20,8 +20,8 @@ reference:
       - SplitBanksy
   - title: Dimensionality reduction
     contents:
-      - RunPCA
-      - RunUMAP
+      - RunBanksyPCA
+      - RunBanksyUMAP
   - title: Clustering
     contents:
       - ClusterBanksy
@@ -75,9 +75,5 @@ navbar:
         href: articles/hypothalamus-analysis.html
       - text: SingleCellExperiment interoperability
         href: articles/single-cell-exp.html
-      - text: Fig. 4 analysis
-        href: articles/Fig4_vignette.html
-      - text: Varying Neighboughood Size and Kernel Shape
-        href: articles/Varying-neighbourhood-parameters.html
     - text: News
       href: news/index.html

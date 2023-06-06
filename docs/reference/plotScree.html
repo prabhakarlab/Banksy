@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Banksy</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
       </span>
     </div>
 
@@ -45,12 +45,6 @@
     </li>
     <li>
       <a href="../articles/single-cell-exp.html">SingleCellExperiment interoperability</a>
-    </li>
-    <li>
-      <a href="../articles/Fig4_vignette.html">Fig. 4 analysis</a>
-    </li>
-    <li>
-      <a href="../articles/Varying-neighbourhood-parameters.html">Varying Neighboughood Size and Kernel Shape</a>
     </li>
   </ul></li>
 <li>
@@ -81,38 +75,61 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">plotScree</span><span class="op">(</span><span class="va">bank</span>, <span class="va">lambda</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plotScree</span><span class="op">(</span><span class="va">bank</span>, <span class="va">lambda</span>, M <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>bank</dt>
 <dd><p>BanksyObject</p></dd>
+
+
 <dt>lambda</dt>
-<dd><p>numeric</p></dd>
+<dd><p>(numeric) spatial weighting parameter</p></dd>
+
+
+<dt>M</dt>
+<dd><p>(numeric) compute up to the k-th azimuthal fourier harmonic (default: 1)</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Scree plot</p>
+    
+
+<p>Scree plot</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Generate a simulated dataset</span></span>
-<span class="r-in"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateDataset.html">simulateDataset</a></span><span class="op">(</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">gcm</span>, cell.locs <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">locs</span>, meta.data <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">meta</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="NormalizeBanksy.html">NormalizeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ScaleBanksy.html">ScaleBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ComputeBanksy.html">ComputeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Generate a simulated dataset</span></span></span>
+<span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateDataset.html">simulateDataset</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="BanksyObject-class.html">BanksyObject</a></span><span class="op">(</span>own.expr <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">gcm</span>, cell.locs <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">locs</span>, meta.data <span class="op">=</span> <span class="va">d</span><span class="op">$</span><span class="va">meta</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="NormalizeBanksy.html">NormalizeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ScaleBanksy.html">ScaleBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ComputeBanksy.html">ComputeBanksy</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing neighbors...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing neighbor matrix...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Spatial mode is kNN median</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Parameters: k_geom = 15</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
-<span class="r-in"><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunPCA.html">RunPCA</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Running PCA for lambda=0.2</span>
-<span class="r-in"><span class="va">scree</span> <span class="op">&lt;-</span> <span class="fu">plotScree</span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">scree</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing neighbors...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Spatial mode is kNN median</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Parameters: k_geom = 30</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing harmonic m = 0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 15 neighbors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing harmonic m = 1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 30 neighbors</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Centering</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
+<span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunBanksyPCA.html">RunBanksyPCA</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running PCA for M=1 lambda=0.2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> BANKSY matrix with own.expr, F0, F1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Squared lambdas: 0.8, 0.1333, 0.0667</span>
+<span class="r-in"><span><span class="va">scree</span> <span class="op">&lt;-</span> <span class="fu">plotScree</span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">scree</span></span></span>
 <span class="r-plt img"><img src="plotScree-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -127,8 +144,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
-2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
