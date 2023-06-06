@@ -78,7 +78,7 @@ We use `lambda=0.2`, and compute 25 PCs on the scale BANKSY matrix:
 
 ```{r scale, eval=F}
 bank <- ScaleBanksy(bank)
-bank <- RunPCA(bank, lambda = 0.2, npcs = 25)
+bank <- RunBanksyPCA(bank, lambda = 0.2, npcs = 25)
 ```
 
 Finally, we perform Leiden clustering on 25 PCs:

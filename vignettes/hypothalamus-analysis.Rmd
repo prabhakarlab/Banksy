@@ -147,11 +147,12 @@ Because expression matrices can be large, one can also specify the maximum
 number of columns that should be plotted with `max.cols`. This subsamples the
 matrix to speed up plotting.
 
-```{r, heatmap, fig.width=9, fig.height=6, fig.align='center'}
+```{r, heatmap, fig.width=12, fig.height=10, fig.align='center'}
 set.seed(1000)
 plotHeatmap(bank, assay = 'banksy', lambda = 0.2, 
             annotate = TRUE, 
             annotate.by = c('Cell_class', clust.names(bank)), 
+            barplot.by = c('NODG', 'nCount'),
             order.by = clust.names(bank), 
             features = sample(rownames(own.expr(bank)), 100),
             max.cols = 200)

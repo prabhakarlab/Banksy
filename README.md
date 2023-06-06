@@ -92,10 +92,6 @@ detail different use cases:
     or
     [scater](https://bioconductor.org/packages/release/bioc/html/scater.html).
 
--   [Figure 4 data
-    analysis](https://prabhakarlab.github.io/Banksy/articles/Fig4_vignette.html):
-    Shows how the results shown in Fig. 4 of the paper were generated.
-
 *Banksy* is also interoperable with
 [Seurat](https://satijalab.org/seurat/) via *SeuratWrappers*.
 Documentation on how to run BANKSY on Seurat objects can be found
@@ -276,7 +272,7 @@ plotSpatialFeatures(bank, by = features, type = feature.types, main = main,
 Runtime for analysis
 </summary>
 
-    #> Time difference of 39.63754 secs
+    #> Time difference of 1.501372 mins
 
 </details>
 <details>

@@ -61,8 +61,9 @@ dimensions.
 slotNames(bank)
 ```
 
-* `own.expr` stores the raw gene*cell expression matrix  
-* `nbr.expr` stores the neighbour feature*cell expression matrix   
+* `own.expr` stores the gene by cell expression matrix  
+* `nbr.expr` stores the averaged neighborhood expression matrix
+* `harmonics` stores higher neighborhood harmonics matrices
 * `custom.expr` is an auxillary slot for storing a custom expression matrix
 * `cell.locs` stores the cell locations   
 * `meta.data` stores cell metadata, such as cluster labels or colours for 
@@ -76,7 +77,7 @@ populating the `nbr.expr` slot:
 
 ```{r compute, eval=T}
 bank <- NormalizeBanksy(bank)
-bank <- ComputeBanksy(bank)
+bank <- ComputeBanksy(bank, verbose=FALSE)
 bank <- ScaleBanksy(bank)
 head(bank)
 ```
@@ -94,9 +95,9 @@ Perform clustering with *ClusterBanksy*. This popluates the `meta.data` slot
 with cluster labels.
 
 ```{r cluster, eval=T}
+set.seed(42)
 bank <- ClusterBanksy(bank, lambda = 0.3, pca = TRUE, npcs = 20,
-                      method = 'leiden', resolution = 1.2, k.neighbors = 50,
-                      seed = 42)
+                      method = 'leiden', resolution = 1.2, k.neighbors = 50)
 
 head(meta.data(bank))
 ```
