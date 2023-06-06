@@ -15,7 +15,6 @@
 #' @param mclust.G (numeric) number of mixture components (mclust)
 #' @param kmeans.centers (numeric) number of clusters (kmeans)
 #' @param kmeans.iter.max (numeric) max number of iterations (kmeans)
-#' @param seed (numeric) seed
 #' @param verbose (logical) show progress bar
 #' @param ... to pass to methods
 #'
@@ -31,6 +30,7 @@
 #' bank <- ComputeBanksy(bank)
 #' bank <- ScaleBanksy(bank)
 #' bank <- RunBanksyPCA(bank, lambda = 0.3)
+#' set.seed(100)
 #' bank <- ClusterBanksy(bank, lambda = 0.3, npcs = 20, k.neighbors = 50, resolution = 0.5)
 #'
 ClusterBanksy <-
@@ -46,7 +46,6 @@ ClusterBanksy <-
              mclust.G = NULL,
              kmeans.centers = NULL,
              kmeans.iter.max = 10,
-             seed = 42,
              verbose = TRUE,
              ...) {
         method <- checkMethod(method)

@@ -38,7 +38,6 @@ plotHeatmap(
   column_gap = 1,
   rasterize = FALSE,
   max.cols = NULL,
-  seed = 42,
   name = "Expression",
   ...
 )
@@ -110,8 +109,6 @@ plotHeatmap(
 
 \item{max.cols}{max columns to display - will subsample if not NULL}
 
-\item{seed}{used for sampling}
-
 \item{name}{name of heatmap legend}
 
 \item{...}{parameters to pass to ComplexHeatmap::Heatmap}
@@ -128,6 +125,7 @@ d <- simulateDataset(n_cells = c(20,20,20), n_genes = 30)
 bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
 bank <- NormalizeBanksy(bank)
 bank <- ScaleBanksy(bank)
+set.seed(100)
 plotHeatmap(bank, annotate = TRUE, annotate.by = 'Label')
 
 }

@@ -368,7 +368,6 @@ plotSpatialFeatures <- function(bank,
 #' @param column_gap column gaps between column slices
 #' @param name name of heatmap legend
 #' @param max.cols max columns to display - will subsample if not NULL
-#' @param seed used for sampling
 #' @param rasterize rasterize if TRUE
 #' @param ... parameters to pass to ComplexHeatmap::Heatmap
 #'
@@ -385,6 +384,7 @@ plotSpatialFeatures <- function(bank,
 #' bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
 #' bank <- NormalizeBanksy(bank)
 #' bank <- ScaleBanksy(bank)
+#' set.seed(100)
 #' plotHeatmap(bank, annotate = TRUE, annotate.by = 'Label')
 #'
 plotHeatmap <-
@@ -427,7 +427,6 @@ plotHeatmap <-
              
              rasterize = FALSE,
              max.cols = NULL,
-             seed = 42,
              name = 'Expression',
              ...) {
         out <- getAssay(bank, assay, dataset, lambda, M, cells, features)
@@ -435,7 +434,7 @@ plotHeatmap <-
         row_chunks <- out$row_chunks
         
         if (!is.null(max.cols))
-            mat <- sampleMatrix(mat, max.cols, seed)
+            mat <- sampleMatrix(mat, max.cols)
         col.fun <- getHeatmapPalette(mat, col, col.breaks)
         
         if (assay == 'banksy') {
@@ -580,7 +579,6 @@ plotARI <-
 #'
 #' @param bank BanksyObject
 #' @param max.cells Number of cells to display
-#' @param seed Seed for sampling cells if max.cells is not NULL
 #' @param flow.colors Colors for alluvial flow
 #' @param cluster.order Order for clustering runs in horizontal axis
 #'
@@ -601,13 +599,13 @@ plotARI <-
 #' bank <- ComputeBanksy(bank)
 #' bank <- RunBanksyPCA(bank, lambda = 0.2)
 #' bank <- ClusterBanksy(bank, lambda = 0.2, npcs = 20, k.neighbors = 50, resolution = c(0.5,1.5))
+#' set.seed(100)
 #' plotAlluvia(bank, max.cells = 20)
 #' plotAlluvia(bank, max.cells = 20, cluster.order = rev(clust.names(bank)))
 #'
 plotAlluvia <-
     function(bank,
              max.cells = 500,
-             seed = 42,
              flow.colors = NULL,
              cluster.order = NULL) {
         df <- meta.data(bank)[, clust.names(bank), drop = FALSE]
@@ -1060,7 +1058,7 @@ getDiscretePalette <- function(feature, col.discrete = NULL) {
     
 }
 
-sampleMatrix <- function(mat, max.cols, seed) {
+sampleMatrix <- function(mat, max.cols) {
     message('Sampling ', max.cols)
     message('Keeping ', round(max.cols / ncol(mat) * 100, 2), '% of cells')
     keep <-

@@ -17,7 +17,6 @@ ClusterBanksy(
   mclust.G = NULL,
   kmeans.centers = NULL,
   kmeans.iter.max = 10,
-  seed = 42,
   verbose = TRUE,
   ...
 )
@@ -47,8 +46,6 @@ ClusterBanksy(
 
 \item{kmeans.iter.max}{(numeric) max number of iterations (kmeans)}
 
-\item{seed}{(numeric) seed}
-
 \item{verbose}{(logical) show progress bar}
 
 \item{...}{to pass to methods}
@@ -67,6 +64,7 @@ bank <- NormalizeBanksy(bank)
 bank <- ComputeBanksy(bank)
 bank <- ScaleBanksy(bank)
 bank <- RunBanksyPCA(bank, lambda = 0.3)
+set.seed(100)
 bank <- ClusterBanksy(bank, lambda = 0.3, npcs = 20, k.neighbors = 50, resolution = 0.5)
 
 }
