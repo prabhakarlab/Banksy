@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/jleechung/Banksy/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jleechung/Banksy/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/jleechung/Banksy/actions/workflows/check-standard.yml/badge.svg)](https://github.com/jleechung/Banksy/actions/workflows/check-standard.yml)
 [![codecov](https://codecov.io/gh/jleechung/Banksy/branch/main/graph/badge.svg?token=OZZK4EDVH9)](https://codecov.io/gh/jleechung/Banksy)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/jleechung/Banksy/graphs/commit-activity)
 <!-- badges: end -->

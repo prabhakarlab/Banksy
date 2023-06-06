@@ -2,7 +2,7 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/jleechung/Banksy/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jleechung/Banksy/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/jleechung/Banksy/actions/workflows/check-standard.yml/badge.svg)](https://github.com/jleechung/Banksy/actions/workflows/check-standard.yml)
 [![codecov](https://codecov.io/gh/jleechung/Banksy/branch/main/graph/badge.svg?token=OZZK4EDVH9)](https://codecov.io/gh/jleechung/Banksy)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/jleechung/Banksy/graphs/commit-activity)
 <!-- badges: end -->
@@ -229,8 +229,6 @@ bank <- RunBanksyPCA(bank, lambda = c(0, 0.2))
 Next, we obtain cluster assignments using graph-based clustering with
 the Leiden algorithm on the first 20 PCs.
 
--   `resolution`. Leiden clustering resolution.
-
 ``` r
 set.seed(42)
 bank <- ClusterBanksy(bank, lambda = c(0, 0.2), pca = TRUE, npcs = 20,
@@ -272,7 +270,7 @@ plotSpatialFeatures(bank, by = features, type = feature.types, main = main,
 Runtime for analysis
 </summary>
 
-    #> Time difference of 1.501372 mins
+    #> Time difference of 1.918232 mins
 
 </details>
 <details>
