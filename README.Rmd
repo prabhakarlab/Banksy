@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/jleechung/Banksy/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jleechung/Banksy/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/jleechung/Banksy/actions/workflows/check-standard.yml/badge.svg)](https://github.com/jleechung/Banksy/actions/workflows/check-standard.yml)
 [![codecov](https://codecov.io/gh/jleechung/Banksy/branch/main/graph/badge.svg?token=OZZK4EDVH9)](https://codecov.io/gh/jleechung/Banksy)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/jleechung/Banksy/graphs/commit-activity)
 <!-- badges: end -->
@@ -88,12 +88,13 @@ usage, along with several vignettes which detail different use cases:
   framework for interfacing with packages like [scran](https://bioconductor.org/packages/release/bioc/html/scran.html) 
   or [scater](https://bioconductor.org/packages/release/bioc/html/scater.html).
 
-* [Figure 4 data analysis](https://prabhakarlab.github.io/Banksy/articles/Fig4_vignette.html):
-  Shows how the results shown in Fig. 4 of the paper were generated. 
-  
 *Banksy* is also interoperable with [Seurat](https://satijalab.org/seurat/) via
 *SeuratWrappers*. Documentation on how to run BANKSY on Seurat objects can be 
 found [here](https://github.com/satijalab/seurat-wrappers/blob/master/docs/banksy.md). 
+For installation of *SeuratWrappers* with the latest BANKSY version, run
+```{r, eval=F}
+remotes::install_github('jleechung/seurat-wrappers')
+```
 
 ## Quick start
 
@@ -126,58 +127,46 @@ class(locs)
 head(locs)
 ```
 
-We store the total counts for each cell and the number of expressed genes as 
-metadata `data.frame`, which can optionally be supplied:
-
-```{r, eval = T}
-total_count <- colSums(expr)
-num_genes <- colSums(expr > 0)
-meta <- data.frame(total_count = total_count, num_genes = num_genes)
-```
-
-Next, create a *BanksyObject* with the expression matrix and cell locations 
-(metadata is optional).
+Next, create a *BanksyObject* with the expression matrix and cell locations.
 
 ```{r, eval = T}
 bank <- BanksyObject(own.expr = expr,
-                     cell.locs = locs,
-                     meta.data = meta)
+                     cell.locs = locs)
+
+head(bank)
 ```
 
 Apply basic QC by keeping only cells with total counts within the 5th and 98th 
 percentile:
 
 ```{r, eval = T}
-bank <- SubsetBanksy(bank, metadata = total_count > quantile(total_count, 0.05) &
-                                      total_count < quantile(total_count, 0.98))
+bank <- SubsetBanksy(bank, metadata = nCount > quantile(nCount, 0.05) &
+                                      nCount < quantile(nCount, 0.98))
 ```
 
 We first normalize the expression matrix, compute the neighbor matrix, and 
 scale the resulting matrices.
 
 ```{r, eval = T}
-bank <- NormalizeBanksy(bank, normFactor = 100)
-bank <- ComputeBanksy(bank, k_geom = 10, spatialMode = 'kNN_r')
+bank <- NormalizeBanksy(bank)
+bank <- ComputeBanksy(bank, k_geom = c(15, 30))
 bank <- ScaleBanksy(bank)
 ```
 
-Run PCA on the BANKSY matrix for `lambda = 0` (no spatial information) 
-and `lambda = 0.3`. 
+Run PCA on the BANKSY matrix for `lambda=0` (no spatial information) 
+and `lambda=0.2`. 
 
 ```{r, eval = T}
-bank <- RunPCA(bank, lambda = c(0, 0.3), npcs = 30)
+bank <- RunBanksyPCA(bank, lambda = c(0, 0.2))
 ```
 
 Next, we obtain cluster assignments using graph-based clustering with the Leiden
-algorithm on the first 20 PCs. Specify the following parameters:
-
-* `resolution`. Leiden clustering resolution.  
-* `k.neighbours`. Number of k neighbours to use for constructing sNN.
+algorithm on the first 20 PCs. 
 
 ```{r, eval = T}
 set.seed(42)
-bank <- ClusterBanksy(bank, lambda = c(0, 0.3), pca = TRUE, npcs = 20,
-                      method = 'leiden', k.neighbors = 50, resolution = 1.2)
+bank <- ClusterBanksy(bank, lambda = c(0, 0.2), pca = TRUE, npcs = 20,
+                      method = 'leiden', resolution = 1.2)
 ```
 
 Different clustering runs can be harmonised with `ConnectClusters`:
@@ -187,7 +176,7 @@ bank <- ConnectClusters(bank, map.to = clust.names(bank)[1])
 ``` 
 
 Visualise the clustering output for non-spatial clustering (`lambda=0`) and 
-BANKSY clustering (`lambda = 0.3`). 
+BANKSY clustering (`lambda=0.2`). 
 
 ```{r, eval = T, fig.height=8, fig.width=18}
 features <- clust.names(bank)
@@ -201,7 +190,7 @@ For clarity, we can visualise each of the clusters separately with `wrap = TRUE`
 
 ```{r, eval = T, fig.height=8, fig.width=18}
 plotSpatialFeatures(bank, by = features, type = feature.types, main = main, 
-                    pt.size = 0.5, main.size = 15, nrow = 1, ncol = 2, 
+                    pt.size = 1, main.size = 15, nrow = 1, ncol = 2, 
                     wrap = TRUE)
 ``` 
 

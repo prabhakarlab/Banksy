@@ -6,44 +6,47 @@
 \usage{
 ClusterBanksy(
   bank,
-  lambda = 0.25,
+  lambda = 0.2,
+  M = 1,
   pca = TRUE,
-  npcs = 30,
+  npcs = 20,
   method = c("leiden", "louvain", "mclust", "kmeans"),
-  k.neighbors = NULL,
-  resolution = NULL,
+  k.neighbors = 50,
+  resolution = 1,
   leiden.iter = -1,
   mclust.G = NULL,
   kmeans.centers = NULL,
   kmeans.iter.max = 10,
-  seed = 42,
+  verbose = TRUE,
   ...
 )
 }
 \arguments{
 \item{bank}{BanksyObject}
 
-\item{lambda}{weighting parameter}
+\item{lambda}{(numeric) weighting parameter}
 
-\item{pca}{if TRUE, runs clustering on PCA, else runs on Banksy matrix}
+\item{M}{(numeric) compute up to the k-th azimuthal fourier harmonic (default: 1)}
 
-\item{npcs}{number of pcs to use for clustering}
+\item{pca}{(logical) runs clustering on PCs (TRUE) or BANKSY matrix (FALSE)}
 
-\item{method}{one of leiden, louvain, mclust, kmeans}
+\item{npcs}{(numeric) number of pcs to use for clustering}
 
-\item{k.neighbors}{leiden / louvain - parameter for constructing shared nearest neighbor network}
+\item{method}{(character) one of leiden, louvain, mclust, kmeans}
 
-\item{resolution}{leiden - parameter used for clustering}
+\item{k.neighbors}{(numeric) parameter for constructing sNN (for louvain / leiden)}
 
-\item{leiden.iter}{leiden - number of leiden iterations}
+\item{resolution}{(numeric) parameter used for clustering (leiden)}
 
-\item{mclust.G}{mclust - number of mixture components G}
+\item{leiden.iter}{(numeric) number of leiden iterations (leiden)}
 
-\item{kmeans.centers}{kmeans - number of clusters}
+\item{mclust.G}{(numeric) number of mixture components (mclust)}
 
-\item{kmeans.iter.max}{kmeans - max number of iterations}
+\item{kmeans.centers}{(numeric) number of clusters (kmeans)}
 
-\item{seed}{seed}
+\item{kmeans.iter.max}{(numeric) max number of iterations (kmeans)}
+
+\item{verbose}{(logical) show progress bar}
 
 \item{...}{to pass to methods}
 }
@@ -60,7 +63,8 @@ bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
 bank <- NormalizeBanksy(bank)
 bank <- ComputeBanksy(bank)
 bank <- ScaleBanksy(bank)
-bank <- RunPCA(bank, lambda = 0.3)
+bank <- RunBanksyPCA(bank, lambda = 0.3)
+set.seed(100)
 bank <- ClusterBanksy(bank, lambda = 0.3, npcs = 20, k.neighbors = 50, resolution = 0.5)
 
 }

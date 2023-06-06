@@ -9,9 +9,14 @@ ScaleBanksy(bank, assay = "both", separate = TRUE)
 \arguments{
 \item{bank}{BanksyObject}
 
-\item{assay}{assay to scale - one of both, own, nbr (default: both)}
+\item{assay}{(character) assay to scale
+\itemize{
+ \item{own: Scales own.expr}
+ \item{nbr: Scales nbr.expr}
+ \item{both: Scales own.expr and nbr.expr (default)}
+}}
 
-\item{separate}{scale datasets separately}
+\item{separate}{(logical) scale datasets separately}
 }
 \value{
 scaled BanksyObject

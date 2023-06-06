@@ -6,7 +6,7 @@
 \usage{
 plotReduction(
   bank,
-  reduction,
+  reduction = NULL,
   components = c(1, 2),
   by = NULL,
   type = c("discrete", "continuous"),
@@ -27,37 +27,37 @@ plotReduction(
 \arguments{
 \item{bank}{BanksyObject}
 
-\item{reduction}{reduction to visualize}
+\item{reduction}{(character) reduction to visualize}
 
-\item{components}{which components to visualize}
+\item{components}{(numeric vector) which components to visualize}
 
-\item{by}{groupings for cells}
+\item{by}{(character) groupings for cells}
 
-\item{type}{type of groupings (one of 'discrete' or 'continuous')}
+\item{type}{(character) type of groupings (one of 'discrete' or 'continuous')}
 
-\item{pt.size}{size of points}
+\item{pt.size}{(numeric) size of points}
 
-\item{pt.alpha}{transparency of points}
+\item{pt.alpha}{(numeric) transparency of points}
 
-\item{col.midpoint}{for continuous labels - midpoint of color gradient}
+\item{col.midpoint}{(numeric) for continuous labels - midpoint of color gradient}
 
-\item{col.low}{for continuous labels - color gradient low}
+\item{col.low}{(character) for continuous labels - color gradient low}
 
-\item{col.mid}{for continuous labels - color gradient mid}
+\item{col.mid}{(character) for continuous labels - color gradient mid}
 
-\item{col.high}{for continuous labels - color gradient high}
+\item{col.high}{(character) for continuous labels - color gradient high}
 
-\item{col.discrete}{for discrete labels - colors for groupings}
+\item{col.discrete}{(character) for discrete labels - colors for groupings}
 
-\item{main}{title}
+\item{main}{(character) title}
 
-\item{main.size}{size of title}
+\item{main.size}{(numeric) size of title}
 
-\item{legend}{show legend}
+\item{legend}{(logical) show legend}
 
-\item{legend.text.size}{size of legend text}
+\item{legend.text.size}{(numeric) size of legend text}
 
-\item{legend.pt.size}{size of legend point}
+\item{legend.pt.size}{(numeric) size of legend point}
 }
 \value{
 Dimensionality reduction plot
@@ -72,8 +72,8 @@ bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
 bank <- NormalizeBanksy(bank)
 bank <- ScaleBanksy(bank)
 bank <- ComputeBanksy(bank)
-bank <- RunPCA(bank, lambda = 0.2)
+bank <- RunBanksyPCA(bank, lambda = 0.2)
 names(reduction(bank))
-plotReduction(bank, reduction = 'pca_0.2', by = 'Label', type = 'discrete')
+plotReduction(bank, by = 'Label', type = 'discrete')
 
 }

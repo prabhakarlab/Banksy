@@ -187,6 +187,7 @@ subsetCells <- function(x, cells) {
   }
 
   if (is.list(x@own.expr)) {
+    # Multi-dataset case
     x@own.expr <- lapply(x@own.expr, function(x) {
       keep <- which(colnames(x) %in% cells)
       x <- x[,keep, drop = FALSE]
@@ -199,11 +200,32 @@ subsetCells <- function(x, cells) {
         x
       })
     }
+    if (!is.null(x@harmonics)) {
+        dset_nms <- names(x@harmonics)
+        out <- lapply(dset_nms, function(d) {
+            nms <- names(x@harmonics[[d]])
+            x <- lapply(x@harmonics[[d]], function(h) {
+                keep <- which(colnames(h) %in% cells)
+                h[, keep, drop = FALSE]
+            })
+            names(x) <- nms
+            x
+        })
+        names(out) <- dset_nms
+        x@harmonics <- out 
+    }
   } else {
+    # Single-dataset case
     keep <- which(colnames(x@own.expr) %in% cells)
     x@own.expr <- x@own.expr[, keep, drop = FALSE]
     if (!is.null(x@nbr.expr)) {
       x@nbr.expr <- x@nbr.expr[, keep, drop = FALSE]
+    }
+    if (!is.null(x@harmonics)) {
+      nms <- names(x@harmonics)
+      out <- lapply(x@harmonics, function(h) h[, keep, drop=FALSE]) 
+      names(out) <- nms
+      x@harmonics <- out
     }
   }
   return(x)
@@ -227,12 +249,30 @@ subsetFeatures <- function(x, features) {
         x
       })
     }
-
+    if (!is.null(x@harmonics)) {
+        dset_nms <- names(x@harmonics)
+        out <- lapply(dset_nms, function(d) {
+            nms <- names(x@harmonics[[d]])
+            x <- lapply(x@harmonics[[d]], function(h) {
+                h[keep,,drop = FALSE]
+            })
+            names(x) <- nms
+            x
+        })
+        names(out) <- dset_nms
+        x@harmonics <- out 
+    }
   } else {
     keep <- which(rownames(x@own.expr) %in% features)
     x@own.expr <- x@own.expr[keep,,drop=FALSE]
     if (!is.null(x@nbr.expr)) {
       x@nbr.expr <- x@nbr.expr[keep,,drop=FALSE]
+    }
+    if (!is.null(x@harmonics)) {
+        nms <- names(x@harmonics)
+        out <- lapply(x@harmonics, function(h) h[keep,,drop=FALSE]) 
+        names(out) <- nms
+        x@harmonics <- out
     }
   }
   return(x)

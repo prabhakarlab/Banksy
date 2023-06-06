@@ -2,7 +2,7 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/jleechung/Banksy/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jleechung/Banksy/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/jleechung/Banksy/actions/workflows/check-standard.yml/badge.svg)](https://github.com/jleechung/Banksy/actions/workflows/check-standard.yml)
 [![codecov](https://codecov.io/gh/jleechung/Banksy/branch/main/graph/badge.svg?token=OZZK4EDVH9)](https://codecov.io/gh/jleechung/Banksy)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/jleechung/Banksy/graphs/commit-activity)
 <!-- badges: end -->
@@ -92,14 +92,15 @@ detail different use cases:
     or
     [scater](https://bioconductor.org/packages/release/bioc/html/scater.html).
 
--   [Figure 4 data
-    analysis](https://prabhakarlab.github.io/Banksy/articles/Fig4_vignette.html):
-    Shows how the results shown in Fig. 4 of the paper were generated.
-
 *Banksy* is also interoperable with
 [Seurat](https://satijalab.org/seurat/) via *SeuratWrappers*.
 Documentation on how to run BANKSY on Seurat objects can be found
 [here](https://github.com/satijalab/seurat-wrappers/blob/master/docs/banksy.md).
+For installation of *SeuratWrappers* with the latest BANKSY version, run
+
+``` r
+remotes::install_github('jleechung/seurat-wrappers')
+```
 
 ## Quick start
 
@@ -144,66 +145,94 @@ head(locs)
 #> cell_11310  14894.101 15810.37
 ```
 
-We store the total counts for each cell and the number of expressed
-genes as metadata `data.frame`, which can optionally be supplied:
-
-``` r
-total_count <- colSums(expr)
-num_genes <- colSums(expr > 0)
-meta <- data.frame(total_count = total_count, num_genes = num_genes)
-```
-
 Next, create a *BanksyObject* with the expression matrix and cell
-locations (metadata is optional).
+locations.
 
 ``` r
 bank <- BanksyObject(own.expr = expr,
-                     cell.locs = locs,
-                     meta.data = meta)
+                     cell.locs = locs)
+
+head(bank)
+#> own expression:
+#>         cell_1276 cell_8890 cell_691 cell_396 cell_9818
+#> Sparcl1        45         0       11       22         0
+#> Slc1a2         17         0        6        5         0
+#> Map            10         0       12       16         0
+#> Sqstm1         26         0        0        2         0
+#> Atp1a2          0         0        4        3         0
+#> 
+#> neighbour expression:
+#> NULL
+#> 
+#> cell locations:
+#>                sdimx    sdimy
+#> cell_1276 -13372.899 15776.37
+#> cell_8890   8941.101 15866.37
+#> cell_691  -14882.899 15896.37
+#> cell_396  -15492.899 15835.37
+#> cell_9818  11308.101 15846.37
+#> 
+#> metadata:
+#>             cell_ID nCount NODG
+#> cell_1276 cell_1276    266   51
+#> cell_8890 cell_8890     13    3
+#> cell_691   cell_691    132   36
+#> cell_396   cell_396     95   27
+#> cell_9818 cell_9818     10    5
 ```
 
 Apply basic QC by keeping only cells with total counts within the 5th
 and 98th percentile:
 
 ``` r
-bank <- SubsetBanksy(bank, metadata = total_count > quantile(total_count, 0.05) &
-                                      total_count < quantile(total_count, 0.98))
+bank <- SubsetBanksy(bank, metadata = nCount > quantile(nCount, 0.05) &
+                                      nCount < quantile(nCount, 0.98))
 ```
 
 We first normalize the expression matrix, compute the neighbor matrix,
 and scale the resulting matrices.
 
 ``` r
-bank <- NormalizeBanksy(bank, normFactor = 100)
-bank <- ComputeBanksy(bank, k_geom = 10, spatialMode = 'kNN_r')
+bank <- NormalizeBanksy(bank)
+bank <- ComputeBanksy(bank, k_geom = c(15, 30))
 #> Computing neighbors...
-#> Computing neighbor matrix...
+#> Spatial mode is kNN median
+#> Parameters: k_geom = 15
+#> Done
+#> Computing neighbors...
+#> Spatial mode is kNN median
+#> Parameters: k_geom = 30
+#> Done
+#> Computing harmonic m = 0
+#> Using 15 neighbors
+#> Done
+#> Computing harmonic m = 1
+#> Using 30 neighbors
+#> Centering
 #> Done
 bank <- ScaleBanksy(bank)
 ```
 
-Run PCA on the BANKSY matrix for `lambda = 0` (no spatial information)
-and `lambda = 0.3`.
+Run PCA on the BANKSY matrix for `lambda=0` (no spatial information) and
+`lambda=0.2`.
 
 ``` r
-bank <- RunPCA(bank, lambda = c(0, 0.3), npcs = 30)
-#> Running PCA for lambda=0
-#> Running PCA for lambda=0.3
+bank <- RunBanksyPCA(bank, lambda = c(0, 0.2))
+#> Running PCA for M=1 lambda=0
+#> BANKSY matrix with own.expr, F0, F1
+#> Squared lambdas: 1, 0, 0
+#> Running PCA for M=1 lambda=0.2
+#> BANKSY matrix with own.expr, F0, F1
+#> Squared lambdas: 0.8, 0.1333, 0.0667
 ```
 
 Next, we obtain cluster assignments using graph-based clustering with
-the Leiden algorithm on the first 20 PCs. Specify the following
-parameters:
-
--   `resolution`. Leiden clustering resolution.  
--   `k.neighbours`. Number of k neighbours to use for constructing sNN.
+the Leiden algorithm on the first 20 PCs.
 
 ``` r
 set.seed(42)
-bank <- ClusterBanksy(bank, lambda = c(0, 0.3), pca = TRUE, npcs = 20,
-                      method = 'leiden', k.neighbors = 50, resolution = 1.2)
-#> Iteration 1 out of 2
-#> Iteration 2 out of 2
+bank <- ClusterBanksy(bank, lambda = c(0, 0.2), pca = TRUE, npcs = 20,
+                      method = 'leiden', resolution = 1.2)
 ```
 
 Different clustering runs can be harmonised with `ConnectClusters`:
@@ -213,7 +242,7 @@ bank <- ConnectClusters(bank, map.to = clust.names(bank)[1])
 ```
 
 Visualise the clustering output for non-spatial clustering (`lambda=0`)
-and BANKSY clustering (`lambda = 0.3`).
+and BANKSY clustering (`lambda=0.2`).
 
 ``` r
 features <- clust.names(bank)
@@ -230,7 +259,7 @@ For clarity, we can visualise each of the clusters separately with
 
 ``` r
 plotSpatialFeatures(bank, by = features, type = feature.types, main = main, 
-                    pt.size = 0.5, main.size = 15, nrow = 1, ncol = 2, 
+                    pt.size = 1, main.size = 15, nrow = 1, ncol = 2, 
                     wrap = TRUE)
 ```
 
@@ -241,7 +270,7 @@ plotSpatialFeatures(bank, by = features, type = feature.types, main = main,
 Runtime for analysis
 </summary>
 
-    #> Time difference of 41.99911 secs
+    #> Time difference of 1.918232 mins
 
 </details>
 <details>
@@ -251,71 +280,72 @@ Session information
 
 ``` r
 sessionInfo()
-#> R version 4.1.2 (2021-11-01)
+#> R version 4.2.1 (2022-06-23 ucrt)
 #> Platform: x86_64-w64-mingw32/x64 (64-bit)
 #> Running under: Windows 10 x64 (build 19043)
 #> 
 #> Matrix products: default
 #> 
 #> locale:
-#> [1] LC_COLLATE=English_Singapore.1252  LC_CTYPE=English_Singapore.1252   
-#> [3] LC_MONETARY=English_Singapore.1252 LC_NUMERIC=C                      
-#> [5] LC_TIME=English_Singapore.1252    
+#> [1] LC_COLLATE=English_Singapore.utf8  LC_CTYPE=English_Singapore.utf8   
+#> [3] LC_MONETARY=English_Singapore.utf8 LC_NUMERIC=C                      
+#> [5] LC_TIME=English_Singapore.utf8    
 #> 
 #> attached base packages:
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] Banksy_0.1.3
+#> [1] Banksy_0.1.4
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] bitops_1.0-7                matrixStats_0.61.0         
+#>  [1] bitops_1.0-7                matrixStats_0.62.0         
 #>  [3] doParallel_1.0.17           RColorBrewer_1.1-3         
-#>  [5] GenomeInfoDb_1.30.1         tools_4.1.2                
-#>  [7] utf8_1.2.2                  R6_2.5.1                   
-#>  [9] irlba_2.3.5                 uwot_0.1.11                
-#> [11] DBI_1.1.2                   BiocGenerics_0.40.0        
-#> [13] colorspace_2.0-2            GetoptLong_1.0.5           
-#> [15] tidyselect_1.1.2            gridExtra_2.3              
-#> [17] compiler_4.1.2              cli_3.1.0                  
-#> [19] Biobase_2.54.0              DelayedArray_0.20.0        
-#> [21] labeling_0.4.2              scales_1.2.0               
-#> [23] stringr_1.4.0               digest_0.6.29              
-#> [25] dbscan_1.1-10               rmarkdown_2.13             
-#> [27] XVector_0.34.0              dichromat_2.0-0.1          
-#> [29] pkgconfig_2.0.3             htmltools_0.5.2            
-#> [31] MatrixGenerics_1.6.0        highr_0.9                  
-#> [33] fastmap_1.1.0               maps_3.4.0                 
-#> [35] rlang_1.0.2                 GlobalOptions_0.1.2        
-#> [37] pals_1.7                    rstudioapi_0.13            
-#> [39] farver_2.1.0                shape_1.4.6                
-#> [41] generics_0.1.2              mclust_5.4.9               
-#> [43] dplyr_1.0.7                 RCurl_1.98-1.6             
-#> [45] magrittr_2.0.1              GenomeInfoDbData_1.2.7     
-#> [47] Matrix_1.3-4                Rcpp_1.0.7                 
-#> [49] munsell_0.5.0               S4Vectors_0.32.3           
-#> [51] fansi_0.5.0                 lifecycle_1.0.1            
-#> [53] stringi_1.7.6               leidenAlg_1.0.2            
-#> [55] yaml_2.2.1                  ggalluvial_0.12.3          
-#> [57] SummarizedExperiment_1.24.0 zlibbioc_1.40.0            
-#> [59] plyr_1.8.6                  grid_4.1.2                 
-#> [61] parallel_4.1.2              crayon_1.5.1               
-#> [63] lattice_0.20-45             sccore_1.0.1               
-#> [65] mapproj_1.2.8               circlize_0.4.15            
-#> [67] knitr_1.37                  ComplexHeatmap_2.10.0      
-#> [69] pillar_1.7.0                igraph_1.2.11              
-#> [71] GenomicRanges_1.46.1        rjson_0.2.21               
-#> [73] codetools_0.2-18            stats4_4.1.2               
-#> [75] glue_1.6.0                  evaluate_0.15              
-#> [77] data.table_1.14.2           png_0.1-7                  
-#> [79] vctrs_0.3.8                 foreach_1.5.2              
-#> [81] gtable_0.3.0                grr_0.9.5                  
-#> [83] purrr_0.3.4                 clue_0.3-60                
-#> [85] assertthat_0.2.1            ggplot2_3.3.6              
-#> [87] xfun_0.29                   tibble_3.1.6               
-#> [89] RcppHungarian_0.2           iterators_1.0.14           
-#> [91] Matrix.utils_0.9.8          IRanges_2.28.0             
-#> [93] cluster_2.1.2               ellipsis_0.3.2
+#>  [5] progress_1.2.2              GenomeInfoDb_1.34.4        
+#>  [7] tools_4.2.1                 utf8_1.2.2                 
+#>  [9] R6_2.5.1                    irlba_2.3.5.1              
+#> [11] uwot_0.1.14                 DBI_1.1.3                  
+#> [13] BiocGenerics_0.44.0         colorspace_2.0-3           
+#> [15] GetoptLong_1.0.5            withr_2.5.0                
+#> [17] tidyselect_1.2.0            gridExtra_2.3              
+#> [19] prettyunits_1.1.1           compiler_4.2.1             
+#> [21] cli_3.4.1                   Biobase_2.58.0             
+#> [23] DelayedArray_0.24.0         labeling_0.4.2             
+#> [25] scales_1.2.1                stringr_1.5.0              
+#> [27] digest_0.6.30               dbscan_1.1-11              
+#> [29] rmarkdown_2.19              XVector_0.38.0             
+#> [31] dichromat_2.0-0.1           pkgconfig_2.0.3            
+#> [33] htmltools_0.5.4             MatrixGenerics_1.10.0      
+#> [35] highr_0.10                  fastmap_1.1.0              
+#> [37] maps_3.4.1                  rlang_1.0.6                
+#> [39] GlobalOptions_0.1.2         pals_1.7                   
+#> [41] rstudioapi_0.14             farver_2.1.1               
+#> [43] shape_1.4.6                 generics_0.1.3             
+#> [45] mclust_6.0.0                dplyr_1.0.10               
+#> [47] RCurl_1.98-1.9              magrittr_2.0.3             
+#> [49] GenomeInfoDbData_1.2.9      Matrix_1.5-3               
+#> [51] Rcpp_1.0.9                  munsell_0.5.0              
+#> [53] S4Vectors_0.36.0            fansi_1.0.3                
+#> [55] lifecycle_1.0.3             stringi_1.7.8              
+#> [57] leidenAlg_1.0.5             yaml_2.3.6                 
+#> [59] ggalluvial_0.12.3           SummarizedExperiment_1.28.0
+#> [61] zlibbioc_1.44.0             plyr_1.8.8                 
+#> [63] grid_4.2.1                  parallel_4.2.1             
+#> [65] crayon_1.5.2                lattice_0.20-45            
+#> [67] sccore_1.0.2                mapproj_1.2.9              
+#> [69] circlize_0.4.15             hms_1.1.2                  
+#> [71] knitr_1.41                  ComplexHeatmap_2.14.0      
+#> [73] pillar_1.8.1                igraph_1.3.5               
+#> [75] GenomicRanges_1.50.1        rjson_0.2.21               
+#> [77] codetools_0.2-18            stats4_4.2.1               
+#> [79] glue_1.6.2                  evaluate_0.19              
+#> [81] data.table_1.14.6           png_0.1-7                  
+#> [83] vctrs_0.5.1                 foreach_1.5.2              
+#> [85] gtable_0.3.1                clue_0.3-62                
+#> [87] assertthat_0.2.1            ggplot2_3.4.0              
+#> [89] xfun_0.36                   tibble_3.1.8               
+#> [91] RcppHungarian_0.2           iterators_1.0.14           
+#> [93] IRanges_2.32.0              cluster_2.1.4              
+#> [95] ellipsis_0.3.2
 ```
 
 </details>

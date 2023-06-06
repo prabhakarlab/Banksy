@@ -4,20 +4,12 @@
 \alias{plotAlluvia}
 \title{Plot Alluvial plot for different cluster assignments}
 \usage{
-plotAlluvia(
-  bank,
-  max.cells = 500,
-  seed = 42,
-  flow.colors = NULL,
-  cluster.order = NULL
-)
+plotAlluvia(bank, max.cells = 500, flow.colors = NULL, cluster.order = NULL)
 }
 \arguments{
 \item{bank}{BanksyObject}
 
 \item{max.cells}{Number of cells to display}
-
-\item{seed}{Seed for sampling cells if max.cells is not NULL}
 
 \item{flow.colors}{Colors for alluvial flow}
 
@@ -36,8 +28,9 @@ bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
 bank <- NormalizeBanksy(bank)
 bank <- ScaleBanksy(bank)
 bank <- ComputeBanksy(bank)
-bank <- RunPCA(bank, lambda = 0.2)
+bank <- RunBanksyPCA(bank, lambda = 0.2)
 bank <- ClusterBanksy(bank, lambda = 0.2, npcs = 20, k.neighbors = 50, resolution = c(0.5,1.5))
+set.seed(100)
 plotAlluvia(bank, max.cells = 20)
 plotAlluvia(bank, max.cells = 20, cluster.order = rev(clust.names(bank)))
 

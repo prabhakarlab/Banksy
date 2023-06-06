@@ -9,29 +9,36 @@ plotHeatmap(
   assay = "own.expr",
   dataset = NULL,
   lambda = NULL,
+  M = NULL,
   cells = NULL,
   features = NULL,
   col = NULL,
   col.breaks = NULL,
   col.discrete = NULL,
-  cluster.row = TRUE,
-  cluster.column = FALSE,
-  row.dend = FALSE,
-  column.dend = FALSE,
-  cex.row = 4,
   annotate = FALSE,
   annotate.by = NULL,
   order.by = NULL,
   annotation.name = TRUE,
   annotation.size = 6,
   annotation.pos = "right",
-  name = "Expression",
   barplot.by = NULL,
   barplot.border = FALSE,
-  barplot.width = 0.6,
-  max.cols = NULL,
-  seed = 42,
+  barplot.width = 0.5,
+  cluster_row_slices = FALSE,
+  show_row_dend = FALSE,
+  show_row_names = TRUE,
+  cluster_rows = FALSE,
+  cex.row = 4,
+  row_gap = 1,
+  cluster_column_slices = FALSE,
+  show_column_dend = FALSE,
+  show_column_names = FALSE,
+  cluster_columns = TRUE,
+  cex.column = 2,
+  column_gap = 1,
   rasterize = FALSE,
+  max.cols = NULL,
+  name = "Expression",
   ...
 )
 }
@@ -44,27 +51,17 @@ plotHeatmap(
 
 \item{lambda}{lambda if assay == banksy}
 
+\item{M}{maximum azimuthal Fourier transform to plot}
+
 \item{cells}{specific cells to plot}
 
 \item{features}{specific features to plot}
 
 \item{col}{colours to use in heatmap}
 
-\item{col.breaks}{color breaks to use in heatmap (same number as col is
-specified)}
+\item{col.breaks}{color breaks to use in heatmap (same number as col is specified)}
 
-\item{col.discrete}{cluster colors, named color array, names are clusters,
-values are colors in hexadecimal}
-
-\item{cluster.row}{cluster rows}
-
-\item{cluster.column}{cluster columns}
-
-\item{row.dend}{draw row dendrograms}
-
-\item{column.dend}{draw column dendrograms}
-
-\item{cex.row}{row label size}
+\item{col.discrete}{cluster colors, named color array, names are clusters, values are colors in hexadecimal}
 
 \item{annotate}{add annotation for cells}
 
@@ -78,19 +75,41 @@ values are colors in hexadecimal}
 
 \item{annotation.pos}{position of annotation labels}
 
-\item{name}{name of heatmap legend}
-
 \item{barplot.by}{metadata to plot barplots (numeric)}
 
 \item{barplot.border}{show borders of barplot}
 
 \item{barplot.width}{barplot width}
 
-\item{max.cols}{max columns to display - will subsample if not NULL}
+\item{cluster_row_slices}{cluster row slices (BANKSY)}
 
-\item{seed}{used for sampling}
+\item{show_row_dend}{show row dendrograms}
+
+\item{show_row_names}{show row names}
+
+\item{cluster_rows}{cluster rows}
+
+\item{cex.row}{row label size}
+
+\item{row_gap}{row gaps between row slices}
+
+\item{cluster_column_slices}{cluster column slices (annotations)}
+
+\item{show_column_dend}{show column dendrograms}
+
+\item{show_column_names}{show column names}
+
+\item{cluster_columns}{cluster columns}
+
+\item{cex.column}{column label size}
+
+\item{column_gap}{column gaps between column slices}
 
 \item{rasterize}{rasterize if TRUE}
+
+\item{max.cols}{max columns to display - will subsample if not NULL}
+
+\item{name}{name of heatmap legend}
 
 \item{...}{parameters to pass to ComplexHeatmap::Heatmap}
 }
@@ -106,6 +125,7 @@ d <- simulateDataset(n_cells = c(20,20,20), n_genes = 30)
 bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
 bank <- NormalizeBanksy(bank)
 bank <- ScaleBanksy(bank)
+set.seed(100)
 plotHeatmap(bank, annotate = TRUE, annotate.by = 'Label')
 
 }

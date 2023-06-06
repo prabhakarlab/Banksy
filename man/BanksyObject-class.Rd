@@ -8,6 +8,8 @@
 \alias{own.expr,BanksyObject-method}
 \alias{nbr.expr}
 \alias{nbr.expr,BanksyObject-method}
+\alias{harmonics}
+\alias{harmonics,BanksyObject-method}
 \alias{custom.expr}
 \alias{custom.expr,BanksyObject-method}
 \alias{cell.locs}
@@ -18,10 +20,14 @@
 \alias{reduction,BanksyObject-method}
 \alias{clust.names}
 \alias{clust.names,BanksyObject-method}
+\alias{reduction.names}
+\alias{reduction.names,BanksyObject-method}
 \alias{own.expr<-}
 \alias{own.expr<-,BanksyObject,assay-method}
 \alias{nbr.expr<-}
 \alias{nbr.expr<-,BanksyObject,assay-method}
+\alias{harmonics<-}
+\alias{harmonics<-,BanksyObject,assay-method}
 \alias{custom.expr<-}
 \alias{custom.expr<-,BanksyObject,assay-method}
 \alias{cell.locs<-}
@@ -37,6 +43,7 @@
 BanksyObject(
   own.expr = NULL,
   nbr.expr = NULL,
+  harmonics = NULL,
   custom.expr = NULL,
   cell.locs = NULL,
   meta.data = NULL,
@@ -52,6 +59,10 @@ own.expr(object)
 nbr.expr(object)
 
 \S4method{nbr.expr}{BanksyObject}(object)
+
+harmonics(object)
+
+\S4method{harmonics}{BanksyObject}(object)
 
 custom.expr(object)
 
@@ -73,6 +84,10 @@ clust.names(object)
 
 \S4method{clust.names}{BanksyObject}(object)
 
+reduction.names(object)
+
+\S4method{reduction.names}{BanksyObject}(object)
+
 own.expr(object) <- value
 
 \S4method{own.expr}{BanksyObject,assay}(object) <- value
@@ -80,6 +95,10 @@ own.expr(object) <- value
 nbr.expr(object) <- value
 
 \S4method{nbr.expr}{BanksyObject,assay}(object) <- value
+
+harmonics(object) <- value
+
+\S4method{harmonics}{BanksyObject,assay}(object) <- value
 
 custom.expr(object) <- value
 
@@ -105,6 +124,8 @@ reduction(object) <- value
 \item{own.expr}{own expression}
 
 \item{nbr.expr}{neighbour expression}
+
+\item{harmonics}{azimuthal fourier harmonics}
 
 \item{custom.expr}{custom expression}
 
@@ -135,69 +156,83 @@ S4 class BanksyObject
 }
 \section{Functions}{
 \itemize{
-\item \code{own.expr}: getter own.expr
+\item \code{own.expr()}: getter own.expr
 
-\item \code{own.expr,BanksyObject-method}: getter own.expr
+\item \code{own.expr(BanksyObject)}: getter own.expr
 
-\item \code{nbr.expr}: getter nbr.expr
+\item \code{nbr.expr()}: getter nbr.expr
 
-\item \code{nbr.expr,BanksyObject-method}: getter nbr.expr
+\item \code{nbr.expr(BanksyObject)}: getter nbr.expr
 
-\item \code{custom.expr}: getter custom.expr
+\item \code{harmonics()}: getter harmonics
 
-\item \code{custom.expr,BanksyObject-method}: getter custom.expr
+\item \code{harmonics(BanksyObject)}: getter harmonics
 
-\item \code{cell.locs}: getter cell.locs
+\item \code{custom.expr()}: getter custom.expr
 
-\item \code{cell.locs,BanksyObject-method}: getter cell.locs
+\item \code{custom.expr(BanksyObject)}: getter custom.expr
 
-\item \code{meta.data}: getter meta.data
+\item \code{cell.locs()}: getter cell.locs
 
-\item \code{meta.data,BanksyObject-method}: getter meta.data
+\item \code{cell.locs(BanksyObject)}: getter cell.locs
 
-\item \code{reduction}: getter reduction
+\item \code{meta.data()}: getter meta.data
 
-\item \code{reduction,BanksyObject-method}: getter reduction
+\item \code{meta.data(BanksyObject)}: getter meta.data
 
-\item \code{clust.names}: getter clust.names
+\item \code{reduction()}: getter reduction
 
-\item \code{clust.names,BanksyObject-method}: getter clust.names
+\item \code{reduction(BanksyObject)}: getter reduction
 
-\item \code{own.expr<-}: setter for own.expr
+\item \code{clust.names()}: getter clust.names
 
-\item \code{own.expr<-,BanksyObject,assay-method}: setter for own.expr
+\item \code{clust.names(BanksyObject)}: getter clust.names
 
-\item \code{nbr.expr<-}: setter for nbr.expr
+\item \code{reduction.names()}: getter reduction.names
 
-\item \code{nbr.expr<-,BanksyObject,assay-method}: setter for nbr.expr
+\item \code{reduction.names(BanksyObject)}: getter reduction.names
 
-\item \code{custom.expr<-}: setter for custom.expr
+\item \code{own.expr(object) <- value}: setter for own.expr
 
-\item \code{custom.expr<-,BanksyObject,assay-method}: setter for custom.expr
+\item \code{own.expr(object = BanksyObject) <- value}: setter for own.expr
 
-\item \code{cell.locs<-}: setter for cell.locs
+\item \code{nbr.expr(object) <- value}: setter for nbr.expr
 
-\item \code{cell.locs<-,BanksyObject,assay-method}: setter for cell.locs
+\item \code{nbr.expr(object = BanksyObject) <- value}: setter for nbr.expr
 
-\item \code{meta.data<-}: setter for meta.data
+\item \code{harmonics(object) <- value}: setter for harmonics
 
-\item \code{meta.data<-,BanksyObject,data.frame-method}: setter for meta.data
+\item \code{harmonics(object = BanksyObject) <- value}: setter for harmonics
 
-\item \code{reduction<-}: setter for reduction
+\item \code{custom.expr(object) <- value}: setter for custom.expr
 
-\item \code{reduction<-,BanksyObject,list-method}: setter for reduction
+\item \code{custom.expr(object = BanksyObject) <- value}: setter for custom.expr
 
-\item \code{show,BanksyObject-method}: show BanksyObject
+\item \code{cell.locs(object) <- value}: setter for cell.locs
 
-\item \code{head,BanksyObject-method}: header for BanksyObject
+\item \code{cell.locs(object = BanksyObject) <- value}: setter for cell.locs
+
+\item \code{meta.data(object) <- value}: setter for meta.data
+
+\item \code{meta.data(object = BanksyObject) <- value}: setter for meta.data
+
+\item \code{reduction(object) <- value}: setter for reduction
+
+\item \code{reduction(object = BanksyObject) <- value}: setter for reduction
+
+\item \code{show(BanksyObject)}: show BanksyObject
+
+\item \code{head(BanksyObject)}: header for BanksyObject
+
 }}
-
 \section{Slots}{
 
 \describe{
 \item{\code{own.expr}}{own expression}
 
 \item{\code{nbr.expr}}{neighbour expression}
+
+\item{\code{harmonics}}{azimuthal fourier harmonics}
 
 \item{\code{custom.expr}}{custom expression}
 
@@ -220,10 +255,13 @@ bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
 mat <- own.expr(bank)
 d <- simulateDataset()
 bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
-mat <- own.expr(bank)
+mat <- nbr.expr(bank)
 d <- simulateDataset()
 bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
-mat <- nbr.expr(bank)
+lst <- harmonics(bank)
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+mat <- custom.expr(bank)
 d <- simulateDataset()
 bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
 df <- cell.locs(bank)
@@ -236,4 +274,7 @@ lst <- reduction(bank)
 d <- simulateDataset()
 bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
 vec <- clust.names(bank)
+d <- simulateDataset()
+bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
+vec <- reduction.names(bank)
 }
