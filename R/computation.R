@@ -188,7 +188,7 @@ ComputeBanksy <- function(bank, M = 1,
     M <- seq(0, M)
     if (length(k_geom) == 1) {
         k_geom <- rep_len(k_geom, max(M)+1)
-        k_geom <- k_geom * seq(length(k_geom))
+        # k_geom <- k_geom * seq(length(k_geom))
     }
     if (length(k_geom)!=length(M)) stop('Specify a single k_geom or ensure sufficient k_geoms specified for each of ', length(M), ' harmonics.')
 
