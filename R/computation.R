@@ -1,9 +1,12 @@
-# NormalizeBanksy
-# ScaleBanksy
-# SubsetBanksy
-# ComputeBanksy
 
-#' Normalize columns to a normFactor
+# This file implements 
+# - NormalizeBanksy
+# - ScaleBanksy
+# - ComputeBanksy
+
+# ------------------------------------------------------------------------------
+
+#' Column-wise normalization of assays in a BanksyObject
 #'
 #' @param bank BanksyObject
 #' @param assay (character) assay to scale
@@ -28,59 +31,92 @@
 #' # Normalize the own.expr matrix
 #' bank <- NormalizeBanksy(bank)
 #' 
-NormalizeBanksy <- function(bank, assay = 'both', norm_factor = NULL,
-                            log_norm = FALSE, pseudocount = 0.1, base = 10) {
-
-  scaleOwn <- TRUE
-  scaleNbr <- TRUE
-  if (assay == 'own') {
-    scaleNbr <- FALSE
-  } else if (assay == 'nbr') {
-    scaleOwn <- FALSE
-  } else if (assay != 'both'){
-    stop('Specify a valid assay. One of both, own, or nbr.')
-  }
-  
-  if (is.null(norm_factor)) {
-      if (is.list(bank@own.expr)) {
-          norm_factor = median(sapply(bank@own.expr, function(x) median(colSums(x))))
-      } else {
-          norm_factor = median(colSums(bank@own.expr))
-      }
-  }
-
-  if (!is.null(bank@own.expr) & scaleOwn) {
-    if (is.list(bank@own.expr)) {
-      bank@own.expr <- lapply(bank@own.expr, normalizer, norm_factor,
-                              log_norm, pseudocount, base)
-    } else {
-      bank@own.expr <- normalizer(bank@own.expr, norm_factor,
-                                  log_norm, pseudocount, base)
+NormalizeBanksy <- function(bank,
+                            assay = 'both',
+                            norm_factor = NULL,
+                            log_norm = FALSE,
+                            pseudocount = 0.1,
+                            base = 10) {
+    scaleOwn <- TRUE
+    scaleNbr <- TRUE
+    if (assay == 'own') {
+        scaleNbr <- FALSE
+    } else if (assay == 'nbr') {
+        scaleOwn <- FALSE
+    } else if (assay != 'both') {
+        stop('Specify a valid assay. One of both, own, or nbr.')
     }
-  }
-  
-  if (!is.null(bank@nbr.expr) & scaleNbr) {
-    if (is.list(bank@nbr.expr)) {
-      bank@nbr.expr <- lapply(bank@nbr.expr, normalizer, norm_factor,
-                              log_norm, pseudocount, base)
-      bank@harmonics <- lapply(names(bank@harmonics), function(x) {
-          lapply(bank@harmonics[[x]], function(x) {
-              normalizer(x, norm_factor, log_norm, pseudocount, base)
-          })
-      })
-      names(bank@harmonics) <- names(bank@nbr.expr)
-    } else {
-      bank@nbr.expr <- normalizer(bank@nbr.expr, norm_factor,
-                                  log_norm, pseudocount, base)
-      bank@harmonics <- lapply(bank@harmonics, function(x) {
-          normalizer(x, norm_factor, log_norm, pseudocount, base)
-      })
+    
+    if (is.null(norm_factor)) {
+        if (is.list(bank@own.expr)) {
+            norm_factor = median(sapply(bank@own.expr, function(x)
+                median(colSums(x))))
+        } else {
+            norm_factor = median(colSums(bank@own.expr))
+        }
     }
-  }
-  return(bank)
+    
+    if (!is.null(bank@own.expr) & scaleOwn) {
+        if (is.list(bank@own.expr)) {
+            bank@own.expr <- lapply(bank@own.expr,
+                                    normalizer,
+                                    norm_factor,
+                                    log_norm,
+                                    pseudocount,
+                                    base)
+        } else {
+            bank@own.expr <- normalizer(bank@own.expr,
+                                        norm_factor,
+                                        log_norm,
+                                        pseudocount,
+                                        base)
+        }
+    }
+    
+    if (!is.null(bank@nbr.expr) & scaleNbr) {
+        if (is.list(bank@nbr.expr)) {
+            bank@nbr.expr <- lapply(bank@nbr.expr,
+                                    normalizer,
+                                    norm_factor,
+                                    log_norm,
+                                    pseudocount,
+                                    base)
+            bank@harmonics <- lapply(names(bank@harmonics), function(x) {
+                lapply(bank@harmonics[[x]], function(x) {
+                    normalizer(x,
+                               norm_factor,
+                               log_norm,
+                               pseudocount,
+                               base)
+                })
+            })
+            names(bank@harmonics) <- names(bank@nbr.expr)
+        } else {
+            bank@nbr.expr <- normalizer(bank@nbr.expr,
+                                        norm_factor,
+                                        log_norm,
+                                        pseudocount,
+                                        base)
+            bank@harmonics <- lapply(bank@harmonics, function(x) {
+                normalizer(x, norm_factor, log_norm, pseudocount, base)
+            })
+        }
+    }
+    return(bank)
 }
 
-#' Scale rows
+
+normalizer <- function(x, norm_factor, log_norm, pseudocount, base) {
+    x <- t(t(x) / colSums(x)) * norm_factor
+    if (log_norm)
+        x <- log(x + pseudocount, base = base)
+    return(x)
+}
+
+
+# ------------------------------------------------------------------------------
+
+#' Row-wise scaling of assays in a BanksyObject
 #'
 #' @param bank BanksyObject
 #' @param assay (character) assay to scale
@@ -104,42 +140,83 @@ NormalizeBanksy <- function(bank, assay = 'both', norm_factor = NULL,
 #' # Scale the own.expr matrix
 #' bank <- ScaleBanksy(bank)
 #' 
-ScaleBanksy <- function(bank, assay = 'both', separate = TRUE) {
-
-  scaleOwn <- TRUE
-  scaleNbr <- TRUE
-  if (assay == 'own') {
-    scaleNbr <- FALSE
-  } else if (assay == 'nbr') {
-    scaleOwn <- FALSE
-  } else if (assay != 'both'){
-    stop('Specify a valid assay. One of both, own, or nbr.')
-  }
-
-  if (!is.null(bank@own.expr) & scaleOwn) {
-    if (is.list(bank@own.expr)) {
-      if (separate) bank@own.expr <- lapply(bank@own.expr, scaler)
-      else {
-        bank@own.expr <- scalerAll(bank@own.expr)
-      }
-    } else {
-      bank@own.expr <- scaler(bank@own.expr)
+ScaleBanksy <- function(bank,
+                        assay = 'both',
+                        separate = TRUE) {
+    scaleOwn <- TRUE
+    scaleNbr <- TRUE
+    if (assay == 'own') {
+        scaleNbr <- FALSE
+    } else if (assay == 'nbr') {
+        scaleOwn <- FALSE
+    } else if (assay != 'both') {
+        stop('Specify a valid assay. One of both, own, or nbr.')
     }
-  }
-  if (!is.null(bank@nbr.expr) & scaleNbr) {
-    if (is.list(bank@nbr.expr)) {
-      bank@nbr.expr <- lapply(bank@nbr.expr, scaler)
-      bank@harmonics <- lapply(names(bank@harmonics), function(x) {
-          lapply(bank@harmonics[[x]], scaler)
-      })
-      names(bank@harmonics) <- names(bank@nbr.expr)
-    } else {
-      bank@nbr.expr <- scaler(bank@nbr.expr)
-      bank@harmonics <- lapply(bank@harmonics, scaler)
+    
+    if (!is.null(bank@own.expr) & scaleOwn) {
+        if (is.list(bank@own.expr)) {
+            if (separate)
+                bank@own.expr <- lapply(bank@own.expr, scaler)
+            else {
+                bank@own.expr <- scalerAll(bank@own.expr)
+            }
+        } else {
+            bank@own.expr <- scaler(bank@own.expr)
+        }
     }
-  }
-  return(bank)
+    if (!is.null(bank@nbr.expr) & scaleNbr) {
+        if (is.list(bank@nbr.expr)) {
+            bank@nbr.expr <- lapply(bank@nbr.expr, scaler)
+            bank@harmonics <- lapply(names(bank@harmonics), function(x) {
+                lapply(bank@harmonics[[x]], scaler)
+            })
+            names(bank@harmonics) <- names(bank@nbr.expr)
+        } else {
+            bank@nbr.expr <- scaler(bank@nbr.expr)
+            bank@harmonics <- lapply(bank@harmonics, scaler)
+        }
+    }
+    return(bank)
 }
+
+
+#' @importFrom matrixStats rowSds
+scaler <- function(x) {
+    rm <- rowMeans(x)
+    rsd <- rowSds(x)
+    x <- (x - rm) / rsd
+    x[is.nan(x)] <- 0
+    return(x)
+}
+
+
+#' @importFrom matrixStats rowVars
+scalerAll <- function(x) {
+    sumIndiv <- lapply(x, rowSums)
+    nIndiv <- lapply(x, ncol)
+    nAll <- sum(unlist(nIndiv))
+    sumAll <- Reduce(`+`, sumIndiv)
+    meanAll <- sumAll / nAll
+    
+    varIndiv <- lapply(x, rowVars)
+    meanIndiv <- lapply(x, rowMeans)
+    zeroIndiv <- lapply(meanIndiv, `-`, meanAll)
+    a <- Map(`*`, varIndiv, nIndiv)
+    b <- Map(`*`, zeroIndiv, nIndiv)
+    numIndiv <- Map(`+`, a, b)
+    numAll <- Reduce(`+`, numIndiv)
+    sdAll <- sqrt(numAll / nAll)
+    
+    x <- lapply(x, function(d) {
+        d <- (d - meanAll) / sdAll
+        d[is.nan(d)] <- 0
+        d
+    })
+    return(x)
+}
+
+
+# ------------------------------------------------------------------------------
 
 #' Compute Banksy Matrices
 #' @param bank BanksyObject
@@ -264,110 +341,6 @@ ComputeBanksy <- function(bank, M = 1,
     return(bank)
 }
 
-# Index of helper functions and where they are called
-# geneFilter ---------------- BanksyObject
-# normalizer ---------------- NormalizeBanksy
-# scaler -------------------- ScaleBanksy
-# scalerAll ----------------- ScaleBanksy
-# computeHarmonics ---------- ComputeBanksy
-# computeNeighbors ---------- ComputeBanksy
-# getSpatialDims ------------ ComputeBanksy
-# with<Method> -------------- ComputeBanksy
-# getPhi -------------------- computeHarmonics
-# mmult --------------------- ComputeBanksy
-# getLambdas ---------------- getBanksyMatrix
-
-geneFilter <- function(x, genes.filter, min.cells.expressed) {
-
-  ngenesBef <- vapply(x, function(x) dim(x)[1], FUN.VALUE = numeric(1))
-
-  if (genes.filter == 'union') {
-    all.genes <- Reduce(union, lapply(x, rownames))
-    x <- lapply(x, function(x) {
-      genes <- setdiff(all.genes, rownames(x))
-      if (length(genes) == 0) {
-        return(x)
-      } else {
-        append <- matrix(0, nrow = length(genes), ncol = ncol(x))
-        colnames(append) <- colnames(x)
-        rownames(append) <- genes
-        x <- rbind(x, append)
-        return(x)
-      }
-    })
-  } else if (genes.filter == 'intersect') {
-    common.genes <- Reduce(intersect, lapply(x, rownames))
-    x <- lapply(x, function(x) x[rownames(x) %in% common.genes,])
-
-    if (min.cells.expressed > 0) {
-      message('Filering genes expressed in less than ', min.cells.expressed, ' cells')
-      pass.genes <- lapply(x, function(x) rownames(x)[rowSums(x > 0) >= min.cells.expressed])
-      pass.genes <- Reduce(intersect, pass.genes)
-      x <- lapply(x, function(x) x[rownames(x) %in% pass.genes,])
-      ngenesAft <- vapply(x, function(x) dim(x)[1], FUN.VALUE = numeric(1))
-      filt <- ngenesBef - ngenesAft
-      for (i in seq_len(length(x))) {
-        message('Filtered ', filt[i], ' genes from dataset ', names(x)[i])
-      }
-
-    }
-  }
-
-  ## Harmonise gene name orderings
-  gene.names <- sort(rownames(x[[1]]))
-  x <- lapply(x, function(x) {
-    x[match(gene.names, rownames(x)),]
-  })
-
-  return(x)
-}
-
-normalizer <- function(x, norm_factor, log_norm, pseudocount, base) {
-  x <- t(t(x) / colSums(x)) * norm_factor
-  if (log_norm) x <- log(x + pseudocount, base = base)
-  return(x)
-}
-
-#' @importFrom matrixStats rowSds
-scaler <- function(x) {
-  rm <- rowMeans(x)
-  rsd <- rowSds(x)
-  x <- (x - rm) / rsd
-  x[is.nan(x)] <- 0
-  return(x)
-}
-
-fscale <- function(x) {
-    rm <- rowMeans(x)
-    x <- (x - rm) 
-    return(x)
-}
-
-#' @importFrom matrixStats rowVars
-scalerAll <- function(x) {
-
-  sumIndiv <- lapply(x, rowSums)
-  nIndiv <- lapply(x, ncol)
-  nAll <- sum(unlist(nIndiv))
-  sumAll <- Reduce(`+`, sumIndiv)
-  meanAll <- sumAll / nAll
-
-  varIndiv <- lapply(x, rowVars)
-  meanIndiv <- lapply(x, rowMeans)
-  zeroIndiv <- lapply(meanIndiv, `-`, meanAll)
-  a <- Map(`*`, varIndiv, nIndiv)
-  b <- Map(`*`, zeroIndiv, nIndiv)
-  numIndiv <- Map(`+`, a,b)
-  numAll <- Reduce(`+`, numIndiv)
-  sdAll <- sqrt(numAll / nAll)
-
-  x <- lapply(x, function(d) {
-    d <- (d - meanAll) / sdAll
-    d[is.nan(d)] <- 0
-    d
-  })
-  return(x)
-}
 
 getLambdasDeprecate <- function(lambda, n_harmonics) {
     lam = c(lambda, lambda * (2^-seq_len(n_harmonics-1)))
@@ -376,6 +349,7 @@ getLambdasDeprecate <- function(lambda, n_harmonics) {
     sqrt(lam)
 }
 
+
 getLambdas <- function(lambda, n_harmonics) {
     weights = lambda * (2^-seq(0, n_harmonics-1))
     weights = weights / sum(2^-seq(0, n_harmonics-1))
@@ -383,6 +357,7 @@ getLambdas <- function(lambda, n_harmonics) {
     message('Squared lambdas: ', paste0(round(lam,4), collapse = ', '))
     sqrt(lam)
 }
+
 
 #' Returns the Banksy matrix (own + nbr)
 #'
@@ -444,32 +419,38 @@ getBanksyMatrix <- function(bank, lambda = 0.2, M = 1) {
     return(list(expr = joint, locs = locs))
 }
 
+
 getSpatialDims <- function(locs, dimensions, alpha) {
-
-  cellID <- seq_len(nrow(locs))
-  names(cellID) <- locs$cell_ID
-  locs <- locs[, grepl('sdim', colnames(locs)), with = FALSE]
-
-  if (dimensions != "all") {
-    if (all(dimensions %in% colnames(locs))) stop('Invalid dimensions specified')
-    locs <- locs[, dimensions]
-  }
-
-  # Set kernel radius based on number of dimensions
-  ndims <- ncol(locs)
-  nz <- length(unique(locs$sdimz))
-  if (ndims < 2) {
-    stop('Must have at least 2 spatial locations.')
-  } else if (nz == 1) {
-    ndims <- ndims - 1
-  }
-  kernelRadius <- sqrt(-ndims * log(alpha))
-
-  locs <- as.matrix(locs)
-  rownames(locs) <- names(cellID)
-
-  return(list(locs = locs, kr = kernelRadius, cellID = cellID))
+    cellID <- seq_len(nrow(locs))
+    names(cellID) <- locs$cell_ID
+    locs <- locs[, grepl('sdim', colnames(locs)), with = FALSE]
+    
+    if (dimensions != "all") {
+        if (all(dimensions %in% colnames(locs)))
+            stop('Invalid dimensions specified')
+        locs <- locs[, dimensions]
+    }
+    
+    # Set kernel radius based on number of dimensions
+    ndims <- ncol(locs)
+    nz <- length(unique(locs$sdimz))
+    if (ndims < 2) {
+        stop('Must have at least 2 spatial locations.')
+    } else if (nz == 1) {
+        ndims <- ndims - 1
+    }
+    kernelRadius <- sqrt(-ndims * log(alpha))
+    
+    locs <- as.matrix(locs)
+    rownames(locs) <- names(cellID)
+    
+    return(list(
+        locs = locs,
+        kr = kernelRadius,
+        cellID = cellID
+    ))
 }
+
 
 #' @importFrom data.table `:=`
 computeNeighbors <- function(locs,
@@ -547,6 +528,14 @@ getPhi <- function(locs, from, to) {
     phi + as.integer(phi < 0) * 2*pi
 }
 
+
+fscale <- function(x) {
+    rm <- rowMeans(x)
+    x <- (x - rm) 
+    return(x)
+}
+
+
 #' @importFrom dbscan kNN
 #' @importFrom data.table data.table setDT  setnames `:=` rbindlist
 #' @importFrom stats dnorm
@@ -587,6 +576,7 @@ withRNNgauss <- function(locs, sigma, kspatial, kernelRadius, verbose) {
     return(knnDF)
 }
 
+
 #' @importFrom dbscan kNN
 #' @importFrom data.table data.table setnames `:=`
 withKNNrank <- function(locs, k_geom, verbose) {
@@ -612,6 +602,7 @@ withKNNrank <- function(locs, k_geom, verbose) {
     
     return(knnDF)
 }
+
 
 #' @importFrom dbscan kNN
 #' @importFrom data.table data.table setnames `:=`
@@ -640,6 +631,7 @@ withKNNr <- function(locs, k_geom, verbose) {
     return(knnDF)
 }
 
+
 #' @importFrom dbscan kNN
 #' @importFrom data.table data.table setnames `:=`
 withKNNrn <- function(locs, k_geom, n, verbose) {
@@ -667,6 +659,7 @@ withKNNrn <- function(locs, k_geom, n, verbose) {
     return(knnDF)
 }
 
+
 #' @importFrom dbscan kNN
 #' @importFrom data.table data.table setnames `:=`
 withKNNunif <- function(locs, k_geom, verbose) {
@@ -693,6 +686,7 @@ withKNNunif <- function(locs, k_geom, verbose) {
     
     return(knnDF)
 }
+
 
 #' @importFrom dbscan kNN
 #' @importFrom data.table data.table setnames `:=`

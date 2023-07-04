@@ -1,4 +1,3 @@
-# DimReduction
 
 #' Run PCA
 #'
