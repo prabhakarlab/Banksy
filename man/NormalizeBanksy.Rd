@@ -2,7 +2,7 @@
 % Please edit documentation in R/computation.R
 \name{NormalizeBanksy}
 \alias{NormalizeBanksy}
-\title{Normalize columns to a normFactor}
+\title{Column-wise normalization of assays in a BanksyObject}
 \usage{
 NormalizeBanksy(
   bank,
@@ -35,7 +35,7 @@ NormalizeBanksy(
 normalized Banksy object
 }
 \description{
-Normalize columns to a normFactor
+Column-wise normalization of assays in a BanksyObject
 }
 \examples{
 # Generate a simulated dataset
