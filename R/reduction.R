@@ -28,7 +28,7 @@ RunBanksyPCA <- function(bank, lambda = 0.2, M = 1, npcs = 20, verbose = TRUE) {
         for (lam in lambda) {
             if (verbose) message('Running PCA for M=', m, ' lambda=', lam)
             
-            x <- getBanksyMatrix(bank, lambda = lam, M = m)$expr
+            x <- getBanksyMatrix(bank, lambda = lam, M = m, verbose = verbose)$expr
             cell.names <- colnames(x)
             
             pca <- prcomp_irlba(t(x), n = npcs)
@@ -117,7 +117,7 @@ RunBanksyUMAP <- function(bank, lambda = 0.2, M = 1, ncomponents = 2, pca = TRUE
         for (lam in lambda) {
             if (!pca) {
                 if (verbose) message('Computing UMAP on Banksy matrix')
-                x <- t(getBanksyMatrix(bank, lambda = lam, M = m)$expr)
+                x <- t(getBanksyMatrix(bank, lambda = lam, M = m, verbose = verbose)$expr)
                 
             } else {
                 if (npcs < 2)

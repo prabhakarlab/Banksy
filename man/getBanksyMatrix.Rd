@@ -4,7 +4,7 @@
 \alias{getBanksyMatrix}
 \title{Returns the Banksy matrix (own + nbr)}
 \usage{
-getBanksyMatrix(bank, lambda = 0.2, M = 1)
+getBanksyMatrix(bank, lambda = 0.2, M = 1, verbose = TRUE)
 }
 \arguments{
 \item{bank}{Banksy Object}
@@ -12,6 +12,8 @@ getBanksyMatrix(bank, lambda = 0.2, M = 1)
 \item{lambda}{(numeric) spatial weighting parameter}
 
 \item{M}{(numeric) compute up to the k-th azimuthal fourier harmonic (default: 1)}
+
+\item{verbose}{(logical) verbosity}
 }
 \value{
 BanksyMatrix

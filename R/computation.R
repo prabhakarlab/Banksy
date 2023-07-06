@@ -350,11 +350,12 @@ getLambdasDeprecate <- function(lambda, n_harmonics) {
 }
 
 
-getLambdas <- function(lambda, n_harmonics) {
+getLambdas <- function(lambda, n_harmonics, verbose=TRUE) {
     weights = lambda * (2^-seq(0, n_harmonics-1))
     weights = weights / sum(2^-seq(0, n_harmonics-1))
     lam = c(1 - sum(weights), weights)
-    message('Squared lambdas: ', paste0(round(lam,4), collapse = ', '))
+    if (verbose)
+        message('Squared lambdas: ', paste0(round(lam,4), collapse = ', '))
     sqrt(lam)
 }
 
@@ -364,6 +365,7 @@ getLambdas <- function(lambda, n_harmonics) {
 #' @param bank Banksy Object
 #' @param lambda (numeric) spatial weighting parameter
 #' @param M (numeric) compute up to the k-th azimuthal fourier harmonic (default: 1) 
+#' @param verbose (logical) verbosity
 #'
 #' @return BanksyMatrix
 #'
@@ -378,7 +380,7 @@ getLambdas <- function(lambda, n_harmonics) {
 #' # Compute BANKSY matrix
 #' bank <- ComputeBanksy(bank)
 #' bm <- getBanksyMatrix(bank)
-getBanksyMatrix <- function(bank, lambda = 0.2, M = 1) {
+getBanksyMatrix <- function(bank, lambda = 0.2, M = 1, verbose = TRUE) {
     
     # Optimize this
     if (is.list(bank@own.expr)) {
@@ -391,9 +393,10 @@ getBanksyMatrix <- function(bank, lambda = 0.2, M = 1) {
         })
         assays <- c(list(own, nbr), out)
         assays <- assays[seq_len(min(M + 2, length(assays)))]
-        message('BANKSY matrix with own.expr, ', 
-                paste0('F', seq(0, length(assays)-2), collapse = ', '))
-        lambdas <- getLambdas(lambda, n_harmonics = length(assays)-1)
+        if (verbose)
+            message('BANKSY matrix with own.expr, ', 
+                    paste0('F', seq(0, length(assays)-2), collapse = ', '))
+        lambdas <- getLambdas(lambda, n_harmonics = length(assays)-1, verbose)
         assays <- Map(function(lam, mat) lam * mat, lambdas, assays)
         joint <- do.call(rbind, assays)
         
@@ -405,10 +408,11 @@ getBanksyMatrix <- function(bank, lambda = 0.2, M = 1) {
         # Consolidate own, F0, and higher harmonics
         assays <- c(list(bank@own.expr, bank@nbr.expr), bank@harmonics)
         assays <- assays[seq_len(min(M + 2, length(assays)))]
-        message('BANKSY matrix with own.expr, ', 
-                paste0('F', seq(0, length(assays)-2), collapse = ', '))
+        if (verbose)
+            message('BANKSY matrix with own.expr, ', 
+                    paste0('F', seq(0, length(assays)-2), collapse = ', '))
         # Compute lambdas
-        lambdas <- getLambdas(lambda, n_harmonics = length(assays)-1)
+        lambdas <- getLambdas(lambda, n_harmonics = length(assays)-1, verbose)
         # Multiple by lambdas
         assays <- Map(function(lam, mat) lam * mat, lambdas, assays)
         # Row concatenate
