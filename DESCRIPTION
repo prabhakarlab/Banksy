@@ -42,7 +42,9 @@ Imports:
     SummarizedExperiment,
     stats,
     utils,
-    progress
+    progress,
+    doParallel,
+    foreach
 License: file LICENSE
 Encoding: UTF-8
 URL: https://github.com/prabhakarlab/Banksy

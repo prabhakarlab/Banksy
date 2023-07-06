@@ -6,17 +6,34 @@
 
 # ------------------------------------------------------------------------------
 
-#' Cluster based on joint expression matrix
+#' Cluster a BANKSY embedding
+#' 
+#' @description 
+#' Cluster the BANKSY embedding obtained from different combinations of 
+#' parameters (`lambda`, `M`, `npcs`). Multiple clustering methods are 
+#' implemented, with the default being Leiden graph-based clustering. For this 
+#' method, parallelization is implemented on non-Windows operating systems.
+#' 
+#' This function allows a grid search over multiple parameters. Parameters 
+#' which admit vectors are:
+#' \itemize{
+#'   \item{`lambda`}
+#'   \item{`M`}
+#'   \item{`k.neighbors`}
+#'   \item{`mclust.G`}
+#'   \item{`kmeans.centers`}
+#' }
 #'
 #' @param bank BanksyObject
-#' @param lambda (numeric) weighting parameter
+#' @param lambda (numeric) weighting parameter (default: 0.2 for celltyping, 0.8 for domain finding)
 #' @param M (numeric) compute up to the k-th azimuthal fourier harmonic (default: 1)
 #' @param pca (logical) runs clustering on PCs (TRUE) or BANKSY matrix (FALSE)
-#' @param npcs (numeric) number of pcs to use for clustering
+#' @param npcs (integer) number of pcs to use for clustering (default: 20)
 #' @param method (character) one of leiden, louvain, mclust, kmeans
 #' @param k.neighbors (numeric) parameter for constructing sNN (for louvain / leiden)
 #' @param resolution (numeric) parameter used for clustering (leiden)
 #' @param leiden.iter (numeric) number of leiden iterations (leiden)
+#' @param num.cores (integer) number of parallel cores on unix / macOS platforms (leiden)
 #' @param mclust.G (numeric) number of mixture components (mclust)
 #' @param kmeans.centers (numeric) number of clusters (kmeans)
 #' @param kmeans.iter.max (numeric) max number of iterations (kmeans)
@@ -48,6 +65,7 @@ ClusterBanksy <-
              k.neighbors = 50,
              resolution = 1,
              leiden.iter = -1,
+             num.cores = 1,
              mclust.G = NULL,
              kmeans.centers = NULL,
              kmeans.iter.max = 10,
@@ -68,7 +86,8 @@ ClusterBanksy <-
         
         if (method == 'leiden') {
             bank <- runLeiden(bank, lambda, M, pca, npcs, 
-                              k.neighbors, resolution, leiden.iter, verbose, ...)
+                              k.neighbors, resolution, leiden.iter, num.cores, 
+                              verbose, ...)
         }
         
         if (method == 'louvain') {
@@ -243,6 +262,8 @@ runMclust <- function(bank, lambda, M, pca, npcs, mclust.G, ...) {
 
 #' @importFrom leidenAlg leiden.community
 #' @importFrom progress progress_bar
+#' @importFrom doParallel registerDoParallel stopImplicitCluster
+#' @importFrom foreach foreach `%do%` `%dopar%`
 runLeiden <- function(bank,
                       lambda,
                       M,
@@ -251,34 +272,65 @@ runLeiden <- function(bank,
                       k.neighbors,
                       resolution,
                       leiden.iter,
+                      num.cores,
                       verbose) {
     max.iters <-
         prod(length(lambda),
              length(k.neighbors),
              length(resolution),
              length(M))
-    pb <- progress_bar$new(
-        format = " [:bar] :percent eta: :eta",
-        total = max.iters, clear = FALSE, width = 60)
-    for (har in M) {
-        for (lam in lambda) {
-            x <- getClusterMatrix(bank, lam, har, pca, npcs)
-            for (k in k.neighbors) {
-                graph <- getGraph(x, k)
-                for (res in resolution) {
-                    if (verbose) pb$tick()
-                    out <-
-                        leiden.community(graph,
-                                         resolution = res,
-                                         n.iterations = leiden.iter)
-                    clust.name <- paste0('clust_M', har, '_lam', lam, '_k', k, '_res', res)
-                    bank@meta.data[[clust.name]] <-
-                        as.numeric(out$membership)
-                    # iter <- iter + 1
+    
+    is_windows = (.Platform$OS.type == 'windows')
+    
+    if (is_windows | num.cores <= 1) {
+        # Serial
+        pb <- progress_bar$new(
+            format = " [:bar] :percent eta: :eta",
+            total = max.iters, clear = FALSE, width = 60)
+        for (har in M) {
+            for (lam in lambda) {
+                x <- getClusterMatrix(bank, lam, har, pca, npcs)
+                for (k in k.neighbors) {
+                    graph <- getGraph(x, k)
+                    for (res in resolution) {
+                        if (verbose) pb$tick()
+                        out <-
+                            leiden.community(graph,
+                                             resolution = res,
+                                             n.iterations = leiden.iter)
+                        clust.name <- paste0('clust_M', har, '_lam', 
+                                             lam, '_k', k, '_res', res)
+                        bank@meta.data[[clust.name]] <-
+                            as.numeric(out$membership)
+                    }
                 }
             }
         }
+    } else {
+        # Parallelize over lambdas and resolution
+        registerDoParallel(num.cores)
+        out = foreach(har=M, .combine='cbind') %do% {
+            foreach(lam=lambda, .combine='cbind', .packages = 'Banksy') %dopar% {
+                x <- getClusterMatrix(bank, lam, har, pca, npcs)
+                foreach(k=k.neighbors, .combine='cbind') %do% {
+                    graph <- getGraph(x, k)
+                    foreach(res=resolution, .combine='cbind', .packages ='leidenAlg') %dopar% {
+                        out <- leiden.community(graph, resolution = res, 
+                                                n.iterations = leiden.iter)
+                        as.numeric(out$membership)
+                    }
+                } 
+            }
+        }
+        stopImplicitCluster()
+        out_names <- apply(
+            expand.grid(resolution, k.neighbors, lambda, M), 1, 
+            function(x) sprintf('clust_M%s_lam%s_k%s_res%s', 
+                                x[4], x[3], x[2], x[1]))
+        colnames(out) <- out_names
+        bank@meta.data = cbind(bank@meta.data, out)
     }
+    
     return(bank)
 }
 

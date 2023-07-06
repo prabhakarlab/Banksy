@@ -2,7 +2,7 @@
 % Please edit documentation in R/clustering.R
 \name{ClusterBanksy}
 \alias{ClusterBanksy}
-\title{Cluster based on joint expression matrix}
+\title{Cluster a BANKSY embedding}
 \usage{
 ClusterBanksy(
   bank,
@@ -14,6 +14,7 @@ ClusterBanksy(
   k.neighbors = 50,
   resolution = 1,
   leiden.iter = -1,
+  num.cores = 1,
   mclust.G = NULL,
   kmeans.centers = NULL,
   kmeans.iter.max = 10,
@@ -24,13 +25,13 @@ ClusterBanksy(
 \arguments{
 \item{bank}{BanksyObject}
 
-\item{lambda}{(numeric) weighting parameter}
+\item{lambda}{(numeric) weighting parameter (default: 0.2 for celltyping, 0.8 for domain finding)}
 
 \item{M}{(numeric) compute up to the k-th azimuthal fourier harmonic (default: 1)}
 
 \item{pca}{(logical) runs clustering on PCs (TRUE) or BANKSY matrix (FALSE)}
 
-\item{npcs}{(numeric) number of pcs to use for clustering}
+\item{npcs}{(integer) number of pcs to use for clustering (default: 20)}
 
 \item{method}{(character) one of leiden, louvain, mclust, kmeans}
 
@@ -39,6 +40,8 @@ ClusterBanksy(
 \item{resolution}{(numeric) parameter used for clustering (leiden)}
 
 \item{leiden.iter}{(numeric) number of leiden iterations (leiden)}
+
+\item{num.cores}{(integer) number of parallel cores on unix / macOS platforms (leiden)}
 
 \item{mclust.G}{(numeric) number of mixture components (mclust)}
 
@@ -54,7 +57,20 @@ ClusterBanksy(
 BanksyObject with cluster labels in meta.data
 }
 \description{
-Cluster based on joint expression matrix
+Cluster the BANKSY embedding obtained from different combinations of 
+parameters (`lambda`, `M`, `npcs`). Multiple clustering methods are 
+implemented, with the default being Leiden graph-based clustering. For this 
+method, parallelization is implemented on non-Windows operating systems.
+
+This function allows a grid search over multiple parameters. Parameters 
+which admit vectors are:
+\itemize{
+  \item{`lambda`}
+  \item{`M`}
+  \item{`k.neighbors`}
+  \item{`mclust.G`}
+  \item{`kmeans.centers`}
+}
 }
 \examples{
 # Generate a simulated dataset
