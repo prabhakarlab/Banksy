@@ -1,5 +1,10 @@
-# ClusterBanksy
-# ConnectClusters
+
+# This file implements 
+# - ClusterBanksy
+# - ConnectClusters
+# - SmoothLabels
+
+# ------------------------------------------------------------------------------
 
 #' Cluster based on joint expression matrix
 #'
@@ -91,6 +96,11 @@ checkArgs <- function(bank, method, lambda, M, pca, npcs, call) {
     call <- call[!sapply(call, is.null)]
     args <- names(call)
     
+    if (length(npcs) > 1) {
+        warning('More than one value of npcs supplied. Using npcs=', npcs[1])
+        npcs = npcs[1]
+    }
+    
     if (pca) {
         # Check if pca has been run for lambda
         params <- expand.grid(M, lambda)
@@ -151,7 +161,7 @@ checkArgs <- function(bank, method, lambda, M, pca, npcs, call) {
 getClusterMatrix <- function(bank, lambda, M, pca, npcs) {
     if (pca) {
         pca.name <- paste0('pca_M', M, '_lam', lambda)
-        x <- bank@reduction[[pca.name]]$x[, seq_len(npcs)]
+        x <- bank@reduction[[pca.name]]$x[, seq_len(npcs[1])]
     } else {
         x <- t(getBanksyMatrix(bank, lambda = lambda, M = M)$expr)
     }
@@ -307,6 +317,7 @@ runLouvain <-
         return(bank)
     }
 
+# ------------------------------------------------------------------------------
 
 #' Harmonize cluster labels among parameter runs
 #'
@@ -436,3 +447,123 @@ getARI <- function(bank, digits = 3) {
     ari.mat <- round(ari.mat, digits)
     return(ari.mat)
 }
+
+# ------------------------------------------------------------------------------
+
+#' Label smoothing as described in SpiceMix (https://doi.org/10.1038/s41588-022-01256-z).
+#' Implemented for numeric labels only
+#' 
+#' @param bank BanksyObject
+#' @param cluster_names (character) vector of label names to smooth. If NULL,
+#'   smooths labels in clust.names(bank)
+#' @param k (integer) number of neighbors (default: 10)
+#' @param prop_thres (numeric) proportions threshold. If the fraction of 
+#'   neighbors with a certain label exceeds this proportion, change the label 
+#'   of the current sample (default: 0.5)
+#' @param max_iter (integer) max number of smoothing iterations. Set to -1 for 
+#'   smoothing to convergence. (default: 10)
+#' @param verbose (logical) verbosity
+#' @param include_self (logical) include the spots label in the neighborhood. 
+#'   (default: True)
+#' 
+#' @return BanksyObject with smoothed cluster labels (appended with '_smooth')
+#'   in meta.data
+#'   
+#' @export
+#' 
+#' @examples
+#' data(dlpfc151673)
+#' bank = BanksyObject(
+#'     own.expr = dlpfc151673$expression, 
+#'     cell.locs = dlpfc151673$locations)
+#' n_spots = ncol(own.expr(bank))
+#' labels = readRDS(
+#'     system.file('extdata/dlpfc_clusters.rds', package = 'Banksy')
+#'     )[seq(n_spots)]
+#' meta.data(bank)$clust = labels
+#' bank = SmoothLabels(bank, k=6)
+#' plotSpatialFeatures(bank, pt.size = 1, by = clust.names(bank), 
+#'     type=rep('discrete',2), ncol = 2, main = clust.names(bank))
+#' 
+SmoothLabels = function(bank,
+                        cluster_names = NULL,
+                        k = 15L,
+                        prop_thres = 0.5,
+                        max_iter = 10,
+                        verbose = TRUE,
+                        include_self = TRUE) {
+    
+    if (is.null(cluster_names)) {
+        cluster_names = clust.names(bank)
+        if (is.null(cluster_names)) stop('No cluster names found')
+    } 
+    if (is.list(bank@own.expr)) {
+        # Multiple datasets
+        return(bank)
+    } else {
+        # Single dataset
+        for (i in seq_len(length(cluster_names))) {
+            new_name = paste0(cluster_names[i], '_smooth')
+            bank@meta.data[,new_name] = smoother(
+                bank@meta.data[,cluster_names[i]],
+                bank@cell.locs,
+                k = k, prop_thres = prop_thres,
+                max_iter = max_iter, verbose = verbose, 
+                include_self = include_self
+            )
+        }
+        return(bank)
+    }
+}
+
+
+#' @importFrom dbscan kNN
+smoother <-
+    function(labels_curr,
+             locs,
+             k = 10L,
+             prop_thres = 0.5,
+             max_iter = 10,
+             verbose = TRUE,
+             include_self = TRUE) {
+        # Get neighbors
+        knn = kNN(locs, k = k)$id
+        N = nrow(knn)
+        
+        labels_raw = labels_curr
+        labels_update = labels_curr
+        
+        if (max_iter == -1) max_iter = Inf
+        
+        iter = 1
+        while (iter < max_iter) {
+            if (verbose)
+                message('Iteration ', iter)
+            
+            # Iterate across cells
+            for (i in 1:N) {
+                # Get neighbors
+                neighbor_labels = labels_curr[c(i, knn[i, ])]
+                if (include_self) 
+                    neighbor_labels = neighbor_labels[-1]
+                # Change label based on condition
+                neighbor_props = table(neighbor_labels) / length(neighbor_labels)
+                if (any(neighbor_props > 0.5)) {
+                    labels_update[i] = as.numeric(names(which.max(neighbor_props)))
+                } else {
+                    labels_update[i] = labels_curr[i]
+                }
+            }
+            
+            change = sum(labels_update != labels_curr)
+            if (verbose)
+                message('Change: ', change)
+
+            if (change == 0)
+                break
+            
+            labels_curr = labels_update
+            iter = iter + 1
+        }
+        labels_update
+    }
