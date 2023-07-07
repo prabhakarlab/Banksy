@@ -37,6 +37,7 @@
 #' @param mclust.G (numeric) number of mixture components (mclust)
 #' @param kmeans.centers (numeric) number of clusters (kmeans)
 #' @param kmeans.iter.max (numeric) max number of iterations (kmeans)
+#' @param seed (int) random seed for reproducibility
 #' @param verbose (logical) show progress bar
 #' @param ... to pass to methods
 #'
@@ -69,6 +70,7 @@ ClusterBanksy <-
              mclust.G = NULL,
              kmeans.centers = NULL,
              kmeans.iter.max = 10,
+             seed = 1000,
              verbose = TRUE,
              ...) {
         method <- checkMethod(method)
@@ -77,21 +79,22 @@ ClusterBanksy <-
         
         if (method == 'kmeans') {
             bank <- runKmeans(bank, lambda, M, pca, npcs, 
-                              kmeans.centers, kmeans.iter.max, ...)
+                              kmeans.centers, kmeans.iter.max, seed, ...)
         }
         
         if (method == 'mclust') {
-            bank <- runMclust(bank, lambda, M, pca, npcs, mclust.G, ...)
+            bank <- runMclust(bank, lambda, M, pca, npcs, mclust.G, seed, ...)
         }
         
         if (method == 'leiden') {
             bank <- runLeiden(bank, lambda, M, pca, npcs, 
                               k.neighbors, resolution, leiden.iter, num.cores, 
-                              verbose, ...)
+                              verbose, seed, ...)
         }
         
         if (method == 'louvain') {
-            bank <- runLouvain(bank, lambda, M, pca, npcs, k.neighbors, resolution)
+            bank <- runLouvain(bank, lambda, M, pca, npcs, k.neighbors, 
+                               resolution, seed)
         }
         
         return(bank)
@@ -216,6 +219,7 @@ runKmeans <- function(bank,
                       npcs,
                       kmeans.centers,
                       kmeans.iter.max,
+                      seed, 
                       ...) {
     max.iters <- prod(length(lambda), length(kmeans.centers), length(M))
     iter <- 1
@@ -224,6 +228,7 @@ runKmeans <- function(bank,
         for (lam in lambda) {
             x <- getClusterMatrix(bank, lam, har, pca, npcs)
             for (k in kmeans.centers) {
+                set.seed(seed)
                 out <- kmeans(x,
                               centers = k,
                               iter.max = kmeans.iter.max,
@@ -240,7 +245,7 @@ runKmeans <- function(bank,
 }
 
 #' @importFrom mclust Mclust mclustBIC
-runMclust <- function(bank, lambda, M, pca, npcs, mclust.G, ...) {
+runMclust <- function(bank, lambda, M, pca, npcs, mclust.G, seed, ...) {
     max.iters <- prod(length(lambda), length(mclust.G), length(M))
     iter <- 1
     message('Iteration ', iter, ' out of ', max.iters)
@@ -248,6 +253,7 @@ runMclust <- function(bank, lambda, M, pca, npcs, mclust.G, ...) {
         for (lam in lambda) {
             x <- getClusterMatrix(bank, lam, har, pca, npcs)
             for (G in mclust.G) {
+                set.seed(seed)
                 out <- Mclust(x, G = G, ...)
                 clust.name <- paste0('clust_M', har, '_lam', lam, '_mclust', G)
                 bank@meta.data[[clust.name]] <- out$classification
@@ -273,7 +279,8 @@ runLeiden <- function(bank,
                       resolution,
                       leiden.iter,
                       num.cores,
-                      verbose) {
+                      verbose,
+                      seed) {
     max.iters <-
         prod(length(lambda),
              length(k.neighbors),
@@ -282,6 +289,9 @@ runLeiden <- function(bank,
     
     is_windows = (.Platform$OS.type == 'windows')
     
+    if (max.iters >= 3 & !is_windows & num.cores == 1)
+        message('Using 1 core. Consider parallelising with the num.cores argument')
+
     if (is_windows | num.cores <= 1) {
         # Serial
         pb <- progress_bar$new(
@@ -294,6 +304,7 @@ runLeiden <- function(bank,
                     graph <- getGraph(x, k)
                     for (res in resolution) {
                         if (verbose) pb$tick()
+                        set.seed(seed)
                         out <-
                             leiden.community(graph,
                                              resolution = res,
@@ -315,6 +326,7 @@ runLeiden <- function(bank,
                 foreach(k=k.neighbors, .combine='cbind') %do% {
                     graph <- getGraph(x, k)
                     foreach(res=resolution, .combine='cbind', .packages ='leidenAlg') %dopar% {
+                        set.seed(seed)
                         out <- leiden.community(graph, resolution = res, 
                                                 n.iterations = leiden.iter)
                         as.numeric(out$membership)
@@ -342,7 +354,8 @@ runLouvain <-
              pca,
              npcs,
              k.neighbors,
-             resolution) {
+             resolution,
+             seed) {
         max.iters <-
             prod(length(lambda),
                  length(k.neighbors),
@@ -356,6 +369,7 @@ runLouvain <-
                 for (k in k.neighbors) {
                     graph <- as.undirected(getGraph(x, k))
                     for (res in resolution) {
+                        set.seed(seed)
                         out <- membership(cluster_louvain(graph, resolution = res))
                         clust.name <- paste0('clust_M', har, '_lam', lam, '_k', k, '_res', res, '_louvain')
                         bank@meta.data[[clust.name]] <- as.numeric(out)

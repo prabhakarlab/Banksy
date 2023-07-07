@@ -18,6 +18,7 @@ ClusterBanksy(
   mclust.G = NULL,
   kmeans.centers = NULL,
   kmeans.iter.max = 10,
+  seed = 1000,
   verbose = TRUE,
   ...
 )
@@ -48,6 +49,8 @@ ClusterBanksy(
 \item{kmeans.centers}{(numeric) number of clusters (kmeans)}
 
 \item{kmeans.iter.max}{(numeric) max number of iterations (kmeans)}
+
+\item{seed}{(int) random seed for reproducibility}
 
 \item{verbose}{(logical) show progress bar}
 
