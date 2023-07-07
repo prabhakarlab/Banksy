@@ -335,6 +335,8 @@ runLeiden <- function(bank,
             }
         }
         stopImplicitCluster()
+        if (max.iters == 1)
+            out = data.frame(clust = out)
         out_names <- apply(
             expand.grid(resolution, k.neighbors, lambda, M), 1, 
             function(x) sprintf('clust_M%s_lam%s_k%s_res%s', 
