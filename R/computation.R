@@ -236,6 +236,9 @@ scalerAll <- function(x) {
 #' @param alpha (numeric) determines radius used: larger alphas give
 #'   smaller radii (for rNN_gauss)
 #' @param k_spatial (numeric) initial number of neighbors to use (for rNN_gauss)
+#' @param sample_size (numeric) number of neighbors to sample from the neighborhood
+#' @param sample_renorm (logical) whether to renormalize the neighbor weights to 1
+#' @param seed (numeric) seed for sampling the neighborhood
 #' @param dimensions (character vector) dimensions to use when computing neighborhood
 #' \itemize{
 #'  \item{subset of colnames of cell.locs}
@@ -260,7 +263,9 @@ scalerAll <- function(x) {
 ComputeBanksy <- function(bank, M = 1,
                           spatial_mode = 'kNN_median', k_geom = 15, n = 2,
                           sigma = 1.5, alpha = 0.05, k_spatial = 100,
-                          dimensions = 'all', center = TRUE, verbose=TRUE) {
+                          sample_size = NULL, sample_renorm = FALSE, 
+                          seed = NULL, dimensions = 'all', center = TRUE, 
+                          verbose=TRUE) {
     
     M <- seq(0, M)
     if (length(k_geom) == 1) {
@@ -284,6 +289,9 @@ ComputeBanksy <- function(bank, M = 1,
                 computeNeighbors(dlocs,
                                  spatial_mode = spatial_mode, k_geom = kg, n = n,
                                  sigma=sigma, alpha=alpha, k_spatial=k_spatial,
+                                 sample_size = sample_size, 
+                                 sample_renorm = sample_renorm,
+                                 seed = seed,
                                  dimensions = dimensions, verbose = verbose)
             })
         })
@@ -320,6 +328,9 @@ ComputeBanksy <- function(bank, M = 1,
             computeNeighbors(locs,
                              spatial_mode = spatial_mode, k_geom = kg, n = n,
                              sigma=sigma, alpha=alpha, k_spatial=k_spatial,
+                             sample_size = sample_size, 
+                             sample_renorm = sample_renorm,
+                             seed = seed,
                              dimensions = dimensions, verbose = verbose)
         })
         # Compute harmonics with different k_geoms
@@ -459,8 +470,9 @@ getSpatialDims <- function(locs, dimensions, alpha) {
 #' @importFrom data.table `:=`
 computeNeighbors <- function(locs,
                              spatial_mode = 'kNN_median', k_geom = 15, n = 2,
-                             sigma = 1.5, alpha = 0.05, k_spatial = 100, 
-                             dimensions = 'all', verbose = FALSE){
+                             sigma = 1.5, alpha = 0.05, k_spatial = 100,
+                             sample_size = NULL, sample_renorm = TRUE,
+                             seed = NULL, dimensions = 'all', verbose = FALSE){
     from <- to <- phi <- NULL
     out <- getSpatialDims(locs, dimensions, alpha)
     locs <- out[[1]]
@@ -492,6 +504,13 @@ computeNeighbors <- function(locs,
              One of rNN_gauss, kNN_rank, kNN_r, kNN_unif, kNN_median')
     }
     knnDF[, phi := getPhi(locs, from, to), by=from][]
+    if (!is.null(sample_size)) {
+        if (verbose) message('Subsampling to ', sample_size, ' neighbors.')
+        knnDF <- subsampler(knnDF, 
+                            sample_size = sample_size, 
+                            sample_renorm = sample_renorm,
+                            seed = seed)
+    }
     if (verbose) message('Done')
     return(knnDF)
 }
@@ -527,8 +546,8 @@ computeHarmonics <- function(gcm, knn_df, M, center, verbose){
 
 
 getPhi <- function(locs, from, to) {
-    out = sweep(locs[to,], 2, locs[from,], '-')
-    phi = atan2(out[,2], out[,1]) 
+    out = sweep(locs[to,,drop=FALSE], 2, locs[from,,drop=FALSE], '-')
+    phi = atan2(out[,2,drop=FALSE], out[,1,drop=FALSE]) 
     phi + as.integer(phi < 0) * 2*pi
 }
 
@@ -600,7 +619,7 @@ withKNNrank <- function(locs, k_geom, verbose) {
                            distance = as.vector(knn$dist))
     },
     error=function(cond) {
-        message("Not enough neighbours at kspatial = ", k_geom, " level.")
+        message("Not enough neighbours at k_geom = ", k_geom, " level.")
         message(cond)
     })
     
@@ -675,7 +694,7 @@ withKNNunif <- function(locs, k_geom, verbose) {
         knn <- dbscan::kNN(x = locs, k = k_geom)
     },
     error=function(cond) {
-        message("Not enough neighbours at kspatial = ", k_geom, " level.")
+        message("Not enough neighbours at k_geom = ", k_geom, " level.")
         message(cond)
     })
     
@@ -703,7 +722,7 @@ withKNNmedian <- function(locs, k_geom, verbose) {
         knn <- dbscan::kNN(x = locs, k = k_geom)
     },
     error=function(cond) {
-        message("Not enough neighbours at kspatial = ", k_geom, " level.")
+        message("Not enough neighbours at k_geom = ", k_geom, " level.")
         message(cond)
     })
     
@@ -717,4 +736,22 @@ withKNNmedian <- function(locs, k_geom, verbose) {
     setnames(knnDF, 'norm.weight', 'weight')
     
     return(knnDF)
+}
+
+#' @importFrom data.table data.table `:=` .SD .N
+subsampler = function(knnDF,
+                      sample_size = NULL,
+                      sample_renorm = TRUE,
+                      seed = NULL) {
+    if (!is.null(seed)) {
+        message('Using seed=', seed)
+        set.seed(seed)
+    }
+    from <- weight <- NULL
+    x <- knnDF[,
+               .SD[sample(.N, min(sample_size, .N), replace = FALSE)],
+               by = from
+    ]
+    if (sample_renorm) x[, weight := weight / sum(weight), by = from]
+    data.table(x)
 }

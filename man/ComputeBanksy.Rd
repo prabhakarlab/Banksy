@@ -13,6 +13,9 @@ ComputeBanksy(
   sigma = 1.5,
   alpha = 0.05,
   k_spatial = 100,
+  sample_size = NULL,
+  sample_renorm = FALSE,
+  seed = NULL,
   dimensions = "all",
   center = TRUE,
   verbose = TRUE
@@ -43,6 +46,12 @@ ComputeBanksy(
 smaller radii (for rNN_gauss)}
 
 \item{k_spatial}{(numeric) initial number of neighbors to use (for rNN_gauss)}
+
+\item{sample_size}{(numeric) number of neighbors to sample from the neighborhood}
+
+\item{sample_renorm}{(logical) whether to renormalize the neighbor weights to 1}
+
+\item{seed}{(numeric) seed for sampling the neighborhood}
 
 \item{dimensions}{(character vector) dimensions to use when computing neighborhood
 \itemize{
