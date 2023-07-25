@@ -1,0 +1,26 @@
+citHeader("To cite BANKSY in publications use:")
+
+citEntry(
+  entry    = "Article",
+  title    = "BANKSY: A Spatial Omics Algorithm that Unifies Cell Typing and Tissue Domain Segmentation",
+  author   = personList(
+                as.person("Vipul Singhal"),
+                as.person("Nigel Chou"),
+                as.person("Joseph Lee"),
+                as.person("Jinyue Liu"),
+                as.person("Wan Kee Chock"),
+                as.person("Li Lin"),
+                as.person("Yun-Ching Chang"),
+                as.person("Erica Teo"),
+                as.person("Hwee Kuan Lee"),
+                as.person("Kok Hao Chen"),
+                as.person("Shyam Prabhakar")),
+  journal  = "bioRxiv",
+  year     = 2022,
+  url      = "https://www.biorxiv.org/content/10.1101/2022.04.14.488259",
+  textVersion = paste(
+    "Singhal, V., Chou, N., et al.",
+    "BANKSY: A Spatial Omics Algorithm that Unifies Cell Typing and Tissue Domain Segmentation",
+    "Preprint at bioRxiv https://doi.org/10.1101/2022.04.14.488259 (2022)"
+  )
+)

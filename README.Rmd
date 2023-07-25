@@ -1,6 +1,5 @@
 ---
-output: 
-    github_document
+output: github_document
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -14,13 +13,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-<!-- badges: start -->
-[![R-CMD-check](https://github.com/jleechung/Banksy/actions/workflows/check-standard.yml/badge.svg)](https://github.com/jleechung/Banksy/actions/workflows/check-standard.yml)
-[![codecov](https://codecov.io/gh/jleechung/Banksy/branch/main/graph/badge.svg?token=OZZK4EDVH9)](https://codecov.io/gh/jleechung/Banksy)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/jleechung/Banksy/graphs/commit-activity)
-<!-- badges: end -->
-
 ## Overview
+
+```{r, eval=T, include=F}
+start.time = Sys.time()
+```
 
 BANKSY is a method for clustering spatial transcriptomic data by augmenting the
 transcriptomic profile of each cell with an average of the transcriptomes of its
@@ -44,160 +41,125 @@ out:
 The *Banksy* package can be installed via `remotes`:
 
 ```{r, eval=F}
-remotes::install_github("prabhakarlab/Banksy", dependencies = TRUE)
-```
-
-Installation should take less than three minutes. 
-
-**Known installation issues**
-
-1. Installation of `leidenAlg` has non-zero exit status
-
-- Refer to the [package website](https://github.com/kharchenkolab/leidenAlg#installation) for 
-*leidenAlg* installation details. Otherwise, users may also install a separate branch
-of *Banksy* with 
-
-```{r, eval=F}
-remotes::install_github("prabhakarlab/Banksy@feat-igraph-leiden")
-```
-
-## Documentation
-
-Detailed description of *Banksy* functionality and example analyses are available
-at the [package webpage](https://prabhakarlab.github.io/Banksy/). 
-
-*Banksy* comes installed with [documentation](https://prabhakarlab.github.io/Banksy/reference/index.html) of main functions and their 
-usage, along with several vignettes which detail different use cases:
-
-* [Working with Banksy objects](https://prabhakarlab.github.io/Banksy/articles/banksy-object.html):
-  Introduction to the *BanksyObject* class which serves as a container for 
-  *Banksy*.  
-  
-* [Mouse hippocampus VeraFISH dataset](https://prabhakarlab.github.io/Banksy/articles/hippocampus-analysis.html):
-  Illustrates a grid search of parameters which best cluster cells.  
-
-* [Human dorsolateral prefrontal cortex 10x Visium dataset](https://prabhakarlab.github.io/Banksy/articles/dlpfc-analysis.html):
-  Illustrates analysis of multiple spatial transcriptomic datasets.
-
-* [Mouse hypothalamus MERFISH dataset](https://prabhakarlab.github.io/Banksy/articles/hypothalamus-analysis.html):
-  Illustrates visualization functionality with a dataset with 3 spatial dimensions.
-  
-* [Interoperability with SingleCellExperiment](https://prabhakarlab.github.io/Banksy/articles/single-cell-exp.html):
-  Illustrates BANKSY interoperability with Bioconductor
-  [SingleCellExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html)
-  framework for interfacing with packages like [scran](https://bioconductor.org/packages/release/bioc/html/scran.html) 
-  or [scater](https://bioconductor.org/packages/release/bioc/html/scater.html).
-
-*Banksy* is also interoperable with [Seurat](https://satijalab.org/seurat/) via
-*SeuratWrappers*. Documentation on how to run BANKSY on Seurat objects can be 
-found [here](https://github.com/satijalab/seurat-wrappers/blob/master/docs/banksy.md). 
-For installation of *SeuratWrappers* with the latest BANKSY version, run
-```{r, eval=F}
-remotes::install_github('jleechung/seurat-wrappers')
+remotes::install_github('prabhakarlab/Banksy')
 ```
 
 ## Quick start
 
-*Banksy* takes as input an expression matrix and cell centroids. Example 
-datasets are provided with the package:
+Load *BANKSY*. We'll also load *SpatialExperiment* and *SummarizedExperiment* 
+for containing and manipulating the data, *scuttle* for normalization 
+and quality control, and *scater*, *ggplot2* and *cowplot* for visualisation.
 
-```{r, eval = T, include=FALSE}
-start.time <- Sys.time()
-```
-
-```{r, eval = T}
+```{r, eval=T, warning=F, message=F}
 library(Banksy)
 
+library(SummarizedExperiment)
+library(SpatialExperiment)
+library(scuttle)
+
+library(scater)
+library(cowplot)
+library(ggplot2)
+```
+
+Here, we'll run *BANKSY* on mouse hippocampus data. 
+
+```{r, eval=T}
 data(hippocampus)
-expr <- hippocampus$expression
-locs <- hippocampus$locations
+gcm <- hippocampus$expression
+locs <- as.matrix(hippocampus$locations)
 ```
 
-The gene expression matrix for cells should be a `matrix`:
+Initialize a SpatialExperiment object and perform basic quality control and 
+normalization. 
 
-```{r, eval = T}
-class(expr)
-head(expr[,1:5])
+```{r, eval=T, message=F}
+se <- SpatialExperiment(assay = list(counts=gcm), spatialCoords = locs)
+
+# QC based on total counts
+qcstats <- perCellQCMetrics(se)
+thres <- quantile(qcstats$total, c(0.05,0.98))
+keep <- (qcstats$total > thres[1]) & (qcstats$total < thres[2])
+se <- se[, keep]
+
+# Normalization to mean library size
+se <- computeLibraryFactors(se)
+aname <- 'normcounts'
+assay(se, aname) <- normalizeCounts(se, log=FALSE)
 ```
 
-while cell locations should be supplied as a `data.frame`:
+Compute the neighborhood matrices for *BANKSY*. Setting `compute_agf=TRUE` 
+computes both the weighted neighborhood mean ($\mathcal{M}$) and the azimuthal 
+Gabor filter ($\mathcal{G}$). The number of spatial neighbors used to compute 
+$\mathcal{M}$ and $\mathcal{G}$ are `k_geom[1]=15` and `k_geom[2]=30` 
+respectively. We run *BANKSY* at `lambda=0` corresponding to non-spatial 
+clustering, and `lambda=0.2` corresponding to  *BANKSY* for cell-typing.
 
-```{r, eval = T}
-class(locs)
-head(locs)
+```{r, eval=T}
+lambda <- c(0, 0.2)
+k_geom <- c(15, 30)
+
+se <- Banksy::computeBanksy(se, assay_name = aname, compute_agf = TRUE, k_geom = k_geom)
 ```
 
-Next, create a *BanksyObject* with the expression matrix and cell locations.
+Next, run PCA on the BANKSY matrix and perform clustering. Setting 
+`use_agf=TRUE` uses both $\mathcal{M}$ and $\mathcal{G}$ to construct the 
+BANKSY matrix.
 
-```{r, eval = T}
-bank <- BanksyObject(own.expr = expr,
-                     cell.locs = locs)
-
-head(bank)
+```{r, eval=T}
+set.seed(1000)
+se <- Banksy::runBanksyPCA(se, use_agf = TRUE, lambda = lambda)
+se <- Banksy::clusterBanksy(se, use_agf = TRUE, lambda = lambda, resolution = 1.2)
 ```
 
-Apply basic QC by keeping only cells with total counts within the 5th and 98th 
-percentile:
+Different clustering runs can be relabeled to minimise their differences with 
+`connectClusters`:
 
-```{r, eval = T}
-bank <- SubsetBanksy(bank, metadata = nCount > quantile(nCount, 0.05) &
-                                      nCount < quantile(nCount, 0.98))
+```{r, eval=T}
+se <- Banksy::connectClusters(se)
 ```
 
-We first normalize the expression matrix, compute the neighbor matrix, and 
-scale the resulting matrices.
+Visualise the clustering output for non-spatial clustering (`lambda=0`) and
+BANKSY clustering (`lambda=0.2`).
 
-```{r, eval = T}
-bank <- NormalizeBanksy(bank)
-bank <- ComputeBanksy(bank, k_geom = c(15, 30))
-bank <- ScaleBanksy(bank)
+```{r, eval=T, fig.height=5, fig.width=14}
+cnames <- colnames(colData(se))
+cnames <- cnames[grep('^clust', cnames)]
+colData(se) <- cbind(colData(se), spatialCoords(se))
+
+plot_nsp <- plotColData(
+    se,
+    x = 'sdimx',
+    y = 'sdimy',
+    point_size = 0.6,
+    colour_by = cnames[1]
+) 
+plot_bank <- plotColData(
+    se,
+    x = 'sdimx',
+    y = 'sdimy',
+    point_size = 0.6,
+    colour_by = cnames[2]
+)
+
+
+plot_grid(plot_nsp + coord_equal(), plot_bank + coord_equal(), ncol = 2)
 ```
 
-Run PCA on the BANKSY matrix for `lambda=0` (no spatial information) 
-and `lambda=0.2`. 
+For clarity, we can visualise each of the clusters separately:
 
-```{r, eval = T}
-bank <- RunBanksyPCA(bank, lambda = c(0, 0.2))
+```{r, eval=T, fig.height=8, fig.width=18}
+plot_grid(
+    plot_nsp + facet_wrap(~colour_by), 
+    plot_bank + facet_wrap(~colour_by), 
+    ncol = 2
+)
 ```
-
-Next, we obtain cluster assignments using graph-based clustering with the Leiden
-algorithm on the first 20 PCs. 
-
-```{r, eval = T}
-set.seed(42)
-bank <- ClusterBanksy(bank, lambda = c(0, 0.2), pca = TRUE, npcs = 20,
-                      method = 'leiden', resolution = 1.2)
-```
-
-Different clustering runs can be harmonised with `ConnectClusters`:
-
-```{r, eval = T}
-bank <- ConnectClusters(bank, map.to = clust.names(bank)[1])
-``` 
-
-Visualise the clustering output for non-spatial clustering (`lambda=0`) and 
-BANKSY clustering (`lambda=0.2`). 
-
-```{r, eval = T, fig.height=8, fig.width=18}
-features <- clust.names(bank)
-feature.types <- rep('discrete', 2)
-main <- c('Non-spatial', 'BANKSY')
-plotSpatialFeatures(bank, by = features, type = feature.types, main = main, 
-                    pt.size = 1.5, main.size = 15, nrow = 1, ncol = 2)
-```
-
-For clarity, we can visualise each of the clusters separately with `wrap = TRUE`:
-
-```{r, eval = T, fig.height=8, fig.width=18}
-plotSpatialFeatures(bank, by = features, type = feature.types, main = main, 
-                    pt.size = 1, main.size = 15, nrow = 1, ncol = 2, 
-                    wrap = TRUE)
-``` 
 
 <details>
     <summary>Runtime for analysis</summary>
 
-```{r, eval = T, echo=FALSE}
+```{r, eval=T, echo=FALSE}
 Sys.time() - start.time
 ```
 
@@ -212,7 +174,3 @@ sessionInfo()
 
 </details>
 
-## Contributing
-
-Bug reports, questions, request for enhancements or other contributions can be 
-raised at the [issue page](https://github.com/prabhakarlab/Banksy/issues). 

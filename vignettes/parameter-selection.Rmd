@@ -1,0 +1,184 @@
+---
+title: "Parameter selection (VeraFISH Mouse Hippocampus)"
+output: rmarkdown::html_vignette
+# output: pdf_document
+vignette: >
+  %\VignetteIndexEntry{Parameter selection (VeraFISH Mouse Hippocampus)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Here, we demonstrate a grid search of clustering parameters with a mouse 
+hippocampus VeraFISH dataset. *BANKSY* currently provides four algorithms for 
+clustering the BANKSY matrix with *clusterBanksy*: Leiden (default), Louvain,
+k-means, and model-based clustering. In this vignette, we run only Leiden 
+clustering. See `?clusterBanksy` for more details on the parameters for
+different clustering methods.
+
+## Loading the data
+
+```{r, eval=T, include=F}
+start.time = Sys.time()
+```
+
+The dataset comprises gene expression for 10,944 cells and 120 genes in 2 
+spatial dimensions. See `?Banksy::hippocampus` for more details.
+
+```{r, eval=T, warning=F, message=F}
+# Load libs
+library(Banksy)
+
+library(SummarizedExperiment)
+library(SpatialExperiment)
+library(scuttle)
+
+library(scater)
+library(cowplot)
+library(ggplot2)
+
+# Load data
+data(hippocampus)
+gcm <- hippocampus$expression
+locs <- as.matrix(hippocampus$locations)
+```
+
+Initialize a SpatialExperiment object and perform basic quality control and 
+normalization. 
+
+```{r, eval=T, message=F}
+se <- SpatialExperiment(assay = list(counts=gcm), spatialCoords = locs)
+colData(se) <- cbind(colData(se), spatialCoords(se))
+
+# QC based on total counts
+qcstats <- perCellQCMetrics(se)
+thres <- quantile(qcstats$total, c(0.05,0.98))
+keep <- (qcstats$total > thres[1]) & (qcstats$total < thres[2])
+se <- se[, keep]
+
+# Normalization to mean library size
+se <- computeLibraryFactors(se)
+aname <- 'normcounts'
+assay(se, aname) <- normalizeCounts(se, log=FALSE)
+```
+
+## Parameters
+
+*BANKSY* has a few key parameters. We describe these below. 
+
+For characterising neighborhoods, *BANKSY* computes the weighted neighborhood 
+mean (`H_0`) and the azimuthal Gabor filter (`H_1`), which estimates gene 
+expression gradients. Setting `use_agf=TRUE` computes both `H_0` and `H_1`.
+
+`k_geom` specifies the number of neighbors used to compute each `H_m` for 
+`m=0,1`. If a single value is specified, the same `k_geom` will be used 
+for each feature matrix. Alternatively, multiple values of `k_geom` can be 
+provided for each feature matrix. Here, we use `k_geom[1]=15` and 
+`k_geom[2]=30` for `H_0` and `H_1` respectively. More neighbors are used to 
+compute gradients.
+
+We compute the neighborhood feature matrices using normalized expression 
+(`normcounts` in the `se` object).
+
+```{r, eval=T}
+k_geom <- c(15, 30)
+se <- computeBanksy(se, assay_name = aname, compute_agf = TRUE, k_geom = k_geom)
+```
+
+`computeBanksy` populates the `assays` slot with `H_0` and `H_1` in this 
+instance:
+
+```{r, eval=T}
+se
+```
+
+The `lambda` parameter is a mixing parameter in `[0,1]` which 
+determines how much spatial information is incorporated for downstream analysis. 
+With smaller values of `lambda`, BANKY operates in *cell-typing* mode, while at
+higher levels of `lambda`, BANKSY operates in *zone-finding* mode. As a 
+starting point, we recommend `lambda=0.2` for cell-typing and `lambda=0.8` for
+zone-finding. Here, we run `lambda=0` which corresponds to non-spatial 
+clustering, and `lambda=0.2` for spatially-informed cell-typing. We compute PCs
+with and without the AGF (`H_1`).
+
+```{r, eval=T}
+lambda <- c(0, 0.2)
+se <- runBanksyPCA(se, use_agf = c(FALSE, TRUE), lambda = lambda, seed = 1000)
+```
+
+`runBanksyPCA` populates the `reducedDims` slot, with each combination of 
+`use_agf` and `lambda` provided. 
+
+```{r, eval=T}
+reducedDimNames(se)
+```
+
+Next, we cluster the BANKSY embedding with Leiden graph-based clustering. This
+admits two parameters: `k_neighbors` and `resolution`. `k_neighbors` determines 
+the number of k nearest neighbors used to construct the shared nearest 
+neighbors graph. Leiden clustering is then performed on the resultant graph 
+with resolution `resolution`. For reproducibiltiy we set a seed for each
+parameter combination.
+
+```{r, eval=T}
+k <- 50
+res <- 1
+se <- clusterBanksy(se, use_agf = c(FALSE, TRUE), lambda = lambda, k_neighbors = k, resolution = res, seed = 1000)
+```
+
+`clusterBanksy` populates `colData(se)` with cluster labels:
+```{r, eval=T}
+colnames(colData(se))
+```
+
+To compare clustering runs visually, different runs can be relabeled to 
+minimise their differences with `connectClusters`:
+
+```{r, eval=T}
+se <- connectClusters(se)
+```
+
+Visualise spatial coordinates with cluster labels.
+
+```{r, eval=T, fig.height=9, fig.width=9, fig.align='center'}
+cnames <- colnames(colData(se))
+cnames <- cnames[grep('^clust', cnames)]
+cplots <- lapply(cnames, function(cnm) {
+    plotColData(se,x = 'sdimx',y = 'sdimy',point_size = 0.1,colour_by = cnm) + 
+        coord_equal() +
+        labs(title = cnm) +
+        theme(legend.title = element_blank()) +
+        guides(colour = guide_legend(override.aes = list(size = 2))) 
+})
+
+plot_grid(plotlist = cplots, ncol=2)
+```
+
+Compare all cluster outputs with `compareClusters`. This function computes 
+pairwise cluster comparison metrics between the clusters in `colData(se)`:
+
+```{r, eval=T}
+compareClusters(se, func = 'ARI')
+```
+
+## Session information
+
+Vignette runtime:
+
+```{r, eval=T, echo=FALSE}
+Sys.time() - start.time
+```
+
+<details>
+
+```{r, sess}
+sessionInfo()
+```
+
+</details>

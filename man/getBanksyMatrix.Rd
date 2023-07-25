@@ -2,32 +2,51 @@
 % Please edit documentation in R/computation.R
 \name{getBanksyMatrix}
 \alias{getBanksyMatrix}
-\title{Returns the Banksy matrix (own + nbr)}
+\title{Returns the BANKSY matrix}
 \usage{
-getBanksyMatrix(bank, lambda = 0.2, M = 1, verbose = TRUE)
+getBanksyMatrix(
+  se,
+  M,
+  lambda,
+  assay_name = NULL,
+  scale = FALSE,
+  group = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
-\item{bank}{Banksy Object}
+\item{se}{A \code{SpatialExperiment},
+\code{SingleCellExperiment} or \code{SummarizedExperiment}
+  object with \code{computeBanksy} ran.}
 
-\item{lambda}{(numeric) spatial weighting parameter}
+\item{M}{A integer scalar specifying the highest azimuthal
+Fourier harmonic to compute.}
 
-\item{M}{(numeric) compute up to the k-th azimuthal fourier harmonic (default: 1)}
+\item{lambda}{A numeric scalar \eqn{\in [0,1]} specifying a spatial
+weighting parameter. Larger values incorporate more spatial neighborhood
+information.}
 
-\item{verbose}{(logical) verbosity}
+\item{assay_name}{A string scalar specifying the name of the assay used in
+\code{computeBanksy}.}
+
+\item{scale}{A logical scalar specifying whether to scale the features to
+zero mean and unit standard deviation. This is performed before
+multiplying the assays by their corresponding lambda weighting factors.}
+
+\item{group}{A string scalar specifying a grouping variable for samples in
+\code{se}. This is used to scale the samples in each group separately.}
+
+\item{verbose}{A logical scalar specifying verbosity.}
 }
 \value{
-BanksyMatrix
+BANKSY matrix.
 }
 \description{
-Returns the Banksy matrix (own + nbr)
+Returns the BANKSY matrix
 }
 \examples{
-# Generate a simulated dataset
-d <- simulateDataset()
-bank <- BanksyObject(own.expr = d$gcm, cell.locs = d$locs, meta.data = d$meta)
-# Normalize the own.expr matrix
-bank <- NormalizeBanksy(bank)
-# Compute BANKSY matrix
-bank <- ComputeBanksy(bank)
-bm <- getBanksyMatrix(bank)
+data(rings)
+spe <- computeBanksy(rings, assay_name = "counts", M = 1, k_geom = c(15, 30))
+banksyMatrix <- getBanksyMatrix(spe, M = 1, lambda = 0.2)
+
 }

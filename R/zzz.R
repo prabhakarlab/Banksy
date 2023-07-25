@@ -1,11 +1,10 @@
-
 #' @importFrom utils packageVersion
 .onAttach <- function(libname, pkgname) {
-    
-    if (!interactive()) return()
-    
+    if (!interactive()) {
+        return()
+    }
+
     packageStartupMessage(
-        sprintf('BANKSY version %s', packageVersion(pkg = 'Banksy'))
+        sprintf("Banksy version %s", packageVersion(pkg = "Banksy"))
     )
-    
 }

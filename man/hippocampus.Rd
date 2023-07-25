@@ -16,7 +16,7 @@ data(hippocampus)
 }
 \description{
 This dataset comprises VeraFISH profiling of cells in the mouse hippocampus.
-Gene expression and cell centroids for 10,944 cells and 129 genes in 2 spatial
-dimensions are provided.
+Gene expression and cell centroids for 10,944 cells and 129 genes in 2 
+spatial dimensions are provided.
 }
 \keyword{datasets}
