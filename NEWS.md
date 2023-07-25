@@ -1,4 +1,13 @@
 
+# Version 0.1.5
+
++ Implemented SmoothLabels for k-nearest neighbors cluster label smoothing
++ Parallel clustering for Leiden graph-based clustering
++ Version depedency on leidenAlg (>= 1.1.0) for compatibility with igraph (>= 1.5.0)
++ Seed setting for clustering
++ Neighborhood sampling for computing neighborhood feature matrices. See arguments 
+`sample_size`, `sample_renorm` and `seed` in function ComputeBanksy
+
 # Version 0.1.4
 
 + Implemented Azimuthal Gabor filters in ComputeBanksy, with the number of 
