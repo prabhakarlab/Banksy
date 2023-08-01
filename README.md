@@ -45,14 +45,9 @@ Installation should take less than three minutes.
 
 1.  Installation of `leidenAlg` has non-zero exit status
 
--   Refer to the [package
+-   Refer to the [`leidenAlg` package
     website](https://github.com/kharchenkolab/leidenAlg#installation)
-    for *leidenAlg* installation details. Otherwise, users may also
-    install a separate branch of *Banksy* with
-
-``` r
-remotes::install_github("prabhakarlab/Banksy@feat-igraph-leiden")
-```
+    for installation details.
 
 ## Documentation
 
@@ -95,11 +90,11 @@ detail different use cases:
 *Banksy* is also interoperable with
 [Seurat](https://satijalab.org/seurat/) via *SeuratWrappers*.
 Documentation on how to run BANKSY on Seurat objects can be found
-[here](https://github.com/satijalab/seurat-wrappers/blob/master/docs/banksy.md).
-For installation of *SeuratWrappers* with the latest BANKSY version, run
+[here](https://github.com/jleechung/seurat-wrappers/blob/feat-aft/docs/banksy.md).
+For installation of *SeuratWrappers* with BANKSY version `>= 0.1.4`, run
 
 ``` r
-remotes::install_github('jleechung/seurat-wrappers')
+remotes::install_github('jleechung/seurat-wrappers@feat-aft')
 ```
 
 ## Quick start
@@ -252,7 +247,7 @@ plotSpatialFeatures(bank, by = features, type = feature.types, main = main,
                     pt.size = 1.5, main.size = 15, nrow = 1, ncol = 2)
 ```
 
-<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
 
 For clarity, we can visualise each of the clusters separately with
 `wrap = TRUE`:
@@ -263,14 +258,14 @@ plotSpatialFeatures(bank, by = features, type = feature.types, main = main,
                     wrap = TRUE)
 ```
 
-<img src="man/figures/README-unnamed-chunk-16-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
 
 <details>
 <summary>
 Runtime for analysis
 </summary>
 
-    #> Time difference of 1.918232 mins
+    #> Time difference of 38.77595 secs
 
 </details>
 <details>
@@ -295,7 +290,7 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] Banksy_0.1.4
+#> [1] Banksy_0.1.5
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] bitops_1.0-7                matrixStats_0.62.0         
@@ -316,7 +311,7 @@ sessionInfo()
 #> [31] dichromat_2.0-0.1           pkgconfig_2.0.3            
 #> [33] htmltools_0.5.4             MatrixGenerics_1.10.0      
 #> [35] highr_0.10                  fastmap_1.1.0              
-#> [37] maps_3.4.1                  rlang_1.0.6                
+#> [37] maps_3.4.1                  rlang_1.1.1                
 #> [39] GlobalOptions_0.1.2         pals_1.7                   
 #> [41] rstudioapi_0.14             farver_2.1.1               
 #> [43] shape_1.4.6                 generics_0.1.3             
@@ -326,7 +321,7 @@ sessionInfo()
 #> [51] Rcpp_1.0.9                  munsell_0.5.0              
 #> [53] S4Vectors_0.36.0            fansi_1.0.3                
 #> [55] lifecycle_1.0.3             stringi_1.7.8              
-#> [57] leidenAlg_1.0.5             yaml_2.3.6                 
+#> [57] leidenAlg_1.1.0             yaml_2.3.6                 
 #> [59] ggalluvial_0.12.3           SummarizedExperiment_1.28.0
 #> [61] zlibbioc_1.44.0             plyr_1.8.8                 
 #> [63] grid_4.2.1                  parallel_4.2.1             

@@ -195,19 +195,19 @@ parameters:</p>
 <span><span class="co">#&gt; cell_6954 cell_6954    116   29                        7</span></span>
 <span><span class="co">#&gt; cell_7074 cell_7074     28   17                        6</span></span>
 <span><span class="co">#&gt;           clust_M1_lam0_k50_res1.2 clust_M1_lam0.2_k50_res0.8</span></span>
-<span><span class="co">#&gt; cell_1276                        9                         14</span></span>
-<span><span class="co">#&gt; cell_691                         3                          8</span></span>
-<span><span class="co">#&gt; cell_396                         7                         14</span></span>
-<span><span class="co">#&gt; cell_68                          9                         14</span></span>
-<span><span class="co">#&gt; cell_6954                        8                          7</span></span>
-<span><span class="co">#&gt; cell_7074                        6                          6</span></span>
+<span><span class="co">#&gt; cell_1276                       10                         13</span></span>
+<span><span class="co">#&gt; cell_691                         2                          8</span></span>
+<span><span class="co">#&gt; cell_396                         7                         13</span></span>
+<span><span class="co">#&gt; cell_68                         10                         13</span></span>
+<span><span class="co">#&gt; cell_6954                        9                          7</span></span>
+<span><span class="co">#&gt; cell_7074                        5                          6</span></span>
 <span><span class="co">#&gt;           clust_M1_lam0.2_k50_res1.2</span></span>
-<span><span class="co">#&gt; cell_1276                         17</span></span>
+<span><span class="co">#&gt; cell_1276                         16</span></span>
 <span><span class="co">#&gt; cell_691                           7</span></span>
-<span><span class="co">#&gt; cell_396                           4</span></span>
-<span><span class="co">#&gt; cell_68                           17</span></span>
+<span><span class="co">#&gt; cell_396                           9</span></span>
+<span><span class="co">#&gt; cell_68                           16</span></span>
 <span><span class="co">#&gt; cell_6954                          8</span></span>
-<span><span class="co">#&gt; cell_7074                          4</span></span></code></pre></div>
+<span><span class="co">#&gt; cell_7074                          6</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="cluster-similarity">Cluster similarity<a class="anchor" aria-label="anchor" href="#cluster-similarity"></a>
@@ -220,19 +220,19 @@ clusters with the same <code>lambda</code> share more similarity:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/getARI.html">getARI</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                            clust_M1_lam0_k50_res0.8 clust_M1_lam0_k50_res1.2</span></span>
-<span><span class="co">#&gt; clust_M1_lam0_k50_res0.8                      1.000                    0.887</span></span>
-<span><span class="co">#&gt; clust_M1_lam0_k50_res1.2                      0.887                    1.000</span></span>
-<span><span class="co">#&gt; clust_M1_lam0.2_k50_res0.8                    0.755                    0.691</span></span>
-<span><span class="co">#&gt; clust_M1_lam0.2_k50_res1.2                    0.668                    0.725</span></span>
+<span><span class="co">#&gt; clust_M1_lam0_k50_res0.8                      1.000                    0.840</span></span>
+<span><span class="co">#&gt; clust_M1_lam0_k50_res1.2                      0.840                    1.000</span></span>
+<span><span class="co">#&gt; clust_M1_lam0.2_k50_res0.8                    0.797                    0.696</span></span>
+<span><span class="co">#&gt; clust_M1_lam0.2_k50_res1.2                    0.665                    0.669</span></span>
 <span><span class="co">#&gt;                            clust_M1_lam0.2_k50_res0.8</span></span>
-<span><span class="co">#&gt; clust_M1_lam0_k50_res0.8                        0.755</span></span>
-<span><span class="co">#&gt; clust_M1_lam0_k50_res1.2                        0.691</span></span>
+<span><span class="co">#&gt; clust_M1_lam0_k50_res0.8                        0.797</span></span>
+<span><span class="co">#&gt; clust_M1_lam0_k50_res1.2                        0.696</span></span>
 <span><span class="co">#&gt; clust_M1_lam0.2_k50_res0.8                      1.000</span></span>
-<span><span class="co">#&gt; clust_M1_lam0.2_k50_res1.2                      0.811</span></span>
+<span><span class="co">#&gt; clust_M1_lam0.2_k50_res1.2                      0.819</span></span>
 <span><span class="co">#&gt;                            clust_M1_lam0.2_k50_res1.2</span></span>
-<span><span class="co">#&gt; clust_M1_lam0_k50_res0.8                        0.668</span></span>
-<span><span class="co">#&gt; clust_M1_lam0_k50_res1.2                        0.725</span></span>
-<span><span class="co">#&gt; clust_M1_lam0.2_k50_res0.8                      0.811</span></span>
+<span><span class="co">#&gt; clust_M1_lam0_k50_res0.8                        0.665</span></span>
+<span><span class="co">#&gt; clust_M1_lam0_k50_res1.2                        0.669</span></span>
+<span><span class="co">#&gt; clust_M1_lam0.2_k50_res0.8                      0.819</span></span>
 <span><span class="co">#&gt; clust_M1_lam0.2_k50_res1.2                      1.000</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/plotARI.html">plotARI</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span> </span></code></pre></div>
@@ -250,26 +250,26 @@ labels between different parameter runs.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/BanksyObject-class.html">meta.data</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;             cell_ID nCount NODG clust_M1_lam0_k50_res0.8</span></span>
-<span><span class="co">#&gt; cell_1276 cell_1276    266   51                       13</span></span>
+<span><span class="co">#&gt; cell_1276 cell_1276    266   51                       12</span></span>
 <span><span class="co">#&gt; cell_691   cell_691    132   36                        7</span></span>
 <span><span class="co">#&gt; cell_396   cell_396     95   27                        5</span></span>
-<span><span class="co">#&gt; cell_68     cell_68    579   72                       13</span></span>
+<span><span class="co">#&gt; cell_68     cell_68    579   72                       12</span></span>
 <span><span class="co">#&gt; cell_6954 cell_6954    116   29                        8</span></span>
 <span><span class="co">#&gt; cell_7074 cell_7074     28   17                        6</span></span>
 <span><span class="co">#&gt;           clust_M1_lam0_k50_res1.2 clust_M1_lam0.2_k50_res0.8</span></span>
-<span><span class="co">#&gt; cell_1276                       13                         17</span></span>
+<span><span class="co">#&gt; cell_1276                       12                         16</span></span>
 <span><span class="co">#&gt; cell_691                         7                          7</span></span>
-<span><span class="co">#&gt; cell_396                         4                         17</span></span>
-<span><span class="co">#&gt; cell_68                         13                         17</span></span>
+<span><span class="co">#&gt; cell_396                         9                         16</span></span>
+<span><span class="co">#&gt; cell_68                         12                         16</span></span>
 <span><span class="co">#&gt; cell_6954                        8                          8</span></span>
 <span><span class="co">#&gt; cell_7074                        6                          6</span></span>
 <span><span class="co">#&gt;           clust_M1_lam0.2_k50_res1.2</span></span>
-<span><span class="co">#&gt; cell_1276                         17</span></span>
+<span><span class="co">#&gt; cell_1276                         16</span></span>
 <span><span class="co">#&gt; cell_691                           7</span></span>
-<span><span class="co">#&gt; cell_396                           4</span></span>
-<span><span class="co">#&gt; cell_68                           17</span></span>
+<span><span class="co">#&gt; cell_396                           9</span></span>
+<span><span class="co">#&gt; cell_68                           16</span></span>
 <span><span class="co">#&gt; cell_6954                          8</span></span>
-<span><span class="co">#&gt; cell_7074                          4</span></span></code></pre></div>
+<span><span class="co">#&gt; cell_7074                          6</span></span></code></pre></div>
 <p>This updates the <code>meta.data</code> slot with new cluster labels
 that can be used for visualisation. We can visualise connected output as
 follows.</p>
@@ -345,7 +345,7 @@ labels with alluvial plots:</p>
 <span><span class="co">#&gt;  [39] pkgconfig_2.0.3             htmltools_0.5.4            </span></span>
 <span><span class="co">#&gt;  [41] MatrixGenerics_1.10.0       highr_0.10                 </span></span>
 <span><span class="co">#&gt;  [43] maps_3.4.1                  fastmap_1.1.0              </span></span>
-<span><span class="co">#&gt;  [45] rlang_1.0.6                 GlobalOptions_0.1.2        </span></span>
+<span><span class="co">#&gt;  [45] rlang_1.1.1                 GlobalOptions_0.1.2        </span></span>
 <span><span class="co">#&gt;  [47] pals_1.7                    rstudioapi_0.14            </span></span>
 <span><span class="co">#&gt;  [49] farver_2.1.1                shape_1.4.6                </span></span>
 <span><span class="co">#&gt;  [51] jquerylib_0.1.4             generics_0.1.3             </span></span>
@@ -355,7 +355,7 @@ labels with alluvial plots:</p>
 <span><span class="co">#&gt;  [59] Matrix_1.5-3                Rcpp_1.0.9                 </span></span>
 <span><span class="co">#&gt;  [61] munsell_0.5.0               S4Vectors_0.36.0           </span></span>
 <span><span class="co">#&gt;  [63] fansi_1.0.3                 lifecycle_1.0.3            </span></span>
-<span><span class="co">#&gt;  [65] leidenAlg_1.0.5             stringi_1.7.8              </span></span>
+<span><span class="co">#&gt;  [65] leidenAlg_1.1.0             stringi_1.7.8              </span></span>
 <span><span class="co">#&gt;  [67] yaml_2.3.6                  ggalluvial_0.12.3          </span></span>
 <span><span class="co">#&gt;  [69] SummarizedExperiment_1.28.0 zlibbioc_1.44.0            </span></span>
 <span><span class="co">#&gt;  [71] plyr_1.8.8                  grid_4.2.1                 </span></span>
