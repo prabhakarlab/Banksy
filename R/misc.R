@@ -16,7 +16,10 @@
 #'
 #' @examples
 #' set.seed(2023)
-#' rings <- simulateDataset()
+#' rings <- simulateDataset(n_cells = 5e3, n_genes = 50, n_rings = 8)
+#' rings
+#' table(rings$cluster)
+#' ggspavis::plotSpots(rings, annotate = 'cluster', size = 2)
 #'
 simulateDataset <- function(n_cells = 300,
                             n_genes = 30,
@@ -56,7 +59,7 @@ simulateDataset <- function(n_cells = 300,
     se <- SpatialExperiment(
         assays = list(counts = counts),
         spatialCoords = locs,
-        colData = data.frame(cluster = points$group)
+        colData = data.frame(cluster = points$group, in_tissue = TRUE)
     )
     rownames(se) <- paste0("gene_", seq(nrow(se)))
     colnames(se) <- paste0("cell_", seq(ncol(se)))

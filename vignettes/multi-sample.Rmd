@@ -183,7 +183,7 @@ names(spe_list) <- paste0('sample_', sample_names)
 ## Parsing BANKSY output
 
 ```{r, eval=T, echo=F}
-spe_list <- readRDS(system.file('extdata/DLPFC.rds', package='BanksyBioc'))
+spe_list <- readRDS(system.file('extdata/DLPFC.rds', package='Banksy'))
 M <- 0; lambda <- 0.2; res <- 0.6
 cnm <- sprintf('clust_M%s_lam%s_k50_res%s', M, lambda, res)
 ```

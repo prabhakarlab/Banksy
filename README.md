@@ -115,6 +115,7 @@ the BANKSY matrix.
 ``` r
 set.seed(1000)
 se <- Banksy::runBanksyPCA(se, use_agf = TRUE, lambda = lambda)
+se <- Banksy::runBanksyUMAP(se, use_agf = TRUE, lambda = lambda)
 se <- Banksy::clusterBanksy(se, use_agf = TRUE, lambda = lambda, resolution = 1.2)
 ```
 
@@ -134,20 +135,10 @@ cnames <- colnames(colData(se))
 cnames <- cnames[grep('^clust', cnames)]
 colData(se) <- cbind(colData(se), spatialCoords(se))
 
-plot_nsp <- plotColData(
-    se,
-    x = 'sdimx',
-    y = 'sdimy',
-    point_size = 0.6,
-    colour_by = cnames[1]
-) 
-plot_bank <- plotColData(
-    se,
-    x = 'sdimx',
-    y = 'sdimy',
-    point_size = 0.6,
-    colour_by = cnames[2]
-)
+plot_nsp <- plotColData(se, x = 'sdimx', y = 'sdimy', 
+                        point_size = 0.6, colour_by = cnames[1]) 
+plot_bank <- plotColData(se, x = 'sdimx', y = 'sdimy',
+                         point_size = 0.6, colour_by = cnames[2])
 
 
 plot_grid(plot_nsp + coord_equal(), plot_bank + coord_equal(), ncol = 2)
@@ -167,12 +158,30 @@ plot_grid(
 
 <img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
 
+Visualize UMAPs of the non-spatial and BANKSY embedding:
+
+``` r
+rdnames <- reducedDimNames(se)
+
+umap_nsp <- plotReducedDim(se, dimred = grep('UMAP.*lam0$', rdnames, value = TRUE), 
+               colour_by = cnames[1])
+umap_bank <- plotReducedDim(se, dimred = grep('UMAP.*lam0.2$', rdnames, value = TRUE), 
+               colour_by = cnames[2])
+plot_grid(
+    umap_nsp, 
+    umap_bank, 
+    ncol = 2
+)
+```
+
+<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
+
 <details>
 <summary>
 Runtime for analysis
 </summary>
 
-    #> Time difference of 56.69139 secs
+    #> Time difference of 2.753008 mins
 
 </details>
 <details>
@@ -208,50 +217,51 @@ sessionInfo()
 #> [15] matrixStats_0.62.0          Banksy_0.2.5               
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] bitops_1.0-7              tools_4.2.1              
-#>  [3] utf8_1.2.2                R6_2.5.1                 
-#>  [5] irlba_2.3.5.1             vipor_0.4.5              
-#>  [7] HDF5Array_1.26.0          uwot_0.1.14              
-#>  [9] DBI_1.1.3                 colorspace_2.0-3         
-#> [11] rhdf5filters_1.10.0       withr_2.5.0              
-#> [13] gridExtra_2.3             tidyselect_1.2.0         
-#> [15] compiler_4.2.1            cli_3.4.1                
-#> [17] BiocNeighbors_1.16.0      DelayedArray_0.24.0      
-#> [19] labeling_0.4.2            scales_1.2.1             
-#> [21] stringr_1.5.0             digest_0.6.30            
-#> [23] dbscan_1.1-11             rmarkdown_2.19           
-#> [25] R.utils_2.12.2            aricode_1.0.2            
-#> [27] XVector_0.38.0            pkgconfig_2.0.3          
-#> [29] htmltools_0.5.4           sparseMatrixStats_1.10.0 
-#> [31] highr_0.10                fastmap_1.1.0            
-#> [33] limma_3.54.0              rlang_1.1.1              
-#> [35] rstudioapi_0.14           DelayedMatrixStats_1.20.0
-#> [37] farver_2.1.1              generics_0.1.3           
-#> [39] BiocParallel_1.32.5       dplyr_1.0.10             
-#> [41] R.oo_1.25.0               RCurl_1.98-1.9           
-#> [43] magrittr_2.0.3            BiocSingular_1.14.0      
-#> [45] GenomeInfoDbData_1.2.9    Matrix_1.5-3             
-#> [47] ggbeeswarm_0.7.1          Rcpp_1.0.9               
-#> [49] munsell_0.5.0             Rhdf5lib_1.20.0          
-#> [51] fansi_1.0.3               viridis_0.6.2            
-#> [53] lifecycle_1.0.3           R.methodsS3_1.8.2        
-#> [55] stringi_1.7.8             leidenAlg_1.1.0          
-#> [57] yaml_2.3.6                edgeR_3.40.1             
-#> [59] zlibbioc_1.44.0           rhdf5_2.42.0             
-#> [61] grid_4.2.1                ggrepel_0.9.2            
-#> [63] parallel_4.2.1            dqrng_0.3.0              
-#> [65] lattice_0.20-45           sccore_1.0.2             
-#> [67] beachmat_2.14.0           locfit_1.5-9.6           
-#> [69] magick_2.7.3              knitr_1.41               
-#> [71] pillar_1.8.1              igraph_1.3.5             
-#> [73] rjson_0.2.21              codetools_0.2-18         
-#> [75] ScaledMatrix_1.6.0        glue_1.6.2               
-#> [77] evaluate_0.19             data.table_1.14.6        
-#> [79] vctrs_0.5.1               gtable_0.3.1             
-#> [81] assertthat_0.2.1          xfun_0.36                
-#> [83] rsvd_1.0.5                DropletUtils_1.18.1      
-#> [85] viridisLite_0.4.1         tibble_3.1.8             
-#> [87] RcppHungarian_0.2         beeswarm_0.4.0
+#>  [1] bitops_1.0-7              RcppAnnoy_0.0.20         
+#>  [3] tools_4.2.1               utf8_1.2.2               
+#>  [5] R6_2.5.1                  irlba_2.3.5.1            
+#>  [7] vipor_0.4.5               HDF5Array_1.26.0         
+#>  [9] uwot_0.1.14               DBI_1.1.3                
+#> [11] colorspace_2.0-3          rhdf5filters_1.10.0      
+#> [13] withr_2.5.0               gridExtra_2.3            
+#> [15] tidyselect_1.2.0          compiler_4.2.1           
+#> [17] cli_3.4.1                 BiocNeighbors_1.16.0     
+#> [19] DelayedArray_0.24.0       labeling_0.4.2           
+#> [21] scales_1.2.1              stringr_1.5.0            
+#> [23] digest_0.6.30             dbscan_1.1-11            
+#> [25] rmarkdown_2.19            R.utils_2.12.2           
+#> [27] aricode_1.0.2             XVector_0.38.0           
+#> [29] pkgconfig_2.0.3           htmltools_0.5.4          
+#> [31] sparseMatrixStats_1.10.0  highr_0.10               
+#> [33] fastmap_1.1.0             limma_3.54.0             
+#> [35] rlang_1.1.1               rstudioapi_0.14          
+#> [37] DelayedMatrixStats_1.20.0 farver_2.1.1             
+#> [39] generics_0.1.3            BiocParallel_1.32.5      
+#> [41] dplyr_1.0.10              R.oo_1.25.0              
+#> [43] RCurl_1.98-1.9            magrittr_2.0.3           
+#> [45] BiocSingular_1.14.0       GenomeInfoDbData_1.2.9   
+#> [47] Matrix_1.5-3              ggbeeswarm_0.7.1         
+#> [49] Rcpp_1.0.9                munsell_0.5.0            
+#> [51] Rhdf5lib_1.20.0           fansi_1.0.3              
+#> [53] viridis_0.6.2             lifecycle_1.0.3          
+#> [55] R.methodsS3_1.8.2         stringi_1.7.8            
+#> [57] leidenAlg_1.1.0           yaml_2.3.6               
+#> [59] edgeR_3.40.1              zlibbioc_1.44.0          
+#> [61] rhdf5_2.42.0              grid_4.2.1               
+#> [63] ggrepel_0.9.2             parallel_4.2.1           
+#> [65] dqrng_0.3.0               lattice_0.20-45          
+#> [67] sccore_1.0.2              beachmat_2.14.0          
+#> [69] locfit_1.5-9.6            magick_2.7.3             
+#> [71] knitr_1.41                pillar_1.8.1             
+#> [73] igraph_1.3.5              rjson_0.2.21             
+#> [75] codetools_0.2-18          ScaledMatrix_1.6.0       
+#> [77] glue_1.6.2                evaluate_0.19            
+#> [79] data.table_1.14.6         vctrs_0.5.1              
+#> [81] gtable_0.3.1              assertthat_0.2.1         
+#> [83] xfun_0.36                 rsvd_1.0.5               
+#> [85] DropletUtils_1.18.1       viridisLite_0.4.1        
+#> [87] tibble_3.1.8              RcppHungarian_0.2        
+#> [89] beeswarm_0.4.0
 ```
 
 </details>

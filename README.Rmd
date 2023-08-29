@@ -109,6 +109,7 @@ BANKSY matrix.
 ```{r, eval=T}
 set.seed(1000)
 se <- Banksy::runBanksyPCA(se, use_agf = TRUE, lambda = lambda)
+se <- Banksy::runBanksyUMAP(se, use_agf = TRUE, lambda = lambda)
 se <- Banksy::clusterBanksy(se, use_agf = TRUE, lambda = lambda, resolution = 1.2)
 ```
 
@@ -127,20 +128,10 @@ cnames <- colnames(colData(se))
 cnames <- cnames[grep('^clust', cnames)]
 colData(se) <- cbind(colData(se), spatialCoords(se))
 
-plot_nsp <- plotColData(
-    se,
-    x = 'sdimx',
-    y = 'sdimy',
-    point_size = 0.6,
-    colour_by = cnames[1]
-) 
-plot_bank <- plotColData(
-    se,
-    x = 'sdimx',
-    y = 'sdimy',
-    point_size = 0.6,
-    colour_by = cnames[2]
-)
+plot_nsp <- plotColData(se, x = 'sdimx', y = 'sdimy', 
+                        point_size = 0.6, colour_by = cnames[1]) 
+plot_bank <- plotColData(se, x = 'sdimx', y = 'sdimy',
+                         point_size = 0.6, colour_by = cnames[2])
 
 
 plot_grid(plot_nsp + coord_equal(), plot_bank + coord_equal(), ncol = 2)
@@ -152,6 +143,22 @@ For clarity, we can visualise each of the clusters separately:
 plot_grid(
     plot_nsp + facet_wrap(~colour_by), 
     plot_bank + facet_wrap(~colour_by), 
+    ncol = 2
+)
+```
+
+Visualize UMAPs of the non-spatial and BANKSY embedding:
+
+```{r, eval=T, fig.height=5, fig.width=14}
+rdnames <- reducedDimNames(se)
+
+umap_nsp <- plotReducedDim(se, dimred = grep('UMAP.*lam0$', rdnames, value = TRUE), 
+               colour_by = cnames[1])
+umap_bank <- plotReducedDim(se, dimred = grep('UMAP.*lam0.2$', rdnames, value = TRUE), 
+               colour_by = cnames[2])
+plot_grid(
+    umap_nsp, 
+    umap_bank, 
     ncol = 2
 )
 ```
