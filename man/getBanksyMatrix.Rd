@@ -30,4 +30,5 @@ bank <- NormalizeBanksy(bank)
 # Compute BANKSY matrix
 bank <- ComputeBanksy(bank)
 bm <- getBanksyMatrix(bank)
+
 }

@@ -10,7 +10,7 @@
 #' 
 #' @description 
 #' Cluster the BANKSY embedding obtained from different combinations of 
-#' parameters (`lambda`, `M`, `npcs`). Multiple clustering methods are 
+#' parameters (`lambda`, `use_agf`, `npcs`). Multiple clustering methods are 
 #' implemented, with the default being Leiden graph-based clustering. For this 
 #' method, parallelization is implemented on non-Windows operating systems.
 #' 
@@ -18,7 +18,7 @@
 #' which admit vectors are:
 #' \itemize{
 #'   \item{`lambda`}
-#'   \item{`M`}
+#'   \item{`use_agf`}
 #'   \item{`k.neighbors`}
 #'   \item{`mclust.G`}
 #'   \item{`kmeans.centers`}
@@ -26,18 +26,20 @@
 #'
 #' @param bank BanksyObject
 #' @param lambda (numeric) weighting parameter (default: 0.2 for celltyping, 0.8 for domain finding)
-#' @param M (numeric) compute up to the k-th azimuthal fourier harmonic (default: 1)
+#' @param use_agf (logical) vector specifying whether to use the AGF for clustering
 #' @param pca (logical) runs clustering on PCs (TRUE) or BANKSY matrix (FALSE)
 #' @param npcs (integer) number of pcs to use for clustering (default: 20)
 #' @param method (character) one of leiden, louvain, mclust, kmeans
-#' @param k.neighbors (numeric) parameter for constructing sNN (for louvain / leiden)
+#' @param k.neighbors (integer) parameter for constructing sNN (for louvain / leiden)
 #' @param resolution (numeric) parameter used for clustering (leiden)
-#' @param leiden.iter (numeric) number of leiden iterations (leiden)
+#' @param leiden.iter (integer) number of leiden iterations (leiden)
 #' @param num.cores (integer) number of parallel cores on unix / macOS platforms (leiden)
-#' @param mclust.G (numeric) number of mixture components (mclust)
-#' @param kmeans.centers (numeric) number of clusters (kmeans)
-#' @param kmeans.iter.max (numeric) max number of iterations (kmeans)
-#' @param seed (int) random seed for reproducibility
+#' @param mclust.G (integer) number of mixture components (mclust)
+#' @param kmeans.centers (integer) number of clusters (kmeans)
+#' @param kmeans.iter.max (integer) max number of iterations (kmeans)
+#' @param seed (integer) random seed for reproducibility
+#' @param M (integer) advanced usage. vector specifying the highest azimuthal
+#'   Fourier harmonic to cluster with. If specified, overwrites the \code{use_agf} argument.
 #' @param verbose (logical) show progress bar
 #' @param ... to pass to methods
 #'
@@ -59,7 +61,7 @@
 ClusterBanksy <-
     function(bank,
              lambda = 0.2,
-             M = 1,
+             use_agf = TRUE, 
              pca = TRUE,
              npcs = 20,
              method = c('leiden', 'louvain', 'mclust', 'kmeans'),
@@ -71,8 +73,11 @@ ClusterBanksy <-
              kmeans.centers = NULL,
              kmeans.iter.max = 10,
              seed = 1000,
+             M = NULL,
              verbose = TRUE,
              ...) {
+        
+        M <- getM(use_agf, M)
         method <- checkMethod(method)
         params <- c(as.list(environment(), list(...)))
         checkArgs(bank, method, lambda, M, pca, npcs, params)
@@ -132,8 +137,8 @@ checkArgs <- function(bank, method, lambda, M, pca, npcs, call) {
         if (any(check == FALSE)) {
             id <- which(check == FALSE)
             stop(
-                'Run PCA for M=',
-                paste(params[id, ][, 1], collapse = ','),
+                'Run PCA with use_agf=',
+                as.logical(paste(params[id, ][, 1], collapse = ',')),
                 ' lambda=',
                 paste(params[id, ][, 2], collapse = ',')
             )
@@ -145,11 +150,11 @@ checkArgs <- function(bank, method, lambda, M, pca, npcs, call) {
         if (any(pca.ncols < npcs)) {
             id <- which(pca.ncols < npcs)
             stop(
-                'Not enough PCs for M=',
-                paste(params[id, ][, 1], collapse = ','),
+                'Not enough PCs for use_agf=',
+                as.logical(paste(params[id, ][, 1], collapse = ',')),
                 ' lambda=',
                 paste(params[id, ][, 2], collapse = ','),
-                '\nCall RunBanksyPCA and increase npcs for these (M,lambdas).'
+                '\nCall RunBanksyPCA and increase npcs for these (use_agf,lambda)s.'
             )
         }
     }

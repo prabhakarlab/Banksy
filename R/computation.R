@@ -220,7 +220,7 @@ scalerAll <- function(x) {
 
 #' Compute Banksy Matrices
 #' @param bank BanksyObject
-#' @param M (numeric) compute up to the k-th azimuthal fourier harmonic (default: 1) 
+#' @param compute_agf (logical) whether to compute the AGF
 #' @param spatial_mode (character) 
 #' \itemize{
 #'  \item{kNN_r: k-nearest neighbors with $1/r$ kernel}
@@ -236,6 +236,8 @@ scalerAll <- function(x) {
 #' @param alpha (numeric) determines radius used: larger alphas give
 #'   smaller radii (for rNN_gauss)
 #' @param k_spatial (numeric) initial number of neighbors to use (for rNN_gauss)
+#' @param M (numeric) advanced usage. specifies the highest azimuthal Fourier
+#'   harmonic to compute. if specified, overwrites the \code{use_agf} argument  
 #' @param sample_size (numeric) number of neighbors to sample from the neighborhood
 #' @param sample_renorm (logical) whether to renormalize the neighbor weights to 1
 #' @param seed (numeric) seed for sampling the neighborhood
@@ -260,20 +262,24 @@ scalerAll <- function(x) {
 #' # Compute neighbors 
 #' bank <- ComputeBanksy(bank)
 #' 
-ComputeBanksy <- function(bank, M = 1,
+ComputeBanksy <- function(bank, compute_agf = TRUE, 
                           spatial_mode = 'kNN_median', k_geom = 15, n = 2,
-                          sigma = 1.5, alpha = 0.05, k_spatial = 100,
+                          sigma = 1.5, alpha = 0.05, k_spatial = 100, M = NULL,
                           sample_size = NULL, sample_renorm = FALSE, 
                           seed = NULL, dimensions = 'all', center = TRUE, 
                           verbose=TRUE) {
     
-    M <- seq(0, M)
+    M <- seq(0, max(getM(compute_agf, M)))
     if (length(k_geom) == 1) {
         k_geom <- rep_len(k_geom, max(M)+1)
         # k_geom <- k_geom * seq(length(k_geom))
     }
-    if (length(k_geom)!=length(M)) stop('Specify a single k_geom or ensure sufficient k_geoms specified for each of ', length(M), ' harmonics.')
-
+    if (length(k_geom)!=length(M)) {
+        stop(
+            'Specify a single k_geom or ensure sufficient k_geoms specified for each of ', 
+            length(M), ' harmonics.')
+    }
+    
     if (is.list(bank@own.expr)) {
         
         
@@ -391,6 +397,7 @@ getLambdas <- function(lambda, n_harmonics, verbose=TRUE) {
 #' # Compute BANKSY matrix
 #' bank <- ComputeBanksy(bank)
 #' bm <- getBanksyMatrix(bank)
+#' 
 getBanksyMatrix <- function(bank, lambda = 0.2, M = 1, verbose = TRUE) {
     
     # Optimize this
@@ -403,6 +410,9 @@ getBanksyMatrix <- function(bank, lambda = 0.2, M = 1, verbose = TRUE) {
             do.call(cbind, lapply(bank@harmonics, function(x) x[[m]]))
         })
         assays <- c(list(own, nbr), out)
+        if (length(assays) < M + 2) {
+            stop('Run ComputeBanksy with compute_agf=TRUE')
+        }
         assays <- assays[seq_len(min(M + 2, length(assays)))]
         if (verbose)
             message('BANKSY matrix with own.expr, ', 
@@ -418,6 +428,9 @@ getBanksyMatrix <- function(bank, lambda = 0.2, M = 1, verbose = TRUE) {
         # Single dataset case
         # Consolidate own, F0, and higher harmonics
         assays <- c(list(bank@own.expr, bank@nbr.expr), bank@harmonics)
+        if (length(assays) < M + 2) {
+            stop('Run ComputeBanksy with compute_agf=TRUE')
+        }
         assays <- assays[seq_len(min(M + 2, length(assays)))]
         if (verbose)
             message('BANKSY matrix with own.expr, ', 
@@ -739,7 +752,7 @@ withKNNmedian <- function(locs, k_geom, verbose) {
 }
 
 #' @importFrom data.table data.table `:=` .SD .N
-subsampler = function(knnDF,
+subsampler <- function(knnDF,
                       sample_size = NULL,
                       sample_renorm = TRUE,
                       seed = NULL) {
@@ -754,4 +767,9 @@ subsampler = function(knnDF,
     ]
     if (sample_renorm) x[, weight := weight / sum(weight), by = from]
     data.table(x)
+}
+
+getM <- function(use_agf, M) {
+    if (is.null(M)) M <- as.numeric(use_agf)
+    sort(M)
 }

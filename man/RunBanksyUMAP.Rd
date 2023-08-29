@@ -7,7 +7,7 @@
 RunBanksyUMAP(
   bank,
   lambda = 0.2,
-  M = 1,
+  use_agf = TRUE,
   ncomponents = 2,
   pca = TRUE,
   npcs = 20,
@@ -15,6 +15,7 @@ RunBanksyUMAP(
   spread = 3,
   mindist = 0.1,
   nepochs = 300,
+  M = NULL,
   verbose = TRUE,
   ...
 )
@@ -24,7 +25,7 @@ RunBanksyUMAP(
 
 \item{lambda}{(numeric vector) spatial weighting parameter}
 
-\item{M}{(numeric) compute up to the k-th azimuthal fourier harmonic (default: 1)}
+\item{use_agf}{(logical vector) whether to use azimuthal Gabor filter (default: TRUE)}
 
 \item{ncomponents}{(numeric) number of umap components to compute}
 
@@ -39,6 +40,10 @@ RunBanksyUMAP(
 \item{mindist}{(numeric) effective min. dist. between embedded points}
 
 \item{nepochs}{(numeric) number of epochs to run umap optimization}
+
+\item{M}{(numeric vector) advanced usage. run UMAP using PCA computed up to 
+the m-th azimuthal Fourier harmonic. if specified, overwrites the
+\code{use_agf} argument}
 
 \item{verbose}{(logical) print messages}
 

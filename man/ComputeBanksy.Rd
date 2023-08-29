@@ -6,13 +6,14 @@
 \usage{
 ComputeBanksy(
   bank,
-  M = 1,
+  compute_agf = TRUE,
   spatial_mode = "kNN_median",
   k_geom = 15,
   n = 2,
   sigma = 1.5,
   alpha = 0.05,
   k_spatial = 100,
+  M = NULL,
   sample_size = NULL,
   sample_renorm = FALSE,
   seed = NULL,
@@ -24,7 +25,7 @@ ComputeBanksy(
 \arguments{
 \item{bank}{BanksyObject}
 
-\item{M}{(numeric) compute up to the k-th azimuthal fourier harmonic (default: 1)}
+\item{compute_agf}{(logical) whether to compute the AGF}
 
 \item{spatial_mode}{(character) 
 \itemize{
@@ -46,6 +47,9 @@ ComputeBanksy(
 smaller radii (for rNN_gauss)}
 
 \item{k_spatial}{(numeric) initial number of neighbors to use (for rNN_gauss)}
+
+\item{M}{(numeric) advanced usage. specifies the highest azimuthal Fourier
+harmonic to compute. if specified, overwrites the \code{use_agf} argument}
 
 \item{sample_size}{(numeric) number of neighbors to sample from the neighborhood}
 
