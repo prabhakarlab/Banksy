@@ -45,14 +45,9 @@ Installation should take less than three minutes.
 
 1.  Installation of `leidenAlg` has non-zero exit status
 
--   Refer to the [package
+-   Refer to the [`leidenAlg` package
     website](https://github.com/kharchenkolab/leidenAlg#installation)
-    for *leidenAlg* installation details. Otherwise, users may also
-    install a separate branch of *Banksy* with
-
-``` r
-remotes::install_github("prabhakarlab/Banksy@feat-igraph-leiden")
-```
+    for installation details.
 
 ## Documentation
 
@@ -95,11 +90,11 @@ detail different use cases:
 *Banksy* is also interoperable with
 [Seurat](https://satijalab.org/seurat/) via *SeuratWrappers*.
 Documentation on how to run BANKSY on Seurat objects can be found
-[here](https://github.com/satijalab/seurat-wrappers/blob/master/docs/banksy.md).
-For installation of *SeuratWrappers* with the latest BANKSY version, run
+[here](https://github.com/jleechung/seurat-wrappers/blob/feat-aft/docs/banksy.md).
+For installation of *SeuratWrappers* with BANKSY version `>= 0.1.4`, run
 
 ``` r
-remotes::install_github('jleechung/seurat-wrappers')
+remotes::install_github('jleechung/seurat-wrappers@feat-aft')
 ```
 
 ## Quick start
@@ -252,7 +247,7 @@ plotSpatialFeatures(bank, by = features, type = feature.types, main = main,
                     pt.size = 1.5, main.size = 15, nrow = 1, ncol = 2)
 ```
 
-<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
 
 For clarity, we can visualise each of the clusters separately with
 `wrap = TRUE`:
@@ -263,14 +258,18 @@ plotSpatialFeatures(bank, by = features, type = feature.types, main = main,
                     wrap = TRUE)
 ```
 
-<img src="man/figures/README-unnamed-chunk-16-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
 
 <details>
 <summary>
 Runtime for analysis
 </summary>
 
+<<<<<<< HEAD
     #> Time difference of 1.915979 mins
+=======
+    #> Time difference of 38.77595 secs
+>>>>>>> main
 
 </details>
 <details>

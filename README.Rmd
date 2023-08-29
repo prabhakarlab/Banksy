@@ -53,13 +53,8 @@ Installation should take less than three minutes.
 
 1. Installation of `leidenAlg` has non-zero exit status
 
-- Refer to the [package website](https://github.com/kharchenkolab/leidenAlg#installation) for 
-*leidenAlg* installation details. Otherwise, users may also install a separate branch
-of *Banksy* with 
-
-```{r, eval=F}
-remotes::install_github("prabhakarlab/Banksy@feat-igraph-leiden")
-```
+- Refer to the [`leidenAlg` package website](https://github.com/kharchenkolab/leidenAlg#installation) for 
+installation details. 
 
 ## Documentation
 
@@ -90,10 +85,11 @@ usage, along with several vignettes which detail different use cases:
 
 *Banksy* is also interoperable with [Seurat](https://satijalab.org/seurat/) via
 *SeuratWrappers*. Documentation on how to run BANKSY on Seurat objects can be 
-found [here](https://github.com/satijalab/seurat-wrappers/blob/master/docs/banksy.md). 
-For installation of *SeuratWrappers* with the latest BANKSY version, run
+found [here](https://github.com/jleechung/seurat-wrappers/blob/feat-aft/docs/banksy.md). 
+For installation of *SeuratWrappers* with BANKSY version `>= 0.1.4`, run
+
 ```{r, eval=F}
-remotes::install_github('jleechung/seurat-wrappers')
+remotes::install_github('jleechung/seurat-wrappers@feat-aft')
 ```
 
 ## Quick start
