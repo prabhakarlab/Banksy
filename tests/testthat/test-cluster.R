@@ -22,8 +22,10 @@ test_that('clusterBanksy gives message when seeded', {
 })
 
 test_that('clusterBanksy gives expected output', {
-    expect_equal(ncol(colData(clusterBanksy(spe, use_pcs = TRUE))), 3)
-    expect_equal(ncol(colData(clusterBanksy(spe, use_pcs = FALSE))), 3)
+    spe1 <- clusterBanksy(spe, use_pcs = TRUE, seed = 1000)
+    expect_equal(length(clusterNames(spe1)), 1)
+    spe2 <- clusterBanksy(spe, use_pcs = FALSE, seed = 1000)
+    expect_equal(length(clusterNames(spe2)), 1)
 })
 
 spe <- clusterBanksy(spe, resolution=1, seed=1000)
@@ -48,8 +50,6 @@ test_that('connectClusters gives expected output', {
     
     
 })
-
-table(spe$cluster, spe$clust_M1_lam0.2_k50_res1)
 
 test_that('smoothLabels with invalid cluster_names', {
     expect_error(smoothLabels(spe, cluster_names='?'))

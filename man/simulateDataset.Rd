@@ -24,6 +24,9 @@ Simulate an unrealistic spatial omics dataset.
 }
 \examples{
 set.seed(2023)
-rings <- simulateDataset()
+rings <- simulateDataset(n_cells = 5e3, n_genes = 50, n_rings = 8)
+rings
+table(rings$cluster)
+ggspavis::plotSpots(rings, annotate = 'cluster', size = 2)
 
 }

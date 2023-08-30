@@ -11,6 +11,8 @@ clusterBanksy(
   algo = "leiden",
   use_pcs = TRUE,
   npcs = 20,
+  dimred = NULL,
+  ndims = NULL,
   assay_name = NULL,
   group = NULL,
   k_neighbors = 50,
@@ -41,6 +43,13 @@ FALSE, runs on the BANKSY matrix.}
 
 \item{npcs}{An integer scalar specifying the number of principal components
 to use if \code{use_pcs} is TRUE.}
+
+\item{dimred}{A string scalar specifying the name of an existing 
+dimensionality reduction result to use. Will overwrite \code{use_pcs} if 
+supplied.}
+
+\item{ndims}{An integer scalar specifying the number of dimensions to use if 
+\code{dimred} is supplied.}
 
 \item{assay_name}{A string scalar specifying the name of the assay used in
 \code{computeBanksy}.}

@@ -561,10 +561,7 @@ subsampler <- function(knnDF,
                       sample_size = NULL,
                       sample_renorm = TRUE,
                       seed = NULL) {
-    if (!is.null(seed)) {
-        message('Using seed=', seed)
-        set.seed(seed)
-    }
+    verbose.seed(seed)
     from <- weight <- NULL
     x <- knnDF[,
                .SD[sample(.N, min(sample_size, .N), replace = FALSE)],

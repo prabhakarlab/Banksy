@@ -65,3 +65,10 @@ simulateDataset <- function(n_cells = 300,
     colnames(se) <- paste0("cell_", seq(ncol(se)))
     se
 }
+
+verbose.seed <- function(seed) {
+    if (!is.null(seed)) {
+        set.seed(seed)
+        message("Using seed=", seed)
+    }
+}
