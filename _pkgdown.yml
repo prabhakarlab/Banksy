@@ -1,0 +1,53 @@
+url: ~
+
+development:
+  mode: auto
+  
+template:
+  bootswatch: simplex
+
+reference:
+  - title: Neighborhood matrix computation
+    contents:
+      - computeBanksy
+      - getBanksyMatrix
+  - title: Dimensionality reduction
+    contents:
+      - runBanksyPCA
+      - runBanksyUMAP
+  - title: Clustering
+    contents:
+      - clusterBanksy
+      - connectClusters
+      - compareClusters
+      - smoothLabels
+      - clusterNames
+  - title: Datasets
+    contents: 
+      - hippocampus
+      - rings
+  - title: Misc.
+    contents:
+      - simulateDataset
+
+news:
+  cran_dates: false
+
+navbar:
+  title: ~
+  type: default
+  left:
+    - text: Functions and data
+      href: reference/index.html
+    - text: Vignettes
+      menu:
+      - text: BANKSY parameter selection (VeraFISH Mouse Hippocampus)
+        href: articles/parameter-selection.html
+      - text: Domain segmentation (STARmap PLUS Mouse brain)
+        href: articles/domain-segment.html
+      - text: Spatial data integration with Harmony (10x Visium Human DLPFC)
+        href: articles/batch-correction.html
+      - text: Analysing multiple datasets (10x Visium Human DLPFC)
+        href: articles/multi-sample.html
+    - text: News
+      href: news/index.html

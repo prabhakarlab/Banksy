@@ -30,11 +30,11 @@
 #' @param M Advanced usage. A integer scalar specifying the highest azimuthal
 #'   Fourier harmonic to compute. If specified, overwrites the \code{use_agf}
 #'   argument.
-#' @param sample_size (numeric) number of neighbors to sample from the
-#'   neighborhood
-#' @param sample_renorm (logical) whether to renormalize the neighbor weights
-#'   to 1
-#' @param seed (numeric) seed for sampling the neighborhood
+#' @param sample_size An integer scalar number of neighbors to sample from the
+#'   neighborhood.
+#' @param sample_renorm A logical scalar specifying whether to renormalize the
+#'   neighbor weights to 1.
+#' @param seed An integer scalar specifying seed for sampling the neighborhood.
 #' @param dimensions A character vector specifying the dimensions to use when
 #'   computing neighborhood.
 #' \itemize{
@@ -128,7 +128,7 @@ computeBanksy <- function(se,
 }
 
 
-#' Returns the BANKSY matrix
+#' Returns the BANKSY matrix.
 #'
 #' @param se A \code{SpatialExperiment},
 #' \code{SingleCellExperiment} or \code{SummarizedExperiment}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/cluster.R
 \name{compareClusters}
 \alias{compareClusters}
-\title{Compare cluster outputs.}
+\title{Compare cluster outputs based on various clustering comparison measures.}
 \usage{
 compareClusters(
   se,
@@ -24,7 +24,7 @@ compute. See `?aricode` for more information.}
 A matirx of cluster comparison measures.
 }
 \description{
-Compare cluster outputs.
+Compare cluster outputs based on various clustering comparison measures.
 }
 \examples{
 data(rings)

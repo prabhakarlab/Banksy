@@ -2,9 +2,7 @@
 % Please edit documentation in R/cluster.R
 \name{smoothLabels}
 \alias{smoothLabels}
-\title{Label smoothing as described in SpiceMix
-(https://doi.org/10.1038/s41588-022-01256-z).
-Implemented for labels that can be coerced to numeric only.}
+\title{k-Nearest neighbor label smoothing.}
 \usage{
 smoothLabels(
   se,
@@ -45,9 +43,12 @@ A SpatialExperiment / SingleCellExperiment / SummarizedExperiment
   '_smooth'.
 }
 \description{
-Label smoothing as described in SpiceMix
-(https://doi.org/10.1038/s41588-022-01256-z).
-Implemented for labels that can be coerced to numeric only.
+k-Nearest neighbor label smoothing.
+}
+\details{
+As described in SpiceMix
+  (https://doi.org/10.1038/s41588-022-01256-z). Implemented for labels that
+  can be coerced to numeric only.
 }
 \examples{
 data(rings)

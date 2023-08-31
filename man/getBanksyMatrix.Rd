@@ -2,7 +2,7 @@
 % Please edit documentation in R/computation.R
 \name{getBanksyMatrix}
 \alias{getBanksyMatrix}
-\title{Returns the BANKSY matrix}
+\title{Returns the BANKSY matrix.}
 \usage{
 getBanksyMatrix(
   se,
@@ -42,7 +42,7 @@ multiplying the assays by their corresponding lambda weighting factors.}
 BANKSY matrix.
 }
 \description{
-Returns the BANKSY matrix
+Returns the BANKSY matrix.
 }
 \examples{
 data(rings)

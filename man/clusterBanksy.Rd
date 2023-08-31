@@ -2,7 +2,7 @@
 % Please edit documentation in R/cluster.R
 \name{clusterBanksy}
 \alias{clusterBanksy}
-\title{Cluster based on joint expression matrix}
+\title{Perform clustering in BANKSY's neighborhood-augmented feature space.}
 \usage{
 clusterBanksy(
   se,
@@ -79,7 +79,7 @@ A SpatialExperiment / SingleCellExperiment / SummarizedExperiment
   object with cluster labels in \code{colData(se)}.
 }
 \description{
-Cluster based on joint expression matrix
+Perform clustering in BANKSY's neighborhood-augmented feature space.
 }
 \examples{
 data(rings)

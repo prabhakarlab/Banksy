@@ -164,9 +164,9 @@ use_agf <- TRUE
 spe <- runBanksyPCA(spe, use_agf = use_agf, lambda = lambda, npcs = npcs, seed = SEED)
 ```
 
-## Integration in BANKSY's neighborhood-augmented feature space
+## Run Harmony on BANKSY's embedding
 
-We run Harmony on the PCs of BANKSY matrix:
+We run Harmony on the PCs of the BANKSY matrix:
 
 ```{r, eval=F}
 set.seed(SEED)
@@ -219,8 +219,9 @@ spe <- connectClusters(spe, map_to = "clust_annotation")
 ```
 
 Generate spatial plots:
+
 ```{r, eval=T, fig.height=10.5, fig.width=7, fig.align='center'}
-sp_point_size <- 0.9
+sp_point_size <- 0.5
 cnm <- clusterNames(spe)[2]
 spatial_plots <- lapply(sample_names, function(snm) {
     x <- spe[, spe$sample_id == snm]

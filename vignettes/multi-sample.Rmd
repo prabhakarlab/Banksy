@@ -18,8 +18,8 @@ knitr::opts_chunk$set(
 Here, we demonstrate BANKSY analysis on 10x Visium data of the human 
 dorsolateral prefrontal cortex from Maynard et al (2018). The data comprise 12 
 samples obtained from 3 subjects, with manual annotation of the layers in each 
-sample. Here, we demonstrate BANKSY analysis on multiple samples with 4 of the
-12 samples in this dataset.
+sample. We will focus on 4 of the 12 samples from subject 3, demonstrating 
+multi-sample analysis with BANKSY.
 
 ```{r, eval=T, include=F}
 start.time <- Sys.time()
@@ -50,7 +50,8 @@ spe <- spatialLIBD::fetch_data(type = "spe", eh = ehub)
 ```
 
 After the download is completed, we trim the *SpatialExperiment* object, 
-retaining only the counts and some metadata such as the sample identifier and pathology annotations. This saves some memory.
+retaining only the counts and some metadata such as the sample identifier and 
+pathology annotations. This saves some memory.
 
 ```{r, eval=F}
 imgData(spe) <- NULL
@@ -100,7 +101,8 @@ spe_list <- lapply(spe_list, function(x) {
 })
 ```
 
-Next, select the top 2000 highly variable features for downstream analysis:
+Next, select the top 2000 highly variable features from each sample, and take
+their union for downstream analysis:
 
 ```{r, eval=F}
 hvgs <- lapply(spe_list, function(x) {
@@ -136,10 +138,11 @@ rm(spe_list)
 gc()
 ```
 
-When running multi-sample BANKSY PCA, the `group` argument *must* be provided. 
+When running multi-sample BANKSY PCA, the `group` argument may be provided. 
 This specifies the grouping variable for the cells or spots across the samples.
-In this case, `sample_id` in `colData(spe_joint)` gives the grouping based on
-the sample of origin.
+Features belonging to cells or spots corresponding to each level of the 
+grouping variable will be z-scaled separately. In this case, `sample_id` in 
+`colData(spe_joint)` gives the grouping based on the sample of origin.
 
 ```{r, eval=F}
 lambda <- 0.2

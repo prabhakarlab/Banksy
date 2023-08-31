@@ -19,18 +19,18 @@ knitr::opts_chunk$set(
 start.time <- Sys.time()
 ```
 
-BANKSY is a method for clustering spatial transcriptomic data by augmenting the
-transcriptomic profile of each cell with an average of the transcriptomes of its
-spatial neighbors. By incorporating neighborhood information for clustering, 
-BANKSY is able to
+BANKSY is a method for clustering spatial omics data by augmenting the
+features of each cell with both an average of the features of its spatial 
+neighbors along with neighborhood feature gradients. By incorporating 
+neighborhood information for clustering, BANKSY is able to
 
 - improve cell-type assignment in noisy data
 - distinguish subtly different cell-types stratified by microenvironment
-- identify spatial zones sharing the same microenvironment
+- identify spatial domains sharing the same microenvironment
 
 BANKSY is applicable to a wide array of spatial technologies (e.g. 10x Visium, 
-Slide-seq, MERFISH) and scales well to large datasets. For more details, check 
-out:
+Slide-seq, MERFISH, CosMX, CODEX) and scales well to large datasets. For more 
+details, check out:
 
 - the [preprint](https://www.biorxiv.org/content/10.1101/2022.04.14.488259v1),
 - a [tweetorial](https://twitter.com/vipul1891/status/1515323372535644166?s=20&t=Bc6rz8VeWWptF67FejGYfQ) on BANKSY, 

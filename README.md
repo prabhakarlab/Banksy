@@ -3,19 +3,19 @@
 
 ## Overview
 
-BANKSY is a method for clustering spatial transcriptomic data by
-augmenting the transcriptomic profile of each cell with an average of
-the transcriptomes of its spatial neighbors. By incorporating
-neighborhood information for clustering, BANKSY is able to
+BANKSY is a method for clustering spatial omics data by augmenting the
+features of each cell with both an average of the features of its
+spatial neighbors along with neighborhood feature gradients. By
+incorporating neighborhood information for clustering, BANKSY is able to
 
 -   improve cell-type assignment in noisy data
 -   distinguish subtly different cell-types stratified by
     microenvironment
--   identify spatial zones sharing the same microenvironment
+-   identify spatial domains sharing the same microenvironment
 
 BANKSY is applicable to a wide array of spatial technologies (e.g. 10x
-Visium, Slide-seq, MERFISH) and scales well to large datasets. For more
-details, check out:
+Visium, Slide-seq, MERFISH, CosMX, CODEX) and scales well to large
+datasets. For more details, check out:
 
 -   the
     [preprint](https://www.biorxiv.org/content/10.1101/2022.04.14.488259v1),
@@ -30,7 +30,7 @@ details, check out:
 The *Banksy* package can be installed via `remotes`:
 
 ``` r
-remotes::install_github('prabhakarlab/Banksy')
+remotes::install_github("prabhakarlab/Banksy")
 ```
 
 ## Quick start
@@ -64,18 +64,18 @@ Initialize a SpatialExperiment object and perform basic quality control
 and normalization.
 
 ``` r
-se <- SpatialExperiment(assay = list(counts=gcm), spatialCoords = locs)
+se <- SpatialExperiment(assay = list(counts = gcm), spatialCoords = locs)
 
 # QC based on total counts
 qcstats <- perCellQCMetrics(se)
-thres <- quantile(qcstats$total, c(0.05,0.98))
+thres <- quantile(qcstats$total, c(0.05, 0.98))
 keep <- (qcstats$total > thres[1]) & (qcstats$total < thres[2])
 se <- se[, keep]
 
 # Normalization to mean library size
 se <- computeLibraryFactors(se)
-aname <- 'normcounts'
-assay(se, aname) <- normalizeCounts(se, log=FALSE)
+aname <- "normcounts"
+assay(se, aname) <- normalizeCounts(se, log = FALSE)
 ```
 
 Compute the neighborhood matrices for *BANKSY*. Setting
@@ -132,13 +132,17 @@ and BANKSY clustering (`lambda=0.2`).
 
 ``` r
 cnames <- colnames(colData(se))
-cnames <- cnames[grep('^clust', cnames)]
+cnames <- cnames[grep("^clust", cnames)]
 colData(se) <- cbind(colData(se), spatialCoords(se))
 
-plot_nsp <- plotColData(se, x = 'sdimx', y = 'sdimy', 
-                        point_size = 0.6, colour_by = cnames[1]) 
-plot_bank <- plotColData(se, x = 'sdimx', y = 'sdimy',
-                         point_size = 0.6, colour_by = cnames[2])
+plot_nsp <- plotColData(se,
+    x = "sdimx", y = "sdimy",
+    point_size = 0.6, colour_by = cnames[1]
+)
+plot_bank <- plotColData(se,
+    x = "sdimx", y = "sdimy",
+    point_size = 0.6, colour_by = cnames[2]
+)
 
 
 plot_grid(plot_nsp + coord_equal(), plot_bank + coord_equal(), ncol = 2)
@@ -150,8 +154,8 @@ For clarity, we can visualise each of the clusters separately:
 
 ``` r
 plot_grid(
-    plot_nsp + facet_wrap(~colour_by), 
-    plot_bank + facet_wrap(~colour_by), 
+    plot_nsp + facet_wrap(~colour_by),
+    plot_bank + facet_wrap(~colour_by),
     ncol = 2
 )
 ```
@@ -163,13 +167,17 @@ Visualize UMAPs of the non-spatial and BANKSY embedding:
 ``` r
 rdnames <- reducedDimNames(se)
 
-umap_nsp <- plotReducedDim(se, dimred = grep('UMAP.*lam0$', rdnames, value = TRUE), 
-               colour_by = cnames[1])
-umap_bank <- plotReducedDim(se, dimred = grep('UMAP.*lam0.2$', rdnames, value = TRUE), 
-               colour_by = cnames[2])
+umap_nsp <- plotReducedDim(se,
+    dimred = grep("UMAP.*lam0$", rdnames, value = TRUE),
+    colour_by = cnames[1]
+)
+umap_bank <- plotReducedDim(se,
+    dimred = grep("UMAP.*lam0.2$", rdnames, value = TRUE),
+    colour_by = cnames[2]
+)
 plot_grid(
-    umap_nsp, 
-    umap_bank, 
+    umap_nsp,
+    umap_bank,
     ncol = 2
 )
 ```
@@ -181,7 +189,7 @@ plot_grid(
 Runtime for analysis
 </summary>
 
-    #> Time difference of 2.753008 mins
+    #> Time difference of 1.82587 mins
 
 </details>
 <details>

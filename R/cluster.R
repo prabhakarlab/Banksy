@@ -1,4 +1,4 @@
-#' Cluster based on joint expression matrix
+#' Perform clustering in BANKSY's neighborhood-augmented feature space.
 #'
 #' @param se A \code{SpatialExperiment},
 #' \code{SingleCellExperiment} or \code{SummarizedExperiment}
@@ -392,9 +392,11 @@ mapToSeed <- function(seed, val) {
 }
 
 
-#' Label smoothing as described in SpiceMix
-#' (https://doi.org/10.1038/s41588-022-01256-z).
-#' Implemented for labels that can be coerced to numeric only.
+#' k-Nearest neighbor cluster label smoothing.
+#'
+#' @details As described in SpiceMix
+#'   (https://doi.org/10.1038/s41588-022-01256-z). Implemented for labels that
+#'   can be coerced to numeric only.
 #'
 #' @param se A \code{SpatialExperiment},
 #' \code{SingleCellExperiment} or \code{SummarizedExperiment}
@@ -521,7 +523,7 @@ smoother <-
     }
 
 
-#' Compare cluster outputs.
+#' Compare cluster outputs based on various clustering comparison measures.
 #'
 #' @param se A \code{SpatialExperiment},
 #' \code{SingleCellExperiment} or \code{SummarizedExperiment}
