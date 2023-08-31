@@ -28,7 +28,7 @@ clusterBanksy(
 \code{SingleCellExperiment} or \code{SummarizedExperiment}
   object with \code{computeBanksy} ran.}
 
-\item{use_agf}{A logical vector specifying whether to use the AGF for 
+\item{use_agf}{A logical vector specifying whether to use the AGF for
 clustering.}
 
 \item{lambda}{A numeric scalar in \eqn{\in [0,1]} specifying a spatial
@@ -44,11 +44,11 @@ FALSE, runs on the BANKSY matrix.}
 \item{npcs}{An integer scalar specifying the number of principal components
 to use if \code{use_pcs} is TRUE.}
 
-\item{dimred}{A string scalar specifying the name of an existing 
-dimensionality reduction result to use. Will overwrite \code{use_pcs} if 
+\item{dimred}{A string scalar specifying the name of an existing
+dimensionality reduction result to use. Will overwrite \code{use_pcs} if
 supplied.}
 
-\item{ndims}{An integer scalar specifying the number of dimensions to use if 
+\item{ndims}{An integer scalar specifying the number of dimensions to use if
 \code{dimred} is supplied.}
 
 \item{assay_name}{A string scalar specifying the name of the assay used in
@@ -67,7 +67,7 @@ constructing sNN (for louvain / leiden).}
 iterations. For running till convergence, set to -1 (leiden).}
 
 \item{M}{Advanced usage. An integer vector specifying the highest azimuthal
-Fourier harmonic to cluster with. If specified, overwrites the 
+Fourier harmonic to cluster with. If specified, overwrites the
 \code{use_agf} argument.}
 
 \item{seed}{Random seed.}

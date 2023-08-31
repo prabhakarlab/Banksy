@@ -66,10 +66,10 @@ to use (for rNN_gauss)}
 Fourier harmonic to compute. If specified, overwrites the \code{use_agf}
 argument.}
 
-\item{sample_size}{(numeric) number of neighbors to sample from the 
+\item{sample_size}{(numeric) number of neighbors to sample from the
 neighborhood}
 
-\item{sample_renorm}{(logical) whether to renormalize the neighbor weights 
+\item{sample_renorm}{(logical) whether to renormalize the neighbor weights
 to 1}
 
 \item{seed}{(numeric) seed for sampling the neighborhood}

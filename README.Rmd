@@ -6,17 +6,17 @@ output: github_document
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
+    collapse = TRUE,
+    comment = "#>",
+    fig.path = "man/figures/README-",
+    out.width = "100%"
 )
 ```
 
 ## Overview
 
 ```{r, eval=T, include=F}
-start.time = Sys.time()
+start.time <- Sys.time()
 ```
 
 BANKSY is a method for clustering spatial transcriptomic data by augmenting the
@@ -41,7 +41,7 @@ out:
 The *Banksy* package can be installed via `remotes`:
 
 ```{r, eval=F}
-remotes::install_github('prabhakarlab/Banksy')
+remotes::install_github("prabhakarlab/Banksy")
 ```
 
 ## Quick start
@@ -74,18 +74,18 @@ Initialize a SpatialExperiment object and perform basic quality control and
 normalization. 
 
 ```{r, eval=T, message=F}
-se <- SpatialExperiment(assay = list(counts=gcm), spatialCoords = locs)
+se <- SpatialExperiment(assay = list(counts = gcm), spatialCoords = locs)
 
 # QC based on total counts
 qcstats <- perCellQCMetrics(se)
-thres <- quantile(qcstats$total, c(0.05,0.98))
+thres <- quantile(qcstats$total, c(0.05, 0.98))
 keep <- (qcstats$total > thres[1]) & (qcstats$total < thres[2])
 se <- se[, keep]
 
 # Normalization to mean library size
 se <- computeLibraryFactors(se)
-aname <- 'normcounts'
-assay(se, aname) <- normalizeCounts(se, log=FALSE)
+aname <- "normcounts"
+assay(se, aname) <- normalizeCounts(se, log = FALSE)
 ```
 
 Compute the neighborhood matrices for *BANKSY*. Setting `compute_agf=TRUE` 
@@ -125,13 +125,17 @@ BANKSY clustering (`lambda=0.2`).
 
 ```{r, eval=T, fig.height=5, fig.width=14}
 cnames <- colnames(colData(se))
-cnames <- cnames[grep('^clust', cnames)]
+cnames <- cnames[grep("^clust", cnames)]
 colData(se) <- cbind(colData(se), spatialCoords(se))
 
-plot_nsp <- plotColData(se, x = 'sdimx', y = 'sdimy', 
-                        point_size = 0.6, colour_by = cnames[1]) 
-plot_bank <- plotColData(se, x = 'sdimx', y = 'sdimy',
-                         point_size = 0.6, colour_by = cnames[2])
+plot_nsp <- plotColData(se,
+    x = "sdimx", y = "sdimy",
+    point_size = 0.6, colour_by = cnames[1]
+)
+plot_bank <- plotColData(se,
+    x = "sdimx", y = "sdimy",
+    point_size = 0.6, colour_by = cnames[2]
+)
 
 
 plot_grid(plot_nsp + coord_equal(), plot_bank + coord_equal(), ncol = 2)
@@ -141,8 +145,8 @@ For clarity, we can visualise each of the clusters separately:
 
 ```{r, eval=T, fig.height=8, fig.width=18}
 plot_grid(
-    plot_nsp + facet_wrap(~colour_by), 
-    plot_bank + facet_wrap(~colour_by), 
+    plot_nsp + facet_wrap(~colour_by),
+    plot_bank + facet_wrap(~colour_by),
     ncol = 2
 )
 ```
@@ -152,13 +156,17 @@ Visualize UMAPs of the non-spatial and BANKSY embedding:
 ```{r, eval=T, fig.height=5, fig.width=14}
 rdnames <- reducedDimNames(se)
 
-umap_nsp <- plotReducedDim(se, dimred = grep('UMAP.*lam0$', rdnames, value = TRUE), 
-               colour_by = cnames[1])
-umap_bank <- plotReducedDim(se, dimred = grep('UMAP.*lam0.2$', rdnames, value = TRUE), 
-               colour_by = cnames[2])
+umap_nsp <- plotReducedDim(se,
+    dimred = grep("UMAP.*lam0$", rdnames, value = TRUE),
+    colour_by = cnames[1]
+)
+umap_bank <- plotReducedDim(se,
+    dimred = grep("UMAP.*lam0.2$", rdnames, value = TRUE),
+    colour_by = cnames[2]
+)
 plot_grid(
-    umap_nsp, 
-    umap_bank, 
+    umap_nsp,
+    umap_bank,
     ncol = 2
 )
 ```

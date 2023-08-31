@@ -19,7 +19,7 @@
 #' rings <- simulateDataset(n_cells = 5e3, n_genes = 50, n_rings = 8)
 #' rings
 #' table(rings$cluster)
-#' ggspavis::plotSpots(rings, annotate = 'cluster', size = 2)
+#' ggspavis::plotSpots(rings, annotate = "cluster", size = 2)
 #'
 simulateDataset <- function(n_cells = 300,
                             n_genes = 30,
@@ -66,6 +66,7 @@ simulateDataset <- function(n_cells = 300,
     se
 }
 
+# Set seed with verbosity.
 verbose.seed <- function(seed) {
     if (!is.null(seed)) {
         set.seed(seed)

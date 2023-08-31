@@ -10,8 +10,8 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+    collapse = TRUE,
+    comment = "#>"
 )
 ```
 
@@ -25,7 +25,7 @@ different clustering methods.
 ## Loading the data
 
 ```{r, eval=T, include=F}
-start.time = Sys.time()
+start.time <- Sys.time()
 ```
 
 The dataset comprises gene expression for 10,944 cells and 120 genes in 2 
@@ -53,19 +53,19 @@ Initialize a SpatialExperiment object and perform basic quality control and
 normalization. 
 
 ```{r, eval=T, message=F}
-se <- SpatialExperiment(assay = list(counts=gcm), spatialCoords = locs)
+se <- SpatialExperiment(assay = list(counts = gcm), spatialCoords = locs)
 colData(se) <- cbind(colData(se), spatialCoords(se))
 
 # QC based on total counts
 qcstats <- perCellQCMetrics(se)
-thres <- quantile(qcstats$total, c(0.05,0.98))
+thres <- quantile(qcstats$total, c(0.05, 0.98))
 keep <- (qcstats$total > thres[1]) & (qcstats$total < thres[2])
 se <- se[, keep]
 
 # Normalization to mean library size
 se <- computeLibraryFactors(se)
-aname <- 'normcounts'
-assay(se, aname) <- normalizeCounts(se, log=FALSE)
+aname <- "normcounts"
+assay(se, aname) <- normalizeCounts(se, log = FALSE)
 ```
 
 ## Parameters
@@ -148,23 +148,23 @@ Visualise spatial coordinates with cluster labels.
 
 ```{r, eval=T, fig.height=9, fig.width=9, fig.align='center'}
 cnames <- colnames(colData(se))
-cnames <- cnames[grep('^clust', cnames)]
+cnames <- cnames[grep("^clust", cnames)]
 cplots <- lapply(cnames, function(cnm) {
-    plotColData(se,x = 'sdimx',y = 'sdimy',point_size = 0.1,colour_by = cnm) + 
+    plotColData(se, x = "sdimx", y = "sdimy", point_size = 0.1, colour_by = cnm) +
         coord_equal() +
         labs(title = cnm) +
         theme(legend.title = element_blank()) +
-        guides(colour = guide_legend(override.aes = list(size = 2))) 
+        guides(colour = guide_legend(override.aes = list(size = 2)))
 })
 
-plot_grid(plotlist = cplots, ncol=2)
+plot_grid(plotlist = cplots, ncol = 2)
 ```
 
 Compare all cluster outputs with `compareClusters`. This function computes 
 pairwise cluster comparison metrics between the clusters in `colData(se)`:
 
 ```{r, eval=T}
-compareClusters(se, func = 'ARI')
+compareClusters(se, func = "ARI")
 ```
 
 ## Session information

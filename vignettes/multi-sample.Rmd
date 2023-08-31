@@ -10,8 +10,8 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+    collapse = TRUE,
+    comment = "#>"
 )
 ```
 
@@ -22,7 +22,7 @@ sample. Here, we demonstrate BANKSY analysis on multiple samples with 4 of the
 12 samples in this dataset.
 
 ```{r, eval=T, include=F}
-start.time = Sys.time()
+start.time <- Sys.time()
 ```
 
 ```{r, eval=T, message=FALSE, warning=FALSE}
@@ -46,7 +46,7 @@ library(spatialLIBD)
 library(ExperimentHub)
 
 ehub <- ExperimentHub::ExperimentHub()
-spe <- spatialLIBD::fetch_data(type='spe', eh=ehub)
+spe <- spatialLIBD::fetch_data(type = "spe", eh = ehub)
 ```
 
 After the download is completed, we trim the *SpatialExperiment* object, 
@@ -54,15 +54,16 @@ retaining only the counts and some metadata such as the sample identifier and pa
 
 ```{r, eval=F}
 imgData(spe) <- NULL
-assay(spe, 'logcounts') <- NULL
+assay(spe, "logcounts") <- NULL
 reducedDims(spe) <- NULL
 rowData(spe) <- NULL
 colData(spe) <- DataFrame(
-    sample_id=spe$sample_id,
-    clust_annotation=factor(
-        addNA(spe$layer_guess_reordered_short), 
-        exclude = NULL, labels = seq(8)),
-    in_tissue=spe$in_tissue,
+    sample_id = spe$sample_id,
+    clust_annotation = factor(
+        addNA(spe$layer_guess_reordered_short),
+        exclude = NULL, labels = seq(8)
+    ),
+    in_tissue = spe$in_tissue,
     row.names = colnames(spe)
 )
 gc()
@@ -75,7 +76,8 @@ Next, subset `spe` to samples from the last subject (samples `151673`,
 ```{r, eval=F}
 sample_names <- as.character(151673:151676)
 spe_list <- lapply(sample_names, function(x) spe[, spe$sample_id == x])
-rm(spe); gc()
+rm(spe)
+gc()
 ```
 
 ## Data preprocessing
@@ -85,13 +87,13 @@ package, we perform basic normalisation of the data:
 
 ```{r, eval=F}
 library(singleCellTK)
-aname <- 'normcounts'
+aname <- "normcounts"
 spe_list <- lapply(spe_list, function(x) {
     singleCellTK::runSeuratNormalizeData(
         x,
-        useAssay = 'counts',
+        useAssay = "counts",
         normAssayName = aname,
-        normalizationMethod = 'RC',
+        normalizationMethod = "RC",
         scaleFactor = 5000,
         verbose = FALSE
     )
@@ -104,11 +106,12 @@ Next, select the top 2000 highly variable features for downstream analysis:
 hvgs <- lapply(spe_list, function(x) {
     singleCellTK::getTopHVG(
         singleCellTK::runSeuratFindHVG(x, hvgNumber = 2000, verbose = FALSE),
-        hvgNumber = 2000)
+        hvgNumber = 2000
+    )
 })
 hvgs <- Reduce(union, hvgs)
 # Subset to hvgs
-spe_list <- lapply(spe_list, function(x) x[hvgs,])
+spe_list <- lapply(spe_list, function(x) x[hvgs, ])
 ```
 
 ## Running BANKSY
@@ -129,7 +132,8 @@ clustering:
 
 ```{r, eval=F}
 spe_joint <- do.call(cbind, spe_list)
-rm(spe_list); gc()
+rm(spe_list)
+gc()
 ```
 
 When running multi-sample BANKSY PCA, the `group` argument *must* be provided. 
@@ -140,7 +144,7 @@ the sample of origin.
 ```{r, eval=F}
 lambda <- 0.2
 use_agf <- FALSE
-spe_joint <- runBanksyPCA(spe_joint, use_agf = use_agf, lambda = lambda, group = 'sample_id', seed = 1000)
+spe_joint <- runBanksyPCA(spe_joint, use_agf = use_agf, lambda = lambda, group = "sample_id", seed = 1000)
 ```
 
 Run UMAP on the BANKSY embedding:
@@ -154,7 +158,7 @@ Finally, obtain cluster labels for spots across all 4 samples.
 ```{r, eval=F}
 res <- 0.6
 spe_joint <- clusterBanksy(spe_joint, use_agf = use_agf, lambda = lambda, resolution = res, seed = 1000)
-cnm <- sprintf('clust_M%s_lam%s_k50_res%s', as.numeric(use_agf), lambda, res)
+cnm <- sprintf("clust_M%s_lam%s_k50_res%s", as.numeric(use_agf), lambda, res)
 ```
 
 To compare clusters visually in the next section, run `connectClusters`:
@@ -168,7 +172,8 @@ Once joint clustering is performed, we split the samples into their own
 
 ```{r, eval=F}
 spe_list <- lapply(sample_names, function(x) spe_joint[, spe_joint$sample_id == x])
-rm(spe_joint); gc()
+rm(spe_joint)
+gc()
 ```
 
 As an optional step, we smooth the cluster labels of each sample separately. 
@@ -177,15 +182,17 @@ sample or tissue in question.
 
 ```{r, eval=F}
 spe_list <- lapply(spe_list, smoothLabels, cluster_names = cnm, k = 6L, verbose = FALSE)
-names(spe_list) <- paste0('sample_', sample_names)
+names(spe_list) <- paste0("sample_", sample_names)
 ```
 
 ## Parsing BANKSY output
 
 ```{r, eval=T, echo=F}
-spe_list <- readRDS(system.file('extdata/DLPFC.rds', package='Banksy'))
-M <- 0; lambda <- 0.2; res <- 0.6
-cnm <- sprintf('clust_M%s_lam%s_k50_res%s', M, lambda, res)
+spe_list <- readRDS(system.file("extdata/DLPFC.rds", package = "Banksy"))
+M <- 0
+lambda <- 0.2
+res <- 0.6
+cnm <- sprintf("clust_M%s_lam%s_k50_res%s", M, lambda, res)
 ```
 
 We can compare BANKSY clusters to pathology annotations using several cluster
@@ -193,12 +200,12 @@ comparison measures such as the adjusted Rand index (ARI) or normalized mutual
 information (NMI) with `compareClusters`. 
 
 ```{r, eval=T}
-ari <- sapply(spe_list, function(x) as.numeric(tail(compareClusters(x, func='ARI')[,1], n=1)))
+ari <- sapply(spe_list, function(x) as.numeric(tail(compareClusters(x, func = "ARI")[, 1], n = 1)))
 ari
 ```
 
 ```{r, eval=T}
-nmi <- sapply(spe_list, function(x) as.numeric(tail(compareClusters(x, func='NMI')[,1], n=1)))
+nmi <- sapply(spe_list, function(x) as.numeric(tail(compareClusters(x, func = "NMI")[, 1], n = 1)))
 nmi
 ```
 
@@ -207,24 +214,26 @@ the [*ggspavis*](https://bioconductor.org/packages/ggspavis) package:
 
 ```{r, eval=T, fig.height=12, fig.width=6, fig.align='center'}
 # Use scater:::.get_palette('tableau10medium')
-pal <- c("#729ECE", "#FF9E4A", "#67BF5C", "#ED665D", "#AD8BC9", 
-         "#A8786E", "#ED97CA", "#A2A2A2", "#CDCC5D", "#6DCCDA")
+pal <- c(
+    "#729ECE", "#FF9E4A", "#67BF5C", "#ED665D", "#AD8BC9",
+    "#A8786E", "#ED97CA", "#A2A2A2", "#CDCC5D", "#6DCCDA"
+)
 
 plot_bank <- lapply(spe_list, function(x) {
-    plotSpots(x, annotate = sprintf('%s_smooth', cnm), size = 0.8, palette = pal) +
-        theme(legend.position = 'none') +
-        labs(title = 'BANKSY clusters')
+    plotSpots(x, annotate = sprintf("%s_smooth", cnm), size = 0.8, palette = pal) +
+        theme(legend.position = "none") +
+        labs(title = "BANKSY clusters")
 })
 
 plot_anno <- lapply(spe_list, function(x) {
-    plotSpots(x, annotate = 'clust_annotation', size = 0.8, palette = pal) +
-        theme(legend.position = 'none') +
-        labs(title = sprintf('Sample %s: Annotation', x$sample_id[1]))
+    plotSpots(x, annotate = "clust_annotation", size = 0.8, palette = pal) +
+        theme(legend.position = "none") +
+        labs(title = sprintf("Sample %s: Annotation", x$sample_id[1]))
 })
 
 plot_list <- c(plot_anno, plot_bank)
 
-plot_grid(plotlist = plot_list, ncol=2, byrow = FALSE)
+plot_grid(plotlist = plot_list, ncol = 2, byrow = FALSE)
 ```
 
 Visualize joint UMAPs for each sample:
@@ -232,26 +241,27 @@ Visualize joint UMAPs for each sample:
 ```{r, eval=T, fig.height=12, fig.width=6, fig.align='center'}
 umap_bank <- lapply(spe_list, function(x) {
     plotReducedDim(x,
-                   'UMAP_M0_lam0.2',
-                   colour_by = sprintf('%s_smooth', cnm),
-                   point_size = 0.5) +
-        theme(legend.position = 'none') +
-        labs(title = 'BANKSY clusters')
+        "UMAP_M0_lam0.2",
+        colour_by = sprintf("%s_smooth", cnm),
+        point_size = 0.5
+    ) +
+        theme(legend.position = "none") +
+        labs(title = "BANKSY clusters")
 })
 
 umap_anno <- lapply(spe_list, function(x) {
     plotReducedDim(x,
-                   'UMAP_M0_lam0.2',
-                   colour_by = 'clust_annotation',
-                   point_size = 0.5) +
-        theme(legend.position = 'none') +
-        labs(title = sprintf('Sample %s: Annotation', x$sample_id[1]))
+        "UMAP_M0_lam0.2",
+        colour_by = "clust_annotation",
+        point_size = 0.5
+    ) +
+        theme(legend.position = "none") +
+        labs(title = sprintf("Sample %s: Annotation", x$sample_id[1]))
 })
 
 umap_list <- c(umap_anno, umap_bank)
 
-plot_grid(plotlist = umap_list, ncol=2, byrow = FALSE)
-
+plot_grid(plotlist = umap_list, ncol = 2, byrow = FALSE)
 ```
 
 ## Session information

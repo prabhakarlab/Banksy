@@ -28,7 +28,7 @@ runBanksyUMAP(
 \code{SingleCellExperiment} or \code{SummarizedExperiment}
   object with \code{computeBanksy} ran.}
 
-\item{use_agf}{A logical vector specifying whether to use the AGF for 
+\item{use_agf}{A logical vector specifying whether to use the AGF for
 computing UMAP.}
 
 \item{lambda}{A numeric vector in \eqn{\in [0,1]} specifying a spatial
@@ -41,11 +41,11 @@ FALSE, runs on the BANKSY matrix.}
 \item{npcs}{An integer scalar specifying the number of principal components
 to use if \code{use_pcs} is TRUE.}
 
-\item{dimred}{A string scalar specifying the name of an existing 
-dimensionality reduction result to use. Will overwrite \code{use_pcs} if 
+\item{dimred}{A string scalar specifying the name of an existing
+dimensionality reduction result to use. Will overwrite \code{use_pcs} if
 supplied.}
 
-\item{ndims}{An integer scalar specifying the number of dimensions to use if 
+\item{ndims}{An integer scalar specifying the number of dimensions to use if
 \code{dimred} is supplied.}
 
 \item{assay_name}{A string scalar specifying the name of the assay used in
@@ -54,16 +54,16 @@ supplied.}
 \item{group}{A string scalar specifying a grouping variable for samples in
 \code{se}. This is used to scale the samples in each group separately.}
 
-\item{n_neighbors}{An integer scalar specifying the number of neighbors to 
+\item{n_neighbors}{An integer scalar specifying the number of neighbors to
 use for UMAP.}
 
-\item{spread}{A numeric scalar specifying the effective scale of embedded 
+\item{spread}{A numeric scalar specifying the effective scale of embedded
 points.}
 
 \item{min_dist}{A numeric scalar specifying the effective min. dist. between
 embedded points.}
 
-\item{n_epochs}{An integer scalar specifying the number of epochs to run 
+\item{n_epochs}{An integer scalar specifying the number of epochs to run
 UMAP optimization.}
 
 \item{M}{Advanced usage. An integer vector specifying the highest azimuthal

@@ -20,7 +20,7 @@ runBanksyPCA(
 \code{SingleCellExperiment} or \code{SummarizedExperiment}
   object with \code{computeBanksy} ran.}
 
-\item{use_agf}{A logical vector specifying whether to use the AGF for 
+\item{use_agf}{A logical vector specifying whether to use the AGF for
 computing principal components.}
 
 \item{lambda}{A numeric vector in \eqn{\in [0,1]} specifying a spatial

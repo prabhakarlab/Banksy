@@ -10,8 +10,8 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+    collapse = TRUE,
+    comment = "#>"
 )
 ```
 
@@ -22,7 +22,7 @@ samples obtained from 3 subjects, with manual annotation of the layers in each
 sample. 
 
 ```{r, eval=T, include=F}
-start.time = Sys.time()
+start.time <- Sys.time()
 ```
 
 ```{r, eval=F, message=FALSE, warning=FALSE}
@@ -50,7 +50,7 @@ library(scater)
 library(cowplot)
 library(ggplot2)
 library(ggspavis)
-spe <- readRDS(system.file('extdata/Integration.rds', package = 'Banksy'))
+spe <- readRDS(system.file("extdata/Integration.rds", package = "Banksy"))
 sample_names <- unique(spe$sample_id)
 ```
 
@@ -65,7 +65,7 @@ library(spatialLIBD)
 library(ExperimentHub)
 
 ehub <- ExperimentHub::ExperimentHub()
-spe <- spatialLIBD::fetch_data(type='spe', eh=ehub)
+spe <- spatialLIBD::fetch_data(type = "spe", eh = ehub)
 sample_names <- unique(spe$sample_id)
 ```
 
@@ -75,22 +75,22 @@ pathology annotations. This saves some memory.
 
 ```{r, eval=F}
 #' Remove NA spots
-na_id = which(is.na(spe$layer_guess_reordered_short))
-spe = spe[,-na_id]
+na_id <- which(is.na(spe$layer_guess_reordered_short))
+spe <- spe[, -na_id]
 
 #' Trim
 imgData(spe) <- NULL
-assay(spe, 'logcounts') <- NULL
+assay(spe, "logcounts") <- NULL
 reducedDims(spe) <- NULL
 rowData(spe) <- NULL
 colData(spe) <- DataFrame(
-    sample_id=spe$sample_id,
-    subject_id = factor(spe$sample_id, labels = rep(paste0('Subject', 1:3), each=4)),
-    clust_annotation=factor(as.numeric(spe$layer_guess_reordered_short)),
-    in_tissue=spe$in_tissue,
+    sample_id = spe$sample_id,
+    subject_id = factor(spe$sample_id, labels = rep(paste0("Subject", 1:3), each = 4)),
+    clust_annotation = factor(as.numeric(spe$layer_guess_reordered_short)),
+    in_tissue = spe$in_tissue,
     row.names = colnames(spe)
 )
-colnames(spe) <- paste0(colnames(spe), '_', spe$sample_id)
+colnames(spe) <- paste0(colnames(spe), "_", spe$sample_id)
 gc()
 ```
 
@@ -100,13 +100,13 @@ different samples do not overlap.
 ```{r, eval=F}
 #' Stagger spatial coordinates
 locs <- spatialCoords(spe)
-locs <- cbind(locs, sample_id=factor(spe$sample_id))
+locs <- cbind(locs, sample_id = factor(spe$sample_id))
 locs_dt <- data.table(locs)
-colnames(locs_dt) = c('sdimx', 'sdimy', 'group')
+colnames(locs_dt) <- c("sdimx", "sdimy", "group")
 locs_dt[, sdimx := sdimx - min(sdimx), by = group]
 global_max <- max(locs_dt$sdimx) * 1.5
 locs_dt[, sdimx := sdimx + group * global_max]
-locs <- as.matrix(locs_dt[,1:2])
+locs <- as.matrix(locs_dt[, 1:2])
 rownames(locs) <- colnames(spe)
 spatialCoords(spe) <- locs
 ```
@@ -116,29 +116,32 @@ spatialCoords(spe) <- locs
 Find highly variable features:
 
 ```{r, eval=F}
- #' Get HVGs
+#' Get HVGs
 hvgs <- singleCellTK::getTopHVG(
     singleCellTK::runSeuratFindHVG(
-        spe, hvgNumber = 2000, verbose = FALSE), 
-    hvgNumber = 2000)
+        spe,
+        hvgNumber = 2000, verbose = FALSE
+    ),
+    hvgNumber = 2000
+)
 ```
 
 Normalize counts:
 
 ```{r, eval=F}
 #' Normalize the data.
-scale_factor <- median(colSums(assay(spe, 'counts')))
-aname <- 'normcounts'
+scale_factor <- median(colSums(assay(spe, "counts")))
+aname <- "normcounts"
 spe <- singleCellTK::runSeuratNormalizeData(
     spe,
-    useAssay = 'counts',
+    useAssay = "counts",
     normAssayName = aname,
-    normalizationMethod = 'RC',
+    normalizationMethod = "RC",
     scaleFactor = scale_factor,
     verbose = FALSE
 )
 
-spe <- spe[hvgs,]
+spe <- spe[hvgs, ]
 ```
 
 ## Running BANKSY
@@ -168,22 +171,22 @@ We run Harmony on the PCs of BANKSY matrix:
 ```{r, eval=F}
 set.seed(SEED)
 harmony_embedding <- HarmonyMatrix(
-        data_mat  = reducedDim(spe, 'PCA_M1_lam0.2'),       
-        meta_data = colData(spe), 
-        vars_use = c('sample_id', 'subject_id'),
-        do_pca    = FALSE,
-        max.iter.harmony = 20,
-        verbose = FALSE
-    )
-reducedDim(spe, 'Harmony_BANKSY') <- harmony_embedding
+    data_mat = reducedDim(spe, "PCA_M1_lam0.2"),
+    meta_data = colData(spe),
+    vars_use = c("sample_id", "subject_id"),
+    do_pca = FALSE,
+    max.iter.harmony = 20,
+    verbose = FALSE
+)
+reducedDim(spe, "Harmony_BANKSY") <- harmony_embedding
 ```
 
 Next, run UMAP on the 'raw' and Harmony corrected PCA embeddings:
 
 ```{r, eval=F}
-k_exp = 100
-spe = runBanksyUMAP(spe, use_agf = TRUE, lambda = lambda, npcs = npcs, n_neighbors = k_exp)
-spe = runBanksyUMAP(spe, dimred = 'Harmony_BANKSY', n_neighbors = k_exp)
+k_exp <- 100
+spe <- runBanksyUMAP(spe, use_agf = TRUE, lambda = lambda, npcs = npcs, n_neighbors = k_exp)
+spe <- runBanksyUMAP(spe, dimred = "Harmony_BANKSY", n_neighbors = k_exp)
 ```
 
 Visualize the UMAPs annotated by subject ID:
@@ -192,35 +195,39 @@ Visualize the UMAPs annotated by subject ID:
 um_point_size <- 0.05
 um_point_alpha <- 0.05
 plot_grid(
-    plotReducedDim(spe, 'UMAP_M1_lam0.2', color_by = 'subject_id', 
-                   point_size = um_point_size, point_alpha = um_point_alpha) +
-        theme(legend.position = 'none'),
-    plotReducedDim(spe, 'UMAP_Harmony_BANKSY', color_by = 'subject_id', 
-                   point_size = um_point_size, point_alpha = um_point_alpha) + 
+    plotReducedDim(spe, "UMAP_M1_lam0.2",
+        color_by = "subject_id",
+        point_size = um_point_size, point_alpha = um_point_alpha
+    ) +
+        theme(legend.position = "none"),
+    plotReducedDim(spe, "UMAP_Harmony_BANKSY",
+        color_by = "subject_id",
+        point_size = um_point_size, point_alpha = um_point_alpha
+    ) +
         theme(legend.title = element_blank()) +
-        guides(colour = guide_legend(override.aes = list(size=5, alpha=1))), 
+        guides(colour = guide_legend(override.aes = list(size = 5, alpha = 1))),
     nrow = 1,
-    rel_widths = c(1,1.2)
-) 
+    rel_widths = c(1, 1.2)
+)
 ```
 
 Cluster the Harmony corrected PCA embedding:
 
 ```{r, eval=F}
-spe <- clusterBanksy(spe, dimred = 'Harmony_BANKSY', k_neighbors = k_exp, resolution = 0.55, seed = SEED)
-spe <- connectClusters(spe, map_to = 'clust_annotation')
+spe <- clusterBanksy(spe, dimred = "Harmony_BANKSY", k_neighbors = k_exp, resolution = 0.55, seed = SEED)
+spe <- connectClusters(spe, map_to = "clust_annotation")
 ```
 
 Generate spatial plots:
 ```{r, eval=T, fig.height=10.5, fig.width=7, fig.align='center'}
 sp_point_size <- 0.9
 cnm <- clusterNames(spe)[2]
-spatial_plots = lapply(sample_names, function(snm) {
-        x <- spe[, spe$sample_id == snm]
-        ari <- aricode::ARI(x$clust_annotation, colData(x)[,cnm])
-        plotSpots(x, annotate = cnm, palette = pals::kelly()[-1], size = sp_point_size) + 
-            theme(legend.position='none', plot.title=element_text(size=10)) + 
-            labs(title = sprintf('Sample %s - ARI: %s', snm, round(ari,3)))
+spatial_plots <- lapply(sample_names, function(snm) {
+    x <- spe[, spe$sample_id == snm]
+    ari <- aricode::ARI(x$clust_annotation, colData(x)[, cnm])
+    plotSpots(x, annotate = cnm, palette = pals::kelly()[-1], size = sp_point_size) +
+        theme(legend.position = "none", plot.title = element_text(size = 10)) +
+        labs(title = sprintf("Sample %s - ARI: %s", snm, round(ari, 3)))
 })
 
 plot_grid(plotlist = spatial_plots, nrow = 4, byrow = FALSE)

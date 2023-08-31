@@ -29,10 +29,10 @@
 #'   to use (for rNN_gauss)
 #' @param M Advanced usage. A integer scalar specifying the highest azimuthal
 #'   Fourier harmonic to compute. If specified, overwrites the \code{use_agf}
-#'   argument.   
-#' @param sample_size (numeric) number of neighbors to sample from the 
+#'   argument.
+#' @param sample_size (numeric) number of neighbors to sample from the
 #'   neighborhood
-#' @param sample_renorm (logical) whether to renormalize the neighbor weights 
+#' @param sample_renorm (logical) whether to renormalize the neighbor weights
 #'   to 1
 #' @param seed (numeric) seed for sampling the neighborhood
 #' @param dimensions A character vector specifying the dimensions to use when
@@ -177,7 +177,8 @@ getBanksyMatrix <- function(se,
     if (length(not_found) > 0) {
         err_msg <- paste0(banksy_names[not_found], collaspe = "; ")
         stop(
-            "The following assays are missing: ", err_msg, "Run computeBanksy")
+            "The following assays are missing: ", err_msg, "Run computeBanksy"
+        )
     }
 
     banksy_assays <- assays(se)[banksy_names]
@@ -282,7 +283,7 @@ getLocs <- function(se, coord_names) {
 computeNeighbors <- function(locs,
                              spatial_mode = "kNN_median", k_geom = 15, n = 2,
                              sigma = 1.5, alpha = 0.05, k_spatial = 100,
-                             sample_size = NULL, sample_renorm = TRUE, 
+                             sample_size = NULL, sample_renorm = TRUE,
                              seed = NULL, dimensions = "all", verbose = FALSE) {
     from <- to <- phi <- NULL
     locs <- as.matrix(locs)
@@ -310,11 +311,12 @@ computeNeighbors <- function(locs,
     }
     knnDF[, phi := getPhi(locs, from, to), by = from][]
     if (!is.null(sample_size)) {
-        if(verbose) message('Subsampling to ', sample_size, ' neighbors')
+        if (verbose) message("Subsampling to ", sample_size, " neighbors")
         knnDF <- subsampler(knnDF,
-                            sample_size = sample_size,
-                            sample_renorm = sample_renorm,
-                            seed = seed)
+            sample_size = sample_size,
+            sample_renorm = sample_renorm,
+            seed = seed
+        )
     }
     if (verbose) message("Done")
     return(knnDF)
@@ -325,8 +327,8 @@ computeHarmonics <- function(gcm, knn_df, M, center, verbose) {
     from <- to <- weight <- phi <- .N <- count <- . <- NULL
     j <- sqrt(as.complex(-1))
 
-    mean_k <- round(mean(knn_df[,.(count=.N),by=from]$count),1)
-    
+    mean_k <- round(mean(knn_df[, .(count = .N), by = from]$count), 1)
+
     if (verbose) message("Computing harmonic m = ", M)
     if (verbose) message("Using ", mean_k, " neighbors")
     if (center) {
@@ -349,8 +351,8 @@ computeHarmonics <- function(gcm, knn_df, M, center, verbose) {
 
 
 getPhi <- function(locs, from, to) {
-    out <- sweep(locs[to,,drop=FALSE], 2, locs[from,,drop=FALSE], "-")
-    phi <- atan2(out[, 2,drop=FALSE], out[, 1,drop=FALSE])
+    out <- sweep(locs[to, , drop = FALSE], 2, locs[from, , drop = FALSE], "-")
+    phi <- atan2(out[, 2, drop = FALSE], out[, 1, drop = FALSE])
     phi + as.integer(phi < 0) * 2 * pi
 }
 
@@ -393,7 +395,7 @@ withRNNgauss <- function(locs, sigma, k_spatial, kernelRadius, verbose) {
     knnDF <- knnDF[distance < sigma * kernelRadius * medianDist, ]
     setDT(knnDF)[, norm.weight := weight / sum(weight), by = from]
     knnDF <- knnDF[, -3, with = FALSE]
-    
+
     ## Create dummy entries for filtered out cells
     iso <- setdiff(seq_len(nrow(locs)), unique(knnDF$from))
     isomat <- c(rep(iso, 2), rep(0, 2 * length(iso)))
@@ -401,7 +403,7 @@ withRNNgauss <- function(locs, sigma, k_spatial, kernelRadius, verbose) {
     knnDF <- rbindlist(list(knnDF, isomat), use.names = FALSE)
     knnDF <- knnDF[order(from, to)]
     setnames(knnDF, "norm.weight", "weight")
-    
+
     return(knnDF)
 }
 
@@ -558,14 +560,14 @@ withKNNmedian <- function(locs, k_geom, verbose) {
 
 #' @importFrom data.table data.table `:=` .SD .N
 subsampler <- function(knnDF,
-                      sample_size = NULL,
-                      sample_renorm = TRUE,
-                      seed = NULL) {
+                       sample_size = NULL,
+                       sample_renorm = TRUE,
+                       seed = NULL) {
     verbose.seed(seed)
     from <- weight <- NULL
     x <- knnDF[,
-               .SD[sample(.N, min(sample_size, .N), replace = FALSE)],
-               by = from
+        .SD[sample(.N, min(sample_size, .N), replace = FALSE)],
+        by = from
     ]
     if (sample_renorm) x[, weight := weight / sum(weight), by = from]
     data.table(x)

@@ -3,7 +3,7 @@
 #' @param se A \code{SpatialExperiment},
 #' \code{SingleCellExperiment} or \code{SummarizedExperiment}
 #'   object with \code{computeBanksy} ran.
-#' @param use_agf A logical vector specifying whether to use the AGF for 
+#' @param use_agf A logical vector specifying whether to use the AGF for
 #'   clustering.
 #' @param lambda A numeric scalar in \eqn{\in [0,1]} specifying a spatial
 #'   weighting parameter. Larger values incorporate more spatial neighborhood
@@ -12,10 +12,10 @@
 #'   FALSE, runs on the BANKSY matrix.
 #' @param npcs An integer scalar specifying the number of principal components
 #'   to use if \code{use_pcs} is TRUE.
-#' @param dimred A string scalar specifying the name of an existing 
-#'   dimensionality reduction result to use. Will overwrite \code{use_pcs} if 
+#' @param dimred A string scalar specifying the name of an existing
+#'   dimensionality reduction result to use. Will overwrite \code{use_pcs} if
 #'   supplied.
-#' @param ndims An integer scalar specifying the number of dimensions to use if 
+#' @param ndims An integer scalar specifying the number of dimensions to use if
 #'   \code{dimred} is supplied.
 #' @param assay_name A string scalar specifying the name of the assay used in
 #'   \code{computeBanksy}.
@@ -30,7 +30,7 @@
 #' @param leiden.iter An integer scalar specifying the number of leiden
 #'   iterations. For running till convergence, set to -1 (leiden).
 #' @param M Advanced usage. An integer vector specifying the highest azimuthal
-#'   Fourier harmonic to cluster with. If specified, overwrites the 
+#'   Fourier harmonic to cluster with. If specified, overwrites the
 #'   \code{use_agf} argument.
 #' @param seed Random seed.
 #' @param ... to pass to methods
@@ -115,7 +115,6 @@ runLeiden <- function(se,
                       resolution,
                       leiden.iter,
                       seed) {
-    
     if (!is.null(dimred)) {
         # Use an existing dimensionality reduction
         ndims <- checkDimred(se, dimred, ndims)
@@ -161,12 +160,12 @@ runLeiden <- function(se,
         out <- lapply(M, function(har) {
             lapply(lambda, function(lam) {
                 x <- getClusterMatrix(se,
-                                      assay_name = assay_name,
-                                      M = har,
-                                      lambda = lam,
-                                      use_pcs = use_pcs,
-                                      npcs = npcs,
-                                      group = group
+                    assay_name = assay_name,
+                    M = har,
+                    lambda = lam,
+                    use_pcs = use_pcs,
+                    npcs = npcs,
+                    group = group
                 )
                 lapply(k_neighbors, function(k) {
                     graph <- as.undirected(getGraph(x, k))
@@ -192,7 +191,6 @@ runLeiden <- function(se,
 
 
 checkClusterArgs <- function(se, all_params) {
-    
     all_params <- all_params[!vapply(all_params, is.null, logical(1))]
     param_nms <- names(all_params)
 
@@ -205,46 +203,43 @@ checkClusterArgs <- function(se, all_params) {
             stop("Specify resolution")
         }
     } else {
-        stop('Invalid clustering algo.')
+        stop("Invalid clustering algo.")
     }
 
     # Check PCs
     if (all_params$use_pcs & is.null(all_params$dimred)) {
-        
         har <- all_params$M
         lam <- all_params$lambda
         npcs <- all_params$npcs
         checkPCA(se, har, lam, npcs)
-        
     }
 }
 
 #' @importFrom SingleCellExperiment reducedDimNames reducedDim
 checkPCA <- function(se, har, lam, npcs) {
-    
     pgrid <- expand.grid(lam, har)
     har <- pgrid[, 2]
     lam <- pgrid[, 1]
     param_names <- sprintf("PCA_M%s_lam%s", har, lam)
-    
-    
+
+
     pca.names <- sprintf("PCA_M%s_lam%s", har, lam)
     check <- pca.names %in% reducedDimNames(se)
-    
+
     # Check if PCs in object
     if (any(check == FALSE)) {
         id <- which(check == FALSE)
         err_msg <- paste0(sprintf("(%s,%s)", har[id], lam[id]), collapse = "; ")
         stop("Run PCA for (M,lambda)=", err_msg)
     }
-    
+
     # Check if sufficient PCs
     pca.mats <- lapply(pca.names, function(nm) reducedDim(se, nm))
     pca.ncols <- vapply(pca.mats, ncol, FUN.VALUE = numeric(1))
     if (any(pca.ncols < npcs)) {
         id <- which(pca.ncols < npcs)
         err_msg <- paste0(sprintf("(%s,%s)", har[id], lam[id]),
-                          collapse = "; "
+            collapse = "; "
         )
         stop(
             "Not enough PCs for (M,lambda)=", err_msg,
@@ -254,7 +249,6 @@ checkPCA <- function(se, har, lam, npcs) {
 }
 
 checkDimred <- function(se, dimred, ndims) {
-    
     check <- dimred %in% reducedDimNames(se)
     # Check if reduction in object
     if (check == FALSE) {
@@ -263,9 +257,10 @@ checkDimred <- function(se, dimred, ndims) {
         mat <- reducedDim(se, dimred)
         if (is.null(ndims)) ndims <- ncol(mat)
         if (ncol(mat) < ndims) {
-            err_msg = sprintf(
-                'Not enough dimensions for %s. Requested %s but found %s.', 
-                dimred, ndims, ncol(mat)) 
+            err_msg <- sprintf(
+                "Not enough dimensions for %s. Requested %s but found %s.",
+                dimred, ndims, ncol(mat)
+            )
             stop(err_msg)
         }
     }
@@ -377,11 +372,11 @@ mapToSeed <- function(seed, val) {
     matching <- HungarianSolver(cost.mat)$pairs
 
     # Remove unmapped labels if val has fewer labels than seed
-    if (any(matching[,2,drop=FALSE] == 0)) {
-        matching <- matching[matching[,2,drop=FALSE] != 0, ]
+    if (any(matching[, 2, drop = FALSE] == 0)) {
+        matching <- matching[matching[, 2, drop = FALSE] != 0, ]
     }
-    from <- matching[,2,drop=FALSE]
-    to <- matching[,1,drop=FALSE]
+    from <- matching[, 2, drop = FALSE]
+    to <- matching[, 1, drop = FALSE]
 
     # Deal with the extra unmapped labels in val
     unmapped_from <- setdiff(seq(max_val), from)
@@ -397,7 +392,7 @@ mapToSeed <- function(seed, val) {
 }
 
 
-#' Label smoothing as described in SpiceMix 
+#' Label smoothing as described in SpiceMix
 #' (https://doi.org/10.1038/s41588-022-01256-z).
 #' Implemented for labels that can be coerced to numeric only.
 #'
@@ -595,24 +590,24 @@ compareClusters <-
     }
 
 #' Get names of clustering runs.
-#' 
+#'
 #' @param se A \code{SpatialExperiment},
 #' \code{SingleCellExperiment} or \code{SummarizedExperiment}
 #'   object with \code{clusterBanksy} ran.
-#'   
+#'
 #' @importFrom SummarizedExperiment colData
-#' 
+#'
 #' @return A character vector of names of clustering runs.
-#' 
+#'
 #' @export
-#' 
+#'
 #' @examples
 #' data(rings)
 #' spe <- computeBanksy(rings, assay_name = "counts", M = 1, k_geom = c(15, 30))
 #' spe <- runBanksyPCA(spe, M = 1, lambda = c(0, 0.2), npcs = 20)
 #' spe <- clusterBanksy(spe, M = 1, lambda = c(0, 0.2), resolution = 1)
 #' clusterNames(spe)
-#' 
+#'
 clusterNames <- function(se) {
-    grep('^clust_', colnames(colData(se)), value = TRUE)
+    grep("^clust_", colnames(colData(se)), value = TRUE)
 }

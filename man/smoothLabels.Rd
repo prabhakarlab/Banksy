@@ -2,7 +2,7 @@
 % Please edit documentation in R/cluster.R
 \name{smoothLabels}
 \alias{smoothLabels}
-\title{Label smoothing as described in SpiceMix 
+\title{Label smoothing as described in SpiceMix
 (https://doi.org/10.1038/s41588-022-01256-z).
 Implemented for labels that can be coerced to numeric only.}
 \usage{
@@ -45,7 +45,7 @@ A SpatialExperiment / SingleCellExperiment / SummarizedExperiment
   '_smooth'.
 }
 \description{
-Label smoothing as described in SpiceMix 
+Label smoothing as described in SpiceMix
 (https://doi.org/10.1038/s41588-022-01256-z).
 Implemented for labels that can be coerced to numeric only.
 }

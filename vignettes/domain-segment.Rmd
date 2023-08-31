@@ -10,8 +10,8 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+    collapse = TRUE,
+    comment = "#>"
 )
 ```
 
@@ -19,7 +19,7 @@ Here, we demonstrate BANKSY domain segmentation on a STARmap PLUS dataset of
 the mouse brain from [Shi et al. (2022)](https://doi.org/10.1101/2022.06.20.496914). 
 
 ```{r, eval=T, include=F}
-start.time = Sys.time()
+start.time <- Sys.time()
 ```
 
 ```{r, eval=T, message=FALSE, warning=FALSE}
@@ -42,28 +42,28 @@ subcellular resolution in 43,341 cells.
 
 ```{r, eval=F}
 #' Change paths accordingly
-gcm_path = '../data/well11processed_expression_pd.csv.gz'
-mdata_path = '../data/well11_spatial.csv.gz'
+gcm_path <- "../data/well11processed_expression_pd.csv.gz"
+mdata_path <- "../data/well11_spatial.csv.gz"
 
 #' Gene cell matrix
-gcm = fread(gcm_path)
-genes = gcm$GENE
-gcm = as.matrix(gcm[,-1])
-rownames(gcm) = genes
+gcm <- fread(gcm_path)
+genes <- gcm$GENE
+gcm <- as.matrix(gcm[, -1])
+rownames(gcm) <- genes
 
 #' Spatial coordinates and metadata
-mdata = fread(mdata_path, skip=1)
-headers = names(fread(mdata_path, nrows=0))
-colnames(mdata) = headers
+mdata <- fread(mdata_path, skip = 1)
+headers <- names(fread(mdata_path, nrows = 0))
+colnames(mdata) <- headers
 #' Orient spatial coordinates
-xx = mdata$X
-yy = mdata$Y
-mdata$X = max(yy) - yy
-mdata$Y = max(xx) - xx
-mdata = data.frame(mdata)
-rownames(mdata) = colnames(gcm)
+xx <- mdata$X
+yy <- mdata$Y
+mdata$X <- max(yy) - yy
+mdata$Y <- max(xx) - xx
+mdata <- data.frame(mdata)
+rownames(mdata) <- colnames(gcm)
 
-locs = as.matrix(mdata[,c('X','Y','Z')])
+locs <- as.matrix(mdata[, c("X", "Y", "Z")])
 
 #' Create SpatialExperiment
 se <- SpatialExperiment(
@@ -83,7 +83,7 @@ constructing the BANKSY matrix.
 lambda <- 0.8
 k_geom <- 30
 npcs <- 50
-aname <- 'processedExp'
+aname <- "processedExp"
 se <- Banksy::computeBanksy(se, assay_name = aname, k_geom = k_geom)
 
 set.seed(1000)
@@ -102,17 +102,17 @@ se <- Banksy::clusterBanksy(se, lambda = lambda, npcs = npcs, resolution = 0.8)
 Visualize clustering results:
 
 ```{r, eval=T, echo=F}
-se <- readRDS(system.file('extdata/STARmap.rds', package='Banksy'))
+se <- readRDS(system.file("extdata/STARmap.rds", package = "Banksy"))
 ```
 
 ```{r, eval=T, fig.height=8, fig.width=7, fig.align='center'}
 cnames <- colnames(colData(se))
-cnames <- cnames[grep('^clust', cnames)]
+cnames <- cnames[grep("^clust", cnames)]
 
-plotColData(se, x = 'X', y = 'Y', point_size = 0.01, colour_by = cnames[1]) +
-    scale_color_manual(values = pals::glasbey()) + 
+plotColData(se, x = "X", y = "Y", point_size = 0.01, colour_by = cnames[1]) +
+    scale_color_manual(values = pals::glasbey()) +
     coord_equal() +
-    theme(legend.position = 'none')
+    theme(legend.position = "none")
 ```
 
 ## Session information
