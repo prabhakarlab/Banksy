@@ -1,20 +1,45 @@
-# ClusterBanksy
-# ConnectClusters
 
-#' Cluster based on joint expression matrix
+# This file implements 
+# - ClusterBanksy
+# - ConnectClusters
+# - SmoothLabels
+
+# ------------------------------------------------------------------------------
+
+#' Cluster a BANKSY embedding
+#' 
+#' @description 
+#' Cluster the BANKSY embedding obtained from different combinations of 
+#' parameters (`lambda`, `use_agf`, `npcs`). Multiple clustering methods are 
+#' implemented, with the default being Leiden graph-based clustering. For this 
+#' method, parallelization is implemented on non-Windows operating systems.
+#' 
+#' This function allows a grid search over multiple parameters. Parameters 
+#' which admit vectors are:
+#' \itemize{
+#'   \item{`lambda`}
+#'   \item{`use_agf`}
+#'   \item{`k.neighbors`}
+#'   \item{`mclust.G`}
+#'   \item{`kmeans.centers`}
+#' }
 #'
 #' @param bank BanksyObject
-#' @param lambda (numeric) weighting parameter
-#' @param M (numeric) compute up to the k-th azimuthal fourier harmonic (default: 1)
+#' @param lambda (numeric) weighting parameter (default: 0.2 for celltyping, 0.8 for domain finding)
+#' @param use_agf (logical) vector specifying whether to use the AGF for clustering
 #' @param pca (logical) runs clustering on PCs (TRUE) or BANKSY matrix (FALSE)
-#' @param npcs (numeric) number of pcs to use for clustering
+#' @param npcs (integer) number of pcs to use for clustering (default: 20)
 #' @param method (character) one of leiden, louvain, mclust, kmeans
-#' @param k.neighbors (numeric) parameter for constructing sNN (for louvain / leiden)
+#' @param k.neighbors (integer) parameter for constructing sNN (for louvain / leiden)
 #' @param resolution (numeric) parameter used for clustering (leiden)
-#' @param leiden.iter (numeric) number of leiden iterations (leiden)
-#' @param mclust.G (numeric) number of mixture components (mclust)
-#' @param kmeans.centers (numeric) number of clusters (kmeans)
-#' @param kmeans.iter.max (numeric) max number of iterations (kmeans)
+#' @param leiden.iter (integer) number of leiden iterations (leiden)
+#' @param num.cores (integer) number of parallel cores on unix / macOS platforms (leiden)
+#' @param mclust.G (integer) number of mixture components (mclust)
+#' @param kmeans.centers (integer) number of clusters (kmeans)
+#' @param kmeans.iter.max (integer) max number of iterations (kmeans)
+#' @param seed (integer) random seed for reproducibility
+#' @param M (integer) advanced usage. vector specifying the highest azimuthal
+#'   Fourier harmonic to cluster with. If specified, overwrites the \code{use_agf} argument.
 #' @param verbose (logical) show progress bar
 #' @param ... to pass to methods
 #'
@@ -36,38 +61,45 @@
 ClusterBanksy <-
     function(bank,
              lambda = 0.2,
-             M = 1,
+             use_agf = TRUE, 
              pca = TRUE,
              npcs = 20,
              method = c('leiden', 'louvain', 'mclust', 'kmeans'),
              k.neighbors = 50,
              resolution = 1,
              leiden.iter = -1,
+             num.cores = 1,
              mclust.G = NULL,
              kmeans.centers = NULL,
              kmeans.iter.max = 10,
+             seed = 1000,
+             M = NULL,
              verbose = TRUE,
              ...) {
+        
+        M <- getM(use_agf, M)
         method <- checkMethod(method)
         params <- c(as.list(environment(), list(...)))
         checkArgs(bank, method, lambda, M, pca, npcs, params)
         
         if (method == 'kmeans') {
             bank <- runKmeans(bank, lambda, M, pca, npcs, 
-                              kmeans.centers, kmeans.iter.max, ...)
+                              kmeans.centers, kmeans.iter.max, seed, ...)
         }
         
         if (method == 'mclust') {
-            bank <- runMclust(bank, lambda, M, pca, npcs, mclust.G, ...)
+            bank <- runMclust(bank, lambda, M, pca, npcs, mclust.G, seed, ...)
         }
         
         if (method == 'leiden') {
             bank <- runLeiden(bank, lambda, M, pca, npcs, 
-                              k.neighbors, resolution, leiden.iter, verbose, ...)
+                              k.neighbors, resolution, leiden.iter, num.cores, 
+                              verbose, seed, ...)
         }
         
         if (method == 'louvain') {
-            bank <- runLouvain(bank, lambda, M, pca, npcs, k.neighbors, resolution)
+            bank <- runLouvain(bank, lambda, M, pca, npcs, k.neighbors, 
+                               resolution, seed)
         }
         
         return(bank)
@@ -91,6 +123,11 @@ checkArgs <- function(bank, method, lambda, M, pca, npcs, call) {
     call <- call[!sapply(call, is.null)]
     args <- names(call)
     
+    if (length(npcs) > 1) {
+        warning('More than one value of npcs supplied. Using npcs=', npcs[1])
+        npcs = npcs[1]
+    }
+    
     if (pca) {
         # Check if pca has been run for lambda
         params <- expand.grid(M, lambda)
@@ -100,8 +137,8 @@ checkArgs <- function(bank, method, lambda, M, pca, npcs, call) {
         if (any(check == FALSE)) {
             id <- which(check == FALSE)
             stop(
-                'Run PCA for M=',
-                paste(params[id, ][, 1], collapse = ','),
+                'Run PCA with use_agf=',
+                as.logical(paste(params[id, ][, 1], collapse = ',')),
                 ' lambda=',
                 paste(params[id, ][, 2], collapse = ',')
             )
@@ -113,11 +150,11 @@ checkArgs <- function(bank, method, lambda, M, pca, npcs, call) {
         if (any(pca.ncols < npcs)) {
             id <- which(pca.ncols < npcs)
             stop(
-                'Not enough PCs for M=',
-                paste(params[id, ][, 1], collapse = ','),
+                'Not enough PCs for use_agf=',
+                as.logical(paste(params[id, ][, 1], collapse = ',')),
                 ' lambda=',
                 paste(params[id, ][, 2], collapse = ','),
-                '\nCall RunBanksyPCA and increase npcs for these (M,lambdas).'
+                '\nCall RunBanksyPCA and increase npcs for these (use_agf,lambda)s.'
             )
         }
     }
@@ -151,7 +188,7 @@ checkArgs <- function(bank, method, lambda, M, pca, npcs, call) {
 getClusterMatrix <- function(bank, lambda, M, pca, npcs) {
     if (pca) {
         pca.name <- paste0('pca_M', M, '_lam', lambda)
-        x <- bank@reduction[[pca.name]]$x[, seq_len(npcs)]
+        x <- bank@reduction[[pca.name]]$x[, seq_len(npcs[1])]
     } else {
         x <- t(getBanksyMatrix(bank, lambda = lambda, M = M)$expr)
     }
@@ -187,6 +224,7 @@ runKmeans <- function(bank,
                       npcs,
                       kmeans.centers,
                       kmeans.iter.max,
+                      seed, 
                       ...) {
     max.iters <- prod(length(lambda), length(kmeans.centers), length(M))
     iter <- 1
@@ -195,6 +233,7 @@ runKmeans <- function(bank,
         for (lam in lambda) {
             x <- getClusterMatrix(bank, lam, har, pca, npcs)
             for (k in kmeans.centers) {
+                set.seed(seed)
                 out <- kmeans(x,
                               centers = k,
                               iter.max = kmeans.iter.max,
@@ -211,7 +250,7 @@ runKmeans <- function(bank,
 }
 
 #' @importFrom mclust Mclust mclustBIC
-runMclust <- function(bank, lambda, M, pca, npcs, mclust.G, ...) {
+runMclust <- function(bank, lambda, M, pca, npcs, mclust.G, seed, ...) {
     max.iters <- prod(length(lambda), length(mclust.G), length(M))
     iter <- 1
     message('Iteration ', iter, ' out of ', max.iters)
@@ -219,6 +258,7 @@ runMclust <- function(bank, lambda, M, pca, npcs, mclust.G, ...) {
         for (lam in lambda) {
             x <- getClusterMatrix(bank, lam, har, pca, npcs)
             for (G in mclust.G) {
+                set.seed(seed)
                 out <- Mclust(x, G = G, ...)
                 clust.name <- paste0('clust_M', har, '_lam', lam, '_mclust', G)
                 bank@meta.data[[clust.name]] <- out$classification
@@ -233,6 +273,8 @@ runMclust <- function(bank, lambda, M, pca, npcs, mclust.G, ...) {
 
 #' @importFrom leidenAlg leiden.community
 #' @importFrom progress progress_bar
+#' @importFrom doParallel registerDoParallel stopImplicitCluster
+#' @importFrom foreach foreach `%do%` `%dopar%`
 runLeiden <- function(bank,
                       lambda,
                       M,
@@ -241,34 +283,73 @@ runLeiden <- function(bank,
                       k.neighbors,
                       resolution,
                       leiden.iter,
-                      verbose) {
+                      num.cores,
+                      verbose,
+                      seed) {
     max.iters <-
         prod(length(lambda),
              length(k.neighbors),
              length(resolution),
              length(M))
-    pb <- progress_bar$new(
-        format = " [:bar] :percent eta: :eta",
-        total = max.iters, clear = FALSE, width = 60)
-    for (har in M) {
-        for (lam in lambda) {
-            x <- getClusterMatrix(bank, lam, har, pca, npcs)
-            for (k in k.neighbors) {
-                graph <- getGraph(x, k)
-                for (res in resolution) {
-                    if (verbose) pb$tick()
-                    out <-
-                        leiden.community(graph,
-                                         resolution = res,
-                                         n.iterations = leiden.iter)
-                    clust.name <- paste0('clust_M', har, '_lam', lam, '_k', k, '_res', res)
-                    bank@meta.data[[clust.name]] <-
-                        as.numeric(out$membership)
-                    # iter <- iter + 1
+    
+    is_windows = (.Platform$OS.type == 'windows')
+    
+    if (max.iters >= 3 & !is_windows & num.cores == 1)
+        message('Using 1 core. Consider parallelising with the num.cores argument')
+
+    if (is_windows | num.cores <= 1) {
+        # Serial
+        pb <- progress_bar$new(
+            format = " [:bar] :percent eta: :eta",
+            total = max.iters, clear = FALSE, width = 60)
+        for (har in M) {
+            for (lam in lambda) {
+                x <- getClusterMatrix(bank, lam, har, pca, npcs)
+                for (k in k.neighbors) {
+                    graph <- getGraph(x, k)
+                    for (res in resolution) {
+                        if (verbose) pb$tick()
+                        set.seed(seed)
+                        out <-
+                            leiden.community(graph,
+                                             resolution = res,
+                                             n.iterations = leiden.iter)
+                        clust.name <- paste0('clust_M', har, '_lam', 
+                                             lam, '_k', k, '_res', res)
+                        bank@meta.data[[clust.name]] <-
+                            as.numeric(out$membership)
+                    }
                 }
             }
         }
+    } else {
+        # Parallelize over lambdas and resolution
+        registerDoParallel(num.cores)
+        out = foreach(har=M, .combine='cbind') %do% {
+            foreach(lam=lambda, .combine='cbind', .packages = 'Banksy') %dopar% {
+                x <- getClusterMatrix(bank, lam, har, pca, npcs)
+                foreach(k=k.neighbors, .combine='cbind') %do% {
+                    graph <- getGraph(x, k)
+                    foreach(res=resolution, .combine='cbind', .packages ='leidenAlg') %dopar% {
+                        set.seed(seed)
+                        out <- leiden.community(graph, resolution = res, 
+                                                n.iterations = leiden.iter)
+                        as.numeric(out$membership)
+                    }
+                } 
+            }
+        }
+        stopImplicitCluster()
+        if (max.iters == 1)
+            out = data.frame(clust = out)
+        out_names <- apply(
+            expand.grid(resolution, k.neighbors, lambda, M), 1, 
+            function(x) sprintf('clust_M%s_lam%s_k%s_res%s', 
+                                x[4], x[3], x[2], x[1]))
+        colnames(out) <- out_names
+        bank@meta.data = cbind(bank@meta.data, out)
     }
+    
     return(bank)
 }
 
@@ -280,7 +361,8 @@ runLouvain <-
              pca,
              npcs,
              k.neighbors,
-             resolution) {
+             resolution,
+             seed) {
         max.iters <-
             prod(length(lambda),
                  length(k.neighbors),
@@ -294,6 +376,7 @@ runLouvain <-
                 for (k in k.neighbors) {
                     graph <- as.undirected(getGraph(x, k))
                     for (res in resolution) {
+                        set.seed(seed)
                         out <- membership(cluster_louvain(graph, resolution = res))
                         clust.name <- paste0('clust_M', har, '_lam', lam, '_k', k, '_res', res, '_louvain')
                         bank@meta.data[[clust.name]] <- as.numeric(out)
@@ -307,6 +390,7 @@ runLouvain <-
         return(bank)
     }
 
+# ------------------------------------------------------------------------------
 
 #' Harmonize cluster labels among parameter runs
 #'
@@ -436,3 +520,123 @@ getARI <- function(bank, digits = 3) {
     ari.mat <- round(ari.mat, digits)
     return(ari.mat)
 }
+
+# ------------------------------------------------------------------------------
+
+#' Label smoothing as described in SpiceMix (https://doi.org/10.1038/s41588-022-01256-z).
+#' Implemented for numeric labels only
+#' 
+#' @param bank BanksyObject
+#' @param cluster_names (character) vector of label names to smooth. If NULL,
+#'   smooths labels in clust.names(bank)
+#' @param k (integer) number of neighbors (default: 10)
+#' @param prop_thres (numeric) proportions threshold. If the fraction of 
+#'   neighbors with a certain label exceeds this proportion, change the label 
+#'   of the current sample (default: 0.5)
+#' @param max_iter (integer) max number of smoothing iterations. Set to -1 for 
+#'   smoothing to convergence. (default: 10)
+#' @param verbose (logical) verbosity
+#' @param include_self (logical) include the spots label in the neighborhood. 
+#'   (default: True)
+#' 
+#' @return BanksyObject with smoothed cluster labels (appended with '_smooth')
+#'   in meta.data
+#'   
+#' @export
+#' 
+#' @examples
+#' data(dlpfc151673)
+#' bank = BanksyObject(
+#'     own.expr = dlpfc151673$expression, 
+#'     cell.locs = dlpfc151673$locations)
+#' n_spots = ncol(own.expr(bank))
+#' labels = readRDS(
+#'     system.file('extdata/dlpfc_clusters.rds', package = 'Banksy')
+#'     )[seq(n_spots)]
+#' meta.data(bank)$clust = labels
+#' bank = SmoothLabels(bank, k=6)
+#' plotSpatialFeatures(bank, pt.size = 1, by = clust.names(bank), 
+#'     type=rep('discrete',2), ncol = 2, main = clust.names(bank))
+#' 
+SmoothLabels = function(bank,
+                        cluster_names = NULL,
+                        k = 15L,
+                        prop_thres = 0.5,
+                        max_iter = 10,
+                        verbose = TRUE,
+                        include_self = TRUE) {
+    
+    if (is.null(cluster_names)) {
+        cluster_names = clust.names(bank)
+        if (is.null(cluster_names)) stop('No cluster names found')
+    } 
+    if (is.list(bank@own.expr)) {
+        # Multiple datasets
+        return(bank)
+    } else {
+        # Single dataset
+        for (i in seq_len(length(cluster_names))) {
+            new_name = paste0(cluster_names[i], '_smooth')
+            bank@meta.data[,new_name] = smoother(
+                bank@meta.data[,cluster_names[i]],
+                bank@cell.locs,
+                k = k, prop_thres = prop_thres,
+                max_iter = max_iter, verbose = verbose, 
+                include_self = include_self
+            )
+        }
+        return(bank)
+    }
+}
+
+
+#' @importFrom dbscan kNN
+smoother <-
+    function(labels_curr,
+             locs,
+             k = 10L,
+             prop_thres = 0.5,
+             max_iter = 10,
+             verbose = TRUE,
+             include_self = TRUE) {
+        # Get neighbors
+        knn = kNN(locs, k = k)$id
+        N = nrow(knn)
+        
+        labels_raw = labels_curr
+        labels_update = labels_curr
+        
+        if (max_iter == -1) max_iter = Inf
+        
+        iter = 1
+        while (iter < max_iter) {
+            if (verbose)
+                message('Iteration ', iter)
+            
+            # Iterate across cells
+            for (i in 1:N) {
+                # Get neighbors
+                neighbor_labels = labels_curr[c(i, knn[i, ])]
+                if (include_self) 
+                    neighbor_labels = neighbor_labels[-1]
+                # Change label based on condition
+                neighbor_props = table(neighbor_labels) / length(neighbor_labels)
+                if (any(neighbor_props > 0.5)) {
+                    labels_update[i] = as.numeric(names(which.max(neighbor_props)))
+                } else {
+                    labels_update[i] = labels_curr[i]
+                }
+            }
+            
+            change = sum(labels_update != labels_curr)
+            if (verbose)
+                message('Change: ', change)
+
+            if (change == 0)
+                break
+            
+            labels_curr = labels_update
+            iter = iter + 1
+        }
+        labels_update
+    }

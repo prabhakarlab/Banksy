@@ -81,7 +81,7 @@ BanksyObject <- function(own.expr = NULL, nbr.expr = NULL, harmonics = NULL,
         own.expr <- geneFilter(own.expr, genes.filter, min.cells.expressed)
 
         for (i in seq_len(nassays)) {
-            gcm <- own.expr[[i]]
+            gcm <- na_filter(own.expr[[i]], i)
             locs <- cell.locs[[i]]
             locs <- locs[match(colnames(gcm), rownames(locs)), ]
             if (!identical(colnames(gcm), rownames(locs))) {
@@ -108,6 +108,7 @@ BanksyObject <- function(own.expr = NULL, nbr.expr = NULL, harmonics = NULL,
         if (is.null(cell.locs)) stop('Provide cell location assay')
     
         own.expr <- as.matrix(own.expr)
+        own.expr <- na_filter(own.expr)
         own.expr <- own.expr[rowSums(own.expr > 0) >= min.cells.expressed, ]
         
         names(cell.locs) <- dimnames[seq_len(ncol(cell.locs))]
@@ -151,6 +152,82 @@ setValidity('BanksyObject', function(object) {
     if (!is(object@reduction, 'list')) check <- FALSE
     return(check)
 })
+
+# Filter genes on init.
+geneFilter <- function(x, genes.filter, min.cells.expressed) {
+    ngenesBef <- vapply(x, function(x) dim(x)[1], FUN.VALUE = numeric(1))
+    
+    if (genes.filter == 'union') {
+        all.genes <- Reduce(union, lapply(x, rownames))
+        x <- lapply(x, function(x) {
+            genes <- setdiff(all.genes, rownames(x))
+            if (length(genes) == 0) {
+                return(x)
+            } else {
+                append <- matrix(0,
+                                 nrow = length(genes),
+                                 ncol = ncol(x))
+                colnames(append) <- colnames(x)
+                rownames(append) <- genes
+                x <- rbind(x, append)
+                return(x)
+            }
+        })
+    } else if (genes.filter == 'intersect') {
+        common.genes <- Reduce(intersect, lapply(x, rownames))
+        x <- lapply(x, function(x)
+            x[rownames(x) %in% common.genes, ])
+        
+        if (min.cells.expressed > 0) {
+            message('Filering genes expressed in less than ',
+                    min.cells.expressed,
+                    ' cells')
+            pass.genes <-
+                lapply(x, function(x)
+                    rownames(x)[rowSums(x > 0) >= min.cells.expressed])
+            pass.genes <- Reduce(intersect, pass.genes)
+            x <- lapply(x, function(x)
+                x[rownames(x) %in% pass.genes, ])
+            ngenesAft <-
+                vapply(x, function(x)
+                    dim(x)[1], FUN.VALUE = numeric(1))
+            filt <- ngenesBef - ngenesAft
+            for (i in seq_len(length(x))) {
+                message('Filtered ',
+                        filt[i],
+                        ' genes from dataset ',
+                        names(x)[i])
+            }
+            
+        }
+    }
+    
+    ## Harmonise gene name orderings
+    gene.names <- sort(rownames(x[[1]]))
+    x <- lapply(x, function(x) {
+        x[match(gene.names, rownames(x)), ]
+    })
+    
+    return(x)
+}
+
+
+# Filter samples on init.
+na_filter = function(x, i=NULL) {
+    offenders = unique(which(is.na(x), arr.ind = TRUE)[,2])
+    if (length(offenders) == 0) {
+        return(x)
+    } else {
+        warn_msg = 'NAs in input matrix detected. Filtering out samples at indices '
+        warn_msg = paste0(warn_msg, paste(offenders, collapse = ', '))
+        if (!is.null(i)) {
+            warn_msg = paste0(warn_msg, ' for assay ', i)
+        }
+        warning(warn_msg)
+        return(x[,-offenders])
+    }
+}
+
 
 ## Getters ---------------------------------------------------------------------
 

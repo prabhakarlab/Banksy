@@ -4,14 +4,24 @@
 \alias{RunBanksyPCA}
 \title{Run PCA}
 \usage{
-RunBanksyPCA(bank, lambda = 0.2, M = 1, npcs = 20, verbose = TRUE)
+RunBanksyPCA(
+  bank,
+  lambda = 0.2,
+  use_agf = TRUE,
+  M = NULL,
+  npcs = 20,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{bank}{BanksyObject}
 
 \item{lambda}{(numeric vector) spatial weighting parameter}
 
-\item{M}{(numeric vector) run PCA using up to the m-th azimuthal fourier harmonic (default: 1)}
+\item{use_agf}{(logical vector) whether to use azimuthal Gabor filter (default: TRUE)}
+
+\item{M}{(numeric vector) advanced usage. run PCA using up to the m-th 
+azimuthal Fourier harmonic. if specified, overwrites the \code{use_agf} argument}
 
 \item{npcs}{(numeric) number of principal components to compute}
 

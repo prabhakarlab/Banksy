@@ -1,11 +1,12 @@
-# DimReduction
 
 #' Run PCA
 #'
 #' @param bank BanksyObject
 #' @param lambda (numeric vector) spatial weighting parameter
-#' @param M (numeric vector) run PCA using up to the m-th azimuthal fourier harmonic (default: 1) 
+#' @param use_agf (logical vector) whether to use azimuthal Gabor filter (default: TRUE)
 #' @param npcs (numeric) number of principal components to compute
+#' @param M (numeric vector) advanced usage. run PCA using up to the m-th 
+#'   azimuthal Fourier harmonic. if specified, overwrites the \code{use_agf} argument   
 #' @param verbose (logical) print messages
 #'
 #' @importFrom irlba prcomp_irlba
@@ -23,13 +24,20 @@
 #' bank <- ComputeBanksy(bank)
 #' bank <- RunBanksyPCA(bank, lambda = 0.2)
 #' 
-RunBanksyPCA <- function(bank, lambda = 0.2, M = 1, npcs = 20, verbose = TRUE) {
+RunBanksyPCA <- function(bank,
+                         lambda = 0.2,
+                         use_agf = TRUE,
+                         M = NULL,
+                         npcs = 20,
+                         verbose = TRUE) {
+    
+    M <- getM(use_agf, M)
     
     for (m in M) {
         for (lam in lambda) {
             if (verbose) message('Running PCA for M=', m, ' lambda=', lam)
             
-            x <- getBanksyMatrix(bank, lambda = lam, M = m)$expr
+            x <- getBanksyMatrix(bank, lambda = lam, M = m, verbose = verbose)$expr
             cell.names <- colnames(x)
             
             pca <- prcomp_irlba(t(x), n = npcs)
@@ -84,7 +92,7 @@ plotScree <- function(bank, lambda, M = 1) {
 #'
 #' @param bank BanksyObject
 #' @param lambda (numeric vector) spatial weighting parameter
-#' @param M (numeric) compute up to the k-th azimuthal fourier harmonic (default: 1) 
+#' @param use_agf (logical vector) whether to use azimuthal Gabor filter (default: TRUE)
 #' @param ncomponents (numeric) number of umap components to compute
 #' @param pca (logical) run UMAP on PCs (TRUE) or BANKSY matrix (FALSE)
 #' @param npcs (numeric) number of principal components to use for umap
@@ -92,6 +100,9 @@ plotScree <- function(bank, lambda, M = 1) {
 #' @param spread (numeric) effective scale of embedded points
 #' @param mindist (numeric) effective min. dist. between embedded points
 #' @param nepochs (numeric) number of epochs to run umap optimization
+#' @param M (numeric vector) advanced usage. run UMAP using PCA computed up to 
+#'   the m-th azimuthal Fourier harmonic. if specified, overwrites the
+#'   \code{use_agf} argument   
 #' @param verbose (logical) print messages
 #' @param ... parameters to pass to uwot::umap
 #'
@@ -110,15 +121,28 @@ plotScree <- function(bank, lambda, M = 1) {
 #' bank <- RunBanksyPCA(bank, lambda = 0.2)
 #' bank <- RunBanksyUMAP(bank, lambda = 0.2)
 #' 
-RunBanksyUMAP <- function(bank, lambda = 0.2, M = 1, ncomponents = 2, pca = TRUE, npcs = 20,
-                    nneighbors = 30, spread = 3, mindist = 0.1, nepochs = 300,
-                    verbose = TRUE, ...) {
+RunBanksyUMAP <- function(bank,
+                          lambda = 0.2,
+                          use_agf = TRUE,
+                          ncomponents = 2,
+                          pca = TRUE,
+                          npcs = 20,
+                          nneighbors = 30,
+                          spread = 3,
+                          mindist = 0.1,
+                          nepochs = 300,
+                          M = NULL,
+                          verbose = TRUE,
+                          ...) {
     
+    M <- getM(use_agf, M)
+        
     for (m in M) {
         for (lam in lambda) {
             if (!pca) {
                 if (verbose) message('Computing UMAP on Banksy matrix')
-                x <- t(getBanksyMatrix(bank, lambda = lam, M = m)$expr)
+                x <- t(getBanksyMatrix(
+                    bank, lambda = lam, M = m, verbose = verbose)$expr)
                 
             } else {
                 if (npcs < 2)
@@ -126,7 +150,7 @@ RunBanksyUMAP <- function(bank, lambda = 0.2, M = 1, ncomponents = 2, pca = TRUE
                 pca.name <- paste0('pca_M', m, '_lam', lam)
                 found <- pca.name %in% names(bank@reduction)
                 if (!found)
-                    stop('Compute PCA with M=', m, ' lambda=', lam, ' before running UMAP')
+                    stop('Compute PCA with use_agf=', as.logical(m), ' lambda=', lam, ' before running UMAP')
                 x <- bank@reduction[[pca.name]]$x
                 nc <- min(ncol(x), npcs)
                 if (nc < npcs)

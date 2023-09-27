@@ -86,17 +86,17 @@ Dimensionality reduction with *RunBanksyPCA* or *RunBanksyUMAP* populates the `r
 slot:
 
 ```{r pca, eval=T, message=F, warning=F}
-bank <- RunBanksyPCA(bank, lambda = 0.3)
+bank <- RunBanksyPCA(bank, lambda = 0.2)
 
 names(reduction(bank))
 ```
 
-Perform clustering with *ClusterBanksy*. This popluates the `meta.data` slot
+Perform clustering with *ClusterBanksy*. This populates the `meta.data` slot
 with cluster labels.
 
 ```{r cluster, eval=T}
 set.seed(42)
-bank <- ClusterBanksy(bank, lambda = 0.3, pca = TRUE, npcs = 20,
+bank <- ClusterBanksy(bank, lambda = 0.2, pca = TRUE, npcs = 20,
                       method = 'leiden', resolution = 1.2, k.neighbors = 50)
 
 head(meta.data(bank))
@@ -139,7 +139,7 @@ clustering with `lam=0.3`, `k=50`, `res=1.2`.
 
 ```{r subset3, eval=T, fig.width=10, fig.height=5, fig.align='center'}
 select_clusters <- c(6,7)
-bankMeta <- SubsetBanksy(bank, metadata = clust_M1_lam0.3_k50_res1.2 %in% select_clusters)
+bankMeta <- SubsetBanksy(bank, metadata = clust_M1_lam0.2_k50_res1.2 %in% select_clusters)
 
 gridExtra::grid.arrange(
   plotSpatial(bank, pt.alpha = 0.4),

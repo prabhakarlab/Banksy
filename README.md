@@ -265,7 +265,11 @@ plotSpatialFeatures(bank, by = features, type = feature.types, main = main,
 Runtime for analysis
 </summary>
 
+<<<<<<< HEAD
+    #> Time difference of 1.915979 mins
+=======
     #> Time difference of 38.77595 secs
+>>>>>>> main
 
 </details>
 <details>

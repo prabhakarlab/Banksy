@@ -2,7 +2,7 @@
 % Please edit documentation in R/computation.R
 \name{ScaleBanksy}
 \alias{ScaleBanksy}
-\title{Scale rows}
+\title{Row-wise scaling of assays in a BanksyObject}
 \usage{
 ScaleBanksy(bank, assay = "both", separate = TRUE)
 }
@@ -22,7 +22,7 @@ ScaleBanksy(bank, assay = "both", separate = TRUE)
 scaled BanksyObject
 }
 \description{
-Scale rows
+Row-wise scaling of assays in a BanksyObject
 }
 \examples{
 # Generate a simulated dataset
