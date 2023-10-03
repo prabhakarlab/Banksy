@@ -1,7 +1,3 @@
 .Rproj.user
 *.Rproj
 .Rhistory
-inst/doc
-scripts
-tmp
-docs
