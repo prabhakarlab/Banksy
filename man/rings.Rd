@@ -10,6 +10,9 @@ A SpatialExperiment object.
 \usage{
 data(rings)
 }
+\value{
+A SpatialExperiment object
+}
 \description{
 This dataset comprises gene expression and spatial coordinates for 50 genes
 and 308 cells from 4 clusters (\code{rings$clusters}). Generate this dataset

@@ -2,7 +2,7 @@
 % Please edit documentation in R/cluster.R
 \name{smoothLabels}
 \alias{smoothLabels}
-\title{k-Nearest neighbor label smoothing.}
+\title{k-Nearest neighbor cluster label smoothing.}
 \usage{
 smoothLabels(
   se,
@@ -43,7 +43,7 @@ A SpatialExperiment / SingleCellExperiment / SummarizedExperiment
   '_smooth'.
 }
 \description{
-k-Nearest neighbor label smoothing.
+k-Nearest neighbor cluster label smoothing.
 }
 \details{
 As described in SpiceMix

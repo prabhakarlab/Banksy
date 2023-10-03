@@ -66,13 +66,13 @@ to use (for rNN_gauss)}
 Fourier harmonic to compute. If specified, overwrites the \code{use_agf}
 argument.}
 
-\item{sample_size}{(numeric) number of neighbors to sample from the
-neighborhood}
+\item{sample_size}{An integer scalar number of neighbors to sample from the
+neighborhood.}
 
-\item{sample_renorm}{(logical) whether to renormalize the neighbor weights
-to 1}
+\item{sample_renorm}{A logical scalar specifying whether to renormalize the
+neighbor weights to 1.}
 
-\item{seed}{(numeric) seed for sampling the neighborhood}
+\item{seed}{An integer scalar specifying seed for sampling the neighborhood.}
 
 \item{dimensions}{A character vector specifying the dimensions to use when
   computing neighborhood.

@@ -11,6 +11,8 @@
 #' }
 #'
 #' @usage data(hippocampus)
+#' 
+#' @return List with expression and locations
 #'
 "hippocampus"
 
@@ -26,5 +28,7 @@
 #' @format A SpatialExperiment object.
 #'
 #' @usage data(rings)
+#' 
+#' @return A SpatialExperiment object
 #'
 "rings"
