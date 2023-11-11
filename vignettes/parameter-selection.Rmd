@@ -11,7 +11,8 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
     collapse = TRUE,
-    comment = "#>"
+    comment = "#>",
+    fig.path = "figures/"
 )
 ```
 
@@ -146,7 +147,7 @@ se <- connectClusters(se)
 
 Visualise spatial coordinates with cluster labels.
 
-```{r, eval=T, fig.height=9, fig.width=9, fig.align='center'}
+```{r parameter-selection-spatial, eval=FALSE, fig.height=9, fig.width=9, fig.align='center'}
 cnames <- colnames(colData(se))
 cnames <- cnames[grep("^clust", cnames)]
 cplots <- lapply(cnames, function(cnm) {
@@ -159,6 +160,10 @@ cplots <- lapply(cnames, function(cnm) {
 
 plot_grid(plotlist = cplots, ncol = 2)
 ```
+
+<center>
+![](figures/parameter-selection-spatial-1.png)
+</center>
 
 Compare all cluster outputs with `compareClusters`. This function computes 
 pairwise cluster comparison metrics between the clusters in `colData(se)`:

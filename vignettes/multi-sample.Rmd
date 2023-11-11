@@ -11,7 +11,8 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
     collapse = TRUE,
-    comment = "#>"
+    comment = "#>",
+    fig.path = "figures/"
 )
 ```
 
@@ -21,11 +22,7 @@ samples obtained from 3 subjects, with manual annotation of the layers in each
 sample. We will focus on 4 of the 12 samples from subject 3, demonstrating 
 multi-sample analysis with BANKSY.
 
-```{r, eval=T, include=F}
-start.time <- Sys.time()
-```
-
-```{r, eval=T, message=FALSE, warning=FALSE}
+```{r, eval=FALSE, message=FALSE, warning=FALSE}
 library(Banksy)
 library(SummarizedExperiment)
 library(SpatialExperiment)
@@ -41,7 +38,7 @@ library(ggspavis)
 We fetch the data for all 12 DLPFC samples with the [*spatialLIBD*](https://bioconductor.org/packages/release/data/experiment/html/spatialLIBD.html) 
 package. This might take awhile.
 
-```{r, eval=F}
+```{r, eval=FALSE}
 library(spatialLIBD)
 library(ExperimentHub)
 
@@ -53,7 +50,7 @@ After the download is completed, we trim the *SpatialExperiment* object,
 retaining only the counts and some metadata such as the sample identifier and 
 pathology annotations. This saves some memory.
 
-```{r, eval=F}
+```{r, eval=FALSE}
 imgData(spe) <- NULL
 assay(spe, "logcounts") <- NULL
 reducedDims(spe) <- NULL
@@ -74,7 +71,7 @@ Next, subset `spe` to samples from the last subject (samples `151673`,
 `151674`, `151675`, `151676`). This stores each sample in its own 
 *SpatialExperiment* object, all placed in a list.
 
-```{r, eval=F}
+```{r, eval=FALSE}
 sample_names <- as.character(151673:151676)
 spe_list <- lapply(sample_names, function(x) spe[, spe$sample_id == x])
 rm(spe)
@@ -86,7 +83,7 @@ gc()
 Using the [*singleCellTK*](https://bioconductor.org/packages/release/bioc/html/singleCellTK.html) 
 package, we perform basic normalisation of the data:
 
-```{r, eval=F}
+```{r, eval=FALSE}
 library(singleCellTK)
 aname <- "normcounts"
 spe_list <- lapply(spe_list, function(x) {
@@ -104,7 +101,7 @@ spe_list <- lapply(spe_list, function(x) {
 Next, select the top 2000 highly variable features from each sample, and take
 their union for downstream analysis:
 
-```{r, eval=F}
+```{r, eval=FALSE}
 hvgs <- lapply(spe_list, function(x) {
     singleCellTK::getTopHVG(
         singleCellTK::runSeuratFindHVG(x, hvgNumber = 2000, verbose = FALSE),
@@ -123,7 +120,7 @@ feature matrices for each sample separately. We use `k_geom=6` corresponding to
 the first-order neighbors in 10x Visium assays (`k_geom=18` corresponding to 
 first and second-order neighbors may also be used).
 
-```{r, eval=F}
+```{r, eval=FALSE}
 compute_agf <- FALSE
 k_geom <- 6
 spe_list <- lapply(spe_list, computeBanksy, assay_name = aname, compute_agf = compute_agf, k_geom = k_geom)
@@ -132,7 +129,7 @@ spe_list <- lapply(spe_list, computeBanksy, assay_name = aname, compute_agf = co
 We then merge the samples to perform joint dimensional reduction and 
 clustering:
 
-```{r, eval=F}
+```{r, eval=FALSE}
 spe_joint <- do.call(cbind, spe_list)
 rm(spe_list)
 gc()
@@ -144,7 +141,7 @@ Features belonging to cells or spots corresponding to each level of the
 grouping variable will be z-scaled separately. In this case, `sample_id` in 
 `colData(spe_joint)` gives the grouping based on the sample of origin.
 
-```{r, eval=F}
+```{r, eval=FALSE}
 lambda <- 0.2
 use_agf <- FALSE
 spe_joint <- runBanksyPCA(spe_joint, use_agf = use_agf, lambda = lambda, group = "sample_id", seed = 1000)
@@ -152,13 +149,13 @@ spe_joint <- runBanksyPCA(spe_joint, use_agf = use_agf, lambda = lambda, group =
 
 Run UMAP on the BANKSY embedding:
 
-```{r, eval=F}
+```{r, eval=FALSE}
 spe_joint <- runBanksyUMAP(spe_joint, use_agf = use_agf, lambda = lambda, seed = 1000)
 ```
 
 Finally, obtain cluster labels for spots across all 4 samples. 
 
-```{r, eval=F}
+```{r, eval=FALSE}
 res <- 0.6
 spe_joint <- clusterBanksy(spe_joint, use_agf = use_agf, lambda = lambda, resolution = res, seed = 1000)
 cnm <- sprintf("clust_M%s_lam%s_k50_res%s", as.numeric(use_agf), lambda, res)
@@ -166,14 +163,14 @@ cnm <- sprintf("clust_M%s_lam%s_k50_res%s", as.numeric(use_agf), lambda, res)
 
 To compare clusters visually in the next section, run `connectClusters`:
 
-```{r, eval=F}
+```{r, eval=FALSE}
 spe_joint <- connectClusters(spe_joint)
 ```
 
 Once joint clustering is performed, we split the samples into their own
 `SpatialExperiment` objects:
 
-```{r, eval=F}
+```{r, eval=FALSE}
 spe_list <- lapply(sample_names, function(x) spe_joint[, spe_joint$sample_id == x])
 rm(spe_joint)
 gc()
@@ -183,39 +180,29 @@ As an optional step, we smooth the cluster labels of each sample separately.
 This can be done if smooth spatial domains are expected in the biological 
 sample or tissue in question.
 
-```{r, eval=F}
+```{r, eval=FALSE}
 spe_list <- lapply(spe_list, smoothLabels, cluster_names = cnm, k = 6L, verbose = FALSE)
 names(spe_list) <- paste0("sample_", sample_names)
 ```
 
 ## Parsing BANKSY output
 
-```{r, eval=T, echo=F}
-spe_list <- readRDS(system.file("extdata/DLPFC.rds", package = "Banksy"))
-M <- 0
-lambda <- 0.2
-res <- 0.6
-cnm <- sprintf("clust_M%s_lam%s_k50_res%s", M, lambda, res)
-```
-
 We can compare BANKSY clusters to pathology annotations using several cluster
 comparison measures such as the adjusted Rand index (ARI) or normalized mutual
 information (NMI) with `compareClusters`. 
 
-```{r, eval=T}
+```{r, eval=FALSE}
 ari <- sapply(spe_list, function(x) as.numeric(tail(compareClusters(x, func = "ARI")[, 1], n = 1)))
-ari
 ```
 
-```{r, eval=T}
+```{r, eval=FALSE}
 nmi <- sapply(spe_list, function(x) as.numeric(tail(compareClusters(x, func = "NMI")[, 1], n = 1)))
-nmi
 ```
 
 Visualise pathology annotation and BANKSY cluster on spatial coordinates with 
 the [*ggspavis*](https://bioconductor.org/packages/ggspavis) package:
 
-```{r, eval=T, fig.height=12, fig.width=6, fig.align='center'}
+```{r multi-sample-spatial, eval=FALSE, fig.height=6, fig.width=12, fig.align='center'}
 # Use scater:::.get_palette('tableau10medium')
 pal <- c(
     "#729ECE", "#FF9E4A", "#67BF5C", "#ED665D", "#AD8BC9",
@@ -236,12 +223,16 @@ plot_anno <- lapply(spe_list, function(x) {
 
 plot_list <- c(plot_anno, plot_bank)
 
-plot_grid(plotlist = plot_list, ncol = 2, byrow = FALSE)
+plot_grid(plotlist = plot_list, ncol = 4, byrow = TRUE)
 ```
+
+<center>
+![](figures/multi-sample-spatial-1.png)
+</center>
 
 Visualize joint UMAPs for each sample:
 
-```{r, eval=T, fig.height=12, fig.width=6, fig.align='center'}
+```{r multi-sample-umap, eval=FALSE, fig.height=6, fig.width=12, fig.align='center'}
 umap_bank <- lapply(spe_list, function(x) {
     plotReducedDim(x,
         "UMAP_M0_lam0.2",
@@ -264,15 +255,9 @@ umap_anno <- lapply(spe_list, function(x) {
 
 umap_list <- c(umap_anno, umap_bank)
 
-plot_grid(plotlist = umap_list, ncol = 2, byrow = FALSE)
+plot_grid(plotlist = umap_list, ncol = 4, byrow = TRUE)
 ```
 
-## Session information
-
-<details>
-
-```{r, sess}
-sessionInfo()
-```
-
-</details>
+<center>
+![](figures/multi-sample-umap-1.png)
+</center>
