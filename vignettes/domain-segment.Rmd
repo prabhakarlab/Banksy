@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 Here, we demonstrate BANKSY domain segmentation on a STARmap PLUS dataset of 
 the mouse brain from [Shi et al. (2022)](https://doi.org/10.1101/2022.06.20.496914). 
 
-```{r, eval=FALSE, message=FALSE, warning=FALSE}
+```{r, eval=TRUE, message=FALSE, warning=FALSE}
 library(Banksy)
 
 library(data.table)
@@ -29,6 +29,10 @@ library(SpatialExperiment)
 library(scater)
 library(cowplot)
 library(ggplot2)
+```
+
+```{r, eval=TRUE, echo=FALSE}
+se <- readRDS(system.file("extdata/STARmap.rds", package = "Banksy"))
 ```
 
 ## Data preprocessing
@@ -74,7 +78,9 @@ se <- SpatialExperiment(
 
 Run BANKSY in domain segmentation mode with `lambda=0.8`. This places larger
 weights on the mean neighborhood expression and azimuthal Gabor filter in 
-constructing the BANKSY matrix. 
+constructing the BANKSY matrix. We adjust the resolution to yield 23 clusters 
+based on the results from [Maher et al. (2023)](https://doi.org/10.1101/2023.06.30.547258v1) 
+(see Fig. 1, 2).  
 
 ```{r, eval=FALSE}
 lambda <- 0.8
@@ -85,15 +91,15 @@ se <- Banksy::computeBanksy(se, assay_name = aname, k_geom = k_geom)
 
 set.seed(1000)
 se <- Banksy::runBanksyPCA(se, lambda = lambda, npcs = npcs)
-```
 
-We adjust the resolution to yield 23 clusters based on the results from 
-[Maher et al. (2023)](https://doi.org/10.1101/2023.06.30.547258v1) 
-(see Fig. 1, 2).  
-
-```{r, eval=FALSE}
 set.seed(1000)
 se <- Banksy::clusterBanksy(se, lambda = lambda, npcs = npcs, resolution = 0.8)
+```
+
+Cluster labels are stored in the `colData` slot:
+
+```{r, eval=TRUE}
+head(colData(se))
 ```
 
 Visualize clustering results:
@@ -111,3 +117,13 @@ plotColData(se, x = "X", y = "Y", point_size = 0.01, colour_by = cnames[1]) +
 <center>
 ![](figures/domain-segment-spatial-1.png)
 </center>
+
+## Session information
+
+<details>
+
+```{r, sess}
+sessionInfo()
+```
+
+</details>

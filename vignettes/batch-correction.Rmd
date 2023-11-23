@@ -22,7 +22,7 @@ multiple spatial omics datasets in the presence of strong batch effects. We use
 (2018). The data comprise 12 samples obtained from 3 subjects, with manual 
 annotation of the layers in each sample. 
 
-```{r, eval=FALSE, message=FALSE, warning=FALSE}
+```{r, eval=TRUE, message=FALSE, warning=FALSE}
 library(Banksy)
 library(SummarizedExperiment)
 library(SpatialExperiment)
@@ -98,7 +98,7 @@ spatialCoords(spe) <- locs
 
 ## Data preprocessing
 
-Find highly variable features:
+Find highly variable features and normalize counts:
 
 ```{r, eval=FALSE}
 #' Get HVGs
@@ -109,12 +109,8 @@ hvgs <- singleCellTK::getTopHVG(
     ),
     hvgNumber = 2000
 )
-```
 
-Normalize counts:
-
-```{r, eval=FALSE}
-#' Normalize the data.
+#' Normalize data
 scale_factor <- median(colSums(assay(spe, "counts")))
 aname <- "normcounts"
 spe <- singleCellTK::runSeuratNormalizeData(
@@ -226,3 +222,13 @@ plot_grid(plotlist = spatial_plots, nrow = 4, byrow = FALSE)
 <center>
 ![](figures/batch-correction-spatial-1.png)
 </center>
+
+## Session information
+
+<details>
+
+```{r, sess}
+sessionInfo()
+```
+
+</details>

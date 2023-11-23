@@ -22,7 +22,7 @@ samples obtained from 3 subjects, with manual annotation of the layers in each
 sample. We will focus on 4 of the 12 samples from subject 3, demonstrating 
 multi-sample analysis with BANKSY.
 
-```{r, eval=FALSE, message=FALSE, warning=FALSE}
+```{r, eval=TRUE, message=FALSE, warning=FALSE}
 library(Banksy)
 library(SummarizedExperiment)
 library(SpatialExperiment)
@@ -81,7 +81,9 @@ gc()
 ## Data preprocessing
 
 Using the [*singleCellTK*](https://bioconductor.org/packages/release/bioc/html/singleCellTK.html) 
-package, we perform basic normalisation of the data:
+package, we first perform basic normalisation of the data, and select the top
+2000 highly variable features from each sample. We take the union of these
+features for downstream analysis.
 
 ```{r, eval=FALSE}
 library(singleCellTK)
@@ -96,12 +98,7 @@ spe_list <- lapply(spe_list, function(x) {
         verbose = FALSE
     )
 })
-```
 
-Next, select the top 2000 highly variable features from each sample, and take
-their union for downstream analysis:
-
-```{r, eval=FALSE}
 hvgs <- lapply(spe_list, function(x) {
     singleCellTK::getTopHVG(
         singleCellTK::runSeuratFindHVG(x, hvgNumber = 2000, verbose = FALSE),
@@ -153,17 +150,14 @@ Run UMAP on the BANKSY embedding:
 spe_joint <- runBanksyUMAP(spe_joint, use_agf = use_agf, lambda = lambda, seed = 1000)
 ```
 
-Finally, obtain cluster labels for spots across all 4 samples. 
+Finally, obtain cluster labels for spots across all 4 samples. We use 
+`connectClusters` for visual comparison of the manual annotations and BANKSY 
+clusters.
 
 ```{r, eval=FALSE}
 res <- 0.6
 spe_joint <- clusterBanksy(spe_joint, use_agf = use_agf, lambda = lambda, resolution = res, seed = 1000)
 cnm <- sprintf("clust_M%s_lam%s_k50_res%s", as.numeric(use_agf), lambda, res)
-```
-
-To compare clusters visually in the next section, run `connectClusters`:
-
-```{r, eval=FALSE}
 spe_joint <- connectClusters(spe_joint)
 ```
 
@@ -185,18 +179,49 @@ spe_list <- lapply(spe_list, smoothLabels, cluster_names = cnm, k = 6L, verbose 
 names(spe_list) <- paste0("sample_", sample_names)
 ```
 
+```{r, eval=TRUE, echo=FALSE}
+spe_list <- readRDS(system.file("extdata/DLPFC.rds", package = "Banksy"))
+M <- 0
+lambda <- 0.2
+res <- 0.6
+cnm <- sprintf("clust_M%s_lam%s_k50_res%s", M, lambda, res)
+```
+
+The raw and smoothed cluster labels are stored in the `colData` slot of each 
+`SingleCellExperiment` or `SpatialExperiment` object. 
+
+```{r, eval=TRUE, echo=FALSE}
+head(colData(spe_list$sample_151673))
+```
+
+To recapitulate the analysis, the parameters used for analysis are stored in 
+the `metadata` slot:
+
+```{r, eval=TRUE, echo=FALSE}
+metadata(spe_list$sample_151673)$BANKSY_params
+```
+
 ## Parsing BANKSY output
 
 We can compare BANKSY clusters to pathology annotations using several cluster
 comparison measures such as the adjusted Rand index (ARI) or normalized mutual
-information (NMI) with `compareClusters`. 
+information (NMI) with `compareClusters`. The function computes the selected 
+comparison measure between all pairs of cluster labels:
 
-```{r, eval=FALSE}
-ari <- sapply(spe_list, function(x) as.numeric(tail(compareClusters(x, func = "ARI")[, 1], n = 1)))
+```{r, eval=TRUE}
+compareClusters(spe_list$sample_151673, func = 'ARI')
 ```
 
-```{r, eval=FALSE}
+We evaluate the ARI and NMI for each sample:
+
+```{r, eval=TRUE}
+ari <- sapply(spe_list, function(x) as.numeric(tail(compareClusters(x, func = "ARI")[, 1], n = 1)))
+ari
+```
+
+```{r, eval=TRUE}
 nmi <- sapply(spe_list, function(x) as.numeric(tail(compareClusters(x, func = "NMI")[, 1], n = 1)))
+nmi
 ```
 
 Visualise pathology annotation and BANKSY cluster on spatial coordinates with 
@@ -261,3 +286,13 @@ plot_grid(plotlist = umap_list, ncol = 4, byrow = TRUE)
 <center>
 ![](figures/multi-sample-umap-1.png)
 </center>
+
+## Session information
+
+<details>
+
+```{r, sess}
+sessionInfo()
+```
+
+</details>

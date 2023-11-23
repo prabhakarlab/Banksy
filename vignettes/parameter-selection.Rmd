@@ -25,14 +25,14 @@ different clustering methods.
 
 ## Loading the data
 
-```{r, eval=T, include=F}
+```{r, eval=TRUE, include=F}
 start.time <- Sys.time()
 ```
 
 The dataset comprises gene expression for 10,944 cells and 120 genes in 2 
 spatial dimensions. See `?Banksy::hippocampus` for more details.
 
-```{r, eval=T, warning=F, message=F}
+```{r, eval=TRUE, warning=FALSE, message=FALSE}
 # Load libs
 library(Banksy)
 
@@ -50,10 +50,18 @@ gcm <- hippocampus$expression
 locs <- as.matrix(hippocampus$locations)
 ```
 
-Initialize a SpatialExperiment object and perform basic quality control and 
-normalization. 
+Here, `gcm` is a gene by cell matrix, and `locs` is a matrix specifying the
+coordinates of the centroid for each cell.
 
-```{r, eval=T, message=F}
+```{r, eval=TRUE}
+head(gcm[,1:5])
+head(locs)
+```
+
+Initialize a SpatialExperiment object and perform basic quality control. We 
+keep cells with total transcript count within the 5th and 98th percentile:
+
+```{r, eval=TRUE, message=FALSE}
 se <- SpatialExperiment(assay = list(counts = gcm), spatialCoords = locs)
 colData(se) <- cbind(colData(se), spatialCoords(se))
 
@@ -62,7 +70,11 @@ qcstats <- perCellQCMetrics(se)
 thres <- quantile(qcstats$total, c(0.05, 0.98))
 keep <- (qcstats$total > thres[1]) & (qcstats$total < thres[2])
 se <- se[, keep]
+```
 
+Next, perform normalization of the data. 
+
+```{r, eval=TRUE, message=FALSE}
 # Normalization to mean library size
 se <- computeLibraryFactors(se)
 aname <- "normcounts"
@@ -87,7 +99,7 @@ compute gradients.
 We compute the neighborhood feature matrices using normalized expression 
 (`normcounts` in the `se` object).
 
-```{r, eval=T}
+```{r, eval=TRUE}
 k_geom <- c(15, 30)
 se <- computeBanksy(se, assay_name = aname, compute_agf = TRUE, k_geom = k_geom)
 ```
@@ -95,7 +107,7 @@ se <- computeBanksy(se, assay_name = aname, compute_agf = TRUE, k_geom = k_geom)
 `computeBanksy` populates the `assays` slot with `H_0` and `H_1` in this 
 instance:
 
-```{r, eval=T}
+```{r, eval=TRUE}
 se
 ```
 
@@ -108,7 +120,7 @@ zone-finding. Here, we run `lambda=0` which corresponds to non-spatial
 clustering, and `lambda=0.2` for spatially-informed cell-typing. We compute PCs
 with and without the AGF (`H_1`).
 
-```{r, eval=T}
+```{r, eval=TRUE}
 lambda <- c(0, 0.2)
 se <- runBanksyPCA(se, use_agf = c(FALSE, TRUE), lambda = lambda, seed = 1000)
 ```
@@ -116,7 +128,7 @@ se <- runBanksyPCA(se, use_agf = c(FALSE, TRUE), lambda = lambda, seed = 1000)
 `runBanksyPCA` populates the `reducedDims` slot, with each combination of 
 `use_agf` and `lambda` provided. 
 
-```{r, eval=T}
+```{r, eval=TRUE}
 reducedDimNames(se)
 ```
 
@@ -127,21 +139,21 @@ neighbors graph. Leiden clustering is then performed on the resultant graph
 with resolution `resolution`. For reproducibiltiy we set a seed for each
 parameter combination.
 
-```{r, eval=T}
+```{r, eval=TRUE}
 k <- 50
 res <- 1
 se <- clusterBanksy(se, use_agf = c(FALSE, TRUE), lambda = lambda, k_neighbors = k, resolution = res, seed = 1000)
 ```
 
 `clusterBanksy` populates `colData(se)` with cluster labels:
-```{r, eval=T}
+```{r, eval=TRUE}
 colnames(colData(se))
 ```
 
 To compare clustering runs visually, different runs can be relabeled to 
 minimise their differences with `connectClusters`:
 
-```{r, eval=T}
+```{r, eval=TRUE}
 se <- connectClusters(se)
 ```
 
@@ -166,17 +178,26 @@ plot_grid(plotlist = cplots, ncol = 2)
 </center>
 
 Compare all cluster outputs with `compareClusters`. This function computes 
-pairwise cluster comparison metrics between the clusters in `colData(se)`:
+pairwise cluster comparison metrics between the clusters in `colData(se)` based 
+on adjusted Rand index (ARI):
 
-```{r, eval=T}
+```{r, eval=TRUE}
 compareClusters(se, func = "ARI")
 ```
+
+or normalized mutual information (NMI):
+
+```{r, eval=TRUE}
+compareClusters(se, func = "NMI")
+```
+
+See `?compareClusters` for the full list of comparison measures.
 
 ## Session information
 
 Vignette runtime:
 
-```{r, eval=T, echo=FALSE}
+```{r, eval=TRUE, echo=FALSE}
 Sys.time() - start.time
 ```
 
