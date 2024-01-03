@@ -9,7 +9,8 @@ knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>",
     fig.path = "man/figures/README-",
-    out.width = "100%"
+    out.width = "100%", 
+    dpi = 70
 )
 ```
 
@@ -38,7 +39,13 @@ details, check out:
 
 ## Installation
 
-The *Banksy* package can be installed via `remotes`:
+The *Banksy* package can be installed via:
+
+```{r, eval=F}
+BiocManager::install('Banksy')
+```
+
+To install from GitHub, use
 
 ```{r, eval=F}
 remotes::install_github("prabhakarlab/Banksy")

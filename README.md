@@ -26,7 +26,13 @@ datasets. For more details, check out:
 
 ## Installation
 
-The *Banksy* package can be installed via `remotes`:
+The *Banksy* package can be installed via:
+
+``` r
+BiocManager::install('Banksy')
+```
+
+To install from GitHub, use
 
 ``` r
 remotes::install_github("prabhakarlab/Banksy")
@@ -157,7 +163,7 @@ plot_bank <- plotColData(se,
 plot_grid(plot_nsp + coord_equal(), plot_bank + coord_equal(), ncol = 2)
 ```
 
-<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
 
 For clarity, we can visualise each of the clusters separately:
 
@@ -169,7 +175,7 @@ plot_grid(
 )
 ```
 
-<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
 
 Visualize UMAPs of the non-spatial and BANKSY embedding:
 
@@ -191,14 +197,14 @@ plot_grid(
 )
 ```
 
-<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
 
 <details>
 <summary>
 Runtime for analysis
 </summary>
 
-    #> Time difference of 55.95643 secs
+    #> Time difference of 56.68255 secs
 
 </details>
 <details>
@@ -210,7 +216,7 @@ Session information
 sessionInfo()
 #> R version 4.3.2 (2023-10-31)
 #> Platform: aarch64-apple-darwin20 (64-bit)
-#> Running under: macOS Ventura 13.3
+#> Running under: macOS Sonoma 14.2.1
 #> 
 #> Matrix products: default
 #> BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
@@ -234,7 +240,7 @@ sessionInfo()
 #>  [9] GenomicRanges_1.54.1        GenomeInfoDb_1.38.1        
 #> [11] IRanges_2.36.0              S4Vectors_0.40.1           
 #> [13] BiocGenerics_0.48.1         MatrixGenerics_1.14.0      
-#> [15] matrixStats_1.1.0           Banksy_0.99.0              
+#> [15] matrixStats_1.1.0           Banksy_0.99.2              
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] tidyselect_1.2.0          viridisLite_0.4.2        
@@ -249,33 +255,33 @@ sessionInfo()
 #> [19] utf8_1.2.4                yaml_2.3.7               
 #> [21] data.table_1.14.8         knitr_1.45               
 #> [23] labeling_0.4.3            S4Arrays_1.2.0           
-#> [25] DelayedArray_0.28.0       abind_1.4-5              
-#> [27] BiocParallel_1.36.0       withr_2.5.2              
-#> [29] grid_4.3.2                fansi_1.0.5              
-#> [31] beachmat_2.18.0           colorspace_2.1-0         
-#> [33] aricode_1.0.3             scales_1.2.1             
-#> [35] cli_3.6.1                 rmarkdown_2.25           
-#> [37] crayon_1.5.2              leidenAlg_1.1.2          
-#> [39] generics_0.1.3            rstudioapi_0.15.0        
-#> [41] rjson_0.2.21              DelayedMatrixStats_1.24.0
-#> [43] ggbeeswarm_0.7.2          RcppHungarian_0.3        
-#> [45] zlibbioc_1.48.0           parallel_4.3.2           
-#> [47] XVector_0.42.0            vctrs_0.6.4              
-#> [49] Matrix_1.6-1.1            BiocSingular_1.18.0      
-#> [51] BiocNeighbors_1.20.0      ggrepel_0.9.4            
-#> [53] irlba_2.3.5.1             beeswarm_0.4.0           
-#> [55] magick_2.8.1              glue_1.6.2               
-#> [57] codetools_0.2-19          uwot_0.1.16              
-#> [59] RcppAnnoy_0.0.21          gtable_0.3.4             
-#> [61] ScaledMatrix_1.10.0       munsell_0.5.0            
-#> [63] tibble_3.2.1              pillar_1.9.0             
-#> [65] htmltools_0.5.7           GenomeInfoDbData_1.2.11  
-#> [67] R6_2.5.1                  sparseMatrixStats_1.14.0 
-#> [69] evaluate_0.23             sccore_1.0.4             
-#> [71] lattice_0.22-5            highr_0.10               
-#> [73] Rcpp_1.0.11               gridExtra_2.3            
-#> [75] SparseArray_1.2.2         xfun_0.41                
-#> [77] pkgconfig_2.0.3
+#> [25] mclust_6.0.0              DelayedArray_0.28.0      
+#> [27] abind_1.4-5               BiocParallel_1.36.0      
+#> [29] withr_2.5.2               grid_4.3.2               
+#> [31] fansi_1.0.5               beachmat_2.18.0          
+#> [33] colorspace_2.1-0          aricode_1.0.3            
+#> [35] scales_1.2.1              cli_3.6.1                
+#> [37] rmarkdown_2.25            crayon_1.5.2             
+#> [39] leidenAlg_1.1.2           generics_0.1.3           
+#> [41] rstudioapi_0.15.0         rjson_0.2.21             
+#> [43] DelayedMatrixStats_1.24.0 ggbeeswarm_0.7.2         
+#> [45] RcppHungarian_0.3         zlibbioc_1.48.0          
+#> [47] parallel_4.3.2            XVector_0.42.0           
+#> [49] vctrs_0.6.4               Matrix_1.6-1.1           
+#> [51] BiocSingular_1.18.0       BiocNeighbors_1.20.0     
+#> [53] ggrepel_0.9.4             irlba_2.3.5.1            
+#> [55] beeswarm_0.4.0            magick_2.8.1             
+#> [57] glue_1.6.2                codetools_0.2-19         
+#> [59] uwot_0.1.16               RcppAnnoy_0.0.21         
+#> [61] gtable_0.3.4              ScaledMatrix_1.10.0      
+#> [63] munsell_0.5.0             tibble_3.2.1             
+#> [65] pillar_1.9.0              htmltools_0.5.7          
+#> [67] GenomeInfoDbData_1.2.11   R6_2.5.1                 
+#> [69] sparseMatrixStats_1.14.0  evaluate_0.23            
+#> [71] sccore_1.0.4              lattice_0.22-5           
+#> [73] highr_0.10                Rcpp_1.0.11              
+#> [75] gridExtra_2.3             SparseArray_1.2.2        
+#> [77] xfun_0.41                 pkgconfig_2.0.3
 ```
 
 </details>
