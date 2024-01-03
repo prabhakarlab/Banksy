@@ -46,9 +46,8 @@ A SpatialExperiment / SingleCellExperiment / SummarizedExperiment
 k-Nearest neighbor cluster label smoothing.
 }
 \details{
-As described in SpiceMix
-  (https://doi.org/10.1038/s41588-022-01256-z). Implemented for labels that
-  can be coerced to numeric only.
+As described in SpiceMix (https://doi.org/10.1038/s41588-022-01256-z). 
+Implemented for labels that can be coerced to numeric only.
 }
 \examples{
 data(rings)

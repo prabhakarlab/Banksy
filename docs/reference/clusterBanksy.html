@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Banksy</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.3</span>
       </span>
     </div>
 
@@ -76,16 +76,18 @@
 <span>  <span class="va">se</span>,</span>
 <span>  use_agf <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  lambda <span class="op">=</span> <span class="fl">0.2</span>,</span>
-<span>  algo <span class="op">=</span> <span class="st">"leiden"</span>,</span>
 <span>  use_pcs <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  npcs <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  npcs <span class="op">=</span> <span class="fl">20L</span>,</span>
 <span>  dimred <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ndims <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  assay_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  group <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  algo <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"leiden"</span>, <span class="st">"louvain"</span>, <span class="st">"kmeans"</span>, <span class="st">"mclust"</span><span class="op">)</span>,</span>
 <span>  k_neighbors <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  leiden.iter <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,</span>
+<span>  kmeans.centers <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  mclust.G <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  M <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -106,14 +108,10 @@ clustering.</p></dd>
 
 
 <dt>lambda</dt>
-<dd><p>A numeric scalar in \(\in [0,1]\) specifying a spatial
-weighting parameter. Larger values incorporate more spatial neighborhood
-information.</p></dd>
-
-
-<dt>algo</dt>
-<dd><p>A string scalar specifying the clustering algorithm to use; one
-of leiden, louvain, mclust, kmeans.</p></dd>
+<dd><p>A numeric vector in \(\in [0,1]\) specifying a spatial
+weighting parameter. Larger values (e.g. 0.8) incorporate more spatial
+neighborhood and find spatial domains, while smaller values (e.g. 0.2)
+perform spatial cell-typing.</p></dd>
 
 
 <dt>use_pcs</dt>
@@ -147,19 +145,34 @@ supplied.</p></dd>
 <code>se</code>. This is used to scale the samples in each group separately.</p></dd>
 
 
+<dt>algo</dt>
+<dd><p>A string scalar specifying the clustering algorithm to use; one
+of leiden, louvain, mclust, kmeans.</p></dd>
+
+
 <dt>k_neighbors</dt>
-<dd><p>An integer scalar specifying number of neighbors for
+<dd><p>An integer vector specifying number of neighbors for
 constructing sNN (for louvain / leiden).</p></dd>
 
 
 <dt>resolution</dt>
-<dd><p>A numeric scalar specifying resolution used for clustering
-(leiden).</p></dd>
+<dd><p>A numeric vector specifying resolution used for clustering
+(louvain / leiden).</p></dd>
 
 
 <dt>leiden.iter</dt>
 <dd><p>An integer scalar specifying the number of leiden
 iterations. For running till convergence, set to -1 (leiden).</p></dd>
+
+
+<dt>kmeans.centers</dt>
+<dd><p>An integer vector specifying the number of kmeans 
+clusters (kmeans).</p></dd>
+
+
+<dt>mclust.G</dt>
+<dd><p>An integer vector specifying the number of mixture 
+components (Mclust).</p></dd>
 
 
 <dt>M</dt>
@@ -169,7 +182,7 @@ Fourier harmonic to cluster with. If specified, overwrites the
 
 
 <dt>seed</dt>
-<dd><p>Random seed.</p></dd>
+<dd><p>Random seed for clustering. If not specified, no seed is set.</p></dd>
 
 
 <dt>...</dt>
@@ -182,6 +195,25 @@ Fourier harmonic to cluster with. If specified, overwrites the
 
 <p>A SpatialExperiment / SingleCellExperiment / SummarizedExperiment
   object with cluster labels in <code>colData(se)</code>.</p>
+    </div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>This function performs clustering on the principal components computed on 
+the BANKSY matrix, i.e., the BANKSY embedding. The PCA corresponding to the 
+parameters <code>use_agf</code> and <code>lambda</code> must have been computed with  
+<a href="runBanksyPCA.html">runBanksyPCA</a>. Clustering may also be performed directly on the 
+BANKSY matrix with <code>use_pcs</code> set to <code>FALSE</code> (this is not 
+recommended).</p>
+<p>Four clustering algorithms are implemented.</p><ul><li><p>leiden: Leiden graph-based clustering. The arguments 
+ <code>k_neighbors</code> and <code>resolution</code> should be specified.</p></li>
+<li><p>louvain: Louvain graph-based clustering. The arguments 
+ <code>k_neighbors</code> and <code>resolution</code> should be specified.</p></li>
+<li><p>kmeans: kmeans clustering. The argument <code>kmeans.centers</code> should 
+ be specified.</p></li>
+<li><p>mclust: Gaussian mixture model-based clustering. The argument 
+ <code>mclust.G</code> should be specified.</p></li>
+</ul><p>By default, no seed is set for clustering. If a seed is specified, the same
+seed is used for clustering across the input parameters.</p>
     </div>
 
     <div id="ref-examples">

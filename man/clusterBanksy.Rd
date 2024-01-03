@@ -8,16 +8,18 @@ clusterBanksy(
   se,
   use_agf = TRUE,
   lambda = 0.2,
-  algo = "leiden",
   use_pcs = TRUE,
-  npcs = 20,
+  npcs = 20L,
   dimred = NULL,
   ndims = NULL,
   assay_name = NULL,
   group = NULL,
+  algo = c("leiden", "louvain", "kmeans", "mclust"),
   k_neighbors = 50,
   resolution = 1,
   leiden.iter = -1,
+  kmeans.centers = 5,
+  mclust.G = 5,
   M = NULL,
   seed = NULL,
   ...
@@ -31,12 +33,10 @@ clusterBanksy(
 \item{use_agf}{A logical vector specifying whether to use the AGF for
 clustering.}
 
-\item{lambda}{A numeric scalar in \eqn{\in [0,1]} specifying a spatial
-weighting parameter. Larger values incorporate more spatial neighborhood
-information.}
-
-\item{algo}{A string scalar specifying the clustering algorithm to use; one
-of leiden, louvain, mclust, kmeans.}
+\item{lambda}{A numeric vector in \eqn{\in [0,1]} specifying a spatial
+weighting parameter. Larger values (e.g. 0.8) incorporate more spatial
+neighborhood and find spatial domains, while smaller values (e.g. 0.2)
+perform spatial cell-typing.}
 
 \item{use_pcs}{A logical scalar specifying whether to cluster on PCs. If
 FALSE, runs on the BANKSY matrix.}
@@ -57,20 +57,29 @@ supplied.}
 \item{group}{A string scalar specifying a grouping variable for samples in
 \code{se}. This is used to scale the samples in each group separately.}
 
-\item{k_neighbors}{An integer scalar specifying number of neighbors for
+\item{algo}{A string scalar specifying the clustering algorithm to use; one
+of leiden, louvain, mclust, kmeans.}
+
+\item{k_neighbors}{An integer vector specifying number of neighbors for
 constructing sNN (for louvain / leiden).}
 
-\item{resolution}{A numeric scalar specifying resolution used for clustering
-(leiden).}
+\item{resolution}{A numeric vector specifying resolution used for clustering
+(louvain / leiden).}
 
 \item{leiden.iter}{An integer scalar specifying the number of leiden
 iterations. For running till convergence, set to -1 (leiden).}
+
+\item{kmeans.centers}{An integer vector specifying the number of kmeans 
+clusters (kmeans).}
+
+\item{mclust.G}{An integer vector specifying the number of mixture 
+components (Mclust).}
 
 \item{M}{Advanced usage. An integer vector specifying the highest azimuthal
 Fourier harmonic to cluster with. If specified, overwrites the
 \code{use_agf} argument.}
 
-\item{seed}{Random seed.}
+\item{seed}{Random seed for clustering. If not specified, no seed is set.}
 
 \item{...}{to pass to methods}
 }
@@ -80,6 +89,29 @@ A SpatialExperiment / SingleCellExperiment / SummarizedExperiment
 }
 \description{
 Perform clustering in BANKSY's neighborhood-augmented feature space.
+}
+\details{
+This function performs clustering on the principal components computed on 
+the BANKSY matrix, i.e., the BANKSY embedding. The PCA corresponding to the 
+parameters \code{use_agf} and \code{lambda} must have been computed with  
+\link[Banksy]{runBanksyPCA}. Clustering may also be performed directly on the 
+BANKSY matrix with \code{use_pcs} set to \code{FALSE} (this is not 
+recommended). 
+
+Four clustering algorithms are implemented. 
+\itemize{
+ \item{leiden: Leiden graph-based clustering. The arguments 
+ \code{k_neighbors} and \code{resolution} should be specified.}
+ \item{louvain: Louvain graph-based clustering. The arguments 
+ \code{k_neighbors} and \code{resolution} should be specified.}
+ \item{kmeans: kmeans clustering. The argument \code{kmeans.centers} should 
+ be specified.}
+ \item{mclust: Gaussian mixture model-based clustering. The argument 
+ \code{mclust.G} should be specified.}
+}
+
+By default, no seed is set for clustering. If a seed is specified, the same
+seed is used for clustering across the input parameters.
 }
 \examples{
 data(rings)

@@ -20,6 +20,8 @@ List with expression and locations
 \description{
 This dataset comprises VeraFISH profiling of cells in the mouse hippocampus.
 Gene expression and cell centroids for 10,944 cells and 129 genes in 2
-spatial dimensions are provided.
+spatial dimensions are provided. For details on how this dataset was 
+generated, refer to Supplementary Information section 2.2 of our 
+\href{https://www.biorxiv.org/content/10.1101/2022.04.14.488259v1.supplementary-material}{preprint}.
 }
 \keyword{datasets}

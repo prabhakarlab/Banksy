@@ -9,15 +9,15 @@ runBanksyUMAP(
   use_agf = TRUE,
   lambda = 0.2,
   use_pcs = TRUE,
-  npcs = 20,
+  npcs = 20L,
   dimred = NULL,
   ndims = NULL,
   assay_name = NULL,
   group = NULL,
-  n_neighbors = 30,
+  n_neighbors = 30L,
   spread = 3,
   min_dist = 0.1,
-  n_epochs = 300,
+  n_epochs = 300L,
   M = NULL,
   seed = NULL,
   ...
@@ -32,8 +32,9 @@ runBanksyUMAP(
 computing UMAP.}
 
 \item{lambda}{A numeric vector in \eqn{\in [0,1]} specifying a spatial
-weighting parameter. Larger values incorporate more spatial neighborhood
-information.}
+weighting parameter. Larger values (e.g. 0.8) incorporate more spatial
+neighborhood and find spatial domains, while smaller values (e.g. 0.2)
+perform spatial cell-typing.}
 
 \item{use_pcs}{A logical scalar specifying whether to run UMAP on PCs. If
 FALSE, runs on the BANKSY matrix.}
@@ -70,7 +71,7 @@ UMAP optimization.}
 Fourier harmonic to use. If specified, overwrites the \code{use_agf}
 argument.}
 
-\item{seed}{Seed for UMAP.}
+\item{seed}{Seed for UMAP. If not specified, no seed is set.}
 
 \item{...}{parameters to pass to uwot::umap}
 }
@@ -80,6 +81,10 @@ A SpatialExperiment / SingleCellExperiment / SummarizedExperiment
 }
 \description{
 Run UMAP on a BANKSY embedding.
+}
+\details{
+This function runs UMAP on the principal components computed on the 
+BANKSY matrix.
 }
 \examples{
 data(rings)

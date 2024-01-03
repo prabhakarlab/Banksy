@@ -22,6 +22,14 @@ A SpatialExperiment object.
 \description{
 Simulate an unrealistic spatial omics dataset.
 }
+\details{
+This function generates an unrealistic spatial omics dataset based on a 
+user-specified number of cells and genes. The number of clusters is defined 
+by \code{n_rings}, while counts follow a Poisson distribution with a 
+user-specified rate \code{rate}. The simulation is set up such that the 
+number of cells in each cluster is uniformly distributed; as such, the final 
+number of cells is approximately equal to the user-specified number of cells.
+}
 \examples{
 set.seed(2023)
 rings <- simulateDataset(n_cells = 5e3, n_genes = 50, n_rings = 8)

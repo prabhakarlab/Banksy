@@ -10,11 +10,11 @@ computeBanksy(
   coord_names = NULL,
   compute_agf = TRUE,
   k_geom = 15,
-  spatial_mode = "kNN_median",
+  spatial_mode = c("kNN_median", "kNN_r", "kNN_rn", "kNN_rank", "kNN_unif", "rNN_gauss"),
   n = 2,
   sigma = 1.5,
   alpha = 0.05,
-  k_spatial = 100,
+  k_spatial = 100L,
   M = NULL,
   sample_size = NULL,
   sample_renorm = TRUE,
@@ -59,7 +59,7 @@ Values \eqn{\in [15,30]} work well.}
 \item{alpha}{A numeric scalar specifying the radius used: larger alphas give
 smaller radii (for rNN_gauss).}
 
-\item{k_spatial}{A numeric scalar specifying the initial number of neighbors
+\item{k_spatial}{An integer scalar specifying the initial number of neighbors
 to use (for rNN_gauss)}
 
 \item{M}{Advanced usage. A integer scalar specifying the highest azimuthal
@@ -84,7 +84,7 @@ neighbor weights to 1.}
 \item{center}{A logical scalar specifying whether to center higher order
 harmonics in local neighborhoods.}
 
-\item{verbose}{messages}
+\item{verbose}{A logical scalar specifying verbosity.}
 }
 \value{
 A SpatialExperiment / SingleCellExperiment / SummarizedExperiment
@@ -92,6 +92,14 @@ A SpatialExperiment / SingleCellExperiment / SummarizedExperiment
 }
 \description{
 Compute the component neighborhood matrices for the BANKSY matrix.
+}
+\details{
+Given an expression matrix (as specified by \code{assay_name}), this function
+computes the mean neighborhood matrix (\code{H0}) and optionally, the 
+azimuthal Gabor filter (AGF) matrix (\code{H1}). The number of neighbors 
+used to define the spatial neighborhood is given by \code{k_geom}. 
+Different kernels may be used to compute the neighborhood features, 
+specified by \code{spatial_mode}.
 }
 \examples{
 data(rings)

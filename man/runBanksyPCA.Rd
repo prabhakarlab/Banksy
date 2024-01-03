@@ -2,13 +2,13 @@
 % Please edit documentation in R/reduction.R
 \name{runBanksyPCA}
 \alias{runBanksyPCA}
-\title{Run PCA on a BANKSY embedding.}
+\title{Run PCA on a BANKSY matrix.}
 \usage{
 runBanksyPCA(
   se,
   use_agf = TRUE,
   lambda = 0.2,
-  npcs = 20,
+  npcs = 20L,
   assay_name = NULL,
   group = NULL,
   M = NULL,
@@ -24,8 +24,9 @@ runBanksyPCA(
 computing principal components.}
 
 \item{lambda}{A numeric vector in \eqn{\in [0,1]} specifying a spatial
-weighting parameter. Larger values incorporate more spatial neighborhood
-information.}
+weighting parameter. Larger values (e.g. 0.8) incorporate more spatial
+neighborhood and find spatial domains, while smaller values (e.g. 0.2)
+perform spatial cell-typing.}
 
 \item{npcs}{An integer scalar specifying the number of principal components
 to compute.}
@@ -40,14 +41,19 @@ to compute.}
 Fourier harmonic to use. If specified, overwrites the \code{use_agf}
 argument.}
 
-\item{seed}{Seed for PCA.}
+\item{seed}{Seed for PCA. If not specified, no seed is set.}
 }
 \value{
 A SpatialExperiment / SingleCellExperiment / SummarizedExperiment
   object with PC coordinates in \code{reducedDims(se)}.
 }
 \description{
-Run PCA on a BANKSY embedding.
+Run PCA on a BANKSY matrix.
+}
+\details{
+This function runs PCA on the BANKSY matrix 
+(see \link[Banksy]{getBanksyMatrix}) with features scaled to zero mean and 
+unit standard deviation.
 }
 \examples{
 data(rings)

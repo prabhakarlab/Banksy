@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Banksy</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.3</span>
       </span>
     </div>
 
@@ -99,6 +99,15 @@ simulating counts.</p></dd>
     
 
 <p>A SpatialExperiment object.</p>
+    </div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>This function generates an unrealistic spatial omics dataset based on a 
+user-specified number of cells and genes. The number of clusters is defined 
+by <code>n_rings</code>, while counts follow a Poisson distribution with a 
+user-specified rate <code>rate</code>. The simulation is set up such that the 
+number of cells in each cluster is uniformly distributed; as such, the final 
+number of cells is approximately equal to the user-specified number of cells.</p>
     </div>
 
     <div id="ref-examples">

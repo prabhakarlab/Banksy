@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Banksy</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.3</span>
       </span>
     </div>
 
@@ -108,7 +108,7 @@ in each sample.</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/prabhakarlab/Banksy" class="external-link">Banksy</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/SummarizedExperiment" class="external-link">SummarizedExperiment</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/drighelli/SpatialExperiment" class="external-link">SpatialExperiment</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">singleCellTK</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.camplab.net/sctk/" class="external-link">singleCellTK</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">scran</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">harmony</span><span class="op">)</span></span>
@@ -125,19 +125,18 @@ in each sample.</p>
 <p>We fetch the data for all 12 DLPFC samples with the <a href="https://bioconductor.org/packages/release/data/experiment/html/spatialLIBD.html" class="external-link"><em>spatialLIBD</em></a>
 package. This might take awhile.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">spatialLIBD</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/LieberInstitute/spatialLIBD" class="external-link">spatialLIBD</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">ExperimentHub</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">ehub</span> <span class="op">&lt;-</span> <span class="fu">ExperimentHub</span><span class="fu">::</span><span class="fu">ExperimentHub</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu">spatialLIBD</span><span class="fu">::</span><span class="fu">fetch_data</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"spe"</span>, eh <span class="op">=</span> <span class="va">ehub</span><span class="op">)</span></span>
-<span><span class="va">sample_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">spe</span><span class="op">$</span><span class="va">sample_id</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">ehub</span> <span class="op">&lt;-</span> <span class="fu">ExperimentHub</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ExperimentHub/man/ExperimentHub-class.html" class="external-link">ExperimentHub</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu">spatialLIBD</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/spatialLIBD/man/fetch_data.html" class="external-link">fetch_data</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"spe"</span>, eh <span class="op">=</span> <span class="va">ehub</span><span class="op">)</span></span></code></pre></div>
 <p>After the download is completed, we trim the
 <em>SpatialExperiment</em> object, retaining only the counts and some
 metadata such as the sample identifier and pathology annotations. This
 saves some memory.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' Remove NA spots</span></span>
-<span><span class="va">na_id</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">spe</span><span class="op">$</span><span class="va">layer_guess_reordered_short</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">na_id</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">spe</span><span class="op">$</span><span class="va">layer_guess_reordered_short</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="va">spe</span><span class="op">[</span>, <span class="op">-</span><span class="va">na_id</span><span class="op">]</span></span>
 <span></span>
 <span><span class="co">#' Trim</span></span>
@@ -150,44 +149,48 @@ saves some memory.</p>
 <span>    subject_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">spe</span><span class="op">$</span><span class="va">sample_id</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Subject"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    clust_annotation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">spe</span><span class="op">$</span><span class="va">layer_guess_reordered_short</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    in_tissue <span class="op">=</span> <span class="va">spe</span><span class="op">$</span><span class="va">in_tissue</span>,</span>
-<span>    row.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spe</span><span class="op">)</span></span>
+<span>    row.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spe</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spe</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spe</span><span class="op">)</span>, <span class="st">"_"</span>, <span class="va">spe</span><span class="op">$</span><span class="va">sample_id</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spe</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spe</span><span class="op">)</span>, <span class="st">"_"</span>, <span class="va">spe</span><span class="op">$</span><span class="va">sample_id</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>We analyse the first sample of each subject due to vignette runtime
+constraints.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="va">spe</span><span class="op">[</span>, <span class="va">spe</span><span class="op">$</span><span class="va">sample_id</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"151507"</span>, <span class="st">"151669"</span>, <span class="st">"151673"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">sample_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">spe</span><span class="op">$</span><span class="va">sample_id</span><span class="op">)</span></span></code></pre></div>
 <p>Next, stagger the spatial coordinates across the samples so that
 spots from different samples do not overlap.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' Stagger spatial coordinates</span></span>
 <span><span class="va">locs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SpatialExperiment/man/SpatialExperiment-methods.html" class="external-link">spatialCoords</a></span><span class="op">(</span><span class="va">spe</span><span class="op">)</span></span>
-<span><span class="va">locs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">locs</span>, sample_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">spe</span><span class="op">$</span><span class="va">sample_id</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">locs_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="va">locs</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">locs_dt</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sdimx"</span>, <span class="st">"sdimy"</span>, <span class="st">"group"</span><span class="op">)</span></span>
+<span><span class="va">locs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">locs</span>, sample_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">spe</span><span class="op">$</span><span class="va">sample_id</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">locs_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span><span class="va">locs</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">locs_dt</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sdimx"</span>, <span class="st">"sdimy"</span>, <span class="st">"group"</span><span class="op">)</span></span>
 <span><span class="va">locs_dt</span><span class="op">[</span>, <span class="va">sdimx</span> <span class="op">:=</span> <span class="va">sdimx</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">sdimx</span><span class="op">)</span>, by <span class="op">=</span> <span class="va">group</span><span class="op">]</span></span>
 <span><span class="va">global_max</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">locs_dt</span><span class="op">$</span><span class="va">sdimx</span><span class="op">)</span> <span class="op">*</span> <span class="fl">1.5</span></span>
 <span><span class="va">locs_dt</span><span class="op">[</span>, <span class="va">sdimx</span> <span class="op">:=</span> <span class="va">sdimx</span> <span class="op">+</span> <span class="va">group</span> <span class="op">*</span> <span class="va">global_max</span><span class="op">]</span></span>
 <span><span class="va">locs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">locs_dt</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">locs</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spe</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">locs</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">spe</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/SpatialExperiment/man/SpatialExperiment-methods.html" class="external-link">spatialCoords</a></span><span class="op">(</span><span class="va">spe</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">locs</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="data-preprocessing">Data preprocessing<a class="anchor" aria-label="anchor" href="#data-preprocessing"></a>
 </h2>
-<p>Find highly variable features:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p>Find highly variable features and normalize counts:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#' Get HVGs</span></span>
-<span><span class="va">hvgs</span> <span class="op">&lt;-</span> <span class="fu">singleCellTK</span><span class="fu">::</span><span class="fu">getTopHVG</span><span class="op">(</span></span>
-<span>    <span class="fu">singleCellTK</span><span class="fu">::</span><span class="fu">runSeuratFindHVG</span><span class="op">(</span></span>
+<span><span class="va">hvgs</span> <span class="op">&lt;-</span> <span class="fu">singleCellTK</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/singleCellTK/man/getTopHVG.html" class="external-link">getTopHVG</a></span><span class="op">(</span></span>
+<span>    <span class="fu">singleCellTK</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/singleCellTK/man/runSeuratFindHVG.html" class="external-link">runSeuratFindHVG</a></span><span class="op">(</span></span>
 <span>        <span class="va">spe</span>,</span>
 <span>        hvgNumber <span class="op">=</span> <span class="fl">2000</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>    <span class="op">)</span>,</span>
 <span>    hvgNumber <span class="op">=</span> <span class="fl">2000</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>Normalize counts:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#' Normalize the data.</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#' Normalize data</span></span>
 <span><span class="va">scale_factor</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/MatrixGenerics/man/rowSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="va">spe</span>, <span class="st">"counts"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">aname</span> <span class="op">&lt;-</span> <span class="st">"normcounts"</span></span>
-<span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu">singleCellTK</span><span class="fu">::</span><span class="fu">runSeuratNormalizeData</span><span class="op">(</span></span>
+<span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu">singleCellTK</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/singleCellTK/man/runSeuratNormalizeData.html" class="external-link">runSeuratNormalizeData</a></span><span class="op">(</span></span>
 <span>    <span class="va">spe</span>,</span>
 <span>    useAssay <span class="op">=</span> <span class="st">"counts"</span>,</span>
 <span>    normAssayName <span class="op">=</span> <span class="va">aname</span>,</span>
@@ -210,7 +213,7 @@ corresponding to first and second-order neighbors in 10x Visium.</p>
 <p>Run PCA on the BANKSY matrix:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lambda</span> <span class="op">&lt;-</span> <span class="fl">0.2</span></span>
-<span><span class="va">npcs</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
+<span><span class="va">npcs</span> <span class="op">&lt;-</span> <span class="fl">20</span></span>
 <span><span class="va">use_agf</span> <span class="op">&lt;-</span> <span class="cn">TRUE</span></span>
 <span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/runBanksyPCA.html">runBanksyPCA</a></span><span class="op">(</span><span class="va">spe</span>, use_agf <span class="op">=</span> <span class="va">use_agf</span>, lambda <span class="op">=</span> <span class="va">lambda</span>, npcs <span class="op">=</span> <span class="va">npcs</span>, seed <span class="op">=</span> <span class="va">SEED</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -220,7 +223,7 @@ corresponding to first and second-order neighbors in 10x Visium.</p>
 <p>We run Harmony on the PCs of the BANKSY matrix:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="va">SEED</span><span class="op">)</span></span>
-<span><span class="va">harmony_embedding</span> <span class="op">&lt;-</span> <span class="fu">HarmonyMatrix</span><span class="op">(</span></span>
+<span><span class="va">harmony_embedding</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/harmony/man/HarmonyMatrix.html" class="external-link">HarmonyMatrix</a></span><span class="op">(</span></span>
 <span>    data_mat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/reducedDims.html" class="external-link">reducedDim</a></span><span class="op">(</span><span class="va">spe</span>, <span class="st">"PCA_M1_lam0.2"</span><span class="op">)</span>,</span>
 <span>    meta_data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">spe</span><span class="op">)</span>,</span>
 <span>    vars_use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample_id"</span>, <span class="st">"subject_id"</span><span class="op">)</span>,</span>
@@ -231,51 +234,191 @@ corresponding to first and second-order neighbors in 10x Visium.</p>
 <span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/reducedDims.html" class="external-link">reducedDim</a></span><span class="op">(</span><span class="va">spe</span>, <span class="st">"Harmony_BANKSY"</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">harmony_embedding</span></span></code></pre></div>
 <p>Next, run UMAP on the ‘raw’ and Harmony corrected PCA embeddings:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">k_exp</span> <span class="op">&lt;-</span> <span class="fl">100</span></span>
-<span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/runBanksyUMAP.html">runBanksyUMAP</a></span><span class="op">(</span><span class="va">spe</span>, use_agf <span class="op">=</span> <span class="cn">TRUE</span>, lambda <span class="op">=</span> <span class="va">lambda</span>, npcs <span class="op">=</span> <span class="va">npcs</span>, n_neighbors <span class="op">=</span> <span class="va">k_exp</span><span class="op">)</span></span>
-<span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/runBanksyUMAP.html">runBanksyUMAP</a></span><span class="op">(</span><span class="va">spe</span>, dimred <span class="op">=</span> <span class="st">"Harmony_BANKSY"</span>, n_neighbors <span class="op">=</span> <span class="va">k_exp</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/runBanksyUMAP.html">runBanksyUMAP</a></span><span class="op">(</span><span class="va">spe</span>, use_agf <span class="op">=</span> <span class="cn">TRUE</span>, lambda <span class="op">=</span> <span class="va">lambda</span>, npcs <span class="op">=</span> <span class="va">npcs</span><span class="op">)</span></span>
+<span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/runBanksyUMAP.html">runBanksyUMAP</a></span><span class="op">(</span><span class="va">spe</span>, dimred <span class="op">=</span> <span class="st">"Harmony_BANKSY"</span><span class="op">)</span></span></code></pre></div>
 <p>Visualize the UMAPs annotated by subject ID:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">um_point_size</span> <span class="op">&lt;-</span> <span class="fl">0.05</span></span>
-<span><span class="va">um_point_alpha</span> <span class="op">&lt;-</span> <span class="fl">0.05</span></span>
-<span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/scater/man/plotReducedDim.html" class="external-link">plotReducedDim</a></span><span class="op">(</span><span class="va">spe</span>, <span class="st">"UMAP_M1_lam0.2"</span>,</span>
-<span>        color_by <span class="op">=</span> <span class="st">"subject_id"</span>,</span>
-<span>        point_size <span class="op">=</span> <span class="va">um_point_size</span>, point_alpha <span class="op">=</span> <span class="va">um_point_alpha</span></span>
-<span>    <span class="op">)</span> <span class="op">+</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/scater/man/plotReducedDim.html" class="external-link">plotReducedDim</a></span><span class="op">(</span><span class="va">spe</span>, <span class="st">"UMAP_M1_lam0.2"</span>, </span>
+<span>                   point_size <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>                   point_alpha <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>                   color_by <span class="op">=</span> <span class="st">"subject_id"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/scater/man/plotReducedDim.html" class="external-link">plotReducedDim</a></span><span class="op">(</span><span class="va">spe</span>, <span class="st">"UMAP_Harmony_BANKSY"</span>,</span>
-<span>        color_by <span class="op">=</span> <span class="st">"subject_id"</span>,</span>
-<span>        point_size <span class="op">=</span> <span class="va">um_point_size</span>, point_alpha <span class="op">=</span> <span class="va">um_point_alpha</span></span>
-<span>    <span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/scater/man/plotReducedDim.html" class="external-link">plotReducedDim</a></span><span class="op">(</span><span class="va">spe</span>, <span class="st">"UMAP_Harmony_BANKSY"</span>, </span>
+<span>                   point_size <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>                   point_alpha <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>                   color_by <span class="op">=</span> <span class="st">"subject_id"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>override.aes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">5</span>, alpha <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    nrow <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    rel_widths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1.2</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<center>
-<img src="figures/batch-correction-umap-1.png">
-</center>
+<p><img src="figures/batch-correction-umap-1.png" width="90%"></p>
 <p>Cluster the Harmony corrected PCA embedding:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clusterBanksy.html">clusterBanksy</a></span><span class="op">(</span><span class="va">spe</span>, dimred <span class="op">=</span> <span class="st">"Harmony_BANKSY"</span>, k_neighbors <span class="op">=</span> <span class="va">k_exp</span>, resolution <span class="op">=</span> <span class="fl">0.55</span>, seed <span class="op">=</span> <span class="va">SEED</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clusterBanksy.html">clusterBanksy</a></span><span class="op">(</span><span class="va">spe</span>, dimred <span class="op">=</span> <span class="st">"Harmony_BANKSY"</span>, resolution <span class="op">=</span> <span class="fl">0.55</span>, seed <span class="op">=</span> <span class="va">SEED</span><span class="op">)</span></span>
 <span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/connectClusters.html">connectClusters</a></span><span class="op">(</span><span class="va">spe</span>, map_to <span class="op">=</span> <span class="st">"clust_annotation"</span><span class="op">)</span></span></code></pre></div>
 <p>Generate spatial plots:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sp_point_size</span> <span class="op">&lt;-</span> <span class="fl">0.5</span></span>
-<span><span class="va">cnm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clusterNames.html">clusterNames</a></span><span class="op">(</span><span class="va">spe</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span>
-<span><span class="va">spatial_plots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">sample_names</span>, <span class="kw">function</span><span class="op">(</span><span class="va">snm</span><span class="op">)</span> <span class="op">{</span></span>
+<code class="sourceCode R"><span><span class="va">cnm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clusterNames.html">clusterNames</a></span><span class="op">(</span><span class="va">spe</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span>
+<span><span class="va">spatial_plots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">sample_names</span>, <span class="kw">function</span><span class="op">(</span><span class="va">snm</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">spe</span><span class="op">[</span>, <span class="va">spe</span><span class="op">$</span><span class="va">sample_id</span> <span class="op">==</span> <span class="va">snm</span><span class="op">]</span></span>
 <span>    <span class="va">ari</span> <span class="op">&lt;-</span> <span class="fu">aricode</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/aricode/man/ARI.html" class="external-link">ARI</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">clust_annotation</span>, <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">[</span>, <span class="va">cnm</span><span class="op">]</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/ggspavis/man/plotSpots.html" class="external-link">plotSpots</a></span><span class="op">(</span><span class="va">x</span>, annotate <span class="op">=</span> <span class="va">cnm</span>, palette <span class="op">=</span> <span class="fu">pals</span><span class="fu">::</span><span class="fu"><a href="https://kwstat.github.io/pals/reference/discrete.html" class="external-link">kelly</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, size <span class="op">=</span> <span class="va">sp_point_size</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/ggspavis/man/plotSpots.html" class="external-link">plotSpots</a></span><span class="op">(</span><span class="va">x</span>, annotate <span class="op">=</span> <span class="va">cnm</span>, palette <span class="op">=</span> <span class="fu">pals</span><span class="fu">::</span><span class="fu"><a href="https://kwstat.github.io/pals/reference/discrete.html" class="external-link">kelly</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, size <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span>, plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Sample %s - ARI: %s"</span>, <span class="va">snm</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">ari</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span>plotlist <span class="op">=</span> <span class="va">spatial_plots</span>, nrow <span class="op">=</span> <span class="fl">4</span>, byrow <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<center>
-<img src="figures/batch-correction-spatial-1.png">
-</center>
+<span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span>plotlist <span class="op">=</span> <span class="va">spatial_plots</span>, ncol <span class="op">=</span> <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="figures/batch-correction-spatial-1.png" width="90%"></p>
+</div>
+<div class="section level2">
+<h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
+</h2>
+<p>Vignette runtime:</p>
+<pre><code><span><span class="co">#&gt; Time difference of 2.50758 mins</span></span></code></pre>
+<details><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; R version 4.3.2 (2023-10-31)</span></span>
+<span><span class="co">#&gt; Platform: aarch64-apple-darwin20 (64-bit)</span></span>
+<span><span class="co">#&gt; Running under: macOS Sonoma 14.2.1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Matrix products: default</span></span>
+<span><span class="co">#&gt; BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib </span></span>
+<span><span class="co">#&gt; LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; locale:</span></span>
+<span><span class="co">#&gt; [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; time zone: Europe/London</span></span>
+<span><span class="co">#&gt; tzcode source: internal</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; attached base packages:</span></span>
+<span><span class="co">#&gt; [1] stats4    stats     graphics  grDevices utils     datasets  methods  </span></span>
+<span><span class="co">#&gt; [8] base     </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; other attached packages:</span></span>
+<span><span class="co">#&gt;  [1] ExperimentHub_2.10.0        AnnotationHub_3.10.0       </span></span>
+<span><span class="co">#&gt;  [3] BiocFileCache_2.10.1        dbplyr_2.4.0               </span></span>
+<span><span class="co">#&gt;  [5] spatialLIBD_1.14.1          ggspavis_1.8.0             </span></span>
+<span><span class="co">#&gt;  [7] cowplot_1.1.1               scater_1.30.0              </span></span>
+<span><span class="co">#&gt;  [9] ggplot2_3.4.4               harmony_0.1.1              </span></span>
+<span><span class="co">#&gt; [11] Rcpp_1.0.11                 data.table_1.14.8          </span></span>
+<span><span class="co">#&gt; [13] scran_1.30.0                scuttle_1.12.0             </span></span>
+<span><span class="co">#&gt; [15] singleCellTK_2.12.0         DelayedArray_0.28.0        </span></span>
+<span><span class="co">#&gt; [17] SparseArray_1.2.2           S4Arrays_1.2.0             </span></span>
+<span><span class="co">#&gt; [19] abind_1.4-5                 Matrix_1.6-1.1             </span></span>
+<span><span class="co">#&gt; [21] SpatialExperiment_1.12.0    SingleCellExperiment_1.24.0</span></span>
+<span><span class="co">#&gt; [23] SummarizedExperiment_1.32.0 Biobase_2.62.0             </span></span>
+<span><span class="co">#&gt; [25] GenomicRanges_1.54.1        GenomeInfoDb_1.38.1        </span></span>
+<span><span class="co">#&gt; [27] IRanges_2.36.0              S4Vectors_0.40.1           </span></span>
+<span><span class="co">#&gt; [29] BiocGenerics_0.48.1         MatrixGenerics_1.14.0      </span></span>
+<span><span class="co">#&gt; [31] matrixStats_1.1.0           Banksy_0.99.3              </span></span>
+<span><span class="co">#&gt; [33] BiocStyle_2.30.0           </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
+<span><span class="co">#&gt;   [1] spatstat.sparse_3.0-3         fs_1.6.3                     </span></span>
+<span><span class="co">#&gt;   [3] bitops_1.0-7                  httr_1.4.7                   </span></span>
+<span><span class="co">#&gt;   [5] RColorBrewer_1.1-3            doParallel_1.0.17            </span></span>
+<span><span class="co">#&gt;   [7] sctransform_0.4.1             tools_4.3.2                  </span></span>
+<span><span class="co">#&gt;   [9] utf8_1.2.4                    R6_2.5.1                     </span></span>
+<span><span class="co">#&gt;  [11] DT_0.30                       HDF5Array_1.30.0             </span></span>
+<span><span class="co">#&gt;  [13] lazyeval_0.2.2                uwot_0.1.16                  </span></span>
+<span><span class="co">#&gt;  [15] rhdf5filters_1.13.2           sp_2.1-1                     </span></span>
+<span><span class="co">#&gt;  [17] withr_2.5.2                   gridExtra_2.3                </span></span>
+<span><span class="co">#&gt;  [19] progressr_0.14.0              cli_3.6.1                    </span></span>
+<span><span class="co">#&gt;  [21] textshaping_0.3.7             spatstat.explore_3.2-5       </span></span>
+<span><span class="co">#&gt;  [23] labeling_0.4.3                eds_1.4.0                    </span></span>
+<span><span class="co">#&gt;  [25] sass_0.4.7                    Seurat_4.4.0                 </span></span>
+<span><span class="co">#&gt;  [27] spatstat.data_3.0-3           pbapply_1.7-2                </span></span>
+<span><span class="co">#&gt;  [29] ggridges_0.5.4                pkgdown_2.0.7                </span></span>
+<span><span class="co">#&gt;  [31] Rsamtools_2.18.0              systemfonts_1.0.5            </span></span>
+<span><span class="co">#&gt;  [33] dbscan_1.1-11                 R.utils_2.12.2               </span></span>
+<span><span class="co">#&gt;  [35] aricode_1.0.3                 dichromat_2.0-0.1            </span></span>
+<span><span class="co">#&gt;  [37] parallelly_1.36.0             sessioninfo_1.2.2            </span></span>
+<span><span class="co">#&gt;  [39] attempt_0.3.1                 maps_3.4.1.1                 </span></span>
+<span><span class="co">#&gt;  [41] limma_3.58.1                  pals_1.8                     </span></span>
+<span><span class="co">#&gt;  [43] rstudioapi_0.15.0             RSQLite_2.3.3                </span></span>
+<span><span class="co">#&gt;  [45] generics_0.1.3                BiocIO_1.12.0                </span></span>
+<span><span class="co">#&gt;  [47] spatstat.random_3.2-1         ica_1.0-3                    </span></span>
+<span><span class="co">#&gt;  [49] dplyr_1.1.3                   ggbeeswarm_0.7.2             </span></span>
+<span><span class="co">#&gt;  [51] fansi_1.0.5                   R.methodsS3_1.8.2            </span></span>
+<span><span class="co">#&gt;  [53] lifecycle_1.0.4               yaml_2.3.7                   </span></span>
+<span><span class="co">#&gt;  [55] edgeR_4.0.1                   Rtsne_0.16                   </span></span>
+<span><span class="co">#&gt;  [57] rhdf5_2.46.0                  paletteer_1.5.0              </span></span>
+<span><span class="co">#&gt;  [59] grid_4.3.2                    blob_1.2.4                   </span></span>
+<span><span class="co">#&gt;  [61] promises_1.2.1                dqrng_0.3.1                  </span></span>
+<span><span class="co">#&gt;  [63] crayon_1.5.2                  miniUI_0.1.1.1               </span></span>
+<span><span class="co">#&gt;  [65] lattice_0.22-5                beachmat_2.18.0              </span></span>
+<span><span class="co">#&gt;  [67] mapproj_1.2.11                KEGGREST_1.42.0              </span></span>
+<span><span class="co">#&gt;  [69] magick_2.8.1                  pillar_1.9.0                 </span></span>
+<span><span class="co">#&gt;  [71] knitr_1.45                    metapod_1.10.0               </span></span>
+<span><span class="co">#&gt;  [73] rjson_0.2.21                  future.apply_1.11.0          </span></span>
+<span><span class="co">#&gt;  [75] codetools_0.2-19              leiden_0.4.3                 </span></span>
+<span><span class="co">#&gt;  [77] glue_1.6.2                    vctrs_0.6.4                  </span></span>
+<span><span class="co">#&gt;  [79] png_0.1-8                     spam_2.10-0                  </span></span>
+<span><span class="co">#&gt;  [81] gtable_0.3.4                  rematch2_2.1.2               </span></span>
+<span><span class="co">#&gt;  [83] cachem_1.0.8                  xfun_0.41                    </span></span>
+<span><span class="co">#&gt;  [85] mime_0.12                     DropletUtils_1.22.0          </span></span>
+<span><span class="co">#&gt;  [87] GSVAdata_1.38.0               ggside_0.2.2                 </span></span>
+<span><span class="co">#&gt;  [89] survival_3.5-7                RcppHungarian_0.3            </span></span>
+<span><span class="co">#&gt;  [91] iterators_1.0.14              fields_15.2                  </span></span>
+<span><span class="co">#&gt;  [93] statmod_1.5.0                 bluster_1.12.0               </span></span>
+<span><span class="co">#&gt;  [95] fitdistrplus_1.1-11           interactiveDisplayBase_1.40.0</span></span>
+<span><span class="co">#&gt;  [97] ellipsis_0.3.2                ROCR_1.0-11                  </span></span>
+<span><span class="co">#&gt;  [99] nlme_3.1-163                  bit64_4.0.5                  </span></span>
+<span><span class="co">#&gt; [101] RcppAnnoy_0.0.21              filelock_1.0.2               </span></span>
+<span><span class="co">#&gt; [103] rprojroot_2.0.3               bslib_0.5.1                  </span></span>
+<span><span class="co">#&gt; [105] irlba_2.3.5.1                 KernSmooth_2.23-22           </span></span>
+<span><span class="co">#&gt; [107] vipor_0.4.5                   colorspace_2.1-0             </span></span>
+<span><span class="co">#&gt; [109] DBI_1.1.3                     tidyselect_1.2.0             </span></span>
+<span><span class="co">#&gt; [111] bit_4.0.5                     compiler_4.3.2               </span></span>
+<span><span class="co">#&gt; [113] curl_5.1.0                    BiocNeighbors_1.20.0         </span></span>
+<span><span class="co">#&gt; [115] desc_1.4.2                    plotly_4.10.3                </span></span>
+<span><span class="co">#&gt; [117] bookdown_0.37                 rtracklayer_1.62.0           </span></span>
+<span><span class="co">#&gt; [119] scales_1.2.1                  lmtest_0.9-40                </span></span>
+<span><span class="co">#&gt; [121] rappdirs_0.3.3                goftest_1.2-3                </span></span>
+<span><span class="co">#&gt; [123] stringr_1.5.0                 digest_0.6.33                </span></span>
+<span><span class="co">#&gt; [125] spatstat.utils_3.0-4          rmarkdown_2.25               </span></span>
+<span><span class="co">#&gt; [127] benchmarkmeData_1.0.4         XVector_0.42.0               </span></span>
+<span><span class="co">#&gt; [129] htmltools_0.5.7               pkgconfig_2.0.3              </span></span>
+<span><span class="co">#&gt; [131] sparseMatrixStats_1.14.0      highr_0.10                   </span></span>
+<span><span class="co">#&gt; [133] fastmap_1.1.1                 rlang_1.1.2                  </span></span>
+<span><span class="co">#&gt; [135] htmlwidgets_1.6.2             shiny_1.7.5.1                </span></span>
+<span><span class="co">#&gt; [137] DelayedMatrixStats_1.24.0     farver_2.1.1                 </span></span>
+<span><span class="co">#&gt; [139] jquerylib_0.1.4               zoo_1.8-12                   </span></span>
+<span><span class="co">#&gt; [141] jsonlite_1.8.7                BiocParallel_1.36.0          </span></span>
+<span><span class="co">#&gt; [143] mclust_6.0.0                  config_0.3.2                 </span></span>
+<span><span class="co">#&gt; [145] R.oo_1.25.0                   BiocSingular_1.18.0          </span></span>
+<span><span class="co">#&gt; [147] RCurl_1.98-1.13               magrittr_2.0.3               </span></span>
+<span><span class="co">#&gt; [149] GenomeInfoDbData_1.2.11       dotCall64_1.1-0              </span></span>
+<span><span class="co">#&gt; [151] patchwork_1.1.3               Rhdf5lib_1.24.0              </span></span>
+<span><span class="co">#&gt; [153] munsell_0.5.0                 viridis_0.6.4                </span></span>
+<span><span class="co">#&gt; [155] reticulate_1.34.0             leidenAlg_1.1.2              </span></span>
+<span><span class="co">#&gt; [157] stringi_1.7.12                MASS_7.3-60                  </span></span>
+<span><span class="co">#&gt; [159] zlibbioc_1.48.0               plyr_1.8.9                   </span></span>
+<span><span class="co">#&gt; [161] listenv_0.9.0                 parallel_4.3.2               </span></span>
+<span><span class="co">#&gt; [163] ggrepel_0.9.4                 deldir_1.0-9                 </span></span>
+<span><span class="co">#&gt; [165] splines_4.3.2                 Biostrings_2.70.1            </span></span>
+<span><span class="co">#&gt; [167] sccore_1.0.4                  tensor_1.5                   </span></span>
+<span><span class="co">#&gt; [169] locfit_1.5-9.8                igraph_1.5.1                 </span></span>
+<span><span class="co">#&gt; [171] spatstat.geom_3.2-7           reshape2_1.4.4               </span></span>
+<span><span class="co">#&gt; [173] ScaledMatrix_1.10.0           BiocVersion_3.18.0           </span></span>
+<span><span class="co">#&gt; [175] XML_3.99-0.15                 evaluate_0.23                </span></span>
+<span><span class="co">#&gt; [177] SeuratObject_5.0.0            golem_0.4.1                  </span></span>
+<span><span class="co">#&gt; [179] BiocManager_1.30.22           foreach_1.5.2                </span></span>
+<span><span class="co">#&gt; [181] httpuv_1.6.12                 polyclip_1.10-6              </span></span>
+<span><span class="co">#&gt; [183] RANN_2.6.1                    tidyr_1.3.0                  </span></span>
+<span><span class="co">#&gt; [185] purrr_1.0.2                   scattermore_1.2              </span></span>
+<span><span class="co">#&gt; [187] future_1.33.0                 benchmarkme_1.0.8            </span></span>
+<span><span class="co">#&gt; [189] rsvd_1.0.5                    xtable_1.8-4                 </span></span>
+<span><span class="co">#&gt; [191] restfulr_0.0.15               later_1.3.1                  </span></span>
+<span><span class="co">#&gt; [193] viridisLite_0.4.2             ragg_1.2.6                   </span></span>
+<span><span class="co">#&gt; [195] tibble_3.2.1                  memoise_2.0.1                </span></span>
+<span><span class="co">#&gt; [197] beeswarm_0.4.0                AnnotationDbi_1.64.1         </span></span>
+<span><span class="co">#&gt; [199] GenomicAlignments_1.38.0      cluster_2.1.4                </span></span>
+<span><span class="co">#&gt; [201] globals_0.16.2                shinyWidgets_0.8.0</span></span></code></pre></div>
+</details>
 </div>
   </div>
 

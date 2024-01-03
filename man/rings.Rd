@@ -15,11 +15,6 @@ A SpatialExperiment object
 }
 \description{
 This dataset comprises gene expression and spatial coordinates for 50 genes
-and 308 cells from 4 clusters (\code{rings$clusters}). Generate this dataset
-with \cr
-}
-\details{
-\code{set.seed(2023)} \cr
-\code{rings <- simulateDataset(n_cells=300, n_rings=4, n_genes=50)} \cr
+and 308 cells from 4 clusters (\code{rings$clusters}). See \code{system.file('scripts/rings.R', package='Banksy')} on how this dataset was generated.
 }
 \keyword{datasets}

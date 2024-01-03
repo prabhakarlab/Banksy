@@ -2,7 +2,7 @@
 % Please edit documentation in R/computation.R
 \name{getBanksyMatrix}
 \alias{getBanksyMatrix}
-\title{Returns the BANKSY matrix.}
+\title{Builds the BANKSY matrix from neighborhood matrices.}
 \usage{
 getBanksyMatrix(
   se,
@@ -22,9 +22,10 @@ getBanksyMatrix(
 \item{M}{A integer scalar specifying the highest azimuthal
 Fourier harmonic to compute.}
 
-\item{lambda}{A numeric scalar \eqn{\in [0,1]} specifying a spatial
-weighting parameter. Larger values incorporate more spatial neighborhood
-information.}
+\item{lambda}{A numeric vector in \eqn{\in [0,1]} specifying a spatial
+weighting parameter. Larger values (e.g. 0.8) incorporate more spatial
+neighborhood and find spatial domains, while smaller values (e.g. 0.2)
+perform spatial cell-typing.}
 
 \item{assay_name}{A string scalar specifying the name of the assay used in
 \code{computeBanksy}.}
@@ -42,7 +43,19 @@ multiplying the assays by their corresponding lambda weighting factors.}
 BANKSY matrix.
 }
 \description{
-Returns the BANKSY matrix.
+Builds the BANKSY matrix from neighborhood matrices.
+}
+\details{
+After computation of the neighborhood matrices 
+(see \link[Banksy]{computeBanksy}), this function builds the BANKSY matrix by 
+concatenating the original expression matrix with the neighborhood matrices,
+and scales each matrix by an appropriate weight as determined by 
+\code{lambda}. The weights of the own expression matrix, mean neighborhood
+ matrix and azimuthal Gabor filter are given by \eqn{\sqrt{1-\lambda}}, 
+ \eqn{\sqrt{\lambda/\mu}} and \eqn{\sqrt{\lambda/2\mu}} respectively, where 
+ \eqn{\mu=1.5}. In the case where the AGF is not computed, the weights for
+ the own and mean neighborhood expression matrix simplify to 
+ \eqn{\sqrt{1-\lambda}} and \eqn{\sqrt{\lambda}} respectively.
 }
 \examples{
 data(rings)

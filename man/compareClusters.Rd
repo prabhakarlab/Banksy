@@ -16,12 +16,12 @@ compareClusters(
   object with cluster labels in \code{colData(se)}.}
 
 \item{func}{A string scalar specifying what clustering comparison measure to
-compute. See `?aricode` for more information.}
+compute. See \code{?aricode} for more information.}
 
 \item{digits}{An integer scalar specifying the number of digits to round to.}
 }
 \value{
-A matirx of cluster comparison measures.
+A matrix of cluster comparison measures.
 }
 \description{
 Compare cluster outputs based on various clustering comparison measures.
