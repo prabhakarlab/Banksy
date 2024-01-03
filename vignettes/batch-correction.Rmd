@@ -30,7 +30,7 @@ start.time <- Sys.time()
 library(Banksy)
 library(SummarizedExperiment)
 library(SpatialExperiment)
-library(singleCellTK)
+library(Seurat)
 library(scran)
 library(data.table)
 library(harmony)
@@ -108,31 +108,22 @@ spatialCoords(spe) <- locs
 
 # Data preprocessing
 
-Find highly variable features and normalize counts:
+Find highly variable features and normalize counts. Here we use Seurat, but 
+other methods may also be used (e.g. `scran::getTopHVGs`). 
 
 ```{r, eval=T, message=FALSE, warning=FALSE}
 #' Get HVGs
-hvgs <- singleCellTK::getTopHVG(
-    singleCellTK::runSeuratFindHVG(
-        spe,
-        hvgNumber = 2000, verbose = FALSE
-    ),
-    hvgNumber = 2000
-)
+seu <- as.Seurat(spe, data = NULL)
+seu <- FindVariableFeatures(seu, nfeatures = 2000)
 
 #' Normalize data
 scale_factor <- median(colSums(assay(spe, "counts")))
-aname <- "normcounts"
-spe <- singleCellTK::runSeuratNormalizeData(
-    spe,
-    useAssay = "counts",
-    normAssayName = aname,
-    normalizationMethod = "RC",
-    scaleFactor = scale_factor,
-    verbose = FALSE
-)
+seu <- NormalizeData(seu, scale.factor = scale_factor, normalization.method = "RC")
 
-spe <- spe[hvgs, ]
+#' Add data to SpatialExperiment and subset to HVGs
+aname <- "normcounts"
+assay(spe, aname) <- GetAssayData(seu)
+spe <- spe[VariableFeatures(seu),]
 ```
 
 # Running BANKSY
@@ -181,7 +172,7 @@ spe <- runBanksyUMAP(spe, dimred = "Harmony_BANKSY")
 
 Visualize the UMAPs annotated by subject ID:
 
-```{r batch-correction-umap, eval=T, fig.height=3, out.width='90%', message=FALSE, warning=FALSE}
+```{r batch-correction-umap, eval=T, fig.height=3.5, out.width='90%', message=FALSE, warning=FALSE}
 plot_grid(
     plotReducedDim(spe, "UMAP_M1_lam0.2", 
                    point_size = 0.1,

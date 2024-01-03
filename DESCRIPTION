@@ -54,7 +54,7 @@ Suggests:
     ggspavis,
     testthat (>= 3.0.0),
     harmony,
-    singleCellTK,
+    Seurat,
     ExperimentHub,
     spatialLIBD
 VignetteBuilder: knitr

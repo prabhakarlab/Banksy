@@ -31,6 +31,7 @@ start.time <- Sys.time()
 library(Banksy)
 library(SummarizedExperiment)
 library(SpatialExperiment)
+library(Seurat)
 
 library(scater)
 library(cowplot)
@@ -85,34 +86,32 @@ invisible(gc())
 
 # Data preprocessing
 
-Using the [*singleCellTK*](https://bioconductor.org/packages/release/bioc/html/singleCellTK.html) 
-package, we first perform basic normalisation of the data, and select the top
-2000 highly variable features from each sample. We take the union of these
-features for downstream analysis.
+Using Seurat, we perform basic normalisation of the data, and select the top
+2000 highly variable features from each sample. Other methods for normalisation 
+and feature selection may also be used. We take the union of these features for 
+downstream analysis.
 
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
-library(singleCellTK)
-aname <- "normcounts"
-spe_list <- lapply(spe_list, function(x) {
-    singleCellTK::runSeuratNormalizeData(
-        x,
-        useAssay = "counts",
-        normAssayName = aname,
-        normalizationMethod = "RC",
-        scaleFactor = 5000,
-        verbose = FALSE
-    )
+#' Normalize data
+seu_list <- lapply(spe_list, function(x) {
+    x <- as.Seurat(x, data = NULL)
+    NormalizeData(x, scale.factor = 5000, normalization.method = 'RC')
 })
 
-hvgs <- lapply(spe_list, function(x) {
-    singleCellTK::getTopHVG(
-        singleCellTK::runSeuratFindHVG(x, hvgNumber = 2000, verbose = FALSE),
-        hvgNumber = 2000
-    )
+#' Compute HVGs
+hvgs <- lapply(seu_list, function(x) {
+    VariableFeatures(FindVariableFeatures(x, nfeatures = 2000))
 })
 hvgs <- Reduce(union, hvgs)
-# Subset to hvgs
-spe_list <- lapply(spe_list, function(x) x[hvgs, ])
+
+#' Add data to SpatialExperiment and subset to HVGs
+aname <- "normcounts"
+spe_list <- Map(function(spe, seu) {
+    assay(spe, aname) <- GetAssayData(seu)
+    spe[hvgs,]
+    }, spe_list, seu_list)
+rm(seu_list)
+invisible(gc())
 ```
 
 # Running BANKSY
