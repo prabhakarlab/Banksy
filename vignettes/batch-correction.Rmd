@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>",
     fig.path = "figures/",
-    dpi = 54
+    dpi = 36
 )
 ```
 
