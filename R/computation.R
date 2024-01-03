@@ -1,4 +1,12 @@
 #' Compute the component neighborhood matrices for the BANKSY matrix.
+#' 
+#' @details
+#' Given an expression matrix (as specified by \code{assay_name}), this function
+#' computes the mean neighborhood matrix (\code{H0}) and optionally, the 
+#' azimuthal Gabor filter (AGF) matrix (\code{H1}). The number of neighbors 
+#' used to define the spatial neighborhood is given by \code{k_geom}. 
+#' Different kernels may be used to compute the neighborhood features, 
+#' specified by \code{spatial_mode}.   
 #'
 #' @param se A \code{SpatialExperiment},
 #' \code{SingleCellExperiment} or \code{SummarizedExperiment}
@@ -25,7 +33,7 @@
 #'   (for rNN_gauss).
 #' @param alpha A numeric scalar specifying the radius used: larger alphas give
 #'   smaller radii (for rNN_gauss).
-#' @param k_spatial A numeric scalar specifying the initial number of neighbors
+#' @param k_spatial An integer scalar specifying the initial number of neighbors
 #'   to use (for rNN_gauss)
 #' @param M Advanced usage. A integer scalar specifying the highest azimuthal
 #'   Fourier harmonic to compute. If specified, overwrites the \code{use_agf}
@@ -43,7 +51,7 @@
 #' }
 #' @param center A logical scalar specifying whether to center higher order
 #'   harmonics in local neighborhoods.
-#' @param verbose messages
+#' @param verbose A logical scalar specifying verbosity. 
 #'
 #' @importFrom SummarizedExperiment assay assay<- assayNames
 #' @importFrom S4Vectors metadata<-
@@ -62,11 +70,13 @@ computeBanksy <- function(se,
                           coord_names = NULL,
                           compute_agf = TRUE,
                           k_geom = 15,
-                          spatial_mode = "kNN_median",
+                          spatial_mode = c("kNN_median", "kNN_r", 
+                                           "kNN_rn", "kNN_rank", "kNN_unif", 
+                                           "rNN_gauss"),
                           n = 2,
                           sigma = 1.5,
                           alpha = 0.05,
-                          k_spatial = 100,
+                          k_spatial = 100L,
                           M = NULL,
                           sample_size = NULL,
                           sample_renorm = TRUE,
@@ -74,9 +84,13 @@ computeBanksy <- function(se,
                           dimensions = "all",
                           center = TRUE,
                           verbose = TRUE) {
+    
+    # Check args
     if (missing(assay_name)) {
         stop("Provide argument `assay_name`. One of ", assayNames(se))
     }
+    spatial_mode <- match.arg(spatial_mode)
+    checkComputeBanksy(as.list(environment()))
 
     # Compute Ms
     M <- seq(0, max(getM(compute_agf, M)))
@@ -127,17 +141,54 @@ computeBanksy <- function(se,
     se
 }
 
+# Argument checks for computeBanksy
+checkComputeBanksy <- function(params) {
+    stopifnot("compute_agf should be a logical scalar" = 
+                  is.logical(as.logical(params$compute_agf)) & 
+                  length(params$compute_agf) == 1)
+    stopifnot("n should be a numeric scalar" = 
+                  is.numeric(params$n) & length(params$n) == 1)
+    stopifnot("sigma should be a numeric scalar" = 
+                  is.numeric(params$sigma) & length(params$sigma) == 1)
+    stopifnot("k_spatial should be an integer scalar" = 
+                  is.integer(as.integer(params$k_spatial)) & 
+                  length(params$k_spatial) == 1)
+    stopifnot("sample_size should be an integer scalar" = 
+                  (is.integer(as.integer(params$sample_size)) & 
+                       length(params$sample_size) == 1) | 
+                  is.null(params$sample_size))
+    stopifnot("sample_renorm should be a logical scalar" = 
+                  is.logical(params$sample_renorm) & 
+                  length(params$sample_renorm) == 1)
+    stopifnot("center should be a logical scalar" = 
+                  is.logical(params$center) & length(params$center) == 1)
+    stopifnot("verbose should be a logical scalar" = 
+                  is.logical(params$verbose) & length(params$verbose) == 1)
+}
 
-#' Returns the BANKSY matrix.
+#' Builds the BANKSY matrix from neighborhood matrices. 
+#' 
+#' @details
+#' After computation of the neighborhood matrices 
+#' (see \link[Banksy]{computeBanksy}), this function builds the BANKSY matrix by 
+#' concatenating the original expression matrix with the neighborhood matrices,
+#' and scales each matrix by an appropriate weight as determined by 
+#' \code{lambda}. The weights of the own expression matrix, mean neighborhood
+#'  matrix and azimuthal Gabor filter are given by \eqn{\sqrt{1-\lambda}}, 
+#'  \eqn{\sqrt{\lambda/\mu}} and \eqn{\sqrt{\lambda/2\mu}} respectively, where 
+#'  \eqn{\mu=1.5}. In the case where the AGF is not computed, the weights for
+#'  the own and mean neighborhood expression matrix simplify to 
+#'  \eqn{\sqrt{1-\lambda}} and \eqn{\sqrt{\lambda}} respectively. 
 #'
 #' @param se A \code{SpatialExperiment},
 #' \code{SingleCellExperiment} or \code{SummarizedExperiment}
 #'   object with \code{computeBanksy} ran.
 #' @param M A integer scalar specifying the highest azimuthal
 #'   Fourier harmonic to compute.
-#' @param lambda A numeric scalar \eqn{\in [0,1]} specifying a spatial
-#'   weighting parameter. Larger values incorporate more spatial neighborhood
-#'   information.
+#' @param lambda A numeric vector in \eqn{\in [0,1]} specifying a spatial
+#'   weighting parameter. Larger values (e.g. 0.8) incorporate more spatial
+#'   neighborhood and find spatial domains, while smaller values (e.g. 0.2)
+#'   perform spatial cell-typing.
 #' @param assay_name A string scalar specifying the name of the assay used in
 #'   \code{computeBanksy}.
 #' @param scale A logical scalar specifying whether to scale the features to
@@ -177,7 +228,9 @@ getBanksyMatrix <- function(se,
     if (length(not_found) > 0) {
         err_msg <- paste0(banksy_names[not_found], collaspe = "; ")
         stop(
-            "The following assays are missing: ", err_msg, "Run computeBanksy"
+            "The following assays are missing: ", err_msg, "Run computeBanksy
+            (see ?computeBanksy for more details). 
+            "
         )
     }
 
@@ -290,25 +343,20 @@ computeNeighbors <- function(locs,
     kernelRadius <- sqrt(-ncol(locs) * log(alpha))
 
     if (verbose) message("Computing neighbors...")
-    if (spatial_mode == "rNN_gauss") {
-        knnDF <- withRNNgauss(
+    knnDF <- switch(spatial_mode, 
+        'rNN_gauss' = withRNNgauss(
             locs = locs, sigma = sigma, k_spatial = k_spatial,
-            kernelRadius = kernelRadius, verbose = verbose
-        )
-    } else if (spatial_mode == "kNN_rank") {
-        knnDF <- withKNNrank(locs = locs, k_geom = k_geom, verbose = verbose)
-    } else if (spatial_mode == "kNN_r") {
-        knnDF <- withKNNr(locs = locs, k_geom = k_geom, verbose = verbose)
-    } else if (spatial_mode == "kNN_rn") {
-        knnDF <- withKNNrn(locs, k_geom = k_geom, n = n, verbose = verbose)
-    } else if (spatial_mode == "kNN_unif") {
-        knnDF <- withKNNunif(locs = locs, k_geom = k_geom, verbose = verbose)
-    } else if (spatial_mode == "kNN_median") {
-        knnDF <- withKNNmedian(locs = locs, k_geom = k_geom, verbose = verbose)
-    } else {
-        stop("Invalid spatial_mode.
-             One of rNN_gauss, kNN_rank, kNN_r, kNN_unif, kNN_median")
-    }
+            kernelRadius = kernelRadius, verbose = verbose),
+        'kNN_rank' = withKNNrank(
+            locs = locs, k_geom = k_geom, verbose = verbose),
+        'kNN_r' = withKNNr(locs = locs, k_geom = k_geom, verbose = verbose),
+        'kNN_rn' = withKNNrn(locs, k_geom = k_geom, n = n, verbose = verbose),
+        'kNN_unif' = withKNNunif(
+            locs = locs, k_geom = k_geom, verbose = verbose),
+        'kNN_median' = withKNNmedian(
+            locs = locs, k_geom = k_geom, verbose = verbose)
+                    )
+    
     knnDF[, phi := getPhi(locs, from, to), by = from][]
     if (!is.null(sample_size)) {
         if (verbose) message("Subsampling to ", sample_size, " neighbors")

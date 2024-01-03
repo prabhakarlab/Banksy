@@ -1,13 +1,38 @@
 #' Perform clustering in BANKSY's neighborhood-augmented feature space.
+#' 
+#' @details
+#' This function performs clustering on the principal components computed on 
+#' the BANKSY matrix, i.e., the BANKSY embedding. The PCA corresponding to the 
+#' parameters \code{use_agf} and \code{lambda} must have been computed with  
+#' \link[Banksy]{runBanksyPCA}. Clustering may also be performed directly on the 
+#' BANKSY matrix with \code{use_pcs} set to \code{FALSE} (this is not 
+#' recommended). 
+#' 
+#' Four clustering algorithms are implemented. 
+#' \itemize{
+#'  \item{leiden: Leiden graph-based clustering. The arguments 
+#'  \code{k_neighbors} and \code{resolution} should be specified.}
+#'  \item{louvain: Louvain graph-based clustering. The arguments 
+#'  \code{k_neighbors} and \code{resolution} should be specified.}
+#'  \item{kmeans: kmeans clustering. The argument \code{kmeans.centers} should 
+#'  be specified.}
+#'  \item{mclust: Gaussian mixture model-based clustering. The argument 
+#'  \code{mclust.G} should be specified.}
+#' }
+#' 
+#' By default, no seed is set for clustering. If a seed is specified, the same
+#' seed is used for clustering across the input parameters. 
+#' 
 #'
 #' @param se A \code{SpatialExperiment},
 #' \code{SingleCellExperiment} or \code{SummarizedExperiment}
 #'   object with \code{computeBanksy} ran.
 #' @param use_agf A logical vector specifying whether to use the AGF for
 #'   clustering.
-#' @param lambda A numeric scalar in \eqn{\in [0,1]} specifying a spatial
-#'   weighting parameter. Larger values incorporate more spatial neighborhood
-#'   information.
+#' @param lambda A numeric vector in \eqn{\in [0,1]} specifying a spatial
+#'   weighting parameter. Larger values (e.g. 0.8) incorporate more spatial
+#'   neighborhood and find spatial domains, while smaller values (e.g. 0.2)
+#'   perform spatial cell-typing.
 #' @param use_pcs A logical scalar specifying whether to cluster on PCs. If
 #'   FALSE, runs on the BANKSY matrix.
 #' @param npcs An integer scalar specifying the number of principal components
@@ -23,16 +48,20 @@
 #'   \code{se}. This is used to scale the samples in each group separately.
 #' @param algo A string scalar specifying the clustering algorithm to use; one
 #'   of leiden, louvain, mclust, kmeans.
-#' @param k_neighbors An integer scalar specifying number of neighbors for
+#' @param k_neighbors An integer vector specifying number of neighbors for
 #'   constructing sNN (for louvain / leiden).
-#' @param resolution A numeric scalar specifying resolution used for clustering
-#'   (leiden).
+#' @param resolution A numeric vector specifying resolution used for clustering
+#'   (louvain / leiden).
 #' @param leiden.iter An integer scalar specifying the number of leiden
 #'   iterations. For running till convergence, set to -1 (leiden).
+#' @param kmeans.centers An integer vector specifying the number of kmeans 
+#'   clusters (kmeans). 
+#' @param mclust.G An integer vector specifying the number of mixture 
+#' components (Mclust). 
 #' @param M Advanced usage. An integer vector specifying the highest azimuthal
 #'   Fourier harmonic to cluster with. If specified, overwrites the
 #'   \code{use_agf} argument.
-#' @param seed Random seed.
+#' @param seed Random seed for clustering. If not specified, no seed is set. 
 #' @param ... to pass to methods
 #'
 #' @importFrom SummarizedExperiment colData colData<-
@@ -49,162 +78,185 @@
 #' spe <- computeBanksy(rings, assay_name = "counts", M = 1, k_geom = c(15, 30))
 #' spe <- runBanksyPCA(spe, M = 1, lambda = c(0, 0.2), npcs = 20)
 #' spe <- clusterBanksy(spe, M = 1, lambda = c(0, 0.2), resolution = 1)
-#'
-clusterBanksy <- function(se,
-                          use_agf = TRUE,
-                          lambda = 0.2,
-                          algo = "leiden",
-                          use_pcs = TRUE,
-                          npcs = 20,
-                          dimred = NULL,
-                          ndims = NULL,
-                          assay_name = NULL,
-                          group = NULL,
-                          k_neighbors = 50,
-                          resolution = 1,
-                          leiden.iter = -1,
-                          M = NULL,
-                          seed = NULL,
-                          ...) {
-    M <- getM(use_agf, M)
-    all_params <- c(as.list(environment(), list(...)))
-    all_params$se <- NULL
-    checkClusterArgs(se = se, all_params = all_params)
-
-    if (algo == "leiden") {
-        cout <- runLeiden(
-            se,
-            assay_name = assay_name,
-            M = M,
-            lambda = lambda,
-            use_pcs = use_pcs,
-            npcs = npcs,
-            dimred = dimred,
-            ndims = ndims,
-            group = group,
-            k_neighbors = k_neighbors,
-            resolution = resolution,
-            leiden.iter = leiden.iter,
-            seed = seed
+#' 
+clusterBanksy <-
+    function(se,
+             use_agf = TRUE,
+             lambda = 0.2,
+             use_pcs = TRUE, 
+             npcs = 20L,
+             dimred = NULL, 
+             ndims = NULL,
+             assay_name = NULL, 
+             group = NULL, 
+             algo = c("leiden", "louvain", "kmeans", "mclust"),
+             k_neighbors = 50,
+             resolution = 1,
+             leiden.iter = -1,
+             kmeans.centers = 5,
+             mclust.G = 5, 
+             M = NULL,
+             seed = NULL,
+             ...) {
+        
+        # Check args
+        M <- getM(use_agf, M)
+        all_params <- c(as.list(environment(), list(...)))
+        all_params$se <- NULL
+        algo <- match.arg(algo)
+        checkClusterArgs(se = se, all_params = all_params)
+        
+        # Compute cluster matrices
+        params <- expand.grid(lambda = lambda, M = M)
+        colnames(params) <- c("lam", "har")
+        if (is.null(dimred)) {
+            cluster_matrices <- lapply(seq(nrow(params)), function(i) {
+                getClusterMatrix(se,
+                                 assay_name = assay_name,
+                                 M = params[i,]$har,
+                                 lambda = params[i,]$lam, 
+                                 use_pcs = use_pcs,
+                                 npcs = npcs, 
+                                 group = group)})
+        } else {
+            # Dim. reduction provided
+            ndims <- checkDimred(se, dimred, ndims)
+            cluster_matrices <- list(
+                reducedDim(se, dimred)[, seq(ndims), drop=FALSE])
+        }
+        
+        # Run clustering
+        labels <- switch(
+            algo, 
+            leiden = runGraphBased(cluster_matrices, 
+                                   algo, 
+                                   k_neighbors, 
+                                   resolution, 
+                                   leiden.iter, 
+                                   seed),
+            louvain = runGraphBased(cluster_matrices, 
+                                    algo, 
+                                    k_neighbors, 
+                                    resolution, 
+                                    leiden.iter, 
+                                    seed),
+            kmeans = runKmeans(cluster_matrices,
+                                  kmeans.centers,
+                                  seed, ...),
+            mclust = runMclust(cluster_matrices,
+                                  mclust.G,
+                                  seed, ...)
         )
+        
+        # Formatting output
+        clust_param <- switch(algo,
+            leiden = expand.grid(res=resolution, k=k_neighbors, 
+                                 lam=lambda, M=M), 
+            louvain = expand.grid(res=resolution, k=k_neighbors, 
+                                  lam=lambda, M=M), 
+            kmeans = expand.grid(kmeans=kmeans.centers, lam=lambda, M=M),
+            mclust = expand.grid(mclust=mclust.G, lam=lambda, M=M))
+        labels <- do.call(cbind.data.frame, unlistNested(labels))
+        cluster_names <- generateClusterNames(rev(clust_param))
+        if (!is.null(dimred)) {
+            cluster_names <- unique(
+                gsub("M\\d+_lam\\d+(\\.\\d+)?", dimred, cluster_names)
+            )
+        }
+        colnames(labels) <- cluster_names
+        colData(se) <- cbind(colData(se), labels)
+        
+        # Log
+        metadata(se)$BANKSY_params$algo <- algo
+        metadata(se)$BANKSY_params$k_neighbors <- k_neighbors
+        metadata(se)$BANKSY_params$resolution <- resolution
+        metadata(se)$BANKSY_params$kmeans.centers <- kmeans.centers
+        metadata(se)$BANKSY_params$mclust.G <- mclust.G
+        metadata(se)$BANKSY_params$cluster_seed <- seed
+        
+        se
     }
 
-    colData(se) <- cbind(colData(se), cout)
-
-    # Log
-    metadata(se)$BANKSY_params$algo <- algo
-    metadata(se)$BANKSY_params$k_neighbors <- k_neighbors
-    metadata(se)$BANKSY_params$resolution <- resolution
-    metadata(se)$BANKSY_params$cluster_seed <- seed
-
-    se
-}
 
 #' @importFrom leidenAlg leiden.community
-#' @importFrom igraph as.undirected
-runLeiden <- function(se,
-                      assay_name,
-                      M,
-                      lambda,
-                      use_pcs,
-                      npcs,
-                      dimred,
-                      ndims,
-                      group,
-                      k_neighbors,
-                      resolution,
-                      leiden.iter,
-                      seed) {
-    if (!is.null(dimred)) {
-        # Use an existing dimensionality reduction
-        ndims <- checkDimred(se, dimred, ndims)
-        x <- reducedDim(se, dimred)[, seq(ndims)]
-        # Set names
-        params <- expand.grid(resolution, k_neighbors)
-        colnames(params) <- c("res", "k")
-        param_names <- sprintf(
-            "clust_%s_k%s_res%s",
-            dimred, params$k, params$res
-        )
-        # Cluster
-        out <- lapply(k_neighbors, function(k) {
-            graph <- as.undirected(getGraph(x, k))
-            lapply(resolution, function(res) {
+#' @importFrom igraph as.undirected cluster_louvain
+runGraphBased <- function(cluster_matrices, algo, 
+                         k_neighbors, resolution, leiden.iter, seed) {
+    lapply(cluster_matrices, function(cmat) {
+        lapply(k_neighbors, function(k) {
+            graph <- as.undirected(getGraph(cmat, k))
+            lapply(resolution, function(res){
                 verbose.seed(seed)
-                cout <- leiden.community(
-                    graph,
-                    resolution = res, n.iterations = leiden.iter
-                )
-                memb <- cout$membership
-                factor(memb, labels = seq(
-                    as.numeric(tail(levels(memb), n = 1)) + 1
-                ))
-            })
-        })
-    } else {
-        # Iterate over lambdas and M
-        max.iters <- prod(
-            length(M),
-            length(lambda),
-            length(k_neighbors),
-            length(resolution)
-        )
-        # Set names
-        params <- expand.grid(resolution, k_neighbors, lambda, M)
-        colnames(params) <- c("res", "k", "lam", "har")
-        param_names <- sprintf(
-            "clust_M%s_lam%s_k%s_res%s",
-            params$har, params$lam, params$k, params$res
-        )
-        # Cluster
-        out <- lapply(M, function(har) {
-            lapply(lambda, function(lam) {
-                x <- getClusterMatrix(se,
-                    assay_name = assay_name,
-                    M = har,
-                    lambda = lam,
-                    use_pcs = use_pcs,
-                    npcs = npcs,
-                    group = group
-                )
-                lapply(k_neighbors, function(k) {
-                    graph <- as.undirected(getGraph(x, k))
-                    lapply(resolution, function(res) {
-                        verbose.seed(seed)
-                        cout <- leiden.community(
-                            graph,
-                            resolution = res, n.iterations = leiden.iter
-                        )
+                memb <- switch(
+                    algo,
+                    leiden = {
+                        cout <- leiden.community(graph, resolution = res,
+                                                 n.iterations = leiden.iter)
                         memb <- cout$membership
                         factor(memb, labels = seq(
-                            as.numeric(tail(levels(memb), n = 1)) + 1
-                        ))
+                            as.numeric(tail(levels(memb), n = 1)) + 1))
+                    },
+                    louvain = {
+                        cout <- cluster_louvain(graph, resolution = res)
+                        factor(cout$membership) 
                     })
-                })
             })
         })
-    }
-    out <- do.call(cbind.data.frame, out)
-    colnames(out) <- param_names
-    out
+    })
 }
 
+#' @importFrom stats kmeans
+runKmeans <- function(cluster_matrices, kmeans.centers, seed, ...) {
+    lapply(cluster_matrices, function(cmat) {
+        lapply(kmeans.centers, function(k) {
+            verbose.seed(seed)
+            cout <- kmeans(cmat, centers = k, ...)
+            factor(cout$cluster)
+        })
+    })
+}
 
+#' @importFrom mclust Mclust mclustBIC
+runMclust <- function(cluster_matrices, mclust.G, seed, ...) {
+    lapply(cluster_matrices, function(cmat) {
+        lapply(mclust.G, function(G) {
+            verbose.seed(seed)
+            cout <- Mclust(cmat, G = G)
+            factor(cout$classification)
+        })
+    })
+}
+
+# Generate cluster labels
+generateClusterNames <- function(df) {
+    processRow <- function(row) {
+        paste0("clust_", paste0(names(df), row, sep = "", collapse = "_"))
+    }
+    unlist(lapply(seq_len(nrow(df)), function(i) processRow(df[i, ])))
+}
+
+# Unlist a nested list
+unlistNested <- function(nested){
+    lapply(rapply(nested, enquote, how = "unlist"), eval)
+}
+
+# Check arguments to clusterBansky
 checkClusterArgs <- function(se, all_params) {
     all_params <- all_params[!vapply(all_params, is.null, logical(1))]
     param_nms <- names(all_params)
-
-    # Check params for clustering algos.
-    if (all_params$algo == "leiden") {
-        if (!("k_neighbors" %in% param_nms)) {
-            stop("Specify k_neighbors")
-        }
-        if (!("resolution" %in% param_nms)) {
-            stop("Specify resolution")
-        }
-    } else {
-        stop("Invalid clustering algo.")
-    }
+    
+    stopifnot("use_agf should be a logical vector" = 
+                  is.logical(as.logical(all_params$compute_agf)))
+    stopifnot("lambda should be a numeric vector with each entry in [0,1]" = 
+                  is.numeric(all_params$lambda) & 
+                  max(all_params$lambda) <= 1 & 
+                  min(all_params$lambda >= 0))
+    stopifnot("use_pcs should be an integer scalar" = 
+                  is.logical(all_params$use_pcs) & 
+                  length(all_params$use_pcs) == 1)
+    stopifnot("npcs should be an integer scalar" = 
+                  is.integer(as.integer(all_params$npcs)) & 
+                  length(all_params$npcs) == 1)
 
     # Check PCs
     if (all_params$use_pcs & is.null(all_params$dimred)) {
@@ -230,7 +282,7 @@ checkPCA <- function(se, har, lam, npcs) {
     if (any(check == FALSE)) {
         id <- which(check == FALSE)
         err_msg <- paste0(sprintf("(%s,%s)", har[id], lam[id]), collapse = "; ")
-        stop("Run PCA for (M,lambda)=", err_msg)
+        stop("Run PCA for (use_agf,lambda)=", err_msg)
     }
 
     # Check if sufficient PCs
@@ -242,8 +294,8 @@ checkPCA <- function(se, har, lam, npcs) {
             collapse = "; "
         )
         stop(
-            "Not enough PCs for (M,lambda)=", err_msg,
-            "\nCall runBanksyPCA and increase npcs for these (M,lambdas)."
+            "Not enough PCs for (use_agf,lambda)=", err_msg,
+            "\nCall runBanksyPCA and increase npcs for these (use_agf,lambdas)."
         )
     }
 }
@@ -394,9 +446,9 @@ mapToSeed <- function(seed, val) {
 
 #' k-Nearest neighbor cluster label smoothing.
 #'
-#' @details As described in SpiceMix
-#'   (https://doi.org/10.1038/s41588-022-01256-z). Implemented for labels that
-#'   can be coerced to numeric only.
+#' @details 
+#' As described in SpiceMix (https://doi.org/10.1038/s41588-022-01256-z). 
+#' Implemented for labels that can be coerced to numeric only.
 #'
 #' @param se A \code{SpatialExperiment},
 #' \code{SingleCellExperiment} or \code{SummarizedExperiment}
@@ -529,13 +581,13 @@ smoother <-
 #' \code{SingleCellExperiment} or \code{SummarizedExperiment}
 #'   object with cluster labels in \code{colData(se)}.
 #' @param func A string scalar specifying what clustering comparison measure to
-#'   compute. See `?aricode` for more information.
+#'   compute. See \code{?aricode} for more information.
 #' @param digits An integer scalar specifying the number of digits to round to.
 #'
 #' @importFrom aricode AMI ARI MARI MARIraw RI NID NMI NVI
 #' @importFrom utils combn
 #'
-#' @return A matirx of cluster comparison measures.
+#' @return A matrix of cluster comparison measures.
 #'
 #' @export
 #'

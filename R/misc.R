@@ -1,11 +1,19 @@
 #' Simulate an unrealistic spatial omics dataset.
+#' 
+#' @details
+#' This function generates an unrealistic spatial omics dataset based on a 
+#' user-specified number of cells and genes. The number of clusters is defined 
+#' by \code{n_rings}, while counts follow a Poisson distribution with a 
+#' user-specified rate \code{rate}. The simulation is set up such that the 
+#' number of cells in each cluster is uniformly distributed; as such, the final 
+#' number of cells is approximately equal to the user-specified number of cells. 
+#' 
 #'
 #' @param n_cells An integer scalar specifying the approximate number of cells.
 #' @param n_genes An integer scalar specifying the number of genes.
 #' @param n_rings An integer scalar specifying the number of spatial rings.
 #' @param rate A numeric scalar specifying the Poisson rate parameter for
 #'  simulating counts.
-#'
 #'
 #' @importFrom stats rpois runif
 #' @importFrom SpatialExperiment SpatialExperiment

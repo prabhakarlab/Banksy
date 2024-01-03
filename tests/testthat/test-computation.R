@@ -194,7 +194,8 @@ test_that("getBanksyMatrix", {
     expect_equal(dim(getBanksyMatrix(spe, M = 1, lambda = 0.2, scale = TRUE)), dim_B1)
 
     expect_equal(
-        as.numeric(rowMeans(getBanksyMatrix(spe, M = 1, lambda = 0.2, scale = TRUE))),
+        as.numeric(rowMeans(getBanksyMatrix(
+            spe, M = 1, lambda = 0.2, scale = TRUE))),
         rep(0, nrow(spe) * 3)
     )
 

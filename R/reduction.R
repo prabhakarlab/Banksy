@@ -1,4 +1,9 @@
-#' Run PCA on a BANKSY embedding.
+#' Run PCA on a BANKSY matrix.
+#' 
+#' @details
+#' This function runs PCA on the BANKSY matrix 
+#' (see \link[Banksy]{getBanksyMatrix}) with features scaled to zero mean and 
+#' unit standard deviation.   
 #'
 #' @param se A \code{SpatialExperiment},
 #' \code{SingleCellExperiment} or \code{SummarizedExperiment}
@@ -6,8 +11,9 @@
 #' @param use_agf A logical vector specifying whether to use the AGF for
 #'   computing principal components.
 #' @param lambda A numeric vector in \eqn{\in [0,1]} specifying a spatial
-#'   weighting parameter. Larger values incorporate more spatial neighborhood
-#'   information.
+#'   weighting parameter. Larger values (e.g. 0.8) incorporate more spatial
+#'   neighborhood and find spatial domains, while smaller values (e.g. 0.2)
+#'   perform spatial cell-typing. 
 #' @param npcs An integer scalar specifying the number of principal components
 #'   to compute.
 #' @param assay_name A string scalar specifying the name of the assay used in
@@ -17,7 +23,7 @@
 #' @param M Advanced usage. An integer vector specifying the highest azimuthal
 #'   Fourier harmonic to use. If specified, overwrites the \code{use_agf}
 #'   argument.
-#' @param seed Seed for PCA.
+#' @param seed Seed for PCA. If not specified, no seed is set. 
 #'
 #' @importFrom irlba prcomp_irlba
 #' @importFrom SingleCellExperiment reducedDim<-
@@ -37,11 +43,15 @@
 runBanksyPCA <- function(se,
                          use_agf = TRUE,
                          lambda = 0.2,
-                         npcs = 20,
+                         npcs = 20L,
                          assay_name = NULL,
                          group = NULL,
                          M = NULL,
                          seed = NULL) {
+    
+    # Check parameters
+    checkBanksyPCA(as.list(environment()))
+    
     # Get all combinations of M and lambdas
     param <- expand.grid(lambda, getM(use_agf, M))
     param_names <- sprintf("PCA_M%s_lam%s", param[, 2], param[, 1])
@@ -75,8 +85,24 @@ runBanksyPCA <- function(se,
     se
 }
 
+# Argument checks for runBanksyPCA
+checkBanksyPCA <- function(params) {
+    stopifnot("use_agf should be a logical vector" = 
+                  is.logical(as.logical(params$compute_agf)))
+    stopifnot("lambda should be a numeric vector with each entry in [0,1]" = 
+                  is.numeric(params$lambda) & 
+                  max(params$lambda) <= 1 & 
+                  min(params$lambda >= 0))
+    stopifnot("npcs should be an integer scalar" = 
+                  is.integer(as.integer(params$npcs)) & 
+                  length(params$npcs) == 1)
+}
 
 #' Run UMAP on a BANKSY embedding.
+#'
+#' @details
+#' This function runs UMAP on the principal components computed on the 
+#' BANKSY matrix.   
 #'
 #' @param se A \code{SpatialExperiment},
 #' \code{SingleCellExperiment} or \code{SummarizedExperiment}
@@ -84,8 +110,9 @@ runBanksyPCA <- function(se,
 #' @param use_agf A logical vector specifying whether to use the AGF for
 #'   computing UMAP.
 #' @param lambda A numeric vector in \eqn{\in [0,1]} specifying a spatial
-#'   weighting parameter. Larger values incorporate more spatial neighborhood
-#'   information.
+#'   weighting parameter. Larger values (e.g. 0.8) incorporate more spatial
+#'   neighborhood and find spatial domains, while smaller values (e.g. 0.2)
+#'   perform spatial cell-typing.
 #' @param use_pcs A logical scalar specifying whether to run UMAP on PCs. If
 #'   FALSE, runs on the BANKSY matrix.
 #' @param npcs An integer scalar specifying the number of principal components
@@ -110,7 +137,7 @@ runBanksyPCA <- function(se,
 #' @param M Advanced usage. An integer vector specifying the highest azimuthal
 #'   Fourier harmonic to use. If specified, overwrites the \code{use_agf}
 #'   argument.
-#' @param seed Seed for UMAP.
+#' @param seed Seed for UMAP. If not specified, no seed is set. 
 #' @param ... parameters to pass to uwot::umap
 #'
 #' @importFrom uwot umap
@@ -132,18 +159,21 @@ runBanksyUMAP <- function(se,
                           use_agf = TRUE,
                           lambda = 0.2,
                           use_pcs = TRUE,
-                          npcs = 20,
+                          npcs = 20L,
                           dimred = NULL,
                           ndims = NULL,
                           assay_name = NULL,
                           group = NULL,
-                          n_neighbors = 30,
+                          n_neighbors = 30L,
                           spread = 3,
                           min_dist = 0.1,
-                          n_epochs = 300,
+                          n_epochs = 300L,
                           M = NULL,
                           seed = NULL,
                           ...) {
+    # Check params
+    checkBanksyUMAP(as.list(environment()))
+    
     if (!is.null(dimred)) {
         # Use a custom dimensionality reduction
         ndims <- checkDimred(se, dimred, ndims)
@@ -200,4 +230,29 @@ runBanksyUMAP <- function(se,
     metadata(se)$BANKSY_params$umap_seed <- seed
 
     se
+}
+
+# Argument checks for runBanksyUMAP
+checkBanksyUMAP <- function(params) {
+    stopifnot("use_agf should be a logical vector" = 
+                  is.logical(as.logical(params$compute_agf)))
+    stopifnot("lambda should be a numeric vector with each entry in [0,1]" = 
+                  is.numeric(params$lambda) & 
+                  max(params$lambda) <= 1 & 
+                  min(params$lambda >= 0))
+    stopifnot("use_pcs should be an integer scalar" = 
+                  is.logical(params$use_pcs) & length(params$use_pcs) == 1)
+    stopifnot("npcs should be an integer scalar" = 
+                  is.integer(as.integer(params$npcs)) & 
+                  length(params$npcs) == 1)
+    stopifnot("n_neighbors should be an integer scalar" = 
+                  is.integer(as.integer(params$n_neighbors)) & 
+                  length(params$n_neighbors) == 1)
+    stopifnot("spread should be a numeric scalar" = 
+                  is.numeric(params$spread) & length(params$spread) == 1)
+    stopifnot("min_dist should be a numeric scalar" = 
+                  is.numeric(params$min_dist) & length(params$min_dist) == 1)
+    stopifnot("n_epochs should be an integer scalar" = 
+                  is.integer(as.integer(params$n_epochs)) & 
+                  length(params$n_epochs) == 1)
 }
