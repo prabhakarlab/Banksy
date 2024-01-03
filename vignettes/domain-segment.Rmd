@@ -1,6 +1,6 @@
 ---
 title: "Domain segmentation (STARmap PLUS mouse brain)"
-output: rmarkdown::html_vignette
+output: BiocStyle::html_document
 # output: pdf_document
 vignette: >
   %\VignetteIndexEntry{Domain segmentation (STARmap PLUS mouse brain)}
@@ -35,7 +35,7 @@ library(ggplot2)
 se <- readRDS(system.file("extdata/STARmap.rds", package = "Banksy"))
 ```
 
-## Data preprocessing
+# Data preprocessing
 
 Data from the study is available from the [Single Cell Portal](https://singlecell.broadinstitute.org/single_cell/study/SCP1830). We 
 analyze data from `well11`. The data comprise 1,022 genes profiled at 
@@ -74,7 +74,7 @@ se <- SpatialExperiment(
 )
 ```
 
-## Running BANKSY
+# Running BANKSY
 
 Run BANKSY in domain segmentation mode with `lambda=0.8`. This places larger
 weights on the mean neighborhood expression and azimuthal Gabor filter in 
@@ -118,7 +118,7 @@ plotColData(se, x = "X", y = "Y", point_size = 0.01, colour_by = cnames[1]) +
 ![](figures/domain-segment-spatial-1.png)
 </center>
 
-## Session information
+# Session information
 
 <details>
 

@@ -1,6 +1,6 @@
 ---
 title: "Parameter selection (VeraFISH Mouse Hippocampus)"
-output: rmarkdown::html_vignette
+output: BiocStyle::html_document
 # output: pdf_document
 vignette: >
   %\VignetteIndexEntry{Parameter selection (VeraFISH Mouse Hippocampus)}
@@ -12,7 +12,8 @@ vignette: >
 knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>",
-    fig.path = "figures/"
+    fig.path = "figures/",
+    dpi = 54
 )
 ```
 
@@ -23,7 +24,7 @@ k-means, and model-based clustering. In this vignette, we run only Leiden
 clustering. See `?clusterBanksy` for more details on the parameters for
 different clustering methods.
 
-## Loading the data
+# Loading the data
 
 ```{r, eval=TRUE, include=F}
 start.time <- Sys.time()
@@ -81,7 +82,7 @@ aname <- "normcounts"
 assay(se, aname) <- normalizeCounts(se, log = FALSE)
 ```
 
-## Parameters
+# Parameters
 
 *BANKSY* has a few key parameters. We describe these below. 
 
@@ -159,7 +160,7 @@ se <- connectClusters(se)
 
 Visualise spatial coordinates with cluster labels.
 
-```{r parameter-selection-spatial, eval=FALSE, fig.height=9, fig.width=9, fig.align='center'}
+```{r parameter-selection-spatial, eval=TRUE, fig.height=7, out.width='90%'}
 cnames <- colnames(colData(se))
 cnames <- cnames[grep("^clust", cnames)]
 cplots <- lapply(cnames, function(cnm) {
@@ -172,10 +173,6 @@ cplots <- lapply(cnames, function(cnm) {
 
 plot_grid(plotlist = cplots, ncol = 2)
 ```
-
-<center>
-![](figures/parameter-selection-spatial-1.png)
-</center>
 
 Compare all cluster outputs with `compareClusters`. This function computes 
 pairwise cluster comparison metrics between the clusters in `colData(se)` based 
@@ -193,7 +190,7 @@ compareClusters(se, func = "NMI")
 
 See `?compareClusters` for the full list of comparison measures.
 
-## Session information
+# Session information
 
 Vignette runtime:
 

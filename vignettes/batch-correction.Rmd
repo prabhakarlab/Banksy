@@ -1,7 +1,6 @@
 ---
 title: "Spatial data integration with Harmony (10x Visium Human DLPFC)"
-output: rmarkdown::html_vignette
-# output: pdf_document
+output: BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{Spatial data integration with Harmony (10x Visium Human DLPFC)}
   %\VignetteEngine{knitr::rmarkdown}
@@ -12,7 +11,8 @@ vignette: >
 knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>",
-    fig.path = "figures/"
+    fig.path = "figures/",
+    dpi = 54
 )
 ```
 
@@ -21,6 +21,10 @@ multiple spatial omics datasets in the presence of strong batch effects. We use
 10x Visium data of the human dorsolateral prefrontal cortex from Maynard et al 
 (2018). The data comprise 12 samples obtained from 3 subjects, with manual 
 annotation of the layers in each sample. 
+
+```{r, eval=TRUE, include=FALSE}
+start.time <- Sys.time()
+```
 
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 library(Banksy)
@@ -39,26 +43,25 @@ library(ggspavis)
 SEED <- 1000
 ```
 
-## Loading the data
+# Loading the data
 
 We fetch the data for all 12 DLPFC samples with the 
 [*spatialLIBD*](https://bioconductor.org/packages/release/data/experiment/html/spatialLIBD.html) 
 package. This might take awhile.
 
-```{r, eval=FALSE}
+```{r, eval=T, message=FALSE, warning=FALSE}
 library(spatialLIBD)
 library(ExperimentHub)
 
 ehub <- ExperimentHub::ExperimentHub()
 spe <- spatialLIBD::fetch_data(type = "spe", eh = ehub)
-sample_names <- unique(spe$sample_id)
 ```
 
 After the download is completed, we trim the *SpatialExperiment* object, 
 retaining only the counts and some metadata such as the sample identifier and 
 pathology annotations. This saves some memory.
 
-```{r, eval=FALSE}
+```{r, eval=T, message=FALSE, warning=FALSE}
 #' Remove NA spots
 na_id <- which(is.na(spe$layer_guess_reordered_short))
 spe <- spe[, -na_id]
@@ -76,13 +79,20 @@ colData(spe) <- DataFrame(
     row.names = colnames(spe)
 )
 colnames(spe) <- paste0(colnames(spe), "_", spe$sample_id)
-gc()
+invisible(gc())
+```
+
+We analyse the first sample of each subject due to vignette runtime constraints.
+
+```{r, eval=T, message=FALSE, warning=FALSE}
+spe <- spe[, spe$sample_id %in% c("151507", "151669", "151673")]
+sample_names <- unique(spe$sample_id)
 ```
 
 Next, stagger the spatial coordinates across the samples so that spots from 
 different samples do not overlap. 
 
-```{r, eval=FALSE}
+```{r, eval=T, message=FALSE, warning=FALSE}
 #' Stagger spatial coordinates
 locs <- spatialCoords(spe)
 locs <- cbind(locs, sample_id = factor(spe$sample_id))
@@ -96,11 +106,11 @@ rownames(locs) <- colnames(spe)
 spatialCoords(spe) <- locs
 ```
 
-## Data preprocessing
+# Data preprocessing
 
 Find highly variable features and normalize counts:
 
-```{r, eval=FALSE}
+```{r, eval=T, message=FALSE, warning=FALSE}
 #' Get HVGs
 hvgs <- singleCellTK::getTopHVG(
     singleCellTK::runSeuratFindHVG(
@@ -125,12 +135,12 @@ spe <- singleCellTK::runSeuratNormalizeData(
 spe <- spe[hvgs, ]
 ```
 
-## Running BANKSY
+# Running BANKSY
 
 Compute BANKSY neighborhood matrices. We use `k_geom=18` corresponding to 
 first and second-order neighbors in 10x Visium.
 
-```{r, eval=FALSE}
+```{r, eval=T, message=FALSE, warning=FALSE}
 compute_agf <- TRUE
 k_geom <- 18
 spe <- computeBanksy(spe, assay_name = aname, compute_agf = compute_agf, k_geom = k_geom)
@@ -138,18 +148,18 @@ spe <- computeBanksy(spe, assay_name = aname, compute_agf = compute_agf, k_geom 
 
 Run PCA on the BANKSY matrix:
 
-```{r, eval=FALSE}
+```{r pca, eval=T, message=FALSE, warning=FALSE}
 lambda <- 0.2
-npcs <- 10
+npcs <- 20
 use_agf <- TRUE
 spe <- runBanksyPCA(spe, use_agf = use_agf, lambda = lambda, npcs = npcs, seed = SEED)
 ```
 
-## Run Harmony on BANKSY's embedding
+# Run Harmony on BANKSY's embedding
 
 We run Harmony on the PCs of the BANKSY matrix:
 
-```{r, eval=FALSE}
+```{r harmony, eval=T, message=FALSE, warning=FALSE}
 set.seed(SEED)
 harmony_embedding <- HarmonyMatrix(
     data_mat = reducedDim(spe, "PCA_M1_lam0.2"),
@@ -164,27 +174,24 @@ reducedDim(spe, "Harmony_BANKSY") <- harmony_embedding
 
 Next, run UMAP on the 'raw' and Harmony corrected PCA embeddings:
 
-```{r, eval=FALSE}
-k_exp <- 100
-spe <- runBanksyUMAP(spe, use_agf = TRUE, lambda = lambda, npcs = npcs, n_neighbors = k_exp)
-spe <- runBanksyUMAP(spe, dimred = "Harmony_BANKSY", n_neighbors = k_exp)
+```{r umap, eval=T, message=FALSE, warning=FALSE}
+spe <- runBanksyUMAP(spe, use_agf = TRUE, lambda = lambda, npcs = npcs)
+spe <- runBanksyUMAP(spe, dimred = "Harmony_BANKSY")
 ```
 
 Visualize the UMAPs annotated by subject ID:
 
-```{r batch-correction-umap, eval=FALSE, fig.height=3.5, fig.width=7, fig.align='center'}
-um_point_size <- 0.05
-um_point_alpha <- 0.05
+```{r batch-correction-umap, eval=T, fig.height=3, out.width='90%', message=FALSE, warning=FALSE}
 plot_grid(
-    plotReducedDim(spe, "UMAP_M1_lam0.2",
-        color_by = "subject_id",
-        point_size = um_point_size, point_alpha = um_point_alpha
-    ) +
+    plotReducedDim(spe, "UMAP_M1_lam0.2", 
+                   point_size = 0.1,
+                   point_alpha = 0.5,
+                   color_by = "subject_id") +
         theme(legend.position = "none"),
-    plotReducedDim(spe, "UMAP_Harmony_BANKSY",
-        color_by = "subject_id",
-        point_size = um_point_size, point_alpha = um_point_alpha
-    ) +
+    plotReducedDim(spe, "UMAP_Harmony_BANKSY", 
+                   point_size = 0.1,
+                   point_alpha = 0.5,
+                   color_by = "subject_id") +
         theme(legend.title = element_blank()) +
         guides(colour = guide_legend(override.aes = list(size = 5, alpha = 1))),
     nrow = 1,
@@ -192,38 +199,35 @@ plot_grid(
 )
 ```
 
-<center>
-![](figures/batch-correction-umap-1.png)
-</center>
-
 Cluster the Harmony corrected PCA embedding:
 
-```{r, eval=FALSE}
-spe <- clusterBanksy(spe, dimred = "Harmony_BANKSY", k_neighbors = k_exp, resolution = 0.55, seed = SEED)
+```{r, eval=T, message=FALSE, warning=FALSE}
+spe <- clusterBanksy(spe, dimred = "Harmony_BANKSY", resolution = 0.55, seed = SEED)
 spe <- connectClusters(spe, map_to = "clust_annotation")
 ```
 
 Generate spatial plots:
 
-```{r batch-correction-spatial, eval=FALSE, fig.height=10.5, fig.width=7, fig.align='center'}
-sp_point_size <- 0.5
+```{r batch-correction-spatial, eval=T, fig.height=4, out.width='90%', message=FALSE, warning=FALSE}
 cnm <- clusterNames(spe)[2]
 spatial_plots <- lapply(sample_names, function(snm) {
     x <- spe[, spe$sample_id == snm]
     ari <- aricode::ARI(x$clust_annotation, colData(x)[, cnm])
-    plotSpots(x, annotate = cnm, palette = pals::kelly()[-1], size = sp_point_size) +
+    plotSpots(x, annotate = cnm, palette = pals::kelly()[-1], size = 0.5) +
         theme(legend.position = "none", plot.title = element_text(size = 10)) +
         labs(title = sprintf("Sample %s - ARI: %s", snm, round(ari, 3)))
 })
 
-plot_grid(plotlist = spatial_plots, nrow = 4, byrow = FALSE)
+plot_grid(plotlist = spatial_plots, ncol = 3, byrow = FALSE)
 ```
 
-<center>
-![](figures/batch-correction-spatial-1.png)
-</center>
+# Session information
 
-## Session information
+Vignette runtime:
+
+```{r, eval=TRUE, echo=FALSE}
+Sys.time() - start.time
+```
 
 <details>
 
