@@ -607,13 +607,7 @@ compareClusters <-
              ),
              digits = 3) {
         if (length(func) > 1) func <- func[1]
-        func <- match.arg(
-            arg = func,
-            choices = c(
-                "ARI", "AMI", "MARI", "MARIraw", "RI",
-                "NID", "NMI", "NVI"
-            )
-        )
+        func <- match.arg(arg = func)
         measure_func <- get(func, mode = "function")
 
         clust_nm <- colnames(colData(se))

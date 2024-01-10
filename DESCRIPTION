@@ -1,6 +1,6 @@
 Package: Banksy
 Title: Spatial transcriptomic clustering
-Version: 0.99.5
+Version: 0.99.6
 Authors@R: c(
     person(given = "Vipul",
            family = "Singhal",
@@ -56,7 +56,8 @@ Suggests:
     harmony,
     Seurat,
     ExperimentHub,
-    spatialLIBD
+    spatialLIBD,
+    BiocStyle
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 biocViews:
