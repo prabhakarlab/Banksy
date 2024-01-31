@@ -14,15 +14,15 @@ incorporating neighborhood information for clustering, BANKSY is able to
 
 BANKSY is applicable to a wide array of spatial technologies (e.g. 10x
 Visium, Slide-seq, MERFISH, CosMX, CODEX) and scales well to large
-datasets. For more details, check out:
+datasets. For more details, check out
 
 - the
   [preprint](https://www.biorxiv.org/content/10.1101/2022.04.14.488259v1),
 - a
   [tweetorial](https://twitter.com/vipul1891/status/1515323372535644166?s=20&t=Bc6rz8VeWWptF67FejGYfQ)
   on BANKSY,
-- a [Python version](https://github.com/prabhakarlab/Banksy_py) of
-  this package,
+- a set of [vignettes](https://prabhakarlab.github.io/Banksy) showing basic usage,
+- a [Python version](https://github.com/prabhakarlab/Banksy_py) of this package,
 - a [Zenodo archive](https://zenodo.org/records/10258795) containing scripts to reproduce the analyses in the paper, and the corresponding [GitHub Pages](https://github.com/jleechung/banksy-zenodo) (and [here](https://github.com/prabhakarlab/Banksy_py/tree/Banksy_manuscript) for analyses done in Python). 
 
 ## Installation
