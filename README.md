@@ -21,8 +21,9 @@ datasets. For more details, check out:
 - a
   [tweetorial](https://twitter.com/vipul1891/status/1515323372535644166?s=20&t=Bc6rz8VeWWptF67FejGYfQ)
   on BANKSY,
-- and a [Python version](https://github.com/prabhakarlab/Banksy_py) of
-  this package.
+- a [Python version](https://github.com/prabhakarlab/Banksy_py) of
+  this package,
+- a [Zenodo archive](https://zenodo.org/records/10258795) containing scripts to reproduce the analyses in the paper, and the corresponding [GitHub Pages](https://github.com/jleechung/banksy-zenodo) (and [here](https://github.com/prabhakarlab/Banksy_py/tree/Banksy_manuscript) for analyses done in Python). 
 
 ## Installation
 
