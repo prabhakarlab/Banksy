@@ -61,7 +61,8 @@ test_that("computeNeighbors with invalid spatial mode", {
 })
 
 test_that("computeBanksy with spatial mode kNN_median", {
-    spe <- computeBanksy(spe, assay_name = "counts", spatial_mode = "kNN_median")
+    spe <- computeBanksy(spe, compute_agf = TRUE, 
+                         assay_name = "counts", spatial_mode = "kNN_median")
     expect_equal(dim(assay(spe, "H0")), dim(spe))
     expect_equal(dim(assay(spe, "H1")), dim(spe))
 
@@ -70,7 +71,7 @@ test_that("computeBanksy with spatial mode kNN_median", {
     expect_equal(metadata(spe)$BANKSY_params$k_geom, c(15, 15))
     expect_equal(metadata(spe)$BANKSY_params$spatial_mode, "kNN_median")
 
-    sce <- computeBanksy(sce,
+    sce <- computeBanksy(sce, compute_agf = TRUE, 
         assay_name = "counts", spatial_mode = "kNN_median",
         coord_names = c("x", "y")
     )
@@ -79,7 +80,7 @@ test_that("computeBanksy with spatial mode kNN_median", {
 })
 
 test_that("computeBanksy with subsampling", {
-    spe <- computeBanksy(spe,
+    spe <- computeBanksy(spe, compute_agf = TRUE, 
         assay_name = "counts", spatial_mode = "kNN_median",
         k_geom = 30, sample_size = 15, sample_renorm = TRUE,
         seed = 1000
@@ -90,7 +91,7 @@ test_that("computeBanksy with subsampling", {
 
 test_that("computeBanksy with spatial mode kNN_median with XL k_geom", {
     expect_error(
-        computeBanksy(spe,
+        computeBanksy(spe, 
             assay_name = "counts",
             spatial_mode = "kNN_median", k_geom = ncol(spe) + 1
         )
@@ -98,7 +99,8 @@ test_that("computeBanksy with spatial mode kNN_median with XL k_geom", {
 })
 
 test_that("computeBanksy with spatial_mode kNN_unif", {
-    spe <- computeBanksy(spe, assay_name = "counts", spatial_mode = "kNN_unif")
+    spe <- computeBanksy(spe, compute_agf = TRUE, 
+                         assay_name = "counts", spatial_mode = "kNN_unif")
     expect_equal(dim(assay(spe, "H0")), dim(spe))
     expect_equal(dim(assay(spe, "H1")), dim(spe))
 })
@@ -113,7 +115,8 @@ test_that("computeBanksy with spatial mode kNN_unif with XL k_geom", {
 })
 
 test_that("computeBanksy with spatial_mode kNN_rn", {
-    spe <- computeBanksy(spe, assay_name = "counts", spatial_mode = "kNN_rn")
+    spe <- computeBanksy(spe, compute_agf = TRUE,
+                         assay_name = "counts", spatial_mode = "kNN_rn")
     expect_equal(dim(assay(spe, "H0")), dim(spe))
     expect_equal(dim(assay(spe, "H1")), dim(spe))
 })
@@ -128,7 +131,8 @@ test_that("computeBanksy with spatial mode kNN_rn with XL k_geom", {
 })
 
 test_that("computeBanksy with spatial_mode kNN_r", {
-    spe <- computeBanksy(spe, assay_name = "counts", spatial_mode = "kNN_r")
+    spe <- computeBanksy(spe, compute_agf = TRUE, 
+                         assay_name = "counts", spatial_mode = "kNN_r")
     expect_equal(dim(assay(spe, "H0")), dim(spe))
     expect_equal(dim(assay(spe, "H1")), dim(spe))
 })
@@ -143,7 +147,8 @@ test_that("computeBanksy with spatial mode kNN_r with XL k_geom", {
 })
 
 test_that("computeBanksy with spatial_mode kNN_rank", {
-    spe <- computeBanksy(spe, assay_name = "counts", spatial_mode = "kNN_rank")
+    spe <- computeBanksy(spe, compute_agf = TRUE, 
+                         assay_name = "counts", spatial_mode = "kNN_rank")
     expect_equal(dim(assay(spe, "H0")), dim(spe))
     expect_equal(dim(assay(spe, "H1")), dim(spe))
 })
@@ -158,7 +163,8 @@ test_that("computeBanksy with spatial mode kNN_rank with XL k_geom", {
 })
 
 test_that("computeBanksy with spatial_mode rNN_gauss", {
-    spe <- computeBanksy(spe, assay_name = "counts", spatial_mode = "rNN_gauss")
+    spe <- computeBanksy(spe, compute_agf = TRUE, 
+                         assay_name = "counts", spatial_mode = "rNN_gauss")
     expect_equal(dim(assay(spe, "H0")), dim(spe))
     expect_equal(dim(assay(spe, "H1")), dim(spe))
 })
@@ -179,7 +185,7 @@ test_that("getBanksyMatrix without computeBanksy", {
 })
 
 test_that("getBanksyMatrix", {
-    spe <- computeBanksy(spe, assay_name = "counts")
+    spe <- computeBanksy(spe, compute_agf = TRUE, assay_name = "counts")
 
     dim_B0 <- c(nrow(spe) * 2, ncol(spe))
     expect_equal(dim(getBanksyMatrix(spe, M = 0, lambda = 0.2)), dim_B0)
@@ -207,7 +213,7 @@ test_that("getBanksyMatrix", {
 })
 
 test_that("getBanksyMatrix multi-sample", {
-    spe <- computeBanksy(spe, "counts")
+    spe <- computeBanksy(spe, "counts", compute_agf = TRUE)
 
     expect_error(getBanksyMatrix(
         spe,

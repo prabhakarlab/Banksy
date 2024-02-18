@@ -41,7 +41,7 @@
 #' spe <- runBanksyPCA(spe, M = 1, lambda = 0.2, npcs = 20)
 #'
 runBanksyPCA <- function(se,
-                         use_agf = TRUE,
+                         use_agf = FALSE,
                          lambda = 0.2,
                          npcs = 20L,
                          assay_name = NULL,
@@ -156,7 +156,7 @@ checkBanksyPCA <- function(params) {
 #' spe <- runBanksyUMAP(spe, M = 1, lambda = 0.2)
 #'
 runBanksyUMAP <- function(se,
-                          use_agf = TRUE,
+                          use_agf = FALSE,
                           lambda = 0.2,
                           use_pcs = TRUE,
                           npcs = 20L,

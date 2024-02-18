@@ -1,6 +1,6 @@
 Package: Banksy
 Title: Spatial transcriptomic clustering
-Version: 0.99.6
+Version: 0.99.7
 Authors@R: c(
     person(given = "Vipul",
            family = "Singhal",
@@ -19,7 +19,7 @@ Description: Banksy is an R package that incorporates spatial information to
     neighbor-augmented product space which can then be clustered, allowing for
     accurate and spatially-aware cell typing and tissue domain segmentation. 
 Depends:
-     R (>= 4.3.0)
+     R (>= 4.4.0)
 Imports:
     aricode,
     data.table,
@@ -41,7 +41,7 @@ License: file LICENSE
 Encoding: UTF-8
 URL: https://github.com/prabhakarlab/Banksy
 BugReports: https://github.com/prabhakarlab/Banksy/issues
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Suggests: 
     knitr,
     rmarkdown,

@@ -6,7 +6,7 @@
 \usage{
 clusterBanksy(
   se,
-  use_agf = TRUE,
+  use_agf = FALSE,
   lambda = 0.2,
   use_pcs = TRUE,
   npcs = 20L,

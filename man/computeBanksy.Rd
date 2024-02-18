@@ -8,7 +8,7 @@ computeBanksy(
   se,
   assay_name,
   coord_names = NULL,
-  compute_agf = TRUE,
+  compute_agf = FALSE,
   k_geom = 15,
   spatial_mode = c("kNN_median", "kNN_r", "kNN_rn", "kNN_rank", "kNN_unif", "rNN_gauss"),
   n = 2,

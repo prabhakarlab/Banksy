@@ -6,7 +6,7 @@
 \usage{
 runBanksyPCA(
   se,
-  use_agf = TRUE,
+  use_agf = FALSE,
   lambda = 0.2,
   npcs = 20L,
   assay_name = NULL,

@@ -3,7 +3,6 @@
 \docType{package}
 \name{Banksy-package}
 \alias{Banksy-package}
-\alias{_PACKAGE}
 \alias{Banksy}
 \title{The Banksy package}
 \description{
