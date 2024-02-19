@@ -70,12 +70,12 @@ object. Here, we add the cluster labels and the PCA and UMAP cell embeddings.
 
 ```{r}
 # Add data to SCE
-sce$non_spatial <- factor(meta.data(bank)$clust_M1_lam0_k50_res1)
-sce$BANKSY <- factor(meta.data(bank)$clust_M1_lam0.2_k50_res1)
-reducedDims(sce) <- list(UMAP_nsp = reduction(bank)$umap_M1_lam0,
-                         UMAP_bky = reduction(bank)$umap_M1_lam0.2,
-                         PCA_nsp = reduction(bank)$pca_M1_lam0$x,
-                         PCA_bky = reduction(bank)$pca_M1_lam0.2$x)
+sce$non_spatial <- factor(meta.data(bank)$clust_M0_lam0_k50_res1)
+sce$BANKSY <- factor(meta.data(bank)$clust_M0_lam0.2_k50_res1)
+reducedDims(sce) <- list(UMAP_nsp = reduction(bank)$umap_M0_lam0,
+                         UMAP_bky = reduction(bank)$umap_M0_lam0.2,
+                         PCA_nsp = reduction(bank)$pca_M0_lam0$x,
+                         PCA_bky = reduction(bank)$pca_M0_lam0.2$x)
 ```
 
 Visualise the cells in UMAP and spatial dimensions:

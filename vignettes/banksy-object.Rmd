@@ -79,7 +79,6 @@ populating the `nbr.expr` slot:
 bank <- NormalizeBanksy(bank)
 bank <- ComputeBanksy(bank, verbose=FALSE)
 bank <- ScaleBanksy(bank)
-head(bank)
 ```
 
 Dimensionality reduction with *RunBanksyPCA* or *RunBanksyUMAP* populates the `reduction`
@@ -139,7 +138,7 @@ clustering with `lam=0.3`, `k=50`, `res=1.2`.
 
 ```{r subset3, eval=T, fig.width=10, fig.height=5, fig.align='center'}
 select_clusters <- c(6,7)
-bankMeta <- SubsetBanksy(bank, metadata = clust_M1_lam0.2_k50_res1.2 %in% select_clusters)
+bankMeta <- SubsetBanksy(bank, metadata = clust_M0_lam0.2_k50_res1.2 %in% select_clusters)
 
 gridExtra::grid.arrange(
   plotSpatial(bank, pt.alpha = 0.4),

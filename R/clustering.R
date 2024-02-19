@@ -61,7 +61,7 @@
 ClusterBanksy <-
     function(bank,
              lambda = 0.2,
-             use_agf = TRUE, 
+             use_agf = FALSE, 
              pca = TRUE,
              npcs = 20,
              method = c('leiden', 'louvain', 'mclust', 'kmeans'),

@@ -115,7 +115,7 @@ parameters (a parameter run), the package implements *ConnectClusters* which
 performs a mapping to harmonise cluster labels between different parameter runs.
 
 ```{r connect, eval=T}
-bank <- ConnectClusters(bank, map.to = 'clust_M1_lam0.2_k50_res1.2')
+bank <- ConnectClusters(bank, map.to = 'clust_M0_lam0.2_k50_res1.2')
 
 head(meta.data(bank))
 ```

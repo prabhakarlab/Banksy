@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Banksy</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
       </span>
     </div>
 
@@ -145,21 +145,13 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Spatial mode is kNN median</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Parameters: k_geom = 15</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing neighbors...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Spatial mode is kNN median</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Parameters: k_geom = 15</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing harmonic m = 0</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using 15 neighbors</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing harmonic m = 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 15 neighbors</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Centering</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
 <span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunBanksyPCA.html">RunBanksyPCA</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Running PCA for M=1 lambda=0.2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> BANKSY matrix with own.expr, F0, F1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Squared lambdas: 0.8, 0.1333, 0.0667</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running PCA for M=0 lambda=0.2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> BANKSY matrix with own.expr, F0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Squared lambdas: 0.8, 0.2</span>
 <span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="ClusterBanksy.html">ClusterBanksy</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.2</span>, npcs <span class="op">=</span> <span class="fl">20</span>, k.neighbors <span class="op">=</span> <span class="fl">50</span>, resolution <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">plotSpatialFeatures</span><span class="op">(</span><span class="va">bank</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Label'</span>, <span class="fu"><a href="BanksyObject-class.html">clust.names</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">'discrete'</span>, <span class="fl">2</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">1</span>, ncol <span class="op">=</span> <span class="fl">2</span>, pt.size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>

@@ -48,10 +48,6 @@ test_that('Show', {
     expect_output(show(bank))
 })
 
-test_that('Head', {
-    expect_output(head(bank))
-})
-
 # Normalization own
 
 bank <- NormalizeBanksy(bank)
@@ -64,7 +60,7 @@ test_that('Normalization for own', {
 
 # Compute neighbors
 
-bank <- ComputeBanksy(bank)
+bank <- ComputeBanksy(bank, compute_agf = TRUE)
 
 test_that('Compute neighbors', {
     expect_s4_class(ComputeBanksy(bank), 'BanksyObject')
@@ -109,8 +105,8 @@ test_that('Plot heatmap', {
                                 lambda = 0.25, max.cols = 100), 'Heatmap')
 })
 
-bank <- RunBanksyPCA(bank, lambda = 0.25, npcs = 20)
-bank <- RunBanksyUMAP(bank, lambda = 0.25, npcs = 20)
+bank <- RunBanksyPCA(bank, lambda = 0.25, npcs = 20, use_agf = TRUE)
+bank <- RunBanksyUMAP(bank, lambda = 0.25, npcs = 20, use_agf = TRUE)
 
 # Subset
 test_that('Subsetting', {

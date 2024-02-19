@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Banksy</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
       </span>
     </div>
 
@@ -87,11 +87,11 @@
       </tr></tbody><tbody><tr><td>
           <p><code><a href="NormalizeBanksy.html">NormalizeBanksy()</a></code> </p>
         </td>
-        <td><p>Normalize columns to a normFactor</p></td>
+        <td><p>Column-wise normalization of assays in a BanksyObject</p></td>
       </tr><tr><td>
           <p><code><a href="ScaleBanksy.html">ScaleBanksy()</a></code> </p>
         </td>
-        <td><p>Scale rows</p></td>
+        <td><p>Row-wise scaling of assays in a BanksyObject</p></td>
       </tr><tr><td>
           <p><code><a href="SubsetBanksy.html">SubsetBanksy()</a></code> </p>
         </td>
@@ -119,11 +119,16 @@
       </tr></tbody><tbody><tr><td>
           <p><code><a href="ClusterBanksy.html">ClusterBanksy()</a></code> </p>
         </td>
-        <td><p>Cluster based on joint expression matrix</p></td>
+        <td><p>Cluster a BANKSY embedding</p></td>
       </tr><tr><td>
           <p><code><a href="ConnectClusters.html">ConnectClusters()</a></code> </p>
         </td>
         <td><p>Harmonize cluster labels among parameter runs</p></td>
+      </tr><tr><td>
+          <p><code><a href="SmoothLabels.html">SmoothLabels()</a></code> </p>
+        </td>
+        <td><p>Label smoothing as described in SpiceMix (https://doi.org/10.1038/s41588-022-01256-z).
+Implemented for numeric labels only</p></td>
       </tr><tr><td>
           <p><code><a href="getARI.html">getARI()</a></code> </p>
         </td>

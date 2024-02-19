@@ -7,7 +7,7 @@
 RunBanksyPCA(
   bank,
   lambda = 0.2,
-  use_agf = TRUE,
+  use_agf = FALSE,
   M = NULL,
   npcs = 20,
   verbose = TRUE
@@ -18,7 +18,7 @@ RunBanksyPCA(
 
 \item{lambda}{(numeric vector) spatial weighting parameter}
 
-\item{use_agf}{(logical vector) whether to use azimuthal Gabor filter (default: TRUE)}
+\item{use_agf}{(logical vector) whether to use azimuthal Gabor filter (default: FALSE)}
 
 \item{M}{(numeric vector) advanced usage. run PCA using up to the m-th 
 azimuthal Fourier harmonic. if specified, overwrites the \code{use_agf} argument}

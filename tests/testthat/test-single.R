@@ -45,10 +45,6 @@ test_that('Show', {
     expect_output(show(bank))
 })
 
-test_that('Head', {
-    expect_output(head(bank))
-})
-
 # Normalization own
 
 bank <- NormalizeBanksy(bank, norm_factor = 100)
@@ -67,7 +63,7 @@ test_that('Normalization for own', {
 
 # Compute neighbors
 
-bank <- ComputeBanksy(bank, verbose = TRUE)
+bank <- ComputeBanksy(bank, compute_agf = TRUE, verbose = TRUE)
 
 test_that('Compute neighbors', {
 
@@ -135,7 +131,7 @@ test_that('Scaling', {
 
 # Reduction
 
-bank <- RunBanksyPCA(bank, lambda = 0.25, npcs = 15)
+bank <- RunBanksyPCA(bank, use_agf = TRUE, lambda = 0.25, npcs = 15)
 
 test_that('PCA', {
     expect_equal(names(bank@reduction),'pca_M1_lam0.25')
@@ -143,11 +139,13 @@ test_that('PCA', {
 })
 
 test_that('Scree', {
-    expect_error(plotScree(bank, lambda = 0.2))
-    expect_equal(class(plotScree(bank, lambda = 0.25)), c('gg', 'ggplot'))
+    expect_error(plotScree(bank, M = 1, lambda = 0.2))
+    expect_equal(class(plotScree(bank, M = 1, lambda = 0.25)), 
+                 c('gg', 'ggplot'))
 })
 
-bank <- RunBanksyUMAP(bank, lambda = 0.25, pca = TRUE, npcs = 10)
+bank <- RunBanksyUMAP(bank, use_agf = TRUE, 
+                      lambda = 0.25, pca = TRUE, npcs = 10)
 
 test_that('UMAP', {
     expect_equal(names(bank@reduction), c('pca_M1_lam0.25', 'umap_M1_lam0.25'))
@@ -155,14 +153,17 @@ test_that('UMAP', {
 })
 
 test_that('UMAP on BANKSY matrix', {
-    expect_equal(names(RunBanksyUMAP(bank, lambda = 0.25, pca = FALSE)@reduction),
+    expect_equal(names(
+        RunBanksyUMAP(bank, use_agf = TRUE, 
+                      lambda = 0.25, pca = FALSE)@reduction),
                  c('pca_M1_lam0.25', 'umap_M1_lam0.25'))
 })
 
 test_that('UMAP errors', {
-    expect_error(RunBanksyUMAP(bank, lambda = 0.2))
-    expect_error(RunBanksyUMAP(bank, lambda = 0.25, npcs = 1))
-    expect_warning(RunBanksyUMAP(bank, lambda = 0.25, npcs = 30))
+    expect_error(RunBanksyUMAP(bank, use_agf = TRUE, lambda = 0.2))
+    expect_error(RunBanksyUMAP(bank, use_agf = TRUE, lambda = 0.25, npcs = 1))
+    expect_warning(RunBanksyUMAP(bank, use_agf = TRUE, 
+                                 lambda = 0.25, npcs = 30))
 })
 
 # Cluster
@@ -172,28 +173,35 @@ test_that('Cluster method check', {
 })
 
 test_that('Leiden clustering unspec. parameters', {
-    expect_error(ClusterBanksy(bank, pca = TRUE, npcs = 15, method = 'leiden'))
-    expect_error(ClusterBanksy(bank, pca = TRUE, npcs = 15,
+    expect_error(ClusterBanksy(bank, use_agf = TRUE, 
+                               pca = TRUE, npcs = 15, method = 'leiden'))
+    expect_error(ClusterBanksy(bank, use_agf = TRUE, 
+                               pca = TRUE, npcs = 15,
                                method = 'leiden', k.neighbors = 10))
-    expect_error(ClusterBanksy(bank, pca = TRUE, npcs = 15,
+    expect_error(ClusterBanksy(bank, use_agf = TRUE, 
+                               pca = TRUE, npcs = 15,
                                method = 'leiden', resolution = 10))
 })
 
 test_that('Louvain clustering unspec. parameters', {
-    expect_error(ClusterBanksy(bank, pca = TRUE, npcs = 15, method = 'louvain'))
+    expect_error(ClusterBanksy(bank, use_agf = TRUE, 
+                               pca = TRUE, npcs = 15, method = 'louvain'))
 })
 
 test_that('k means clustering unspec. parameters', {
-    expect_error(ClusterBanksy(bank, pca = TRUE, npcs = 15, method = 'kmeans'))
+    expect_error(ClusterBanksy(bank, use_agf = TRUE,
+                               pca = TRUE, npcs = 15, method = 'kmeans'))
 })
 
 test_that('Mclust clustering unspec. parameters', {
-    expect_error(ClusterBanksy(bank, pca = TRUE, npcs = 15, method = 'mclust'))
+    expect_error(ClusterBanksy(bank, use_agf = TRUE,
+                               pca = TRUE, npcs = 15, method = 'mclust'))
 })
 
 
 set.seed(42)
 bank <- ClusterBanksy(bank, lambda = 0.25, pca = TRUE, npcs = 5,
+                      use_agf = TRUE,
                       method = 'leiden', k.neighbors = 30,
                       resolution = c(0.5, 1, 1.5))
 
@@ -201,28 +209,33 @@ bank <- ClusterBanksy(bank, lambda = 0.25, pca = TRUE, npcs = 5,
 test_that('Cluster with different methods', {
     expect_true('clust_M1_lam0.25_k30_res0.5' %in% clust.names(bank))
     
-    bank <- ClusterBanksy(bank, lambda = 0.25, pca = TRUE, npcs = 5,
+    bank <- ClusterBanksy(bank, use_agf = TRUE,
+                          lambda = 0.25, pca = TRUE, npcs = 5,
                           method = 'louvain', k.neighbors = c(20,30))
     expect_true('clust_M1_lam0.25_k30_res1_louvain' %in% clust.names(bank))
     
-    bank <- ClusterBanksy(bank, lambda = 0.25, pca = TRUE, npcs = 5,
+    bank <- ClusterBanksy(bank, use_agf = TRUE,
+                          lambda = 0.25, pca = TRUE, npcs = 5,
                           method = 'kmeans', kmeans.centers = c(3,4))
     expect_true('clust_M1_lam0.25_kmeans3' %in% clust.names(bank))
     expect_equal(length(unique(bank@meta.data$clust_M1_lam0.25_kmeans3)),3)
     
-    bank <- ClusterBanksy(bank, lambda = 0.25, pca = TRUE, npcs = 5,
+    bank <- ClusterBanksy(bank, use_agf = TRUE,
+                          lambda = 0.25, pca = TRUE, npcs = 5,
                           method = 'mclust', mclust.G = c(3,4))
     expect_true('clust_M1_lam0.25_mclust3' %in% clust.names(bank))
     expect_equal(length(unique(bank@meta.data$clust_M1_lam0.25_kmeans3)),3)
 })
 
 test_that('Insuffient PCs', {
-    expect_error(ClusterBanksy(bank, lambda = 0.2))
-    expect_error(ClusterBanksy(bank, lambda = 0.25, pca = TRUE, npcs = 30))
+    expect_error(ClusterBanksy(bank, use_agf = TRUE, lambda = 0.2))
+    expect_error(ClusterBanksy(bank, use_agf = TRUE, 
+                               lambda = 0.25, pca = TRUE, npcs = 30))
 })
 
 test_that('Cluster with matrix', {
-    expect_equal(clust.names(ClusterBanksy(bank, lambda = 0.25, pca = FALSE,
+    expect_equal(clust.names(ClusterBanksy(bank, use_agf = TRUE,
+                                           lambda = 0.25, pca = FALSE,
                                            method = 'leiden', k.neighbors = 30,
                                            resolution = c(0.5,1,1.5))),
                  clust.names(bank))

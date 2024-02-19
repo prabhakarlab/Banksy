@@ -7,7 +7,7 @@
 RunBanksyUMAP(
   bank,
   lambda = 0.2,
-  use_agf = TRUE,
+  use_agf = FALSE,
   ncomponents = 2,
   pca = TRUE,
   npcs = 20,
@@ -25,7 +25,7 @@ RunBanksyUMAP(
 
 \item{lambda}{(numeric vector) spatial weighting parameter}
 
-\item{use_agf}{(logical vector) whether to use azimuthal Gabor filter (default: TRUE)}
+\item{use_agf}{(logical vector) whether to use azimuthal Gabor filter (default: FALSE)}
 
 \item{ncomponents}{(numeric) number of umap components to compute}
 

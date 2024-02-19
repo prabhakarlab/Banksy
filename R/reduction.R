@@ -3,7 +3,7 @@
 #'
 #' @param bank BanksyObject
 #' @param lambda (numeric vector) spatial weighting parameter
-#' @param use_agf (logical vector) whether to use azimuthal Gabor filter (default: TRUE)
+#' @param use_agf (logical vector) whether to use azimuthal Gabor filter (default: FALSE)
 #' @param npcs (numeric) number of principal components to compute
 #' @param M (numeric vector) advanced usage. run PCA using up to the m-th 
 #'   azimuthal Fourier harmonic. if specified, overwrites the \code{use_agf} argument   
@@ -26,7 +26,7 @@
 #' 
 RunBanksyPCA <- function(bank,
                          lambda = 0.2,
-                         use_agf = TRUE,
+                         use_agf = FALSE,
                          M = NULL,
                          npcs = 20,
                          verbose = TRUE) {
@@ -55,7 +55,7 @@ RunBanksyPCA <- function(bank,
 #'
 #' @param bank BanksyObject
 #' @param lambda (numeric) spatial weighting parameter
-#' @param M (numeric) compute up to the k-th azimuthal fourier harmonic (default: 1) 
+#' @param M (numeric) compute up to the k-th azimuthal fourier harmonic (default: 0) 
 #'
 #' @importFrom ggplot2 ggplot aes geom_point theme element_blank element_line
 #'
@@ -74,7 +74,7 @@ RunBanksyPCA <- function(bank,
 #' scree <- plotScree(bank, lambda = 0.2)
 #' scree
 #' 
-plotScree <- function(bank, lambda, M = 1) {
+plotScree <- function(bank, lambda, M = 0) {
 
   pca.name <- paste0('pca_M', M, '_lam', lambda)
   found <- pca.name %in% names(bank@reduction)
@@ -92,7 +92,7 @@ plotScree <- function(bank, lambda, M = 1) {
 #'
 #' @param bank BanksyObject
 #' @param lambda (numeric vector) spatial weighting parameter
-#' @param use_agf (logical vector) whether to use azimuthal Gabor filter (default: TRUE)
+#' @param use_agf (logical vector) whether to use azimuthal Gabor filter (default: FALSE)
 #' @param ncomponents (numeric) number of umap components to compute
 #' @param pca (logical) run UMAP on PCs (TRUE) or BANKSY matrix (FALSE)
 #' @param npcs (numeric) number of principal components to use for umap
@@ -123,7 +123,7 @@ plotScree <- function(bank, lambda, M = 1) {
 #' 
 RunBanksyUMAP <- function(bank,
                           lambda = 0.2,
-                          use_agf = TRUE,
+                          use_agf = FALSE,
                           ncomponents = 2,
                           pca = TRUE,
                           npcs = 20,

@@ -26,6 +26,7 @@ reference:
     contents:
       - ClusterBanksy
       - ConnectClusters
+      - SmoothLabels
       - getARI
   - title: Visualisation
     contents:

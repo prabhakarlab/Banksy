@@ -4,14 +4,14 @@
 \alias{plotScree}
 \title{Plots scree plot for PCA}
 \usage{
-plotScree(bank, lambda, M = 1)
+plotScree(bank, lambda, M = 0)
 }
 \arguments{
 \item{bank}{BanksyObject}
 
 \item{lambda}{(numeric) spatial weighting parameter}
 
-\item{M}{(numeric) compute up to the k-th azimuthal fourier harmonic (default: 1)}
+\item{M}{(numeric) compute up to the k-th azimuthal fourier harmonic (default: 0)}
 }
 \value{
 Scree plot

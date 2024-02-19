@@ -262,7 +262,7 @@ scalerAll <- function(x) {
 #' # Compute neighbors 
 #' bank <- ComputeBanksy(bank)
 #' 
-ComputeBanksy <- function(bank, compute_agf = TRUE, 
+ComputeBanksy <- function(bank, compute_agf = FALSE, 
                           spatial_mode = 'kNN_median', k_geom = 15, n = 2,
                           sigma = 1.5, alpha = 0.05, k_spatial = 100, M = NULL,
                           sample_size = NULL, sample_renorm = FALSE, 
@@ -398,7 +398,7 @@ getLambdas <- function(lambda, n_harmonics, verbose=TRUE) {
 #' bank <- ComputeBanksy(bank)
 #' bm <- getBanksyMatrix(bank)
 #' 
-getBanksyMatrix <- function(bank, lambda = 0.2, M = 1, verbose = TRUE) {
+getBanksyMatrix <- function(bank, lambda = 0.2, M = 0, verbose = TRUE) {
     
     # Optimize this
     if (is.list(bank@own.expr)) {

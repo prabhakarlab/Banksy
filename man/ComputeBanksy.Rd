@@ -6,7 +6,7 @@
 \usage{
 ComputeBanksy(
   bank,
-  compute_agf = TRUE,
+  compute_agf = FALSE,
   spatial_mode = "kNN_median",
   k_geom = 15,
   n = 2,

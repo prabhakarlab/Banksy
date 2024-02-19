@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Banksy</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
       </span>
     </div>
 
@@ -78,7 +78,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">RunBanksyUMAP</span><span class="op">(</span></span>
 <span>  <span class="va">bank</span>,</span>
 <span>  lambda <span class="op">=</span> <span class="fl">0.2</span>,</span>
-<span>  M <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  use_agf <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  ncomponents <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  pca <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  npcs <span class="op">=</span> <span class="fl">20</span>,</span>
@@ -86,6 +86,7 @@
 <span>  spread <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  mindist <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  nepochs <span class="op">=</span> <span class="fl">300</span>,</span>
+<span>  M <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -101,8 +102,8 @@
 <dd><p>(numeric vector) spatial weighting parameter</p></dd>
 
 
-<dt>M</dt>
-<dd><p>(numeric) compute up to the k-th azimuthal fourier harmonic (default: 1)</p></dd>
+<dt>use_agf</dt>
+<dd><p>(logical vector) whether to use azimuthal Gabor filter (default: FALSE)</p></dd>
 
 
 <dt>ncomponents</dt>
@@ -133,6 +134,12 @@
 <dd><p>(numeric) number of epochs to run umap optimization</p></dd>
 
 
+<dt>M</dt>
+<dd><p>(numeric vector) advanced usage. run UMAP using PCA computed up to 
+the m-th azimuthal Fourier harmonic. if specified, overwrites the
+<code>use_agf</code> argument</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>(logical) print messages</p></dd>
 
@@ -160,24 +167,16 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Spatial mode is kNN median</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Parameters: k_geom = 15</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing neighbors...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Spatial mode is kNN median</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Parameters: k_geom = 15</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing harmonic m = 0</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using 15 neighbors</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing harmonic m = 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 15 neighbors</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Centering</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
 <span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="RunBanksyPCA.html">RunBanksyPCA</a></span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Running PCA for M=1 lambda=0.2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> BANKSY matrix with own.expr, F0, F1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Squared lambdas: 0.8, 0.1333, 0.0667</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running PCA for M=0 lambda=0.2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> BANKSY matrix with own.expr, F0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Squared lambdas: 0.8, 0.2</span>
 <span class="r-in"><span><span class="va">bank</span> <span class="op">&lt;-</span> <span class="fu">RunBanksyUMAP</span><span class="op">(</span><span class="va">bank</span>, lambda <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing UMAP with 20 PCs</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Running UMAP for M=1 lambda=0.2</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running UMAP for M=0 lambda=0.2</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
