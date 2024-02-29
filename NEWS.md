@@ -1,4 +1,8 @@
 
+# Version 0.1.6
+
++ Fix compatibility with SeuratWrappers
+
 # Version 0.1.5
 
 + Implemented SmoothLabels for k-nearest neighbors cluster label smoothing
