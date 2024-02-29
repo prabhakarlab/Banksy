@@ -145,7 +145,7 @@ scale the resulting matrices.
 
 ```{r, eval = T}
 bank <- NormalizeBanksy(bank)
-bank <- ComputeBanksy(bank, k_geom = c(15, 30))
+bank <- ComputeBanksy(bank, k_geom = 15)
 bank <- ScaleBanksy(bank)
 ```
 

@@ -280,15 +280,12 @@ ComputeBanksy <- function(bank, compute_agf = FALSE,
             length(M), ' harmonics.')
     }
     
+    # Extract locs
+    locs <- bank@cell.locs
+    
     if (is.list(bank@own.expr)) {
         
-        
         # Multi-dataset case
-        locs <- lapply(bank@cell.locs, function(x) {
-            x <- data.table(x, keep.rownames = TRUE)
-            setnames(x, 'rn', 'cell_ID')
-        })
-        
         # Compute knn list for all datasets
         knn_lst <- lapply(locs, function(dlocs) {
             lapply(k_geom, function(kg) {
@@ -328,8 +325,7 @@ ComputeBanksy <- function(bank, compute_agf = FALSE,
         
     } else {
         # Single dataset case
-        locs <- data.table(bank@cell.locs, keep.rownames = TRUE)
-        setnames(locs, 'rn', 'cell_ID')
+        locs <- bank@cell.locs
         knn_list <- lapply(k_geom, function(kg) {
             computeNeighbors(locs,
                              spatial_mode = spatial_mode, k_geom = kg, n = n,
@@ -449,9 +445,10 @@ getBanksyMatrix <- function(bank, lambda = 0.2, M = 0, verbose = TRUE) {
 
 
 getSpatialDims <- function(locs, dimensions, alpha) {
+    
     cellID <- seq_len(nrow(locs))
-    names(cellID) <- locs$cell_ID
-    locs <- locs[, grepl('sdim', colnames(locs)), with = FALSE]
+    names(cellID) <- rownames(locs)
+    locs <- locs[, grepl('sdim', colnames(locs)), drop = FALSE]
     
     if (dimensions != "all") {
         if (all(dimensions %in% colnames(locs)))
