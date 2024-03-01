@@ -17,7 +17,7 @@ Visium, Slide-seq, MERFISH, CosMX, CODEX) and scales well to large
 datasets. For more details, check out
 
 - the
-  [paper]([https://www.biorxiv.org/content/10.1101/2022.04.14.488259v1](https://www.nature.com/articles/s41588-024-01664-3)),
+  [paper]((https://www.nature.com/articles/s41588-024-01664-3),
 - reviewer files [here](https://static-content.springer.com/esm/art%3A10.1038%2Fs41588-024-01664-3/MediaObjects/41588_2024_1664_MOESM3_ESM.pdf)
 - a
   [tweetorial](https://x.com/shyam_lab/status/1762648072360792479?s=20)
