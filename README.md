@@ -18,7 +18,7 @@ datasets. For more details, check out
 
 - the
   [paper](https://www.nature.com/articles/s41588-024-01664-3),
-- the [peer review file](https://static-content.springer.com/esm/art%3A10.1038%2Fs41588-024-01664-3/MediaObjects/41588_2024_1664_MOESM3_ESM.pdf)
+- the [peer review file](https://static-content.springer.com/esm/art%3A10.1038%2Fs41588-024-01664-3/MediaObjects/41588_2024_1664_MOESM3_ESM.pdf),
 - a
   [tweetorial](https://x.com/shyam_lab/status/1762648072360792479?s=20)
   on BANKSY,
