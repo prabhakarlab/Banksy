@@ -17,9 +17,10 @@ Visium, Slide-seq, MERFISH, CosMX, CODEX) and scales well to large
 datasets. For more details, check out
 
 - the
-  [preprint](https://www.biorxiv.org/content/10.1101/2022.04.14.488259v1),
+  [paper]([https://www.biorxiv.org/content/10.1101/2022.04.14.488259v1](https://www.nature.com/articles/s41588-024-01664-3)),
+- reviewer files [here](https://static-content.springer.com/esm/art%3A10.1038%2Fs41588-024-01664-3/MediaObjects/41588_2024_1664_MOESM3_ESM.pdf)
 - a
-  [tweetorial](https://twitter.com/vipul1891/status/1515323372535644166?s=20&t=Bc6rz8VeWWptF67FejGYfQ)
+  [tweetorial](https://x.com/shyam_lab/status/1762648072360792479?s=20)
   on BANKSY,
 - a set of [vignettes](https://prabhakarlab.github.io/Banksy) showing basic usage,
 - a [Python version](https://github.com/prabhakarlab/Banksy_py) of this package,
