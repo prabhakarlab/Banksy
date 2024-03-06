@@ -54,7 +54,7 @@ remotes::install_github("prabhakarlab/Banksy")
 *Banksy* is also interoperable with [Seurat](https://satijalab.org/seurat/) via 
 *SeuratWrappers*. Documentation on how to run BANKSY on Seurat objects can be 
 found [here](https://github.com/jleechung/seurat-wrappers/blob/feat-aft/docs/banksy.md). 
-For installation of *SeuratWrappers* with BANKSY version `>= 0.1.4`, run
+For installation of *SeuratWrappers* with BANKSY version `>= 0.1.6`, run
 
 ```{r, eval=F}
 remotes::install_github('jleechung/seurat-wrappers@feat-aft')

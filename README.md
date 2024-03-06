@@ -14,17 +14,15 @@ incorporating neighborhood information for clustering, BANKSY is able to
 
 BANKSY is applicable to a wide array of spatial technologies (e.g. 10x
 Visium, Slide-seq, MERFISH, CosMX, CODEX) and scales well to large
-datasets. For more details, check out
+datasets. For more details, check out:
 
 - the
-  [paper](https://www.nature.com/articles/s41588-024-01664-3),
-- the [peer review file](https://static-content.springer.com/esm/art%3A10.1038%2Fs41588-024-01664-3/MediaObjects/41588_2024_1664_MOESM3_ESM.pdf),
+  [preprint](https://www.biorxiv.org/content/10.1101/2022.04.14.488259v1),
 - a
-  [tweetorial](https://x.com/shyam_lab/status/1762648072360792479?s=20)
+  [tweetorial](https://twitter.com/vipul1891/status/1515323372535644166?s=20&t=Bc6rz8VeWWptF67FejGYfQ)
   on BANKSY,
-- a set of [vignettes](https://prabhakarlab.github.io/Banksy) showing basic usage,
-- a [Python version](https://github.com/prabhakarlab/Banksy_py) of this package,
-- a [Zenodo archive](https://zenodo.org/records/10258795) containing scripts to reproduce the analyses in the paper, and the corresponding [GitHub Pages](https://github.com/jleechung/banksy-zenodo) (and [here](https://github.com/prabhakarlab/Banksy_py/tree/Banksy_manuscript) for analyses done in Python). 
+- and a [Python version](https://github.com/prabhakarlab/Banksy_py) of
+  this package.
 
 ## Installation
 
@@ -44,7 +42,7 @@ remotes::install_github("prabhakarlab/Banksy")
 [Seurat](https://satijalab.org/seurat/) via *SeuratWrappers*.
 Documentation on how to run BANKSY on Seurat objects can be found
 [here](https://github.com/jleechung/seurat-wrappers/blob/feat-aft/docs/banksy.md).
-For installation of *SeuratWrappers* with BANKSY version `>= 0.1.4`, run
+For installation of *SeuratWrappers* with BANKSY version `>= 0.1.6`, run
 
 ``` r
 remotes::install_github('jleechung/seurat-wrappers@feat-aft')
@@ -206,7 +204,7 @@ plot_grid(
 Runtime for analysis
 </summary>
 
-    #> Time difference of 56.68255 secs
+    #> Time difference of 1.159899 mins
 
 </details>
 <details>
@@ -235,55 +233,55 @@ sessionInfo()
 #> [8] base     
 #> 
 #> other attached packages:
-#>  [1] cowplot_1.1.1               scater_1.30.0              
+#>  [1] cowplot_1.1.3               scater_1.30.1              
 #>  [3] ggplot2_3.4.4               scuttle_1.12.0             
 #>  [5] SpatialExperiment_1.12.0    SingleCellExperiment_1.24.0
 #>  [7] SummarizedExperiment_1.32.0 Biobase_2.62.0             
-#>  [9] GenomicRanges_1.54.1        GenomeInfoDb_1.38.1        
-#> [11] IRanges_2.36.0              S4Vectors_0.40.1           
+#>  [9] GenomicRanges_1.54.1        GenomeInfoDb_1.38.6        
+#> [11] IRanges_2.36.0              S4Vectors_0.40.2           
 #> [13] BiocGenerics_0.48.1         MatrixGenerics_1.14.0      
-#> [15] matrixStats_1.1.0           Banksy_0.99.2              
+#> [15] matrixStats_1.2.0           Banksy_0.99.7              
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] tidyselect_1.2.0          viridisLite_0.4.2        
-#>  [3] farver_2.1.1              dplyr_1.1.3              
-#>  [5] vipor_0.4.5               viridis_0.6.4            
+#>  [3] farver_2.1.1              dplyr_1.1.4              
+#>  [5] vipor_0.4.7               viridis_0.6.5            
 #>  [7] bitops_1.0-7              fastmap_1.1.1            
-#>  [9] RCurl_1.98-1.13           digest_0.6.33            
+#>  [9] RCurl_1.98-1.14           digest_0.6.34            
 #> [11] rsvd_1.0.5                lifecycle_1.0.4          
-#> [13] magrittr_2.0.3            dbscan_1.1-11            
-#> [15] compiler_4.3.2            rlang_1.1.2              
-#> [17] tools_4.3.2               igraph_1.5.1             
-#> [19] utf8_1.2.4                yaml_2.3.7               
-#> [21] data.table_1.14.8         knitr_1.45               
+#> [13] magrittr_2.0.3            dbscan_1.1-12            
+#> [15] compiler_4.3.2            rlang_1.1.3              
+#> [17] tools_4.3.2               igraph_2.0.1.1           
+#> [19] utf8_1.2.4                yaml_2.3.8               
+#> [21] data.table_1.15.0         knitr_1.45               
 #> [23] labeling_0.4.3            S4Arrays_1.2.0           
-#> [25] mclust_6.0.0              DelayedArray_0.28.0      
+#> [25] mclust_6.0.1              DelayedArray_0.28.0      
 #> [27] abind_1.4-5               BiocParallel_1.36.0      
-#> [29] withr_2.5.2               grid_4.3.2               
-#> [31] fansi_1.0.5               beachmat_2.18.0          
+#> [29] withr_3.0.0               grid_4.3.2               
+#> [31] fansi_1.0.6               beachmat_2.18.0          
 #> [33] colorspace_2.1-0          aricode_1.0.3            
-#> [35] scales_1.2.1              cli_3.6.1                
+#> [35] scales_1.3.0              cli_3.6.2                
 #> [37] rmarkdown_2.25            crayon_1.5.2             
 #> [39] leidenAlg_1.1.2           generics_0.1.3           
 #> [41] rstudioapi_0.15.0         rjson_0.2.21             
 #> [43] DelayedMatrixStats_1.24.0 ggbeeswarm_0.7.2         
 #> [45] RcppHungarian_0.3         zlibbioc_1.48.0          
 #> [47] parallel_4.3.2            XVector_0.42.0           
-#> [49] vctrs_0.6.4               Matrix_1.6-1.1           
-#> [51] BiocSingular_1.18.0       BiocNeighbors_1.20.0     
-#> [53] ggrepel_0.9.4             irlba_2.3.5.1            
-#> [55] beeswarm_0.4.0            magick_2.8.1             
-#> [57] glue_1.6.2                codetools_0.2-19         
-#> [59] uwot_0.1.16               RcppAnnoy_0.0.21         
+#> [49] vctrs_0.6.5               Matrix_1.6-5             
+#> [51] BiocSingular_1.18.0       BiocNeighbors_1.20.2     
+#> [53] ggrepel_0.9.5             irlba_2.3.5.1            
+#> [55] beeswarm_0.4.0            magick_2.8.2             
+#> [57] glue_1.7.0                codetools_0.2-19         
+#> [59] uwot_0.1.16               RcppAnnoy_0.0.22         
 #> [61] gtable_0.3.4              ScaledMatrix_1.10.0      
 #> [63] munsell_0.5.0             tibble_3.2.1             
 #> [65] pillar_1.9.0              htmltools_0.5.7          
 #> [67] GenomeInfoDbData_1.2.11   R6_2.5.1                 
 #> [69] sparseMatrixStats_1.14.0  evaluate_0.23            
 #> [71] sccore_1.0.4              lattice_0.22-5           
-#> [73] highr_0.10                Rcpp_1.0.11              
-#> [75] gridExtra_2.3             SparseArray_1.2.2        
-#> [77] xfun_0.41                 pkgconfig_2.0.3
+#> [73] highr_0.10                Rcpp_1.0.12              
+#> [75] gridExtra_2.3             SparseArray_1.2.4        
+#> [77] xfun_0.42                 pkgconfig_2.0.3
 ```
 
 </details>
