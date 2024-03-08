@@ -171,11 +171,18 @@ control. We keep cells with total transcript count within the 5th and
 </h2>
 <p><em>BANKSY</em> has a few key parameters. We describe these
 below.</p>
+<div class="section level3">
+<h3 id="agf-usage">AGF usage<a class="anchor" aria-label="anchor" href="#agf-usage"></a>
+</h3>
 <p>For characterising neighborhoods, <em>BANKSY</em> computes the
 weighted neighborhood mean (<code>H_0</code>) and the azimuthal Gabor
 filter (<code>H_1</code>), which estimates gene expression gradients.
-Setting <code>use_agf=TRUE</code> computes both <code>H_0</code> and
+Setting <code>compute_agf=TRUE</code> computes both <code>H_0</code> and
 <code>H_1</code>.</p>
+</div>
+<div class="section level3">
+<h3 id="k-geometric">k-geometric<a class="anchor" aria-label="anchor" href="#k-geometric"></a>
+</h3>
 <p><code>k_geom</code> specifies the number of neighbors used to compute
 each <code>H_m</code> for <code>m=0,1</code>. If a single value is
 specified, the same <code>k_geom</code> will be used for each feature
@@ -220,12 +227,16 @@ with <code>H_0</code> and <code>H_1</code> in this instance:</p>
 <span><span class="co">#&gt; altExpNames(0):</span></span>
 <span><span class="co">#&gt; spatialCoords names(2) : sdimx sdimy</span></span>
 <span><span class="co">#&gt; imgData names(1): sample_id</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="lambda">lambda<a class="anchor" aria-label="anchor" href="#lambda"></a>
+</h3>
 <p>The <code>lambda</code> parameter is a mixing parameter in
 <code>[0,1]</code> which determines how much spatial information is
 incorporated for downstream analysis. With smaller values of
 <code>lambda</code>, BANKY operates in <em>cell-typing</em> mode, while
 at higher levels of <code>lambda</code>, BANKSY operates in
-<em>zone-finding</em> mode. As a starting point, we recommend
+<em>domain-finding</em> mode. As a starting point, we recommend
 <code>lambda=0.2</code> for cell-typing and <code>lambda=0.8</code> for
 zone-finding. Here, we run <code>lambda=0</code> which corresponds to
 non-spatial clustering, and <code>lambda=0.2</code> for
@@ -244,6 +255,10 @@ slot, with each combination of <code>use_agf</code> and
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/SingleCellExperiment/man/reducedDims.html" class="external-link">reducedDimNames</a></span><span class="op">(</span><span class="va">se</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "PCA_M0_lam0"   "PCA_M0_lam0.2" "PCA_M1_lam0"   "PCA_M1_lam0.2"</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="clustering-parameters">Clustering parameters<a class="anchor" aria-label="anchor" href="#clustering-parameters"></a>
+</h3>
 <p>Next, we cluster the BANKSY embedding with Leiden graph-based
 clustering. This admits two parameters: <code>k_neighbors</code> and
 <code>resolution</code>. <code>k_neighbors</code> determines the number
@@ -267,6 +282,11 @@ cluster labels:</p>
 <span><span class="co">#&gt; [3] "sdimy"                    "sizeFactor"              </span></span>
 <span><span class="co">#&gt; [5] "clust_M0_lam0_k50_res1"   "clust_M0_lam0.2_k50_res1"</span></span>
 <span><span class="co">#&gt; [7] "clust_M1_lam0_k50_res1"   "clust_M1_lam0.2_k50_res1"</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="comparing-cluster-results">Comparing cluster results<a class="anchor" aria-label="anchor" href="#comparing-cluster-results"></a>
+</h2>
 <p>To compare clustering runs visually, different runs can be relabeled
 to minimise their differences with <code>connectClusters</code>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -324,7 +344,7 @@ measures.</p>
 <h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
 </h2>
 <p>Vignette runtime:</p>
-<pre><code><span><span class="co">#&gt; Time difference of 47.01152 secs</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Time difference of 46.16122 secs</span></span></code></pre>
 <details><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.3.2 (2023-10-31)</span></span>

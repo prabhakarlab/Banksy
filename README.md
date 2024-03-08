@@ -16,13 +16,21 @@ BANKSY is applicable to a wide array of spatial technologies (e.g. 10x
 Visium, Slide-seq, MERFISH, CosMX, CODEX) and scales well to large
 datasets. For more details, check out:
 
-- the
-  [preprint](https://www.biorxiv.org/content/10.1101/2022.04.14.488259v1),
+- the [paper](https://www.nature.com/articles/s41588-024-01664-3),
+- the [peer review
+  file](https://static-content.springer.com/esm/art%3A10.1038%2Fs41588-024-01664-3/MediaObjects/41588_2024_1664_MOESM3_ESM.pdf),
 - a
-  [tweetorial](https://twitter.com/vipul1891/status/1515323372535644166?s=20&t=Bc6rz8VeWWptF67FejGYfQ)
+  [tweetorial](https://x.com/shyam_lab/status/1762648072360792479?s=20)
   on BANKSY,
-- and a [Python version](https://github.com/prabhakarlab/Banksy_py) of
-  this package.
+- a set of [vignettes](https://prabhakarlab.github.io/Banksy) showing
+  basic usage,
+- a [Python version](https://github.com/prabhakarlab/Banksy_py) of this
+  package,
+- a [Zenodo archive](https://zenodo.org/records/10258795) containing
+  scripts to reproduce the analyses in the paper, and the corresponding
+  [GitHub Pages](https://github.com/jleechung/banksy-zenodo) (and
+  [here](https://github.com/prabhakarlab/Banksy_py/tree/Banksy_manuscript)
+  for analyses done in Python).
 
 ## Installation
 
@@ -204,7 +212,7 @@ plot_grid(
 Runtime for analysis
 </summary>
 
-    #> Time difference of 1.159899 mins
+    #> Time difference of 1.312978 mins
 
 </details>
 <details>

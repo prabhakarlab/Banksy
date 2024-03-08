@@ -86,9 +86,13 @@ assay(se, aname) <- normalizeCounts(se, log = FALSE)
 
 *BANKSY* has a few key parameters. We describe these below. 
 
+## AGF usage
+
 For characterising neighborhoods, *BANKSY* computes the weighted neighborhood 
 mean (`H_0`) and the azimuthal Gabor filter (`H_1`), which estimates gene 
-expression gradients. Setting `use_agf=TRUE` computes both `H_0` and `H_1`.
+expression gradients. Setting `compute_agf=TRUE` computes both `H_0` and `H_1`.
+
+## k-geometric
 
 `k_geom` specifies the number of neighbors used to compute each `H_m` for 
 `m=0,1`. If a single value is specified, the same `k_geom` will be used 
@@ -112,10 +116,12 @@ instance:
 se
 ```
 
+## lambda
+
 The `lambda` parameter is a mixing parameter in `[0,1]` which 
 determines how much spatial information is incorporated for downstream analysis. 
 With smaller values of `lambda`, BANKY operates in *cell-typing* mode, while at
-higher levels of `lambda`, BANKSY operates in *zone-finding* mode. As a 
+higher levels of `lambda`, BANKSY operates in *domain-finding* mode. As a 
 starting point, we recommend `lambda=0.2` for cell-typing and `lambda=0.8` for
 zone-finding. Here, we run `lambda=0` which corresponds to non-spatial 
 clustering, and `lambda=0.2` for spatially-informed cell-typing. We compute PCs
@@ -132,6 +138,8 @@ se <- runBanksyPCA(se, use_agf = c(FALSE, TRUE), lambda = lambda, seed = 1000)
 ```{r, eval=TRUE}
 reducedDimNames(se)
 ```
+
+## Clustering parameters
 
 Next, we cluster the BANKSY embedding with Leiden graph-based clustering. This
 admits two parameters: `k_neighbors` and `resolution`. `k_neighbors` determines 
@@ -150,6 +158,8 @@ se <- clusterBanksy(se, use_agf = c(FALSE, TRUE), lambda = lambda, k_neighbors =
 ```{r, eval=TRUE}
 colnames(colData(se))
 ```
+
+# Comparing cluster results
 
 To compare clustering runs visually, different runs can be relabeled to 
 minimise their differences with `connectClusters`:
