@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Banksy</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.8</span>
       </span>
     </div>
 
@@ -81,6 +81,7 @@
 <span>  dimred <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ndims <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  assay_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  group <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n_neighbors <span class="op">=</span> <span class="fl">30L</span>,</span>
 <span>  spread <span class="op">=</span> <span class="fl">3</span>,</span>
@@ -136,6 +137,11 @@ supplied.</p></dd>
 <dt>assay_name</dt>
 <dd><p>A string scalar specifying the name of the assay used in
 <code>computeBanksy</code>.</p></dd>
+
+
+<dt>scale</dt>
+<dd><p>A logical scalar specifying whether to scale features before
+UMAP. Only used when use_pcs is FALSE. Defaults to TRUE.</p></dd>
 
 
 <dt>group</dt>

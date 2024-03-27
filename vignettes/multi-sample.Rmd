@@ -124,13 +124,14 @@ first and second-order neighbors may also be used).
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
 compute_agf <- FALSE
 k_geom <- 6
-spe_list <- lapply(spe_list, computeBanksy, assay_name = aname, compute_agf = compute_agf, k_geom = k_geom)
+spe_list <- lapply(spe_list, computeBanksy, assay_name = aname, 
+                   compute_agf = compute_agf, k_geom = k_geom)
 ```
 
 We then merge the samples to perform joint dimensional reduction and 
 clustering:
 
-```{r, eval=TRUE, message=FALSE, warning=FALSE, echo=FALSE}
+```{r, eval=TRUE, message=FALSE, warning=FALSE}
 spe_joint <- do.call(cbind, spe_list)
 rm(spe_list)
 invisible(gc())
@@ -224,13 +225,13 @@ pal <- c(
 )
 
 plot_bank <- lapply(spe_list, function(x) {
-    plotSpots(x, annotate = sprintf("%s_smooth", cnm), size = 0.8, palette = pal) +
+    plotSpots(x, annotate = sprintf("%s_smooth", cnm), size = 0.8, pal = pal) +
         theme(legend.position = "none") +
         labs(title = "BANKSY clusters")
 })
 
 plot_anno <- lapply(spe_list, function(x) {
-    plotSpots(x, annotate = "clust_annotation", size = 0.8, palette = pal) +
+    plotSpots(x, annotate = "clust_annotation", size = 0.8, pal = pal) +
         theme(legend.position = "none") +
         labs(title = sprintf("Sample %s", x$sample_id[1]))
 })

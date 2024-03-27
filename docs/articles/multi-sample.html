@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Banksy</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.8</span>
       </span>
     </div>
 
@@ -193,9 +193,14 @@ second-order neighbors may also be used).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">compute_agf</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></span>
 <span><span class="va">k_geom</span> <span class="op">&lt;-</span> <span class="fl">6</span></span>
-<span><span class="va">spe_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">spe_list</span>, <span class="va">computeBanksy</span>, assay_name <span class="op">=</span> <span class="va">aname</span>, compute_agf <span class="op">=</span> <span class="va">compute_agf</span>, k_geom <span class="op">=</span> <span class="va">k_geom</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">spe_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">spe_list</span>, <span class="va">computeBanksy</span>, assay_name <span class="op">=</span> <span class="va">aname</span>, </span>
+<span>                   compute_agf <span class="op">=</span> <span class="va">compute_agf</span>, k_geom <span class="op">=</span> <span class="va">k_geom</span><span class="op">)</span></span></code></pre></div>
 <p>We then merge the samples to perform joint dimensional reduction and
 clustering:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">spe_joint</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">cbind</span>, <span class="va">spe_list</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">spe_list</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>When running multi-sample BANKSY PCA, the <code>group</code> argument
 may be provided. This specifies the grouping variable for the cells or
 spots across the samples. Features belonging to cells or spots
@@ -203,31 +208,31 @@ corresponding to each level of the grouping variable will be z-scaled
 separately. In this case, <code>sample_id</code> in
 <code>colData(spe_joint)</code> gives the grouping based on the sample
 of origin.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lambda</span> <span class="op">&lt;-</span> <span class="fl">0.2</span></span>
 <span><span class="va">use_agf</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></span>
 <span><span class="va">spe_joint</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/runBanksyPCA.html">runBanksyPCA</a></span><span class="op">(</span><span class="va">spe_joint</span>, use_agf <span class="op">=</span> <span class="va">use_agf</span>, lambda <span class="op">=</span> <span class="va">lambda</span>, group <span class="op">=</span> <span class="st">"sample_id"</span>, seed <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></code></pre></div>
 <p>Run UMAP on the BANKSY embedding:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spe_joint</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/runBanksyUMAP.html">runBanksyUMAP</a></span><span class="op">(</span><span class="va">spe_joint</span>, use_agf <span class="op">=</span> <span class="va">use_agf</span>, lambda <span class="op">=</span> <span class="va">lambda</span>, seed <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></code></pre></div>
 <p>Finally, obtain cluster labels for spots across all 4 samples. We use
 <code>connectClusters</code> for visual comparison of the manual
 annotations and BANKSY clusters.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fl">0.7</span></span>
 <span><span class="va">spe_joint</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/clusterBanksy.html">clusterBanksy</a></span><span class="op">(</span><span class="va">spe_joint</span>, use_agf <span class="op">=</span> <span class="va">use_agf</span>, lambda <span class="op">=</span> <span class="va">lambda</span>, resolution <span class="op">=</span> <span class="va">res</span>, seed <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
 <span><span class="va">cnm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"clust_M%s_lam%s_k50_res%s"</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">use_agf</span><span class="op">)</span>, <span class="va">lambda</span>, <span class="va">res</span><span class="op">)</span></span>
 <span><span class="va">spe_joint</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/connectClusters.html">connectClusters</a></span><span class="op">(</span><span class="va">spe_joint</span><span class="op">)</span></span></code></pre></div>
 <p>Once joint clustering is performed, we split the samples into their
 own <code>SpatialExperiment</code> objects:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spe_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">sample_names</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">spe_joint</span><span class="op">[</span>, <span class="va">spe_joint</span><span class="op">$</span><span class="va">sample_id</span> <span class="op">==</span> <span class="va">x</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">spe_joint</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>As an optional step, we smooth the cluster labels of each sample
 separately. This can be done if smooth spatial domains are expected in
 the biological sample or tissue in question.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spe_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">spe_list</span>, <span class="va">smoothLabels</span>, cluster_names <span class="op">=</span> <span class="va">cnm</span>, k <span class="op">=</span> <span class="fl">6L</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">spe_list</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"sample_"</span>, <span class="va">sample_names</span><span class="op">)</span></span></code></pre></div>
 <p>The raw and smoothed cluster labels are stored in the
@@ -259,7 +264,7 @@ cluster comparison measures such as the adjusted Rand index (ARI) or
 normalized mutual information (NMI) with <code>compareClusters</code>.
 The function computes the selected comparison measure between all pairs
 of cluster labels:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/compareClusters.html">compareClusters</a></span><span class="op">(</span><span class="va">spe_list</span><span class="op">$</span><span class="va">sample_151673</span>, func <span class="op">=</span> <span class="st">'ARI'</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                                   clust_annotation clust_M0_lam0.2_k50_res0.7</span></span>
 <span><span class="co">#&gt; clust_annotation                             1.000                      0.548</span></span>
@@ -270,12 +275,12 @@ of cluster labels:</p>
 <span><span class="co">#&gt; clust_M0_lam0.2_k50_res0.7                                    0.917</span></span>
 <span><span class="co">#&gt; clust_M0_lam0.2_k50_res0.7_smooth                             1.000</span></span></code></pre></div>
 <p>We evaluate the ARI and NMI for each sample:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ari</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">spe_list</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="fu"><a href="../reference/compareClusters.html">compareClusters</a></span><span class="op">(</span><span class="va">x</span>, func <span class="op">=</span> <span class="st">"ARI"</span><span class="op">)</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span>, n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">ari</span></span>
 <span><span class="co">#&gt; sample_151673 sample_151674 sample_151675 sample_151676 </span></span>
 <span><span class="co">#&gt;         0.564         0.655         0.624         0.587</span></span></code></pre></div>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nmi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">spe_list</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="fu"><a href="../reference/compareClusters.html">compareClusters</a></span><span class="op">(</span><span class="va">x</span>, func <span class="op">=</span> <span class="st">"NMI"</span><span class="op">)</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span>, n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">nmi</span></span>
 <span><span class="co">#&gt; sample_151673 sample_151674 sample_151675 sample_151676 </span></span>
@@ -283,7 +288,7 @@ of cluster labels:</p>
 <p>Visualise pathology annotation and BANKSY cluster on spatial
 coordinates with the <a href="https://bioconductor.org/packages/ggspavis" class="external-link"><em>ggspavis</em></a>
 package:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use scater:::.get_palette('tableau10medium')</span></span>
 <span><span class="va">pal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>    <span class="st">"#729ECE"</span>, <span class="st">"#FF9E4A"</span>, <span class="st">"#67BF5C"</span>, <span class="st">"#ED665D"</span>, <span class="st">"#AD8BC9"</span>,</span>
@@ -291,13 +296,13 @@ package:</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">plot_bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">spe_list</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/ggspavis/man/plotSpots.html" class="external-link">plotSpots</a></span><span class="op">(</span><span class="va">x</span>, annotate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%s_smooth"</span>, <span class="va">cnm</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">0.8</span>, palette <span class="op">=</span> <span class="va">pal</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/ggspavis/man/plotSpots.html" class="external-link">plotSpots</a></span><span class="op">(</span><span class="va">x</span>, annotate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%s_smooth"</span>, <span class="va">cnm</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">0.8</span>, pal <span class="op">=</span> <span class="va">pal</span><span class="op">)</span> <span class="op">+</span></span>
 <span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"BANKSY clusters"</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">plot_anno</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">spe_list</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/ggspavis/man/plotSpots.html" class="external-link">plotSpots</a></span><span class="op">(</span><span class="va">x</span>, annotate <span class="op">=</span> <span class="st">"clust_annotation"</span>, size <span class="op">=</span> <span class="fl">0.8</span>, palette <span class="op">=</span> <span class="va">pal</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/ggspavis/man/plotSpots.html" class="external-link">plotSpots</a></span><span class="op">(</span><span class="va">x</span>, annotate <span class="op">=</span> <span class="st">"clust_annotation"</span>, size <span class="op">=</span> <span class="fl">0.8</span>, pal <span class="op">=</span> <span class="va">pal</span><span class="op">)</span> <span class="op">+</span></span>
 <span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Sample %s"</span>, <span class="va">x</span><span class="op">$</span><span class="va">sample_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
@@ -307,7 +312,7 @@ package:</p>
 <span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span>plotlist <span class="op">=</span> <span class="va">plot_list</span>, ncol <span class="op">=</span> <span class="fl">4</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figures/multi-sample-spatial-1.png" width="90%"></p>
 <p>Visualize joint UMAPs for each sample:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">umap_bank</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">spe_list</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/pkg/scater/man/plotReducedDim.html" class="external-link">plotReducedDim</a></span><span class="op">(</span><span class="va">x</span>,</span>
 <span>        <span class="st">"UMAP_M0_lam0.2"</span>,</span>
@@ -337,8 +342,8 @@ package:</p>
 <h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
 </h2>
 <p>Vignette runtime:</p>
-<pre><code><span><span class="co">#&gt; Time difference of 2.51199 mins</span></span></code></pre>
-<details><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<pre><code><span><span class="co">#&gt; Time difference of 2.537282 mins</span></span></code></pre>
+<details><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.3.2 (2023-10-31)</span></span>
 <span><span class="co">#&gt; Platform: aarch64-apple-darwin20 (64-bit)</span></span>
@@ -371,7 +376,7 @@ package:</p>
 <span><span class="co">#&gt; [19] GenomeInfoDb_1.38.6         IRanges_2.36.0             </span></span>
 <span><span class="co">#&gt; [21] S4Vectors_0.40.2            BiocGenerics_0.48.1        </span></span>
 <span><span class="co">#&gt; [23] MatrixGenerics_1.14.0       matrixStats_1.2.0          </span></span>
-<span><span class="co">#&gt; [25] Banksy_0.99.7               BiocStyle_2.30.0           </span></span>
+<span><span class="co">#&gt; [25] Banksy_0.99.8               BiocStyle_2.30.0           </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;   [1] fs_1.6.3                      spatstat.sparse_3.0-3        </span></span>

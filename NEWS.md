@@ -1,4 +1,16 @@
 
+# Version 0.99.8
+
++ Add feature scaling options for PCA and UMAP
+
+# Version 0.99.7
+
++ SCE/SPE-compatible
+
+# Version 0.1.6
+
++ Fix compatibility with SeuratWrappers
+
 # Version 0.1.5
 
 + Implemented SmoothLabels for k-nearest neighbors cluster label smoothing

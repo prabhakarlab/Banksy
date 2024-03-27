@@ -204,7 +204,7 @@ cnm <- clusterNames(spe)[2]
 spatial_plots <- lapply(sample_names, function(snm) {
     x <- spe[, spe$sample_id == snm]
     ari <- aricode::ARI(x$clust_annotation, colData(x)[, cnm])
-    plotSpots(x, annotate = cnm, palette = pals::kelly()[-1], size = 0.5) +
+    plotSpots(x, annotate = cnm, pal = pals::kelly()[-1], size = 0.5) +
         theme(legend.position = "none", plot.title = element_text(size = 10)) +
         labs(title = sprintf("Sample %s - ARI: %s", snm, round(ari, 3)))
 })
