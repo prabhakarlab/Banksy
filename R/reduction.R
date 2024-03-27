@@ -18,6 +18,8 @@
 #'   to compute.
 #' @param assay_name A string scalar specifying the name of the assay used in
 #'   \code{computeBanksy}.
+#' @param scale A logical scalar specifying whether to scale features before
+#'   PCA. Defaults to TRUE.
 #' @param group A string scalar specifying a grouping variable for samples in
 #'   \code{se}. This is used to scale the samples in each group separately.
 #' @param M Advanced usage. An integer vector specifying the highest azimuthal
@@ -45,6 +47,7 @@ runBanksyPCA <- function(se,
                          lambda = 0.2,
                          npcs = 20L,
                          assay_name = NULL,
+                         scale = TRUE,
                          group = NULL,
                          M = NULL,
                          seed = NULL) {
@@ -63,7 +66,7 @@ runBanksyPCA <- function(se,
             M = m,
             lambda = lam,
             assay_name = assay_name,
-            scale = TRUE,
+            scale = scale,
             group = group
         )
         verbose.seed(seed)
@@ -124,6 +127,8 @@ checkBanksyPCA <- function(params) {
 #'   \code{dimred} is supplied.
 #' @param assay_name A string scalar specifying the name of the assay used in
 #'   \code{computeBanksy}.
+#' @param scale A logical scalar specifying whether to scale features before
+#'   UMAP. Only used when use_pcs is FALSE. Defaults to TRUE.
 #' @param group A string scalar specifying a grouping variable for samples in
 #'   \code{se}. This is used to scale the samples in each group separately.
 #' @param n_neighbors An integer scalar specifying the number of neighbors to
@@ -163,6 +168,7 @@ runBanksyUMAP <- function(se,
                           dimred = NULL,
                           ndims = NULL,
                           assay_name = NULL,
+                          scale = TRUE,
                           group = NULL,
                           n_neighbors = 30L,
                           spread = 3,
@@ -201,7 +207,7 @@ runBanksyUMAP <- function(se,
                     assay_name = assay_name,
                     lambda = lam,
                     M = m,
-                    scale = TRUE,
+                    scale = scale,
                     group = group
                 ))
             } else {

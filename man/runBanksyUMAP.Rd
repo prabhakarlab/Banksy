@@ -13,6 +13,7 @@ runBanksyUMAP(
   dimred = NULL,
   ndims = NULL,
   assay_name = NULL,
+  scale = TRUE,
   group = NULL,
   n_neighbors = 30L,
   spread = 3,
@@ -51,6 +52,9 @@ supplied.}
 
 \item{assay_name}{A string scalar specifying the name of the assay used in
 \code{computeBanksy}.}
+
+\item{scale}{A logical scalar specifying whether to scale features before
+UMAP. Only used when use_pcs is FALSE. Defaults to TRUE.}
 
 \item{group}{A string scalar specifying a grouping variable for samples in
 \code{se}. This is used to scale the samples in each group separately.}

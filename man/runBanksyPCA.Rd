@@ -10,6 +10,7 @@ runBanksyPCA(
   lambda = 0.2,
   npcs = 20L,
   assay_name = NULL,
+  scale = TRUE,
   group = NULL,
   M = NULL,
   seed = NULL
@@ -33,6 +34,9 @@ to compute.}
 
 \item{assay_name}{A string scalar specifying the name of the assay used in
 \code{computeBanksy}.}
+
+\item{scale}{A logical scalar specifying whether to scale features before
+PCA. Defaults to TRUE.}
 
 \item{group}{A string scalar specifying a grouping variable for samples in
 \code{se}. This is used to scale the samples in each group separately.}
