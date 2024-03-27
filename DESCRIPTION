@@ -19,7 +19,7 @@ Description: Banksy is an R package that incorporates spatial information to
     neighbor-augmented product space which can then be clustered, allowing for
     accurate and spatially-aware cell typing and tissue domain segmentation. 
 Depends:
-     R (>= 4.3.0)
+     R (>= 4.4.0)
 Imports:
     aricode,
     data.table,
