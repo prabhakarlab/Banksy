@@ -1,10 +1,6 @@
 ---
 title: "Mouse Hippocampus VeraFISH analysis"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Mouse Hippocampus VeraFISH analysis}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+output: github_document
 ---
 
 ```{r, include = FALSE}

@@ -35,18 +35,8 @@ details, check out:
 The *Banksy* package can be installed via `remotes`:
 
 ``` r
-remotes::install_github("prabhakarlab/Banksy", dependencies = TRUE)
+remotes::install_github("prabhakarlab/Banksy@legacy")
 ```
-
-Installation should take less than three minutes.
-
-**Known installation issues**
-
-1.  Installation of `leidenAlg` has non-zero exit status
-
-- Refer to the [`leidenAlg` package
-  website](https://github.com/kharchenkolab/leidenAlg#installation) for
-  installation details.
 
 ## Documentation
 
@@ -60,25 +50,25 @@ of main functions and their usage, along with several vignettes which
 detail different use cases:
 
 - [Working with Banksy
-  objects](https://prabhakarlab.github.io/Banksy/articles/banksy-object.html):
+  objects](https://github.com/prabhakarlab/Banksy/blob/legacy/vignettes/banksy-object.md):
   Introduction to the *BanksyObject* class which serves as a container
   for *Banksy*.
 
 - [Mouse hippocampus VeraFISH
-  dataset](https://prabhakarlab.github.io/Banksy/articles/hippocampus-analysis.html):
+  dataset](https://github.com/prabhakarlab/Banksy/blob/legacy/vignettes/hippocampus-analysis.md):
   Illustrates a grid search of parameters which best cluster cells.
 
 - [Human dorsolateral prefrontal cortex 10x Visium
-  dataset](https://prabhakarlab.github.io/Banksy/articles/dlpfc-analysis.html):
+  dataset](https://github.com/prabhakarlab/Banksy/blob/legacy/vignettes/dlpfc-analysis.md):
   Illustrates analysis of multiple spatial transcriptomic datasets.
 
 - [Mouse hypothalamus MERFISH
-  dataset](https://prabhakarlab.github.io/Banksy/articles/hypothalamus-analysis.html):
+  dataset](https://github.com/prabhakarlab/Banksy/blob/legacy/vignettes/hypothalamus-analysis.md):
   Illustrates visualization functionality with a dataset with 3 spatial
   dimensions.
 
 - [Interoperability with
-  SingleCellExperiment](https://prabhakarlab.github.io/Banksy/articles/single-cell-exp.html):
+  SingleCellExperiment](https://github.com/prabhakarlab/Banksy/blob/legacy/vignettes/single-cell-exp.md):
   Illustrates BANKSY interoperability with Bioconductor
   [SingleCellExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html)
   framework for interfacing with packages like
@@ -89,11 +79,11 @@ detail different use cases:
 *Banksy* is also interoperable with
 [Seurat](https://satijalab.org/seurat/) via *SeuratWrappers*.
 Documentation on how to run BANKSY on Seurat objects can be found
-[here](https://github.com/jleechung/seurat-wrappers/blob/feat-aft/docs/banksy.md).
-For installation of *SeuratWrappers* with BANKSY version `>= 0.1.4`, run
+[here](https://github.com/satijalab/seurat-wrappers/blob/master/docs/banksy.md).
+For installation of *SeuratWrappers* with BANKSY version `>= 0.1.6`, run
 
 ``` r
-remotes::install_github('jleechung/seurat-wrappers@feat-aft')
+remotes::install_github('satijalab/seurat-wrappers')
 ```
 
 ## Quick start
@@ -256,7 +246,7 @@ plotSpatialFeatures(bank, by = features, type = feature.types, main = main,
 Runtime for analysis
 </summary>
 
-    #> Time difference of 46.16683 secs
+    #> Time difference of 27.2723 secs
 
 </details>
 <details>
@@ -284,7 +274,7 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] Banksy_0.1.5
+#> [1] Banksy_0.1.6
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] tidyselect_1.2.0            farver_2.1.1               

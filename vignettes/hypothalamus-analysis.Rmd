@@ -1,10 +1,6 @@
 ---
 title: "Visualisation"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Visualisation}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+output: github_document
 ---
 
 ```{r, include = FALSE}

@@ -1,10 +1,6 @@
 ---
 title: "Interoperability with SingleCellExperiment"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Interoperability with SingleCellExperiment}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+output: github_document
 ---
 
 ```{r, include = FALSE}
