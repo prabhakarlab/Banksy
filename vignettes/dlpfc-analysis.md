@@ -1,9 +1,5 @@
----
-title: "Human DLPFC 10x Visium analysis"
-output: github_document
----
-
-
+Human DLPFC 10x Visium analysis
+================
 
 Here, we demonstrate BANKSY analysis on the human dorsolateral prefrontal 
 cortex 10x Visium data from Maynard et al (2018). The data comprise 12 samples 

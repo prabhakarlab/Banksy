@@ -1,9 +1,5 @@
----
-title: "Working with Banksy objects"
-output: github_document
----
-
-
+Working with Banksy objects
+================
 
 This article describes the *BanksyObject* class in detail and how to interact 
 with it. 

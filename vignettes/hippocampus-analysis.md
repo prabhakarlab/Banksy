@@ -1,9 +1,5 @@
----
-title: "Mouse Hippocampus VeraFISH analysis"
-output: github_document
----
-
-
+Mouse Hippocampus VeraFISH analysis
+================
 
 Here, we demonstrate a grid search of clustering parameters with a mouse 
 hippocampus VeraFISH dataset. *BANKSY* currently provides four algorithms for 
@@ -91,7 +87,10 @@ set.seed(42)
 bank <- ClusterBanksy(bank, lambda = lam, pca = TRUE, npcs = 20, 
                       method = 'leiden', k.neighbors = knbr, resolution = res)
 #> Using 1 core. Consider parallelising with the num.cores argument
-#>  [=====================>---------------------]  50% eta:  3s [===============================>-----------]  75% eta:  4s [===========================================] 100% eta:  0s
+#> 
+ [=====================>---------------------]  50% eta:  3s
+ [===============================>-----------]  75% eta:  4s
+ [===========================================] 100% eta:  0s
 ```
 
 This populates the `meta.data` slot of the *BanksyObject* with cluster labels

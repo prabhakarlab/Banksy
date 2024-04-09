@@ -1,9 +1,5 @@
----
-title: "Visualisation"
-output: github_document
----
-
-
+Visualisation
+================
 
 This article demonstrates functions for visualisation with a mouse hypothalamus
 MERFISH dataset. The dataset comprises 11,162 cells and 161 genes in 3 spatial 

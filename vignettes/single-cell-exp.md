@@ -1,9 +1,5 @@
----
-title: "Interoperability with SingleCellExperiment"
-output: github_document
----
-
-
+Interoperability with SingleCellExperiment
+================
 
 Here, we demonstrate interoperability between *Banksy* and 
 *SingleCellExperiment* with a mouse VeraFISH dataset.  
