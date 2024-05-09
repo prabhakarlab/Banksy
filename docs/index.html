@@ -39,7 +39,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">Banksy</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.12</span>
       </span>
     </div>
 
@@ -108,6 +108,7 @@
 <li>the <a href="https://static-content.springer.com/esm/art%3A10.1038%2Fs41588-024-01664-3/MediaObjects/41588_2024_1664_MOESM3_ESM.pdf" class="external-link">peer review file</a>,</li>
 <li>a <a href="https://x.com/shyam_lab/status/1762648072360792479?s=20" class="external-link">tweetorial</a> on BANKSY,</li>
 <li>a set of <a href="https://prabhakarlab.github.io/Banksy">vignettes</a> showing basic usage,</li>
+<li>usage compatibility with Seurat (<a href="https://github.com/satijalab/seurat-wrappers/blob/master/docs/banksy.md" class="external-link">here</a> and <a href="https://satijalab.org/seurat/articles/visiumhd_analysis_vignette#identifying-spatially-defined-tissue-domains" class="external-link">here</a>),</li>
 <li>a <a href="https://github.com/prabhakarlab/Banksy_py" class="external-link">Python version</a> of this package,</li>
 <li>a <a href="https://zenodo.org/records/10258795" class="external-link">Zenodo archive</a> containing scripts to reproduce the analyses in the paper, and the corresponding <a href="https://github.com/jleechung/banksy-zenodo" class="external-link">GitHub Pages</a> (and <a href="https://github.com/prabhakarlab/Banksy_py/tree/Banksy_manuscript" class="external-link">here</a> for analyses done in Python).</li>
 </ul>
@@ -123,7 +124,7 @@
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"prabhakarlab/Banksy"</span><span class="op">)</span></span></code></pre></div>
 <p>To use the legacy version of <em>Banksy</em> utilising the <code>BanksyObject</code> class, use</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"prabhakarlab/Banksy@main"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"prabhakarlab/Banksy@legacy"</span><span class="op">)</span></span></code></pre></div>
 <p><em>Banksy</em> is also interoperable with <a href="https://satijalab.org/seurat/" class="external-link"><em>Seurat</em></a> via <a href="https://github.com/satijalab/seurat-wrappers" class="external-link"><em>SeuratWrappers</em></a>. Documentation on how to run BANKSY on Seurat objects can be found <a href="https://github.com/satijalab/seurat-wrappers/blob/master/docs/banksy.md" class="external-link">here</a>. For installation of <em>SeuratWrappers</em> with BANKSY version <code>&gt;= 0.1.6</code>, run</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'satijalab/seurat-wrappers'</span><span class="op">)</span></span></code></pre></div>
@@ -238,7 +239,7 @@
 <p><img src="reference/figures/README-unnamed-chunk-15-1.png" width="100%"></p>
 <details><summary>
 Runtime for analysis
-</summary><div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co">#&gt; Time difference of 57.72235 secs</span></span></code></pre></div>
+</summary><div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co">#&gt; Time difference of 57.44879 secs</span></span></code></pre></div>
 </details><details><summary>
 Session information
 </summary><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
@@ -252,7 +253,7 @@ Session information
 <span><span class="co">#&gt; LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; locale:</span></span>
-<span><span class="co">#&gt; [1] C/en_US.UTF-8/C/C/C/C</span></span>
+<span><span class="co">#&gt; [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; time zone: Europe/London</span></span>
 <span><span class="co">#&gt; tzcode source: internal</span></span>
@@ -269,7 +270,7 @@ Session information
 <span><span class="co">#&gt;  [9] GenomicRanges_1.54.1        GenomeInfoDb_1.38.6        </span></span>
 <span><span class="co">#&gt; [11] IRanges_2.36.0              S4Vectors_0.40.2           </span></span>
 <span><span class="co">#&gt; [13] BiocGenerics_0.48.1         MatrixGenerics_1.14.0      </span></span>
-<span><span class="co">#&gt; [15] matrixStats_1.2.0           Banksy_0.99.9              </span></span>
+<span><span class="co">#&gt; [15] matrixStats_1.2.0           Banksy_0.99.12             </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;  [1] tidyselect_1.2.0          viridisLite_0.4.2        </span></span>

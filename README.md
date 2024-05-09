@@ -24,6 +24,10 @@ datasets. For more details, check out:
   on BANKSY,
 - a set of [vignettes](https://prabhakarlab.github.io/Banksy) showing
   basic usage,
+- usage compatibility with Seurat
+  ([here](https://github.com/satijalab/seurat-wrappers/blob/master/docs/banksy.md)
+  and
+  [here](https://satijalab.org/seurat/articles/visiumhd_analysis_vignette#identifying-spatially-defined-tissue-domains)),
 - a [Python version](https://github.com/prabhakarlab/Banksy_py) of this
   package,
 - a [Zenodo archive](https://zenodo.org/records/10258795) containing
@@ -221,7 +225,7 @@ plot_grid(
 Runtime for analysis
 </summary>
 
-    #> Time difference of 55.9195 secs
+    #> Time difference of 57.44879 secs
 
 </details>
 <details>
@@ -257,7 +261,7 @@ sessionInfo()
 #>  [9] GenomicRanges_1.54.1        GenomeInfoDb_1.38.6        
 #> [11] IRanges_2.36.0              S4Vectors_0.40.2           
 #> [13] BiocGenerics_0.48.1         MatrixGenerics_1.14.0      
-#> [15] matrixStats_1.2.0           Banksy_0.99.9              
+#> [15] matrixStats_1.2.0           Banksy_0.99.12             
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] tidyselect_1.2.0          viridisLite_0.4.2        

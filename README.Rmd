@@ -38,6 +38,7 @@ details, check out:
 - a [tweetorial](https://x.com/shyam_lab/status/1762648072360792479?s=20) on BANKSY,
 - a set of [vignettes](https://prabhakarlab.github.io/Banksy) showing basic 
   usage,
+- usage compatibility with Seurat ([here](https://github.com/satijalab/seurat-wrappers/blob/master/docs/banksy.md) and [here](https://satijalab.org/seurat/articles/visiumhd_analysis_vignette#identifying-spatially-defined-tissue-domains)),
 - a [Python version](https://github.com/prabhakarlab/Banksy_py) of this package,
 - a [Zenodo archive](https://zenodo.org/records/10258795) containing scripts to 
   reproduce the analyses in the paper, and the corresponding

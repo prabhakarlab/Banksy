@@ -1,4 +1,4 @@
-pandoc: 3.1.8
+pandoc: 3.1.13
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
@@ -6,7 +6,7 @@ articles:
   domain-segment: domain-segment.html
   multi-sample: multi-sample.html
   parameter-selection: parameter-selection.html
-last_built: 2024-04-09T15:08Z
+last_built: 2024-05-09T13:15Z
 urls:
   reference: https://prabhakarlab.github.io/Banksy/reference
   article: https://prabhakarlab.github.io/Banksy/articles
