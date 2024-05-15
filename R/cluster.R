@@ -550,7 +550,7 @@ smoother <-
                 neighbor_props <- table(neighbor_labels) /
                     length(neighbor_labels)
                 # Change label based on condition
-                if (any(neighbor_props > 0.5)) {
+                if (any(neighbor_props > prop_thres)) {
                     labels_update[i] <- as.numeric(
                         names(which.max(neighbor_props))
                     )
