@@ -21,6 +21,7 @@ computeBanksy(
   seed = NULL,
   dimensions = "all",
   center = TRUE,
+  chunk_size = NULL,
   verbose = TRUE
 )
 }
@@ -83,6 +84,11 @@ neighbor weights to 1.}
 
 \item{center}{A logical scalar specifying whether to center higher order
 harmonics in local neighborhoods.}
+
+\item{chunk_size}{A integer scalar specifying the number of rows / genes of 
+the neighborhood cell matrix to compute. Must be less than floor of 
+2e31-1 / number of cells. This is automatically computed but can be 
+specified.}
 
 \item{verbose}{A logical scalar specifying verbosity.}
 }

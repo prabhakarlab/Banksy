@@ -51,6 +51,10 @@
 #' }
 #' @param center A logical scalar specifying whether to center higher order
 #'   harmonics in local neighborhoods.
+#' @param chunk_size A integer scalar specifying the number of rows / genes of 
+#'   the neighborhood cell matrix to compute. Must be less than floor of 
+#'   2e31-1 / number of cells. This is automatically computed but can be 
+#'   specified.
 #' @param verbose A logical scalar specifying verbosity. 
 #'
 #' @importFrom SummarizedExperiment assay assay<- assayNames
@@ -83,6 +87,7 @@ computeBanksy <- function(se,
                           seed = NULL,
                           dimensions = "all",
                           center = TRUE,
+                          chunk_size = NULL,
                           verbose = TRUE) {
     
     # Check args
@@ -121,7 +126,8 @@ computeBanksy <- function(se,
     # Compute harmonics with different k_geoms
     center <- c(FALSE, rep(center, length(M) - 1))
     har <- Map(function(knn_df, M, center) {
-        out <- computeHarmonics(expr, knn_df, M, center, verbose = verbose)
+        out <- computeHarmonics(expr, knn_df, M, center, 
+                                verbose = verbose, chunk_size = chunk_size)
         rownames(out) <- rownames(expr)
         out
     }, knn_list, M, center)
@@ -371,25 +377,69 @@ computeNeighbors <- function(locs,
 }
 
 
-computeHarmonics <- function(gcm, knn_df, M, center, verbose) {
+computeHarmonics <- function(gcm, knn_df, M, center, verbose, chunk_size) {
     from <- to <- weight <- phi <- .N <- count <- . <- NULL
     j <- sqrt(as.complex(-1))
 
     mean_k <- round(mean(knn_df[, .(count = .N), by = from]$count), 1)
+    
+    total_rows <- nrow(gcm) * ncol(gcm)
+    max_rows <- 2^31 - 1
 
-    if (verbose) message("Computing harmonic m = ", M)
-    if (verbose) message("Using ", mean_k, " neighbors")
-    if (center) {
-        if (verbose) message("Centering")
-        aggr <- knn_df[, abs(
-            fscale(gcm[, to, drop = FALSE]) %*% (weight * exp(j * M * phi))
-        ), by = from]
+    if (total_rows > max_rows || !is.null(chunk_size)) {
+        if (verbose) message("Computing neighborhood matrices in chunks...")
+        # Automatically compute max chunk size
+        max_chunk_size <- floor(max_rows / ncol(gcm))
+        if (!is.null(chunk_size)) {
+            # If user specifies a chunk size
+            if (chunk_size > max_chunk_size) {
+                stop('Specified chunk_size too large. Must be smaller than ', floor(max_rows / ncol(gcm)))
+            }
+            max_chunk_size <- chunk_size
+        }
     } else {
-        aggr <- knn_df[, abs(
-            gcm[, to, drop = FALSE] %*% (weight * exp(j * M * phi))
-        ), by = from]
+        # Process whole dataset, backward compatible
+        max_chunk_size <- nrow(gcm)
     }
-    ncm <- matrix(aggr$V1, nrow = nrow(gcm), ncol = ncol(gcm))
+    
+    num_chunks <- ceiling(nrow(gcm) / max_chunk_size)
+
+    if (verbose && num_chunks > 1) {
+        message("Processing in ", num_chunks, " chunks of max ", max_chunk_size, " genes each")
+    }
+
+    # Initialize result matrix
+    ncm <- matrix(0, nrow = nrow(gcm), ncol = ncol(gcm))
+
+    for (chunk in 1:num_chunks) {
+        start_idx <- (chunk - 1) * max_chunk_size + 1
+        end_idx <- min(chunk * max_chunk_size, nrow(gcm))
+
+        if (verbose && num_chunks > 1) {
+            message("Processing chunk ", chunk, "/", num_chunks, " (rows ", start_idx, " to ", end_idx, ")")
+        }
+
+        # Subset the gene matrix for this chunk
+        gcm_chunk <- gcm[start_idx:end_idx, , drop = FALSE]
+
+        # Perform calculation on chunk
+        if (center) {
+            if (verbose && chunk == 1) message("Centering")
+            chunk_aggr <- knn_df[, abs(
+                fscale(gcm_chunk[, to, drop = FALSE]) %*% (weight * exp(j * M * phi))
+            ), by = from]
+        } else {
+            chunk_aggr <- knn_df[, abs(
+                gcm_chunk[, to, drop = FALSE] %*% (weight * exp(j * M * phi))
+            ), by = from]
+        }
+
+        # Add results to the final matrix
+        ncm[start_idx:end_idx, ] <- matrix(chunk_aggr$V1,
+                                           nrow = end_idx - start_idx + 1,
+                                           ncol = ncol(gcm))
+    }
+    
     rownames(ncm) <- rownames(gcm)
     colnames(ncm) <- colnames(gcm)
     if (verbose) message("Done")
