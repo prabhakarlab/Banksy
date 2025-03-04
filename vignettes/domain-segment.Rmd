@@ -82,6 +82,8 @@ constructing the BANKSY matrix. We adjust the resolution to yield 23 clusters
 based on the results from [Maher et al. (2023)](https://doi.org/10.1101/2023.06.30.547258v1) 
 (see Fig. 1, 2).  
 
+> Note that the parameter values for domain segmentation for datasets generated using the older [Visium v1 / v2 55um technologies](https://doi.org/10.1038/s41593-020-00787-0) are `lambda = 0.2` and `k_geom = 18`. See the note in the tutorial on the main [page](https://github.com/prabhakarlab/Banksy) for more details. 
+
 ```{r, eval=FALSE}
 lambda <- 0.8
 k_geom <- 30

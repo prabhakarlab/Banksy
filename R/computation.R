@@ -119,7 +119,7 @@ computeBanksy <- function(se,
     })
 
     # Compute harmonics with different k_geoms
-    center <- c(FALSE, rep(TRUE, length(M) - 1))
+    center <- c(FALSE, rep(center, length(M) - 1))
     har <- Map(function(knn_df, M, center) {
         out <- computeHarmonics(expr, knn_df, M, center, verbose = verbose)
         rownames(out) <- rownames(expr)

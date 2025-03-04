@@ -49,6 +49,7 @@ library(ExperimentHub)
 
 ehub <- ExperimentHub::ExperimentHub()
 spe <- spatialLIBD::fetch_data(type = "spe", eh = ehub)
+
 ```
 
 After the download is completed, we trim the *SpatialExperiment* object, 
@@ -154,7 +155,7 @@ Run UMAP on the BANKSY embedding:
 spe_joint <- runBanksyUMAP(spe_joint, use_agf = use_agf, lambda = lambda, seed = 1000)
 ```
 
-Finally, obtain cluster labels for spots across all 4 samples. We use 
+Finally, we obtain cluster labels for spots across all 4 samples. We use 
 `connectClusters` for visual comparison of the manual annotations and BANKSY 
 clusters.
 

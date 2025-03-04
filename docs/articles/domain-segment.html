@@ -158,6 +158,13 @@ This places larger weights on the mean neighborhood expression and
 azimuthal Gabor filter in constructing the BANKSY matrix. We adjust the
 resolution to yield 23 clusters based on the results from <a href="https://doi.org/10.1101/2023.06.30.547258v1" class="external-link">Maher et
 al. (2023)</a> (see Fig. 1, 2).</p>
+<blockquote>
+<p>Note that the parameter values for domain segmentation for datasets
+generated using the older <a href="https://doi.org/10.1038/s41593-020-00787-0" class="external-link">Visium v1 / v2 55um
+technologies</a> are <code>lambda = 0.2</code> and
+<code>k_geom = 18</code>. See the note in the tutorial on the main <a href="https://github.com/prabhakarlab/Banksy" class="external-link">page</a> for more
+details.</p>
+</blockquote>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lambda</span> <span class="op">&lt;-</span> <span class="fl">0.8</span></span>
 <span><span class="va">k_geom</span> <span class="op">&lt;-</span> <span class="fl">30</span></span>
@@ -211,7 +218,7 @@ al. (2023)</a> (see Fig. 1, 2).</p>
 <span><span class="co">#&gt; locale:</span></span>
 <span><span class="co">#&gt; [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; time zone: Europe/London</span></span>
+<span><span class="co">#&gt; time zone: America/Detroit</span></span>
 <span><span class="co">#&gt; tzcode source: internal</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attached base packages:</span></span>

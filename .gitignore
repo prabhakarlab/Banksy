@@ -1,3 +1,6 @@
 .Rproj.user
 *.Rproj
 .Rhistory
+data/Human_DLPFC_Visium_processedData_sce_scran_spatialLIBD.Rdata
+.DS_Store
+inst/.DS_Store
