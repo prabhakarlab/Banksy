@@ -101,6 +101,8 @@ provided for each feature matrix. Here, we use `k_geom[1]=15` and
 `k_geom[2]=30` for `H_0` and `H_1` respectively. More neighbors are used to 
 compute gradients.
 
+> For datasets generated using Visium v1/v2, use `k_geom=18` (or `k_geom <- c(18, 18)` if `compute_agf = TRUE`), since that corresponds to taking as neighbourhood two concentric rings of spots around each spot. 
+
 We compute the neighborhood feature matrices using normalized expression 
 (`normcounts` in the `se` object).
 
@@ -123,7 +125,12 @@ determines how much spatial information is incorporated for downstream analysis.
 With smaller values of `lambda`, BANKY operates in *cell-typing* mode, while at
 higher levels of `lambda`, BANKSY operates in *domain-finding* mode. As a 
 starting point, we recommend `lambda=0.2` for cell-typing and `lambda=0.8` for
-zone-finding. Here, we run `lambda=0` which corresponds to non-spatial 
+zone-finding, **except for datasets generated using the Visium v1/v2 technology**, for which 
+we [recommend](https://prabhakarlab.github.io/Banksy/articles/multi-sample.html)
+`lambda=0.2` for domain finding. See the note in the tutorial on the 
+[main page](https://github.com/prabhakarlab/Banksy) for more info. 
+
+Here, we run `lambda=0` which corresponds to non-spatial 
 clustering, and `lambda=0.2` for spatially-informed cell-typing. We compute PCs
 with and without the AGF (`H_1`).
 

@@ -163,6 +163,11 @@
 <span><span class="va">aname</span> <span class="op">&lt;-</span> <span class="st">"normcounts"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="va">se</span>, <span class="va">aname</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scuttle/man/normalizeCounts.html" class="external-link">normalizeCounts</a></span><span class="op">(</span><span class="va">se</span>, log <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>Compute the neighborhood matrices for <em>BANKSY</em>. Setting <code>compute_agf=TRUE</code> computes both the weighted neighborhood mean (<span class="math inline">ℳ</span>) and the azimuthal Gabor filter (<span class="math inline">𝒢</span>). The number of spatial neighbors used to compute <span class="math inline">ℳ</span> and <span class="math inline">𝒢</span> are <code>k_geom[1]=15</code> and <code>k_geom[2]=30</code> respectively. We run <em>BANKSY</em> at <code>lambda=0</code> corresponding to non-spatial clustering, and <code>lambda=0.2</code> corresponding to <em>BANKSY</em> for cell-typing.</p>
+<blockquote>
+<p><strong>An important note about choosing the <code>lambda</code> parameter for the older <a href="https://doi.org/10.1038/s41593-020-00787-0" class="external-link">Visium v1 / v2 55um datasets</a> or the original <a href="https://doi.org/10.1038/s41596-018-0045-2" class="external-link">ST 100um technology</a>:</strong></p>
+<p>For most modern high resolution technologies like Xenium, Visium HD, StereoSeq, MERFISH, STARmap PLUS, SeqFISH+, SlideSeq v2, and CosMx (and others), we recommend the usual defults for <code>lambda</code>: For cell typing, use <code>lambda = 0.2</code> (as shown below, or in <a href="https://prabhakarlab.github.io/Banksy/articles/parameter-selection.html">this vignette</a>) and for <a href="https://prabhakarlab.github.io/Banksy/articles/domain-segment.html">domain segmentation</a>, use <code>lambda = 0.8</code>. These technologies are either imaging based, having true single-cell resolution (e.g., MERFISH), or are sequencing based, having barcoded spots on the scale of single-cells (e.g., <a href="https://www.10xgenomics.com/products/visium-hd-spatial-gene-expression" class="external-link">Visium HD</a>). We find that the usual defaults work well at this measurement resolution.</p>
+<p>However, for the older <strong>Visium v1/v2</strong> or <strong>ST</strong> technologies, with their much lower resolution spots (55um and 100um diameter, respectively), we find that <code>lambda = 0.2</code> seems to work best for domain segmentation. This could be because each spot already measures the average transcriptome of several cells in a neighbourhood. It seems that <code>lambda = 0.2</code> shares enough information between these neighbourhoods to lead to good domain segmentation performance. For example, in the <a href="https://prabhakarlab.github.io/Banksy/articles/multi-sample.html">human DLPFC vignette</a>, we use <code>lambda = 0.2</code> on a Visium v1/v2 dataset. Also note that in these lower resolution technologies, each spot can have multiple cells of different types, and as such <em>cell-typing</em> is not defined for them.</p>
+</blockquote>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lambda</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.2</span><span class="op">)</span></span>
 <span><span class="va">k_geom</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">30</span><span class="op">)</span></span>
@@ -239,7 +244,7 @@
 <p><img src="reference/figures/README-unnamed-chunk-15-1.png" width="100%"></p>
 <details><summary>
 Runtime for analysis
-</summary><div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co">#&gt; Time difference of 57.44879 secs</span></span></code></pre></div>
+</summary><div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co">#&gt; Time difference of 35.28841 secs</span></span></code></pre></div>
 </details><details><summary>
 Session information
 </summary><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
@@ -255,7 +260,7 @@ Session information
 <span><span class="co">#&gt; locale:</span></span>
 <span><span class="co">#&gt; [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; time zone: Europe/London</span></span>
+<span><span class="co">#&gt; time zone: America/Detroit</span></span>
 <span><span class="co">#&gt; tzcode source: internal</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attached base packages:</span></span>

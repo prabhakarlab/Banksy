@@ -126,6 +126,13 @@ $\mathcal{M}$ and $\mathcal{G}$ are `k_geom[1]=15` and `k_geom[2]=30`
 respectively. We run *BANKSY* at `lambda=0` corresponding to non-spatial 
 clustering, and `lambda=0.2` corresponding to  *BANKSY* for cell-typing.
 
+> **An important note about choosing the `lambda` parameter for the older [Visium v1 / v2 55um datasets](https://doi.org/10.1038/s41593-020-00787-0) or the original [ST 100um technology](https://doi.org/10.1038/s41596-018-0045-2):**
+>
+> For most modern high resolution technologies like Xenium, Visium HD, StereoSeq, MERFISH, STARmap PLUS, SeqFISH+, SlideSeq v2, and CosMx (and others), we recommend the usual defults for `lambda`: For cell typing, use `lambda = 0.2` (as shown below, or in [this vignette](https://prabhakarlab.github.io/Banksy/articles/parameter-selection.html)) and for [domain segmentation](https://prabhakarlab.github.io/Banksy/articles/domain-segment.html), use `lambda = 0.8`. These technologies are either imaging based, having true single-cell resolution (e.g., MERFISH), or are sequencing based, having barcoded spots on the scale of single-cells (e.g., [Visium HD](https://www.10xgenomics.com/products/visium-hd-spatial-gene-expression)). We find that the usual defaults work well at this measurement resolution. 
+>
+> However, for the older **Visium v1/v2** or **ST** technologies, with their much lower resolution spots (55um and 100um diameter, respectively), we find that `lambda = 0.2` seems to work best for domain segmentation. This could be because each spot already measures the average transcriptome of several cells in a neighbourhood. It seems that `lambda = 0.2` shares enough information between these neighbourhoods to lead to good domain segmentation performance. For example, in the [human DLPFC vignette](https://prabhakarlab.github.io/Banksy/articles/multi-sample.html), we use `lambda = 0.2` on a Visium v1/v2 dataset. Also note that in these lower resolution technologies, each spot can have multiple cells of different types, and as such _cell-typing_ is not defined for them. 
+
+
 ```{r, eval=T}
 lambda <- c(0, 0.2)
 k_geom <- c(15, 30)

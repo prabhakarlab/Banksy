@@ -190,6 +190,12 @@ matrix. Alternatively, multiple values of <code>k_geom</code> can be
 provided for each feature matrix. Here, we use <code>k_geom[1]=15</code>
 and <code>k_geom[2]=30</code> for <code>H_0</code> and <code>H_1</code>
 respectively. More neighbors are used to compute gradients.</p>
+<blockquote>
+<p>For datasets generated using Visium v1/v2, use <code>k_geom=18</code>
+(or <code>k_geom &lt;- c(18, 18)</code> if
+<code>compute_agf = TRUE</code>), since that corresponds to taking as
+neighbourhood two concentric rings of spots around each spot.</p>
+</blockquote>
 <p>We compute the neighborhood feature matrices using normalized
 expression (<code>normcounts</code> in the <code>se</code> object).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -238,9 +244,14 @@ incorporated for downstream analysis. With smaller values of
 at higher levels of <code>lambda</code>, BANKSY operates in
 <em>domain-finding</em> mode. As a starting point, we recommend
 <code>lambda=0.2</code> for cell-typing and <code>lambda=0.8</code> for
-zone-finding. Here, we run <code>lambda=0</code> which corresponds to
-non-spatial clustering, and <code>lambda=0.2</code> for
-spatially-informed cell-typing. We compute PCs with and without the AGF
+zone-finding, <strong>except for datasets generated using the Visium
+v1/v2 technology</strong>, for which we <a href="https://prabhakarlab.github.io/Banksy/articles/multi-sample.html">recommend</a>
+<code>lambda=0.2</code> for domain finding. See the note in the tutorial
+on the <a href="https://github.com/prabhakarlab/Banksy" class="external-link">main page</a>
+for more info.</p>
+<p>Here, we run <code>lambda=0</code> which corresponds to non-spatial
+clustering, and <code>lambda=0.2</code> for spatially-informed
+cell-typing. We compute PCs with and without the AGF
 (<code>H_1</code>).</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lambda</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.2</span><span class="op">)</span></span>
@@ -344,7 +355,7 @@ measures.</p>
 <h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
 </h2>
 <p>Vignette runtime:</p>
-<pre><code><span><span class="co">#&gt; Time difference of 48.92457 secs</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Time difference of 27.6314 secs</span></span></code></pre>
 <details><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.3.2 (2023-10-31)</span></span>
@@ -358,7 +369,7 @@ measures.</p>
 <span><span class="co">#&gt; locale:</span></span>
 <span><span class="co">#&gt; [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; time zone: Europe/London</span></span>
+<span><span class="co">#&gt; time zone: America/Detroit</span></span>
 <span><span class="co">#&gt; tzcode source: internal</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attached base packages:</span></span>
