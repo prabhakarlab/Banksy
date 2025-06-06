@@ -383,7 +383,7 @@ computeNeighbors <- function(locs,
 }
 
 
-computeHarmonics <- function(gcm, knn_df, M, center, verbose, chunk_size, parallel = FALSE, num_cores = NULL) {
+computeHarmonics <- function(gcm, knn_df, M, center, verbose, chunk_size = NULL, parallel = FALSE, num_cores = NULL) {
     from <- to <- weight <- phi <- .N <- count <- . <- NULL
     j <- sqrt(as.complex(-1))
     mean_k <- round(mean(knn_df[, .(count = .N), by = from]$count), 1)
