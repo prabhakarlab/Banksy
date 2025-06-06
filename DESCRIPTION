@@ -22,6 +22,7 @@ Depends:
      R (>= 4.4.0)
 Imports:
     aricode,
+    BiocParallel,
     data.table,
     dbscan,
     SpatialExperiment,
