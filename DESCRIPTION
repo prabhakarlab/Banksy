@@ -1,6 +1,6 @@
 Package: Banksy
 Title: Spatial transcriptomic clustering
-Version: 1.5.5
+Version: 1.5.6
 Authors@R: c(
     person(given = "Vipul",
            family = "Singhal",
@@ -42,7 +42,7 @@ License: file LICENSE
 Encoding: UTF-8
 URL: https://github.com/prabhakarlab/Banksy
 BugReports: https://github.com/prabhakarlab/Banksy/issues
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Suggests: 
     knitr,
     rmarkdown,

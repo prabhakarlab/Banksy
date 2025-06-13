@@ -24,6 +24,7 @@ computeBanksy(
   chunk_size = NULL,
   parallel = FALSE,
   num_cores = NULL,
+  row_limit_factor = 0.75,
   verbose = TRUE
 )
 }
@@ -88,15 +89,22 @@ neighbor weights to 1.}
 harmonics in local neighborhoods.}
 
 \item{chunk_size}{A integer scalar specifying the number of rows / genes of 
-the neighborhood cell matrix to compute. Must be less than floor of 
-2e31-1 / number of cells. This is automatically computed but can be 
-specified.}
+the neighborhood cell matrix to compute. Must be strictly less than floor 
+of 2e31-1 / number of cells, though this may still give rise to negative
+length vector errors. For safety, set this to less than 
+2e31-1 * row_limit_factor / number of cells. This is automatically 
+computed based on the latter, but can be specified.}
 
 \item{parallel}{A logical scalar specifying whether to compute chunks in 
 parallel using bplapply. Not implemented for Windows.}
 
 \item{num_cores}{A integer scalar specifying the number of cores to use 
 if parallel is TRUE.}
+
+\item{row_limit_factor}{A numeric scalar specifying the safety factor 
+applied to the maximum vector length (2^31-1) when computing chunk sizes. 
+Accounts for data.table overhead during grouping operations. 
+Default is 0.75.}
 
 \item{verbose}{A logical scalar specifying verbosity.}
 }

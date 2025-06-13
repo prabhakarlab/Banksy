@@ -52,13 +52,19 @@
 #' @param center A logical scalar specifying whether to center higher order
 #'   harmonics in local neighborhoods.
 #' @param chunk_size A integer scalar specifying the number of rows / genes of 
-#'   the neighborhood cell matrix to compute. Must be less than floor of 
-#'   2e31-1 / number of cells. This is automatically computed but can be 
-#'   specified.
+#'   the neighborhood cell matrix to compute. Must be strictly less than floor 
+#'   of 2e31-1 / number of cells, though this may still give rise to negative
+#'   length vector errors. For safety, set this to less than 
+#'   2e31-1 * row_limit_factor / number of cells. This is automatically 
+#'   computed based on the latter, but can be specified.
 #' @param parallel A logical scalar specifying whether to compute chunks in 
 #'   parallel using bplapply. Not implemented for Windows.
 #' @param num_cores A integer scalar specifying the number of cores to use 
 #'   if parallel is TRUE.
+#' @param row_limit_factor A numeric scalar specifying the safety factor 
+#'   applied to the maximum vector length (2^31-1) when computing chunk sizes. 
+#'   Accounts for data.table overhead during grouping operations. 
+#'   Default is 0.75.
 #' @param verbose A logical scalar specifying verbosity. 
 #'
 #' @importFrom SummarizedExperiment assay assay<- assayNames
@@ -94,6 +100,7 @@ computeBanksy <- function(se,
                           chunk_size = NULL,
                           parallel = FALSE,
                           num_cores = NULL,
+                          row_limit_factor = 0.75,
                           verbose = TRUE) {
     
     # Check args
@@ -133,7 +140,9 @@ computeBanksy <- function(se,
     center <- c(FALSE, rep(center, length(M) - 1))
     har <- Map(function(knn_df, M, center) {
         out <- computeHarmonics(expr, knn_df, M, center, 
-                                verbose = verbose, chunk_size = chunk_size)
+                                verbose = verbose, chunk_size = chunk_size, 
+                                parallel = parallel, num_cores = num_cores, 
+                                row_limit_factor = row_limit_factor)
         rownames(out) <- rownames(expr)
         out
     }, knn_list, M, center)
@@ -383,13 +392,13 @@ computeNeighbors <- function(locs,
 }
 
 
-computeHarmonics <- function(gcm, knn_df, M, center, verbose, chunk_size = NULL, parallel = FALSE, num_cores = NULL) {
+computeHarmonics <- function(gcm, knn_df, M, center, verbose, chunk_size = NULL, parallel = FALSE, num_cores = NULL, row_limit_factor = 0.75) {
     from <- to <- weight <- phi <- .N <- count <- . <- NULL
     j <- sqrt(as.complex(-1))
     mean_k <- round(mean(knn_df[, .(count = .N), by = from]$count), 1)
     
     total_rows <- as.double(nrow(gcm)) * ncol(gcm)
-    max_rows <- 2^31 - 1
+    max_rows <- (2^31 - 1) * row_limit_factor
     if (total_rows > max_rows || !is.null(chunk_size)) {
         if (verbose) message("Computing neighborhood matrices in chunks...")
         # Automatically compute max chunk size
