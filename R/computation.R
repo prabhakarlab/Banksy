@@ -388,7 +388,7 @@ computeHarmonics <- function(gcm, knn_df, M, center, verbose, chunk_size = NULL,
     j <- sqrt(as.complex(-1))
     mean_k <- round(mean(knn_df[, .(count = .N), by = from]$count), 1)
     
-    total_rows <- nrow(gcm) * ncol(gcm)
+    total_rows <- as.double(nrow(gcm)) * ncol(gcm)
     max_rows <- 2^31 - 1
     if (total_rows > max_rows || !is.null(chunk_size)) {
         if (verbose) message("Computing neighborhood matrices in chunks...")
