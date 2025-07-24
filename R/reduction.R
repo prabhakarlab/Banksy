@@ -27,9 +27,9 @@
 #'   argument.
 #' @param seed Seed for PCA. If not specified, no seed is set. 
 #'
-#' @importFrom irlba prcomp_irlba
+#' @importFrom irlba prcomp_irlba irlba
 #' @importFrom SingleCellExperiment reducedDim<-
-#' @importFrom matrixStats rowSds
+#' @importFrom MatrixGenerics rowSds
 #' @importFrom S4Vectors metadata
 #'
 #' @return A SpatialExperiment / SingleCellExperiment / SummarizedExperiment
@@ -70,10 +70,14 @@ runBanksyPCA <- function(se,
             group = group
         )
         verbose.seed(seed)
-        joint <- joint[rowSds(joint) != 0, ]
-        pca <- prcomp_irlba(t(joint), n = npcs, scale. = FALSE)
-        pca_x <- pca$x
-        attr(pca_x, "percentVar") <- 100 * pca$sdev^2 / sum(pca$sdev^2)
+        joint <- joint[MatrixGenerics::rowSds(joint) != 0, ]
+        pca <- irlba::irlba(
+            Matrix::t(joint), nv = npcs, nu = npcs, 
+            scale. = FALSE, center = TRUE)
+        pca_x <- pca$u %*% diag(pca$d)
+        percentVar <- 100 * pca$d^2/sum(pca$d^2)
+        colnames(pca_x) <- paste0("PC", seq_len(npcs))
+        attr(pca_x, "percentVar") <- percentVar
         pca_x
     }, param[, 2], param[, 1], SIMPLIFY = FALSE)
 

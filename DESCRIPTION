@@ -1,6 +1,6 @@
 Package: Banksy
 Title: Spatial transcriptomic clustering
-Version: 1.5.6
+Version: 1.5.8
 Authors@R: c(
     person(given = "Vipul",
            family = "Singhal",
@@ -30,7 +30,8 @@ Imports:
     SummarizedExperiment,
     S4Vectors,
     stats,
-    matrixStats,
+    Matrix,
+    MatrixGenerics,
     mclust,
     igraph,
     irlba,

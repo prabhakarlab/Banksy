@@ -309,11 +309,11 @@ getBanksyMatrix <- function(se,
     joint
 }
 
-#' @importFrom matrixStats rowSds
+#' @importFrom MatrixGenerics rowSds
 scaler <- function(x) {
     x <- as.matrix(x)
     rm <- rowMeans(x)
-    rsd <- rowSds(x)
+    rsd <- MatrixGenerics::rowSds(x)
     x <- (x - rm) / rsd
     x[is.nan(x)] <- 0
     return(x)
