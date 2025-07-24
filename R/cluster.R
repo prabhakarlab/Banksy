@@ -179,12 +179,12 @@ clusterBanksy <-
 
 
 #' @importFrom leidenAlg leiden.community
-#' @importFrom igraph as.undirected cluster_louvain
+#' @importFrom igraph as_undirected cluster_louvain
 runGraphBased <- function(cluster_matrices, algo, 
                          k_neighbors, resolution, leiden.iter, seed) {
     lapply(cluster_matrices, function(cmat) {
         lapply(k_neighbors, function(k) {
-            graph <- as.undirected(getGraph(cmat, k))
+            graph <- igraph::as_undirected(getGraph(cmat, k))
             lapply(resolution, function(res){
                 verbose.seed(seed)
                 memb <- switch(
