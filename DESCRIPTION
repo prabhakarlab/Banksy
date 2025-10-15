@@ -1,6 +1,6 @@
 Package: Banksy
 Title: Spatial transcriptomic clustering
-Version: 1.5.9
+Version: 1.5.10
 Authors@R: c(
     person(given = "Vipul",
            family = "Singhal",
@@ -38,7 +38,8 @@ Imports:
     leidenAlg (>= 1.1.0),
     utils,
     uwot,
-    RcppHungarian
+    RcppHungarian,
+    GenomeInfoDb
 License: file LICENSE
 Encoding: UTF-8
 URL: https://github.com/prabhakarlab/Banksy
