@@ -151,12 +151,11 @@ We run Harmony on the PCs of the BANKSY matrix:
 
 ```{r harmony, eval=T, message=FALSE, warning=FALSE}
 set.seed(SEED)
-harmony_embedding <- HarmonyMatrix(
+harmony_embedding <- harmony::RunHarmony(
     data_mat = reducedDim(spe, "PCA_M1_lam0.2"),
     meta_data = colData(spe),
     vars_use = c("sample_id", "subject_id"),
-    do_pca = FALSE,
-    max.iter.harmony = 20,
+    max_iter = 20,
     verbose = FALSE
 )
 reducedDim(spe, "Harmony_BANKSY") <- harmony_embedding
