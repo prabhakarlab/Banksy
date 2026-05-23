@@ -69,6 +69,7 @@
 #'
 #' @importFrom SummarizedExperiment assay assay<- assayNames
 #' @importFrom S4Vectors metadata<-
+#' @importFrom Matrix sparseMatrix
 #'
 #' @return A SpatialExperiment / SingleCellExperiment / SummarizedExperiment
 #'   object with neighborhood matrices added.
@@ -121,8 +122,8 @@ computeBanksy <- function(se,
         )
     }
 
-    # Extract expression and locations
-    expr <- as.matrix(assay(se, assay_name))
+    # Extract expression and locations (keep sparse if input is sparse)
+    expr <- assay(se, assay_name)
     locs <- getLocs(se, coord_names)
     if (ncol(locs) == 0) stop("No spatial coordinates found")
 
@@ -392,101 +393,157 @@ computeNeighbors <- function(locs,
 }
 
 
-computeHarmonics <- function(gcm, knn_df, M, center, verbose, chunk_size = NULL, parallel = FALSE, num_cores = NULL, row_limit_factor = 0.75) {
+computeHarmonics <- function(gcm, knn_df, M, center, verbose,
+                             chunk_size = NULL, parallel = FALSE,
+                             num_cores = NULL, row_limit_factor = 0.75) {
+
+    if (parallel && verbose) {
+        message("Note: parallel is not used by the sparse matmul implementation; ",
+                "BLAS-level parallelism is used automatically")
+    }
+
+    n_genes <- nrow(gcm)
+    n_cells <- ncol(gcm)
+
+    # Extract knn_df columns. Filter out sentinel rows (to=0) that
+    # rNN_gauss inserts for isolated cells — these have weight=0 and
+    # would crash sparseMatrix which requires positive indices.
+    from_idx <- knn_df[["from"]]
+    to_idx <- knn_df[["to"]]
+    w <- knn_df[["weight"]]
+    p <- knn_df[["phi"]]
+    valid <- to_idx > 0L & from_idx > 0L
+    if (!all(valid)) {
+        from_idx <- from_idx[valid]
+        to_idx <- to_idx[valid]
+        w <- w[valid]
+        p <- p[valid]
+    }
+
+    if (verbose) {
+        mean_k <- round(mean(tabulate(from_idx, nbins = n_cells)), 1)
+        message("Computing harmonic m = ", M, " with ", mean_k, " neighbors")
+    }
+
+    # Determine chunk size: balance cache efficiency vs chunk overhead.
+    # Target: gcm chunk fits in L3 cache (~30 MB) for good locality
+    # during sparse matmul. Also cap total intermediates at ~2 GB.
+    if (is.null(chunk_size)) {
+        cache_chunk <- as.integer(floor(30e6 / (8 * as.double(n_cells))))
+        mem_chunk <- as.integer(floor(2e9 / (8 * 4 * as.double(n_cells))))
+        max_chunk <- max(100L, min(cache_chunk, mem_chunk, n_genes))
+    } else {
+        max_chunk <- min(as.integer(chunk_size), n_genes)
+    }
+    num_chunks <- ceiling(n_genes / max_chunk)
+    if (verbose && num_chunks > 1) {
+        message("Processing in ", num_chunks, " chunks of max ",
+                max_chunk, " genes")
+    }
+
+    # Build sparse weight matrices (n_cells x n_cells, k_geom nnz per col)
+    if (M == 0) {
+        # Real case: W[to, from] = weight
+        W <- sparseMatrix(i = to_idx, j = from_idx, x = w,
+                          dims = c(n_cells, n_cells))
+
+        ncm <- matrix(0, nrow = n_genes, ncol = n_cells)
+        for (ch in seq_len(num_chunks)) {
+            ri <- .chunkIdx(ch, max_chunk, n_genes)
+            ncm[ri, ] <- as.matrix(abs(gcm[ri, , drop = FALSE] %*% W))
+        }
+    } else {
+        # Complex case: split into real and imaginary parts
+        W_re <- sparseMatrix(i = to_idx, j = from_idx,
+                             x = w * cos(M * p),
+                             dims = c(n_cells, n_cells))
+        W_im <- sparseMatrix(i = to_idx, j = from_idx,
+                             x = w * sin(M * p),
+                             dims = c(n_cells, n_cells))
+
+        # Centering: H_m = |gcm %*% W_m - (gcm %*% U) * s|
+        # where U is uniform neighbor weights and s = colSums(W_m)
+        if (center) {
+            k_per <- tabulate(from_idx, nbins = n_cells)
+            k_per[k_per == 0] <- 1L
+            U <- sparseMatrix(i = to_idx, j = from_idx,
+                              x = 1 / k_per[from_idx],
+                              dims = c(n_cells, n_cells))
+            s_re <- Matrix::colSums(W_re)
+            s_im <- Matrix::colSums(W_im)
+            if (verbose) message("Centering")
+        }
+
+        ncm <- matrix(0, nrow = n_genes, ncol = n_cells)
+        for (ch in seq_len(num_chunks)) {
+            ri <- .chunkIdx(ch, max_chunk, n_genes)
+            gcm_chunk <- gcm[ri, , drop = FALSE]
+
+            re <- as.matrix(gcm_chunk %*% W_re)
+            im <- as.matrix(gcm_chunk %*% W_im)
+
+            if (center) {
+                mn <- as.matrix(gcm_chunk %*% U)
+                re <- re - sweep(mn, 2, s_re, `*`)
+                im <- im - sweep(mn, 2, s_im, `*`)
+            }
+
+            ncm[ri, ] <- sqrt(re^2 + im^2)
+        }
+    }
+
+    rownames(ncm) <- rownames(gcm)
+    colnames(ncm) <- colnames(gcm)
+
+    if (verbose) message("Done")
+    return(ncm)
+}
+
+# Legacy data.table implementation, kept for equivalence testing
+.computeHarmonics_legacy <- function(gcm, knn_df, M, center, verbose,
+                                     chunk_size = NULL, row_limit_factor = 0.75) {
     from <- to <- weight <- phi <- .N <- count <- . <- NULL
     j <- sqrt(as.complex(-1))
-    mean_k <- round(mean(knn_df[, .(count = .N), by = from]$count), 1)
-    
+
     total_rows <- as.double(nrow(gcm)) * ncol(gcm)
     max_rows <- (2^31 - 1) * row_limit_factor
     if (total_rows > max_rows || !is.null(chunk_size)) {
-        if (verbose) message("Computing neighborhood matrices in chunks...")
-        # Automatically compute max chunk size
         max_chunk_size <- floor(max_rows / ncol(gcm))
         if (!is.null(chunk_size)) {
-            # If user specifies a chunk size
             if (chunk_size > max_chunk_size) {
-                stop('Specified chunk_size too large. Must be smaller than ', floor(max_rows / ncol(gcm)))
+                stop('Specified chunk_size too large. Must be smaller than ',
+                     floor(max_rows / ncol(gcm)))
             }
             max_chunk_size <- chunk_size
         }
     } else {
-        # Process whole dataset, backward compatible
         max_chunk_size <- nrow(gcm)
     }
-    
+
     num_chunks <- ceiling(nrow(gcm) / max_chunk_size)
-    if (verbose && num_chunks > 1) {
-        message("Processing in ", num_chunks, " chunks of max ", max_chunk_size, " genes each")
-        if (parallel) {
-            if (.Platform$OS.type == "windows") {
-                message("Parallel processing not supported on Windows - using sequential processing")
-            } else {
-                if (!is.null(num_cores)) {
-                    message("Using parallel processing with ", num_cores, " cores")
-                } else {
-                    message("Using parallel processing with default backend")
-                }
-            }
-        }
-    }
-    
-    # Conditionally set the apply function and backend
-    if (parallel) {
-        if (.Platform$OS.type == "windows") {
-            if (verbose) message("Parallel processing not supported on Windows. Using sequential processing.")
-            apply_fun <- lapply
-        } else {
-            if (!requireNamespace("BiocParallel", quietly = TRUE)) {
-                stop("BiocParallel package is required for parallel processing. Please install it with: BiocManager::install('BiocParallel')")
-            }
-            
-            if (!is.null(num_cores)) {
-                bp_param <- BiocParallel::MulticoreParam(workers = num_cores)
-                apply_fun <- function(x, fun) BiocParallel::bplapply(x, fun, BPPARAM = bp_param)
-            } else {
-                apply_fun <- BiocParallel::bplapply
-            }
-        }
-    } else {
-        apply_fun <- lapply
-    }
-    
-    # Define chunk processing function
+
     process_chunk <- function(chunk) {
         start_idx <- (chunk - 1) * max_chunk_size + 1
         end_idx <- min(chunk * max_chunk_size, nrow(gcm))
-        
-        if (verbose && num_chunks > 1 && (!parallel || .Platform$OS.type == "windows")) {
-            message("Processing chunk ", chunk, "/", num_chunks, " (rows ", start_idx, " to ", end_idx, ")")
-        }
-        
         gcm_chunk <- gcm[start_idx:end_idx, , drop = FALSE]
-        
+
         if (center) {
-            if (verbose && chunk == 1 && (!parallel || .Platform$OS.type == "windows")) message("Centering")
             chunk_aggr <- knn_df[, abs(
-                fscale(gcm_chunk[, to, drop = FALSE]) %*% (weight * exp(j * M * phi))
+                fscale(gcm_chunk[, to, drop = FALSE]) %*%
+                    (weight * exp(j * M * phi))
             ), by = from]
         } else {
             chunk_aggr <- knn_df[, abs(
-                gcm_chunk[, to, drop = FALSE] %*% (weight * exp(j * M * phi))
+                gcm_chunk[, to, drop = FALSE] %*%
+                    (weight * exp(j * M * phi))
             ), by = from]
         }
-        
-        result_vector <- chunk_aggr$V1
-        rm(gcm_chunk, chunk_aggr)
-        
-        return(result_vector)
+        chunk_aggr$V1
     }
-    
-    # Process chunks
-    chunk_results <- apply_fun(1:num_chunks, process_chunk)
-    
-    # Initialize result matrix
+
+    chunk_results <- lapply(seq_len(num_chunks), process_chunk)
+
     ncm <- matrix(0, nrow = nrow(gcm), ncol = ncol(gcm))
-    
-    # Combine chunk results into final matrix
     for (i in seq_along(chunk_results)) {
         start_idx <- (i - 1) * max_chunk_size + 1
         end_idx <- min(i * max_chunk_size, nrow(gcm))
@@ -494,15 +551,47 @@ computeHarmonics <- function(gcm, knn_df, M, center, verbose, chunk_size = NULL,
                                            nrow = end_idx - start_idx + 1,
                                            ncol = ncol(gcm))
     }
-    
-    # Clean up chunk results and run garbage collection
-    rm(chunk_results)
 
     rownames(ncm) <- rownames(gcm)
     colnames(ncm) <- colnames(gcm)
-
-    if (verbose) message("Done")
     return(ncm)
+}
+
+.chunkIdx <- function(chunk, max_chunk, n_total) {
+    start <- (chunk - 1L) * max_chunk + 1L
+    end <- min(chunk * max_chunk, n_total)
+    start:end
+}
+
+# Build sparse weight matrix W from knn_df (M=0 only).
+# W[j, i] = w_ij (weight of neighbor j for cell i).
+.buildWeightMatrix <- function(knn_df, n_cells) {
+    sparseMatrix(
+        i = knn_df[["to"]], j = knn_df[["from"]],
+        x = knn_df[["weight"]], dims = c(n_cells, n_cells)
+    )
+}
+
+# Compute row-wise mean and sd of (gcm %*% W) without forming the full product.
+# Processes in gene-row chunks to control memory.
+.computeH0ScalingParams <- function(gcm, W, chunk_size = 100L) {
+    n_genes <- nrow(gcm)
+    n_cells <- ncol(gcm)
+    mu <- numeric(n_genes)
+    ss <- numeric(n_genes)
+
+    for (ch_start in seq(1L, n_genes, by = chunk_size)) {
+        ch_end <- min(ch_start + chunk_size - 1L, n_genes)
+        ri <- ch_start:ch_end
+        chunk <- as.matrix(gcm[ri, , drop = FALSE] %*% W)
+        mu[ri] <- rowMeans(chunk)
+        ss[ri] <- rowSums(chunk * chunk)
+    }
+
+    # Sample sd (n-1 denominator) to match Seurat::FastRowScale
+    sd <- sqrt(pmax(n_cells / (n_cells - 1) * (ss / n_cells - mu * mu), 0))
+    sd[sd == 0] <- 1
+    list(mu = mu, sd = sd)
 }
 
 
