@@ -45,6 +45,12 @@ details, check out:
   [GitHub Pages](https://github.com/jleechung/banksy-zenodo) 
   (and [here](https://github.com/prabhakarlab/Banksy_py/tree/Banksy_manuscript) for analyses done in Python). 
 
+**For scaling BANKSY to large datasets, we recommend using BANKSY with
+SeuratWrappers. See
+[this vignette](https://github.com/jleechung/seurat-wrappers/blob/feat-sparse-matmul/docs/banksy.md#scaling-to-large-datasets)
+for a memory-efficient workflow that computes PCA directly via a sparse
+linear operator, avoiding materialization of the full BANKSY matrix.**
+
 ## Installation
 
 The *Banksy* package can be installed via Bioconductor. This currently requires
