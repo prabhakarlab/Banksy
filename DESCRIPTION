@@ -25,6 +25,7 @@ Imports:
     BiocParallel,
     data.table,
     dbscan,
+    Rcpp,
     SpatialExperiment,
     SingleCellExperiment,
     SummarizedExperiment,
@@ -40,6 +41,7 @@ Imports:
     uwot,
     RcppHungarian,
     GenomeInfoDb
+LinkingTo: Rcpp
 License: file LICENSE
 Encoding: UTF-8
 URL: https://github.com/prabhakarlab/Banksy
@@ -62,6 +64,16 @@ Suggests:
     BiocStyle
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+Collate:
+    'RcppExports.R'
+    'lazy.R'
+    'Banksy-package.R'
+    'cluster.R'
+    'computation.R'
+    'data.R'
+    'misc.R'
+    'reduction.R'
+    'zzz.R'
 biocViews:
     Clustering,
     Spatial,

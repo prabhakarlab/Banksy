@@ -262,7 +262,166 @@ checkBanksyUMAP <- function(params) {
                   is.numeric(params$spread) & length(params$spread) == 1)
     stopifnot("min_dist should be a numeric scalar" = 
                   is.numeric(params$min_dist) & length(params$min_dist) == 1)
-    stopifnot("n_epochs should be an integer scalar" = 
-                  is.integer(as.integer(params$n_epochs)) & 
+    stopifnot("n_epochs should be an integer scalar" =
+                  is.integer(as.integer(params$n_epochs)) &
                   length(params$n_epochs) == 1)
+}
+
+#' Run lazy PCA on a BANKSY matrix.
+#'
+#' @details
+#' This function computes PCA on the BANKSY matrix without materializing the
+#' full matrix in memory. Instead, it uses an implicit operator that applies
+#' the BANKSY transform on the fly during the iterative PCA solver. This
+#' enables analysis of very large datasets (millions of cells) that would
+#' otherwise exceed available memory.
+#'
+#' Unlike \code{\link{runBanksyPCA}}, this function does not require
+#' \code{\link{computeBanksy}} to be run first. It computes the kNN graph
+#' and weight matrices internally.
+#'
+#' Currently only supported for M=0 (no AGF).
+#'
+#' @param se A \code{SpatialExperiment},
+#'   \code{SingleCellExperiment} or \code{SummarizedExperiment}
+#'   object.
+#' @param lambda A numeric scalar in \eqn{[0,1]} specifying the spatial
+#'   weighting parameter.
+#' @param npcs An integer scalar specifying the number of principal components
+#'   to compute (default 50).
+#' @param assay_name A string scalar specifying the name of the assay to use.
+#' @param coord_names A string vector specifying the names in \code{colData}
+#'   corresponding to spatial coordinates.
+#' @param k_geom An integer scalar specifying the number of neighbors to use.
+#' @param spatial_mode A string scalar specifying the kernel for neighborhood
+#'   computation (default: kNN_median).
+#' @param group A string scalar specifying a grouping variable for samples in
+#'   \code{se}. This is used for per-group kNN computation and optionally
+#'   per-group scaling.
+#' @param split_scale A logical scalar specifying whether to scale features
+#'   per group. Only used when \code{group} is not NULL.
+#' @param scale_max A numeric scalar specifying the maximum absolute z-score
+#'   for clipping (default 10).
+#' @param pca_backend A string scalar specifying the PCA backend.
+#'   \code{"cpp"} (default) uses C++ irlba for lower memory and faster runtime.
+#'   \code{"r"} uses R's irlba package.
+#' @param name A string scalar specifying the name for the dimensionality
+#'   reduction in \code{reducedDims(se)} (default: \code{"lazyPCA_M0_lamX"}).
+#' @param verbose A logical scalar specifying verbosity.
+#' @param ... Additional arguments passed to \code{computeNeighbors}.
+#'
+#' @importFrom SummarizedExperiment assay colData
+#' @importFrom SingleCellExperiment reducedDim<-
+#' @importFrom S4Vectors metadata metadata<-
+#'
+#' @return A SpatialExperiment / SingleCellExperiment / SummarizedExperiment
+#'   object with PC coordinates in \code{reducedDims(se)}.
+#'
+#' @export
+#'
+#' @examples
+#' data(rings)
+#' spe <- runBanksyLazyPCA(spe, assay_name = "counts", lambda = 0.2,
+#'                          k_geom = 15, npcs = 20)
+#'
+runBanksyLazyPCA <- function(se,
+                              lambda = 0.2,
+                              npcs = 50L,
+                              assay_name = NULL,
+                              coord_names = NULL,
+                              k_geom = 15L,
+                              spatial_mode = c("kNN_median", "kNN_r",
+                                               "kNN_rn", "kNN_rank",
+                                               "kNN_unif", "rNN_gauss"),
+                              group = NULL,
+                              split_scale = TRUE,
+                              scale_max = 10,
+                              pca_backend = c("cpp", "r"),
+                              name = NULL,
+                              verbose = TRUE,
+                              ...) {
+
+    # Validate
+    if (lambda < 0 || lambda > 1) stop('lambda must be between 0 and 1')
+    spatial_mode <- match.arg(spatial_mode)
+    pca_backend <- match.arg(pca_backend)
+    if (is.null(assay_name)) {
+        assay_name <- SummarizedExperiment::assayNames(se)[1]
+        if (verbose) message('Using assay: ', assay_name)
+    }
+
+    # Default reduction name
+    if (is.null(name)) name <- sprintf("lazyPCA_M0_lam%s", lambda)
+
+    # Extract expression (genes x cells)
+    data_own <- assay(se, assay_name)
+    if (!inherits(data_own, 'dgCMatrix'))
+        data_own <- as(data_own, 'dgCMatrix')
+
+    # Get spatial coordinates
+    locs <- getLocs(se, coord_names)
+
+    do_split_scale <- !is.null(group) && split_scale
+
+    if (!is.null(group)) {
+        # Per-group path
+        groups_vec <- colData(se)[, group]
+        ugroups <- unique(groups_vec)
+        group_idx <- lapply(ugroups, function(g) which(g == groups_vec))
+
+        if (verbose) {
+            message('Computing per-group neighbors')
+            for (gr in seq_along(group_idx))
+                message('  ', ugroups[gr], ': ', length(group_idx[[gr]]), ' cells')
+        }
+
+        # Per-group kNN on unstaggered coordinates
+        group_locs <- lapply(group_idx, function(cid) locs[cid, , drop = FALSE])
+        group_knn <- lapply(group_locs, function(loc_slice)
+            lapply(k_geom, function(kg)
+                computeNeighbors(loc_slice, spatial_mode = spatial_mode,
+                                 k_geom = kg, verbose = FALSE, ...)))
+        rm(group_locs)
+
+        result <- .banksy_lazy_pca_core(
+            data_own, knn_list = NULL,
+            group_knn = group_knn, group_idx = group_idx,
+            lambda = lambda, npcs = npcs,
+            split_scale = do_split_scale,
+            scale_max = scale_max, pca_backend = pca_backend,
+            verbose = verbose)
+        rm(data_own, group_knn)
+    } else {
+        # Single-matrix path
+        knn_list <- lapply(k_geom, function(kg)
+            computeNeighbors(locs, spatial_mode = spatial_mode,
+                             k_geom = kg, verbose = verbose, ...))
+
+        result <- .banksy_lazy_pca_core(
+            data_own, knn_list = knn_list,
+            lambda = lambda, npcs = npcs,
+            split_scale = FALSE,
+            scale_max = scale_max, pca_backend = pca_backend,
+            verbose = verbose)
+        rm(data_own, knn_list)
+    }
+
+    # Store in reducedDims: matrix with percentVar attribute
+    pca_x <- result$embeddings
+    percentVar <- 100 * result$stdev^2 / result$total_var *
+                  (max(1, ncol(pca_x)) - 1)
+    # Simpler: use stdev^2 directly since total_var = sum(d^2)
+    percentVar <- 100 * result$stdev^2 * max(1, nrow(pca_x) - 1) /
+                  result$total_var
+    attr(pca_x, "percentVar") <- percentVar
+
+    reducedDim(se, name) <- pca_x
+
+    # Log
+    metadata(se)$BANKSY_params$lambda <- lambda
+    metadata(se)$BANKSY_params$npcs <- npcs
+    metadata(se)$BANKSY_params$pca_backend <- pca_backend
+
+    if (verbose) message('Done. Access reduction with reducedDim(se, "', name, '")')
+    se
 }
