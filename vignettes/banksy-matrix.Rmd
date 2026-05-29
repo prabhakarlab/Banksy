@@ -1,0 +1,142 @@
+---
+title: "Clustering via BANKSY matrix construction"
+output: BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{Clustering via BANKSY matrix construction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    fig.path = 'figures/'
+)
+```
+
+By default, `runBanksyPCA` uses a lazy linear operator that computes PCA
+without materializing the full BANKSY matrix. This is memory-efficient and
+recommended for most use cases.
+
+However, some workflows require explicit construction of the BANKSY matrix —
+for example, when using the azimuthal Gabor filter (AGF), when access to the
+intermediate matrices is needed, or when using higher harmonics (`M > 0`).
+This vignette demonstrates the standard workflow using `computeBanksy`
+followed by `runBanksyPCA(lazy=FALSE)`.
+
+```{r, eval=TRUE, message=FALSE, warning=FALSE}
+library(Banksy)
+
+library(SummarizedExperiment)
+library(SpatialExperiment)
+library(scuttle)
+
+library(scater)
+library(cowplot)
+library(ggplot2)
+```
+
+# Data preprocessing
+
+We use the mouse hippocampus dataset provided with *Banksy*.
+
+```{r, eval=TRUE}
+data(hippocampus)
+gcm <- hippocampus$expression
+locs <- as.matrix(hippocampus$locations)
+```
+
+Initialize a SpatialExperiment object and perform quality control and
+normalization.
+
+```{r, eval=TRUE, message=FALSE}
+se <- SpatialExperiment(assay = list(counts = gcm), spatialCoords = locs)
+
+# QC based on total counts
+qcstats <- perCellQCMetrics(se)
+thres <- quantile(qcstats$total, c(0.05, 0.98))
+keep <- (qcstats$total > thres[1]) & (qcstats$total < thres[2])
+se <- se[, keep]
+
+# Normalization to mean library size
+se <- computeLibraryFactors(se)
+aname <- "normcounts"
+assay(se, aname) <- normalizeCounts(se, log = FALSE)
+```
+
+# Computing the BANKSY neighborhood matrices
+
+`computeBanksy` computes the neighborhood matrices and stores them as assays
+in the SpatialExperiment object. Setting `compute_agf=TRUE` computes both
+the weighted neighborhood mean ($\mathcal{M}$) and the azimuthal Gabor filter
+($\mathcal{G}$). The number of spatial neighbors used to compute
+$\mathcal{M}$ and $\mathcal{G}$ are `k_geom[1]=15` and `k_geom[2]=30`
+respectively.
+
+```{r, eval=TRUE}
+k_geom <- c(15, 30)
+se <- computeBanksy(se, assay_name = aname, compute_agf = TRUE, k_geom = k_geom)
+```
+
+After running `computeBanksy`, the neighborhood matrices are accessible as
+assays:
+
+```{r, eval=TRUE}
+assayNames(se)
+```
+
+# PCA, clustering, and visualization
+
+We run PCA with `lazy=FALSE` to use the standard path, which constructs the
+full BANKSY matrix via `getBanksyMatrix`. Setting `use_agf=TRUE` uses both
+$\mathcal{M}$ and $\mathcal{G}$. We compare non-spatial clustering
+(`lambda=0`) with BANKSY cell-typing (`lambda=0.2`).
+
+```{r, eval=TRUE}
+lambda <- c(0, 0.2)
+set.seed(1000)
+se <- runBanksyPCA(se, use_agf = TRUE, lambda = lambda, lazy = FALSE)
+se <- runBanksyUMAP(se, use_agf = TRUE, lambda = lambda)
+se <- clusterBanksy(se, use_agf = TRUE, lambda = lambda, resolution = 1.2)
+se <- connectClusters(se)
+```
+
+Visualise the clustering output:
+
+```{r, eval=TRUE, fig.height=5, fig.width=14}
+cnames <- colnames(colData(se))
+cnames <- cnames[grep("^clust", cnames)]
+colData(se) <- cbind(colData(se), spatialCoords(se))
+
+plot_nsp <- plotColData(se,
+    x = "sdimx", y = "sdimy",
+    point_size = 0.6, colour_by = cnames[1]
+)
+plot_bank <- plotColData(se,
+    x = "sdimx", y = "sdimy",
+    point_size = 0.6, colour_by = cnames[2]
+)
+
+plot_grid(plot_nsp + coord_equal(), plot_bank + coord_equal(), ncol = 2)
+```
+
+# Accessing the BANKSY matrix
+
+The full BANKSY matrix can be retrieved with `getBanksyMatrix`. This is
+useful for custom downstream analyses.
+
+```{r, eval=TRUE}
+banksy_matrix <- getBanksyMatrix(se, M = 1, lambda = 0.2,
+                                  assay_name = aname, scale = TRUE)
+dim(banksy_matrix)
+```
+
+<details>
+    <summary>Session information</summary>
+
+```{r, sess}
+sessionInfo()
+```
+
+</details>

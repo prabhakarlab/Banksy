@@ -2,7 +2,6 @@
 
 export(clusterBanksy)
 S3method(dim,BanksyLazy)
-export(runBanksyLazyPCA)
 export(clusterNames)
 export(compareClusters)
 export(computeBanksy)
