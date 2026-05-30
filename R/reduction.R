@@ -67,12 +67,7 @@
 #'
 #' @examples
 #' data(rings)
-#' spe <- computeBanksy(rings, assay_name = "counts", M = 1, k_geom = c(15, 30))
-#' spe <- runBanksyPCA(spe, M = 1, lambda = 0.2, npcs = 20)
-#'
-#' # Lazy path (no computeBanksy needed):
-#' # spe <- runBanksyPCA(spe, lambda = 0.2, npcs = 20, lazy = TRUE,
-#' #                      assay_name = "counts", k_geom = 15)
+#' spe <- runBanksyPCA(rings, assay_name = "counts", lambda = 0.2, npcs = 20)
 #'
 runBanksyPCA <- function(se,
                          use_agf = FALSE,
@@ -97,6 +92,8 @@ runBanksyPCA <- function(se,
 
     if (lazy) {
         # Lazy path: compute kNN + PCA without materializing BANKSY matrix
+        if (use_agf || (!is.null(M) && max(M) > 0))
+            stop("lazy=TRUE only supports M=0 (no AGF). Use lazy=FALSE for AGF")
         spatial_mode <- match.arg(spatial_mode)
         pca_backend <- match.arg(pca_backend)
         stopifnot("lambda values must be in [0,1]" =
@@ -293,9 +290,8 @@ checkBanksyPCA <- function(params) {
 #'
 #' @examples
 #' data(rings)
-#' spe <- computeBanksy(rings, assay_name = "counts", M = 1, k_geom = c(15, 30))
-#' spe <- runBanksyPCA(spe, M = 1, lambda = 0.2, npcs = 20)
-#' spe <- runBanksyUMAP(spe, M = 1, lambda = 0.2)
+#' spe <- runBanksyPCA(rings, assay_name = "counts", lambda = 0.2, npcs = 20)
+#' spe <- runBanksyUMAP(spe, lambda = 0.2)
 #'
 runBanksyUMAP <- function(se,
                           use_agf = FALSE,
