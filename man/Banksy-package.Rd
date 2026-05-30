@@ -31,6 +31,7 @@ functionality and use cases, refer to the package webpage at
 Useful links:
 \itemize{
   \item \url{https://github.com/prabhakarlab/Banksy}
+  \item \url{https://prabhakarlab.github.io/Banksy}
   \item Report bugs at \url{https://github.com/prabhakarlab/Banksy/issues}
 }
 

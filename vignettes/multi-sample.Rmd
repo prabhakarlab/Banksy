@@ -114,28 +114,19 @@ rm(seu_list)
 invisible(gc())
 ```
 
+Merge the objects:
+```{r, eval=TRUE, message=FALSE, warning=FALSE}
+spe_joint <- do.call(cbind, spe_list)
+rm(spe_list)
+invisible(gc())
+```
+
 # Running BANKSY
 
 To run BANKSY across multiple samples, we first compute the BANKSY neighborhood
 feature matrices for each sample separately. We use `k_geom=6` corresponding to
 the first-order neighbors in 10x Visium assays (`k_geom=18` corresponding to 
 first and second-order neighbors may also be used).
-
-```{r, eval=TRUE, message=FALSE, warning=FALSE}
-compute_agf <- FALSE
-k_geom <- 6
-spe_list <- lapply(spe_list, computeBanksy, assay_name = aname, 
-                   compute_agf = compute_agf, k_geom = k_geom)
-```
-
-We then merge the samples to perform joint dimensional reduction and 
-clustering:
-
-```{r, eval=TRUE, message=FALSE, warning=FALSE}
-spe_joint <- do.call(cbind, spe_list)
-rm(spe_list)
-invisible(gc())
-```
 
 When running multi-sample BANKSY PCA, the `group` argument may be provided. 
 This specifies the grouping variable for the cells or spots across the samples.
@@ -144,15 +135,16 @@ grouping variable will be z-scaled separately. In this case, `sample_id` in
 `colData(spe_joint)` gives the grouping based on the sample of origin.
 
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
+k_geom <- 6
 lambda <- 0.2
-use_agf <- FALSE
-spe_joint <- runBanksyPCA(spe_joint, use_agf = use_agf, lambda = lambda, group = "sample_id", seed = 1000)
+npcs <- 20
+spe_joint <- runBanksyPCA(spe_joint, assay_name = aname, lambda = lambda, k_geom = k_geom, npcs = npcs, group = "sample_id", seed = 1000)
 ```
 
 Run UMAP on the BANKSY embedding:
 
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
-spe_joint <- runBanksyUMAP(spe_joint, use_agf = use_agf, lambda = lambda, seed = 1000)
+spe_joint <- runBanksyUMAP(spe_joint, lambda = lambda, seed = 1000)
 ```
 
 Finally, we obtain cluster labels for spots across all 4 samples. We use 
@@ -160,9 +152,9 @@ Finally, we obtain cluster labels for spots across all 4 samples. We use
 clusters.
 
 ```{r, eval=TRUE, message=FALSE, warning=FALSE}
-res <- 0.7
-spe_joint <- clusterBanksy(spe_joint, use_agf = use_agf, lambda = lambda, resolution = res, seed = 1000)
-cnm <- sprintf("clust_M%s_lam%s_k50_res%s", as.numeric(use_agf), lambda, res)
+res <- 0.55
+spe_joint <- clusterBanksy(spe_joint, lambda = lambda, resolution = res, seed = 1000)
+cnm <- sprintf("clust_M0_lam%s_k50_res%s", lambda, res)
 spe_joint <- connectClusters(spe_joint)
 ```
 

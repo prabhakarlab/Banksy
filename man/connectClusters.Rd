@@ -24,9 +24,8 @@ Relabel cluster labels across parameter runs to maximise their similarity.
 }
 \examples{
 data(rings)
-spe <- computeBanksy(rings, assay_name = "counts", M = 1, k_geom = c(15, 30))
-spe <- runBanksyPCA(spe, M = 1, lambda = c(0, 0.2), npcs = 20)
-spe <- clusterBanksy(spe, M = 1, lambda = c(0, 0.2), resolution = 1)
+spe <- runBanksyPCA(rings, assay_name = "counts", lambda = c(0, 0.2), npcs = 20)
+spe <- clusterBanksy(spe, lambda = c(0, 0.2), resolution = 1)
 spe <- connectClusters(spe)
 
 }

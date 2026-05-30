@@ -5,7 +5,7 @@ library(SpatialExperiment)
 set.seed(1000)
 spe <- simulateDataset(rate = 2)
 spe <- computeBanksy(spe, assay_name = "counts", compute_agf = TRUE)
-spe <- runBanksyPCA(spe, use_agf = TRUE, seed = 1000)
+spe <- runBanksyPCA(spe, use_agf = TRUE, seed = 1000, lazy = FALSE)
 
 test_that("clusterBanksy with invalid algo", {
     expect_error(clusterBanksy(spe, algo = "?"))

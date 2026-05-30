@@ -13,16 +13,25 @@ runBanksyPCA(
   scale = TRUE,
   group = NULL,
   M = NULL,
-  seed = NULL
+  seed = NULL,
+  lazy = TRUE,
+  pca_backend = c("cpp", "r"),
+  coord_names = NULL,
+  k_geom = 15L,
+  spatial_mode = c("kNN_median", "kNN_r", "kNN_rn", "kNN_rank", "kNN_unif", "rNN_gauss"),
+  split_scale = TRUE,
+  num_cores = NULL,
+  verbose = TRUE,
+  ...
 )
 }
 \arguments{
 \item{se}{A \code{SpatialExperiment},
 \code{SingleCellExperiment} or \code{SummarizedExperiment}
-  object with \code{computeBanksy} ran.}
+  object with \code{computeBanksy} ran (not required when \code{lazy=TRUE}).}
 
 \item{use_agf}{A logical vector specifying whether to use the AGF for
-computing principal components.}
+computing principal components. Ignored when \code{lazy=TRUE}.}
 
 \item{lambda}{A numeric vector in \eqn{\in [0,1]} specifying a spatial
 weighting parameter. Larger values (e.g. 0.8) incorporate more spatial
@@ -36,16 +45,46 @@ to compute.}
 \code{computeBanksy}.}
 
 \item{scale}{A logical scalar specifying whether to scale features before
-PCA. Defaults to TRUE.}
+PCA. Defaults to TRUE. Ignored when \code{lazy=TRUE} (always scales).}
 
 \item{group}{A string scalar specifying a grouping variable for samples in
-\code{se}. This is used to scale the samples in each group separately.}
+\code{se}. This is used to scale the samples in each group separately.
+When \code{lazy=TRUE}, also used for per-group kNN computation.}
 
 \item{M}{Advanced usage. An integer vector specifying the highest azimuthal
 Fourier harmonic to use. If specified, overwrites the \code{use_agf}
-argument.}
+argument. Ignored when \code{lazy=TRUE}.}
 
-\item{seed}{Seed for PCA. If not specified, no seed is set.}
+\item{seed}{Seed for PCA. If not specified, no seed is set. Ignored when
+\code{lazy=TRUE}.}
+
+\item{lazy}{A logical scalar. If TRUE, compute PCA directly without
+materializing the full BANKSY matrix. Default FALSE.}
+
+\item{pca_backend}{A string scalar specifying the PCA backend when
+\code{lazy=TRUE}. \code{"cpp"} (default) uses C++ irlba for lower memory
+and faster runtime. \code{"r"} uses R's irlba package.}
+
+\item{coord_names}{A string vector specifying the names in \code{colData}
+corresponding to spatial coordinates. Only used when \code{lazy=TRUE}.}
+
+\item{k_geom}{An integer scalar specifying the number of neighbors to use.
+Only used when \code{lazy=TRUE}.}
+
+\item{spatial_mode}{A string scalar specifying the kernel for neighborhood
+computation. Only used when \code{lazy=TRUE}.}
+
+\item{split_scale}{A logical scalar specifying whether to scale features
+per group. Only used when \code{lazy=TRUE} and \code{group} is not NULL.}
+
+\item{num_cores}{An integer scalar specifying the number of cores for
+parallel kNN via mclapply. Only used when \code{lazy=TRUE} and
+\code{group} is not NULL.}
+
+\item{verbose}{A logical scalar specifying verbosity.}
+
+\item{...}{Additional arguments passed to \code{computeNeighbors} when
+\code{lazy=TRUE}.}
 }
 \value{
 A SpatialExperiment / SingleCellExperiment / SummarizedExperiment
@@ -55,13 +94,18 @@ A SpatialExperiment / SingleCellExperiment / SummarizedExperiment
 Run PCA on a BANKSY matrix.
 }
 \details{
-This function runs PCA on the BANKSY matrix 
-(see \link[Banksy]{getBanksyMatrix}) with features scaled to zero mean and 
+This function runs PCA on the BANKSY matrix
+(see \link[Banksy]{getBanksyMatrix}) with features scaled to zero mean and
 unit standard deviation.
+
+When \code{lazy=TRUE}, PCA is computed without materializing the full BANKSY
+matrix in memory using an implicit linear operator. This enables analysis of
+very large datasets (millions of cells). The lazy path does not require
+\code{\link{computeBanksy}} to be run first — it computes the kNN graph
+internally. Currently only supported for M=0 (no AGF).
 }
 \examples{
 data(rings)
-spe <- computeBanksy(rings, assay_name = "counts", M = 1, k_geom = c(15, 30))
-spe <- runBanksyPCA(spe, M = 1, lambda = 0.2, npcs = 20)
+spe <- runBanksyPCA(rings, assay_name = "counts", lambda = 0.2, npcs = 20)
 
 }

@@ -8,6 +8,8 @@
 #' @keywords internal
 #' @aliases Banksy-package Banksy
 #' @docType package
+#' @useDynLib Banksy, .registration = TRUE
+#' @importFrom Rcpp sourceCpp
 #'
 #' @section Description:
 #' Banksy is an R package that incorporates spatial information to cluster 

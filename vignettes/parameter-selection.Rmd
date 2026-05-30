@@ -101,7 +101,7 @@ provided for each feature matrix. Here, we use `k_geom[1]=15` and
 `k_geom[2]=30` for `H_0` and `H_1` respectively. More neighbors are used to 
 compute gradients.
 
-> For datasets generated using Visium v1/v2, use `k_geom=18` (or `k_geom <- c(18, 18)` if `compute_agf = TRUE`), since that corresponds to taking as neighbourhood two concentric rings of spots around each spot. 
+**For datasets generated using Visium v1/v2, use `k_geom=18` (or `k_geom <- c(18, 18)` if `compute_agf = TRUE`), since that corresponds to taking as neighbourhood two concentric rings of spots around each spot.**
 
 We compute the neighborhood feature matrices using normalized expression 
 (`normcounts` in the `se` object).
@@ -136,7 +136,7 @@ with and without the AGF (`H_1`).
 
 ```{r, eval=TRUE}
 lambda <- c(0, 0.2)
-se <- runBanksyPCA(se, use_agf = c(FALSE, TRUE), lambda = lambda, seed = 1000)
+se <- runBanksyPCA(se, use_agf = c(FALSE, TRUE), lambda = lambda, seed = 1000, lazy = FALSE)
 ```
 
 `runBanksyPCA` populates the `reducedDims` slot, with each combination of 

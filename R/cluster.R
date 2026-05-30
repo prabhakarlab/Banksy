@@ -75,9 +75,8 @@
 #'
 #' @examples
 #' data(rings)
-#' spe <- computeBanksy(rings, assay_name = "counts", M = 1, k_geom = c(15, 30))
-#' spe <- runBanksyPCA(spe, M = 1, lambda = c(0, 0.2), npcs = 20)
-#' spe <- clusterBanksy(spe, M = 1, lambda = c(0, 0.2), resolution = 1)
+#' spe <- runBanksyPCA(rings, assay_name = "counts", lambda = c(0, 0.2), npcs = 20)
+#' spe <- clusterBanksy(spe, lambda = c(0, 0.2), resolution = 1)
 #' 
 clusterBanksy <-
     function(se,
@@ -375,9 +374,8 @@ getGraph <- function(x, k) {
 #'
 #' @examples
 #' data(rings)
-#' spe <- computeBanksy(rings, assay_name = "counts", M = 1, k_geom = c(15, 30))
-#' spe <- runBanksyPCA(spe, M = 1, lambda = c(0, 0.2), npcs = 20)
-#' spe <- clusterBanksy(spe, M = 1, lambda = c(0, 0.2), resolution = 1)
+#' spe <- runBanksyPCA(rings, assay_name = "counts", lambda = c(0, 0.2), npcs = 20)
+#' spe <- clusterBanksy(spe, lambda = c(0, 0.2), resolution = 1)
 #' spe <- connectClusters(spe)
 #'
 connectClusters <- function(se, map_to = NULL, verbose = TRUE) {
@@ -474,10 +472,9 @@ mapToSeed <- function(seed, val) {
 #'
 #' @examples
 #' data(rings)
-#' spe <- computeBanksy(rings, assay_name = "counts", M = 1, k_geom = c(15, 30))
-#' spe <- runBanksyPCA(spe, M = 1, lambda = 0.2, npcs = 20)
-#' spe <- clusterBanksy(spe, M = 1, lambda = 0.2, resolution = 1)
-#' spe <- smoothLabels(spe, cluster_names = "clust_M1_lam0.2_k50_res1")
+#' spe <- runBanksyPCA(rings, assay_name = "counts", lambda = 0.2, npcs = 20)
+#' spe <- clusterBanksy(spe, lambda = 0.2, resolution = 1)
+#' spe <- smoothLabels(spe, cluster_names = "clust_M0_lam0.2_k50_res1")
 #'
 smoothLabels <- function(se,
                          cluster_names = NULL,
@@ -593,9 +590,8 @@ smoother <-
 #'
 #' @examples
 #' data(rings)
-#' spe <- computeBanksy(rings, assay_name = "counts", M = 1, k_geom = c(15, 30))
-#' spe <- runBanksyPCA(spe, M = 1, lambda = 0.2, npcs = 20)
-#' spe <- clusterBanksy(spe, M = 1, lambda = 0.2, resolution = c(0.1, 1))
+#' spe <- runBanksyPCA(rings, assay_name = "counts", lambda = 0.2, npcs = 20)
+#' spe <- clusterBanksy(spe, lambda = 0.2, resolution = c(0.1, 1))
 #' spe <- connectClusters(spe)
 #' compareClusters(spe)
 #'
@@ -651,9 +647,8 @@ compareClusters <-
 #'
 #' @examples
 #' data(rings)
-#' spe <- computeBanksy(rings, assay_name = "counts", M = 1, k_geom = c(15, 30))
-#' spe <- runBanksyPCA(spe, M = 1, lambda = c(0, 0.2), npcs = 20)
-#' spe <- clusterBanksy(spe, M = 1, lambda = c(0, 0.2), resolution = 1)
+#' spe <- runBanksyPCA(rings, assay_name = "counts", lambda = c(0, 0.2), npcs = 20)
+#' spe <- clusterBanksy(spe, lambda = c(0, 0.2), resolution = 1)
 #' clusterNames(spe)
 #'
 clusterNames <- function(se) {
