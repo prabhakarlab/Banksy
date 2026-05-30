@@ -293,15 +293,10 @@
             lastsv <- Bsvd$d
 
             if (verbose && (iter <= 2L || iter %% 5 == 0 || ct_conv || sv_conv)) {
-                rss <- tryCatch({
-                    l <- readLines("/proc/self/status", warn = FALSE)
-                    v <- grep("^VmRSS:", l, value = TRUE)
-                    as.numeric(gsub("[^0-9]", "", v)) / 1024^2
-                }, error = function(e) NA)
                 elapsed <- proc.time()["elapsed"] - t0
                 message(sprintf(
-                    "  iter=%d  mprod=%d  sv[%d]=%.4e  RSS=%.1fGB  t=%.0fs",
-                    iter, mprod, k, Bsvd$d[k], rss, elapsed))
+                    "  iter=%d  mprod=%d  sv[%d]=%.4e  t=%.0fs",
+                    iter, mprod, k, Bsvd$d[k], elapsed))
             }
 
             if (ct_conv || sv_conv) {
@@ -405,8 +400,11 @@
                 n_c / (n_c - 1) * (Matrix::rowMeans(grp^2) - mu[, gr]^2), 0
             ))
         }
-        valid <- rowSums(sd == 0) == 0
         sd[sd == 0] <- 1
+        # No cross-group valid mask: per-group centering already yields a 0
+        # contribution for a gene in groups where it is constant, while keeping
+        # its z-scored signal where it varies (matches the non-lazy scaler).
+        valid <- NULL
     } else {
         if (!is.null(gcm_list)) {
             # Aggregate global stats from per-group data
@@ -481,7 +479,7 @@
                 g_sd <- sd[gi]
             }
             exceed <- g@x > g_mu + scale_max * g_sd
-            if (split_scale) exceed <- exceed & valid[gi]
+            if (split_scale && !is.null(valid)) exceed <- exceed & valid[gi]
             if (any(exceed)) {
                 z_vals <- (g@x[exceed] - g_mu[exceed]) / g_sd[exceed]
                 exc_i <- c(exc_i, gi[exceed])
@@ -507,7 +505,7 @@
             own_sd <- sd[own_i]
         }
         exceed <- data_own@x > own_mu + scale_max * own_sd
-        if (split_scale) exceed <- exceed & valid[own_i]
+        if (split_scale && !is.null(valid)) exceed <- exceed & valid[own_i]
         if (any(exceed)) {
             ei <- own_i[exceed]
             z_vals <- (data_own@x[exceed] - own_mu[exceed]) / own_sd[exceed]
@@ -577,8 +575,8 @@
                 n_c / (n_c - 1) * (ss[, gr] / n_c - mu[, gr]^2), 0
             ))
         }
-        valid <- rowSums(sd == 0) == 0
         sd[sd == 0] <- 1
+        valid <- NULL
         thresh <- mu + scale_max * sd
     } else {
         mu <- numeric(n_genes)
@@ -601,7 +599,7 @@
 
     # Identify genes that need clipping
     if (split_scale) {
-        clip_genes <- which(valid & rowSums(max_h0 > thresh) > 0)
+        clip_genes <- which(rowSums(max_h0 > thresh) > 0)
     } else {
         clip_genes <- which(max_h0 > thresh)
     }
@@ -710,8 +708,8 @@
                 n_c / (n_c - 1) * (ss_g[, gr] / n_c - mu[, gr]^2), 0
             ))
         }
-        valid <- rowSums(sd == 0) == 0
         sd[sd == 0] <- 1
+        valid <- NULL
     } else {
         n_g_vec <- vapply(group_idx, length, integer(1))
         mu <- rowSums(sweep(mu_g, 2, n_g_vec, `*`)) / n_cells
@@ -725,7 +723,7 @@
     # Identify clip genes
     if (split_scale) {
         thresh <- mu + scale_max * sd
-        clip_genes <- which(valid & rowSums(max_g > thresh) > 0)
+        clip_genes <- which(rowSums(max_g > thresh) > 0)
     } else {
         thresh <- mu + scale_max * sd
         max_h0 <- apply(max_g, 1, max)
@@ -758,6 +756,9 @@
 #' S3 dim method for BanksyLazy operator
 #' @param x A BanksyLazy object
 #' @return Integer vector of length 2: c(2*n_genes, n_cells)
+#' @importFrom methods as is slot
+#' @importFrom stats rnorm
+#' @keywords internal
 #' @export
 dim.BanksyLazy <- function(x) c(x$n_genes * 2L, x$n_cells)
 
