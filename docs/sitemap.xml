@@ -1,6 +1,7 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://prabhakarlab.github.io/Banksy/404.html</loc></url>
 <url><loc>https://prabhakarlab.github.io/Banksy/LICENSE-text.html</loc></url>
+<url><loc>https://prabhakarlab.github.io/Banksy/articles/banksy-matrix.html</loc></url>
 <url><loc>https://prabhakarlab.github.io/Banksy/articles/batch-correction.html</loc></url>
 <url><loc>https://prabhakarlab.github.io/Banksy/articles/domain-segment.html</loc></url>
 <url><loc>https://prabhakarlab.github.io/Banksy/articles/index.html</loc></url>
@@ -15,6 +16,7 @@
 <url><loc>https://prabhakarlab.github.io/Banksy/reference/compareClusters.html</loc></url>
 <url><loc>https://prabhakarlab.github.io/Banksy/reference/computeBanksy.html</loc></url>
 <url><loc>https://prabhakarlab.github.io/Banksy/reference/connectClusters.html</loc></url>
+<url><loc>https://prabhakarlab.github.io/Banksy/reference/dim.BanksyLazy.html</loc></url>
 <url><loc>https://prabhakarlab.github.io/Banksy/reference/getBanksyMatrix.html</loc></url>
 <url><loc>https://prabhakarlab.github.io/Banksy/reference/hippocampus.html</loc></url>
 <url><loc>https://prabhakarlab.github.io/Banksy/reference/index.html</loc></url>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Banksy</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.2</span>
       </span>
     </div>
 
@@ -32,6 +32,9 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/banksy-matrix.html">Clustering via BANKSY matrix construction</a>
+    </li>
+    <li>
       <a href="../articles/parameter-selection.html">BANKSY parameter selection (VeraFISH Mouse Hippocampus)</a>
     </li>
     <li>
@@ -92,6 +95,7 @@
 <span>  chunk_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  num_cores <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  row_limit_factor <span class="op">=</span> <span class="fl">0.75</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -127,13 +131,26 @@ Values \(\in [15,30]\) work well.</p></dd>
 
 <dt id="arg-spatial-mode">spatial_mode<a class="anchor" aria-label="anchor" href="#arg-spatial-mode"></a></dt>
 <dd><p>A string scalar specifying the kernel for neighborhood
-  computation (default: kNN_median).</p><ul><li><p>kNN_median: k-nearest neighbors with median-scaled Gaussian kernel</p></li>
-<li><p>kNN_r: k-nearest neighbors with $1/r$ kernel</p></li>
-<li><p>kNN_rn: k-nearest neighbors with $1/r^n$ kernel</p></li>
-<li><p>kNN_rank: k-nearest neighbors with rank Gaussian kernel</p></li>
-<li><p>kNN_unif: k-nearest neighbors wth uniform kernel</p></li>
-<li><p>rNN_gauss: radial nearest neighbors with Gaussian kernel</p></li>
-</ul></dd>
+  computation (default: kNN_median).</p><dl><dt>kNN_median</dt>
+<dd><p>k-nearest neighbors with median-scaled Gaussian kernel</p></dd>
+
+ <dt>kNN_r</dt>
+<dd><p>k-nearest neighbors with $1/r$ kernel</p></dd>
+
+ <dt>kNN_rn</dt>
+<dd><p>k-nearest neighbors with $1/r^n$ kernel</p></dd>
+
+ <dt>kNN_rank</dt>
+<dd><p>k-nearest neighbors with rank Gaussian kernel</p></dd>
+
+ <dt>kNN_unif</dt>
+<dd><p>k-nearest neighbors with uniform kernel</p></dd>
+
+ <dt>rNN_gauss</dt>
+<dd><p>radial nearest neighbors with Gaussian kernel</p></dd>
+
+
+</dl></dd>
 
 
 <dt id="arg-n">n<a class="anchor" aria-label="anchor" href="#arg-n"></a></dt>
@@ -177,9 +194,14 @@ neighbor weights to 1.</p></dd>
 
 <dt id="arg-dimensions">dimensions<a class="anchor" aria-label="anchor" href="#arg-dimensions"></a></dt>
 <dd><p>A character vector specifying the dimensions to use when
-  computing neighborhood.</p><ul><li><p>subset of colnames of cell.locs</p></li>
-<li><p>allUses all colnames of spatialCoords to compute (default)</p></li>
-</ul></dd>
+  computing neighborhood. One of:</p><dl><dt>a subset of <code>spatialCoords</code> colnames</dt>
+<dd><p>use the specified dimensions</p></dd>
+
+ <dt>all</dt>
+<dd><p>use all <code>spatialCoords</code> colnames (default)</p></dd>
+
+
+</dl></dd>
 
 
 <dt id="arg-center">center<a class="anchor" aria-label="anchor" href="#arg-center"></a></dt>
@@ -189,9 +211,11 @@ harmonics in local neighborhoods.</p></dd>
 
 <dt id="arg-chunk-size">chunk_size<a class="anchor" aria-label="anchor" href="#arg-chunk-size"></a></dt>
 <dd><p>A integer scalar specifying the number of rows / genes of
-the neighborhood cell matrix to compute. Must be less than floor of
-2e31-1 / number of cells. This is automatically computed but can be
-specified.</p></dd>
+the neighborhood cell matrix to compute. Must be strictly less than floor
+of 2e31-1 / number of cells, though this may still give rise to negative
+length vector errors. For safety, set this to less than
+2e31-1 * row_limit_factor / number of cells. This is automatically
+computed based on the latter, but can be specified.</p></dd>
 
 
 <dt id="arg-parallel">parallel<a class="anchor" aria-label="anchor" href="#arg-parallel"></a></dt>
@@ -202,6 +226,13 @@ parallel using bplapply. Not implemented for Windows.</p></dd>
 <dt id="arg-num-cores">num_cores<a class="anchor" aria-label="anchor" href="#arg-num-cores"></a></dt>
 <dd><p>A integer scalar specifying the number of cores to use
 if parallel is TRUE.</p></dd>
+
+
+<dt id="arg-row-limit-factor">row_limit_factor<a class="anchor" aria-label="anchor" href="#arg-row-limit-factor"></a></dt>
+<dd><p>A numeric scalar specifying the safety factor
+applied to the maximum vector length (2^31-1) when computing chunk sizes.
+Accounts for data.table overhead during grouping operations.
+Default is 0.75.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -235,7 +266,9 @@ specified by <code>spatial_mode</code>.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Spatial mode is kNN_median</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Parameters: k_geom=30</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing harmonic m = 0 with 15 neighbors</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing harmonic m = 1 with 30 neighbors</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Centering</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
 <span class="r-in"><span></span></span>
@@ -253,7 +286,7 @@ specified by <code>spatial_mode</code>.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
       </footer></div>
