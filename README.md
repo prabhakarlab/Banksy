@@ -36,11 +36,13 @@ datasets. For more details, check out:
   [here](https://github.com/prabhakarlab/Banksy_py/tree/Banksy_manuscript)
   for analyses done in Python).
 
-**For scaling BANKSY to large datasets, we recommend using BANKSY with
-SeuratWrappers. See [this
-vignette](https://github.com/jleechung/seurat-wrappers/blob/feat-sparse-matmul/docs/banksy.md#scaling-to-large-datasets)
-for a memory-efficient workflow that computes PCA directly via a sparse
-linear operator, avoiding materialization of the full BANKSY matrix.**
+**BANKSY now includes a lazy PCA mode (`lazy=TRUE` in `runBanksyPCA`)
+that computes PCA directly via an implicit linear operator without
+materializing the full BANKSY matrix. This is the default and
+recommended mode, scaling to millions of cells with low memory usage.
+For analysis on large datasets (\> 1 million samples), we recommend
+using BANKSY via SeuratWrappers: see [this
+vignette](https://github.com/jleechung/seurat-wrappers/blob/feat-sparse-matmul/docs/banksy.md#scaling-to-large-datasets).**
 
 ## Installation
 
@@ -120,23 +122,25 @@ aname <- "normcounts"
 assay(se, aname) <- normalizeCounts(se, log = FALSE)
 ```
 
-Compute the neighborhood matrices for *BANKSY*. Setting
-`compute_agf=TRUE` computes both the weighted neighborhood mean
-($\mathcal{M}$) and the azimuthal Gabor filter ($\mathcal{G}$). The
-number of spatial neighbors used to compute $\mathcal{M}$ and
-$\mathcal{G}$ are `k_geom[1]=15` and `k_geom[2]=30` respectively. We run
-*BANKSY* at `lambda=0` corresponding to non-spatial clustering, and
-`lambda=0.2` corresponding to *BANKSY* for cell-typing.
+Run `runBanksyPCA` to compute BANKSY PCA embeddings. By default, this
+uses a lazy linear operator that computes PCA without materializing the
+full BANKSY matrix — computing the kNN graph and applying the BANKSY
+transform on the fly during the iterative PCA solver. This is
+memory-efficient and scales to millions of cells.
+
+We run *BANKSY* at `lambda=0` corresponding to non-spatial clustering,
+and `lambda=0.2` corresponding to *BANKSY* for cell-typing. The number
+of spatial neighbors is set by `k_geom`.
 
 > **An important note about choosing the `lambda` parameter for the
 > older [Visium v1 / v2 55um
 > datasets](https://doi.org/10.1038/s41593-020-00787-0) or the original
 > [ST 100um technology](https://doi.org/10.1038/s41596-018-0045-2):**
 >
-> For most modern high resolution technologies like Xenium, Visium HD,
-> StereoSeq, MERFISH, STARmap PLUS, SeqFISH+, SlideSeq v2, and CosMx
-> (and others), we recommend the usual defults for `lambda`: For cell
-> typing, use `lambda = 0.2` (as shown below, or in [this
+> **Modern high resolution technologies** (Xenium, Visium HD, StereoSeq,
+> MERFISH, STARmap PLUS, SeqFISH+, SlideSeq v2, and CosMx, and others):
+> we recommend the usual defaults for `lambda`. For cell typing, use
+> `lambda = 0.2` (as shown below, or in [this
 > vignette](https://prabhakarlab.github.io/Banksy/articles/parameter-selection.html))
 > and for [domain
 > segmentation](https://prabhakarlab.github.io/Banksy/articles/domain-segment.html),
@@ -148,14 +152,13 @@ $\mathcal{G}$ are `k_geom[1]=15` and `k_geom[2]=30` respectively. We run
 > We find that the usual defaults work well at this measurement
 > resolution.
 >
-> However, for the older **Visium v1/v2** or **ST** technologies, with
-> their much lower resolution spots (55um and 100um diameter,
-> respectively), we find that `lambda = 0.2` seems to work best for
-> domain segmentation. This could be because each spot already measures
-> the average transcriptome of several cells in a neighbourhood. It
-> seems that `lambda = 0.2` shares enough information between these
-> neighbourhoods to lead to good domain segmentation performance. For
-> example, in the [human DLPFC
+> **Older Visium v1/v2 or ST technologies** (with their much lower
+> resolution spots, 55um and 100um diameter, respectively): we find that
+> `lambda = 0.2` seems to work best for domain segmentation. This could
+> be because each spot already measures the average transcriptome of
+> several cells in a neighbourhood. It seems that `lambda = 0.2` shares
+> enough information between these neighbourhoods to lead to good domain
+> segmentation performance. For example, in the [human DLPFC
 > vignette](https://prabhakarlab.github.io/Banksy/articles/multi-sample.html),
 > we use `lambda = 0.2` on a Visium v1/v2 dataset. Also note that in
 > these lower resolution technologies, each spot can have multiple cells
@@ -163,33 +166,48 @@ $\mathcal{G}$ are `k_geom[1]=15` and `k_geom[2]=30` respectively. We run
 
 ``` r
 lambda <- c(0, 0.2)
-k_geom <- c(15, 30)
 
-se <- Banksy::computeBanksy(se, assay_name = aname, compute_agf = TRUE, k_geom = k_geom)
+se <- Banksy::runBanksyPCA(se, assay_name = aname, lambda = lambda, k_geom = 15)
 #> Computing neighbors...
 #> Spatial mode is kNN_median
 #> Parameters: k_geom=15
 #> Done
-#> Computing neighbors...
-#> Spatial mode is kNN_median
-#> Parameters: k_geom=30
-#> Done
-#> Computing harmonic m = 0 with 15 neighbors
-#> Done
-#> Computing harmonic m = 1 with 30 neighbors
-#> Centering
-#> Done
+#> --- lambda = 0 ---
+#> Building sparse weight matrix
+#> Computing scaling parameters for own expression
+#> Computing clipping excess for own expression
+#> Computing scaling params and clipping for H0
+#> H0 genes requiring clipping: 0 / 120
+#> Clipping corrections: own=0 H0=0 entries
+#> Computing BANKSY PCA (20 PCs) via C++ irlba (work=27)
+#>   iter=1  mprod=54  sv[20]=7.9454e+01  t=0s
+#>   iter=2  mprod=68  sv[20]=9.5131e+01  t=0s
+#>   iter=5  mprod=110  sv[20]=1.0435e+02  t=1s
+#>   iter=10  mprod=180  sv[20]=1.0568e+02  t=1s
+#>   iter=11  mprod=194  sv[20]=1.0568e+02  t=1s
+#>   Converged: iter=11, mprod=194
+#> --- lambda = 0.2 ---
+#> Building sparse weight matrix
+#> Computing scaling parameters for own expression
+#> Computing clipping excess for own expression
+#> Computing scaling params and clipping for H0
+#> H0 genes requiring clipping: 0 / 120
+#> Clipping corrections: own=0 H0=0 entries
+#> Computing BANKSY PCA (20 PCs) via C++ irlba (work=27)
+#>   iter=1  mprod=54  sv[20]=6.2079e+01  t=0s
+#>   iter=2  mprod=68  sv[20]=8.2518e+01  t=0s
+#>   iter=5  mprod=110  sv[20]=9.5141e+01  t=1s
+#>   iter=9  mprod=166  sv[20]=9.6004e+01  t=1s
+#>   Converged: iter=9, mprod=166
+#> Done.
 ```
 
-Next, run PCA on the BANKSY matrix and perform clustering. Setting
-`use_agf=TRUE` uses both $\mathcal{M}$ and $\mathcal{G}$ to construct
-the BANKSY matrix.
+Next, compute UMAP and perform clustering:
 
 ``` r
 set.seed(1000)
-se <- Banksy::runBanksyPCA(se, use_agf = TRUE, lambda = lambda)
-se <- Banksy::runBanksyUMAP(se, use_agf = TRUE, lambda = lambda)
-se <- Banksy::clusterBanksy(se, use_agf = TRUE, lambda = lambda, resolution = 1.2)
+se <- Banksy::runBanksyUMAP(se, use_agf = FALSE, lambda = lambda)
+se <- Banksy::clusterBanksy(se, use_agf = FALSE, lambda = lambda, resolution = 1.2)
 ```
 
 Different clustering runs can be relabeled to minimise their differences
@@ -197,7 +215,7 @@ with `connectClusters`:
 
 ``` r
 se <- Banksy::connectClusters(se)
-#> clust_M1_lam0.2_k50_res1.2 --> clust_M1_lam0_k50_res1.2
+#> clust_M0_lam0.2_k50_res1.2 --> clust_M0_lam0_k50_res1.2
 ```
 
 Visualise the clustering output for non-spatial clustering (`lambda=0`)
@@ -262,7 +280,7 @@ plot_grid(
 Runtime for analysis
 </summary>
 
-    #> Time difference of 36.87376 secs
+    #> Time difference of 35.0907 secs
 
 </details>
 <details>
@@ -299,7 +317,7 @@ sessionInfo()
 #> [11] IRanges_2.43.0              S4Vectors_0.47.0           
 #> [13] BiocGenerics_0.55.0         generics_0.1.4             
 #> [15] MatrixGenerics_1.21.0       matrixStats_1.5.0          
-#> [17] Banksy_1.9.1               
+#> [17] Banksy_1.9.2               
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] beeswarm_0.4.0      gtable_0.3.6        rjson_0.2.23       
