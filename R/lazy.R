@@ -434,17 +434,14 @@
             sd <- sqrt(pmax(n_c / (n_c - 1) * (row_sq_sums / n_c - mu^2), 0))
         } else {
             n_c <- as.double(n_cells)
-            if (inherits(data_own, 'sparseMatrix')) {
-                mu <- Matrix::rowMeans(data_own)
-                sd <- sqrt(pmax(
-                    n_c / (n_c - 1) * (Matrix::rowMeans(data_own^2) - mu^2), 0
-                ))
-            } else {
-                mu <- rowMeans(data_own)
-                sd <- sqrt(pmax(
-                    n_c / (n_c - 1) * (rowMeans(data_own^2) - mu^2), 0
-                ))
-            }
+            # MatrixGenerics dispatches for base matrix, dgCMatrix and
+            # on-disk backends alike; base::rowMeans needs a real dim() and
+            # fails on BPCells (issue #79).
+            mu <- MatrixGenerics::rowMeans(data_own)
+            sd <- sqrt(pmax(
+                n_c / (n_c - 1) *
+                    (MatrixGenerics::rowMeans(data_own^2) - mu^2), 0
+            ))
         }
         sd[sd == 0] <- 1
         valid <- NULL
@@ -507,6 +504,48 @@
                                         dims = c(n_genes, n_cells)))
         else
             return(NULL)
+    }
+    # On-disk backends have no @i/@p/@x, and the dense arithmetic below
+    # returns lazy S4 transforms that any() and Matrix() cannot consume.
+    # Stream in column chunks, reusing the sparse path per chunk (issue #79).
+    if (!inherits(data_own, 'sparseMatrix') && !is.matrix(data_own)) {
+        # With groups = NULL, match() returns integer(0), cbind() drops the
+        # column, and mu[cbind(ci, cgr)] degrades to linear indexing: wrong
+        # numbers, no error. Both callers pass groups whenever split_scale.
+        if (split_scale && (is.null(groups) || is.null(ugroups))) {
+            stop('split_scale = TRUE requires groups and ugroups for ',
+                 'streamed (non-sparse) input')
+        }
+        # Nothing can exceed an infinite cap, so skip the sweep entirely
+        if (!is.finite(scale_max)) return(NULL)
+        chunk_sz <- max(1L, min(n_cells, as.integer(2e7 %/% max(1L, n_genes))))
+        exc_i <- integer(0); exc_j <- integer(0); exc_x <- numeric(0)
+        for (start in seq(1L, n_cells, by = chunk_sz)) {
+            cid <- seq(start, min(start + chunk_sz - 1L, n_cells))
+            ch <- as(data_own[, cid, drop = FALSE], 'dgCMatrix')
+            ci <- ch@i + 1L
+            cj <- rep(cid, diff(ch@p))
+            if (split_scale) {
+                cgr <- match(groups[cj], ugroups)
+                c_mu <- mu[cbind(ci, cgr)]
+                c_sd <- sd[cbind(ci, cgr)]
+            } else {
+                c_mu <- mu[ci]
+                c_sd <- sd[ci]
+            }
+            exceed <- ch@x > c_mu + scale_max * c_sd
+            if (split_scale && !is.null(valid)) exceed <- exceed & valid[ci]
+            if (any(exceed)) {
+                exc_i <- c(exc_i, ci[exceed])
+                exc_j <- c(exc_j, cj[exceed])
+                exc_x <- c(exc_x,
+                           (ch@x[exceed] - c_mu[exceed]) / c_sd[exceed] -
+                               scale_max)
+            }
+        }
+        if (length(exc_i) == 0L) return(NULL)
+        return(Matrix::sparseMatrix(i = exc_i, j = exc_j, x = exc_x,
+                                    dims = c(n_genes, n_cells)))
     }
     if (inherits(data_own, 'sparseMatrix')) {
         own_i <- data_own@i + 1L
@@ -784,6 +823,13 @@ dim.BanksyLazy <- function(x) c(x$n_genes * 2L, x$n_cells)
     x
 }
 
+# t(m) %*% x. On-disk backends implement %*% and a lazy t() but not
+# crossprod(); dgCMatrix keeps the faster crossprod path (issue #79).
+.crossmul <- function(m, x) {
+    if (inherits(m, 'sparseMatrix') || is.matrix(m)) crossprod(m, x)
+    else Matrix::t(m) %*% x
+}
+
 # --- Lazy operator dispatch ---
 
 .banksy_lazy_mult <- function(A, x, transpose = FALSE) {
@@ -913,12 +959,12 @@ dim.BanksyLazy <- function(x) c(x$n_genes * 2L, x$n_cells)
         xo_s <- xo / A$sd[[1]]
         xh_s <- xh / A$sd[[2]]
         adj_o <- colSums(A$mu[[1]] * xo_s)
-        r <- A$lam[1] * (.as_base(crossprod(A$gcm, xo_s)) -
+        r <- A$lam[1] * (.as_base(.crossmul(A$gcm, xo_s)) -
              matrix(adj_o, A$n_cells, k, byrow = TRUE))
         if (!is.null(A$excess[[1]]))
             r <- r - A$lam[1] * .as_base(crossprod(A$excess[[1]], xo))
         adj_h <- colSums(A$mu[[2]] * xh_s)
-        ht <- .as_base(crossprod(A$gcm, xh_s))
+        ht <- .as_base(.crossmul(A$gcm, xh_s))
         ht <- .as_base(crossprod(A$W, ht))
         ht <- ht - matrix(adj_h, A$n_cells, k, byrow = TRUE)
         r <- r + A$lam[2] * ht
