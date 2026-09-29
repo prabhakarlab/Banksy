@@ -54,6 +54,8 @@
         stop('lazy PCA requires at least 3 genes and 6 cells')
     }
 
+    if (has_groups) .checkGroupIdx(group_idx)
+
     if (has_groups) {
         # Per-group decomposition
         if (verbose) message('Building per-group weight matrices')
@@ -382,6 +384,17 @@
 
     list(embeddings = embeddings, loadings = loadings,
          stdev = stdev, total_var = total_var)
+}
+
+# Reject empty groups: the C++ scaling kernels divide by group size, so a
+# zero-sized group yields Inf and propagates NaNs. Arises when the grouping
+# variable has NA, since unique() keeps NA but no cell matches it.
+.checkGroupIdx <- function(group_idx) {
+    empty <- which(lengths(group_idx) == 0L)
+    if (length(empty) > 0L) {
+        stop('group(s) with no cells: ', paste(empty, collapse = ', '),
+             '. Check the grouping variable for NA values')
+    }
 }
 
 # Own expression scaling params + clipping excess

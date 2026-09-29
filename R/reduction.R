@@ -116,6 +116,8 @@ runBanksyPCA <- function(se,
             groups_vec <- colData(se)[, group]
             ugroups <- unique(groups_vec)
             group_idx <- lapply(ugroups, function(g) which(g == groups_vec))
+            # Before computeNeighbors, which fails obscurely on empty groups
+            .checkGroupIdx(group_idx)
 
             if (verbose) {
                 message('Computing per-group neighbors')
