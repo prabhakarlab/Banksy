@@ -32,8 +32,8 @@
 #' @param M Advanced usage. An integer vector specifying the highest azimuthal
 #'   Fourier harmonic to use. If specified, overwrites the \code{use_agf}
 #'   argument. Ignored when \code{lazy=TRUE}.
-#' @param seed Seed for PCA. If not specified, no seed is set. Ignored when
-#'   \code{lazy=TRUE}.
+#' @param seed Seed for PCA. If not specified, no seed is set. Not used when
+#'   \code{lazy=TRUE}, which is deterministic.
 #' @param lazy A logical scalar. If TRUE, compute PCA directly without
 #'   materializing the full BANKSY matrix. Default FALSE.
 #' @param pca_backend A string scalar specifying the PCA backend when

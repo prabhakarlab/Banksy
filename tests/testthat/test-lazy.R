@@ -102,6 +102,21 @@ test_that("lazy PCA does not require computeBanksy", {
     expect_true(pca_name %in% reducedDimNames(se))
 })
 
+test_that("lazy PCA is deterministic", {
+    # Both backends start from a fixed vector, so repeated runs are identical
+    # without a seed and the caller's RNG stream is untouched
+    for (backend in c("cpp", "r")) {
+        e1 <- reducedDim(lazy_pca(spe, k_geom = k_geom,
+                                  pca_backend = backend), pca_name)
+        e2 <- reducedDim(lazy_pca(spe, k_geom = k_geom,
+                                  pca_backend = backend), pca_name)
+        expect_identical(e1, e2)
+    }
+    set.seed(1); before <- .Random.seed
+    invisible(lazy_pca(spe, k_geom = k_geom))
+    expect_identical(before, .Random.seed)
+})
+
 test_that("lazy PCA rejects the AGF", {
     expect_error(lazy_pca(spe, use_agf = TRUE, k_geom = k_geom))
     expect_error(lazy_pca(spe, M = 1, k_geom = k_geom))

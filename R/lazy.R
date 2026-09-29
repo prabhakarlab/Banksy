@@ -154,7 +154,8 @@
     # Reclaim memory before iterative solve
     gc(verbose = FALSE)
 
-    # SVD solve
+    # SVD solve. Both backends start from a fixed vector, so the lazy path is
+    # deterministic and needs no seed.
     pca_backend <- match.arg(pca_backend, c("cpp", "r"))
     if (pca_backend == "cpp") {
         # irlba algorithm with C++ Q buffer management.
@@ -182,8 +183,7 @@
         F_vec <- numeric(n)
         B <- NULL
 
-        set.seed(42)
-        q1 <- rnorm(n); q1 <- q1 / lanczos_norm(q1)
+        q1 <- .lazy_start_vector(n)
         lanczos_set_col(V_buf, 0L, q1, n)
         rm(q1)
 
@@ -216,7 +216,7 @@
 
             S <- sqrt(sum(W_mat[, j]^2))
             if (S < eps23) {
-                W_mat[, j] <- rnorm(m)
+                W_mat[, j] <- .lazy_start_vector(m, j + 1L)
                 if (j > 1L) W_mat[, j] <- W_mat[, j] - as.numeric(
                     W_mat[, 1:(j-1), drop=FALSE] %*%
                     crossprod(W_mat[, 1:(j-1), drop=FALSE], W_mat[, j]))
@@ -238,7 +238,7 @@
                 if (j + 1L <= work) {
                     R <- lanczos_norm(F_vec)
                     if (R < eps23) {
-                        F_vec <- rnorm(n)
+                        F_vec <- .lazy_start_vector(n, j + 1L)
                         F_vec <- lanczos_reorth(V_buf, j, F_vec, n)
                         lanczos_set_col(V_buf, j,
                             F_vec / lanczos_norm(F_vec), n)
@@ -268,7 +268,7 @@
                             crossprod(W_mat[, 1:j, drop=FALSE], W_mat[, j + 1L]))
                     S <- sqrt(sum(W_mat[, j + 1L]^2))
                     if (S < eps23) {
-                        W_mat[, j + 1L] <- rnorm(m)
+                        W_mat[, j + 1L] <- .lazy_start_vector(m, j + 2L)
                         if (j > 0L) W_mat[, j + 1L] <- W_mat[, j + 1L] - as.numeric(
                             W_mat[, 1:j, drop=FALSE] %*%
                             crossprod(W_mat[, 1:j, drop=FALSE], W_mat[, j + 1L]))
@@ -364,7 +364,8 @@
             }
             .banksy_lazy_mult(A, x, transpose)
         }
-        pca <- irlba::irlba(banksy_op, nv = npcs, mult = .instrumented_mult)
+        pca <- irlba::irlba(banksy_op, nv = npcs, mult = .instrumented_mult,
+                            v = .lazy_start_vector(n_cells))
     }
 
     # Cell embeddings: V * D
@@ -811,10 +812,18 @@
 #' @param x A BanksyLazy object
 #' @return Integer vector of length 2: c(2*n_genes, n_cells)
 #' @importFrom methods as is slot
-#' @importFrom stats rnorm
 #' @keywords internal
 #' @export
 dim.BanksyLazy <- function(x) c(x$n_genes * 2L, x$n_cells)
+
+# Deterministic starting vector for the iterative solvers. sin() of an integer
+# sequence is dense and aperiodic, so it is not orthogonal to the leading
+# singular subspace, and it avoids touching the caller's RNG stream. `k` varies
+# the phase so each breakdown restart gets a distinct vector.
+.lazy_start_vector <- function(n, k = 1L) {
+    v <- sin(seq_len(n) * k)
+    v / sqrt(sum(v^2))
+}
 
 .as_base <- function(x) {
     if (inherits(x, 'Matrix')) x <- as.matrix(x)
