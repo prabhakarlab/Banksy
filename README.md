@@ -182,9 +182,9 @@ se <- Banksy::runBanksyPCA(se, assay_name = aname, lambda = lambda, k_geom = 15)
 #> H0 genes requiring clipping: 0 / 120
 #> Clipping corrections: own=0 H0=0 entries
 #> Computing BANKSY PCA (20 PCs) via C++ irlba (work=27)
-#>   iter=1  mprod=54  sv[20]=7.9454e+01  t=0s
-#>   iter=2  mprod=68  sv[20]=9.5131e+01  t=0s
-#>   iter=5  mprod=110  sv[20]=1.0435e+02  t=0s
+#>   iter=1  mprod=54  sv[20]=7.8915e+01  t=0s
+#>   iter=2  mprod=68  sv[20]=9.4830e+01  t=0s
+#>   iter=5  mprod=110  sv[20]=1.0418e+02  t=0s
 #>   iter=10  mprod=180  sv[20]=1.0568e+02  t=0s
 #>   iter=11  mprod=194  sv[20]=1.0568e+02  t=0s
 #>   Converged: iter=11, mprod=194
@@ -196,9 +196,9 @@ se <- Banksy::runBanksyPCA(se, assay_name = aname, lambda = lambda, k_geom = 15)
 #> H0 genes requiring clipping: 0 / 120
 #> Clipping corrections: own=0 H0=0 entries
 #> Computing BANKSY PCA (20 PCs) via C++ irlba (work=27)
-#>   iter=1  mprod=54  sv[20]=6.2079e+01  t=0s
-#>   iter=2  mprod=68  sv[20]=8.2518e+01  t=0s
-#>   iter=5  mprod=110  sv[20]=9.5141e+01  t=0s
+#>   iter=1  mprod=54  sv[20]=6.2809e+01  t=0s
+#>   iter=2  mprod=68  sv[20]=8.2233e+01  t=0s
+#>   iter=5  mprod=110  sv[20]=9.5297e+01  t=0s
 #>   iter=9  mprod=166  sv[20]=9.6004e+01  t=0s
 #>   Converged: iter=9, mprod=166
 #> Done.
@@ -284,7 +284,7 @@ plot_grid(
 Runtime for analysis
 </summary>
 
-    #> Time difference of 48.20301 secs
+    #> Time difference of 47.77112 secs
 
 </details>
 
@@ -316,7 +316,7 @@ sessioninfo::session_info()
 #>  package              * version  date (UTC) lib source
 #>  abind                  1.4-8    2024-09-12 [1] CRAN (R 4.5.1)
 #>  aricode                1.1.0    2026-05-13 [1] CRAN (R 4.5.3)
-#>  Banksy               * 1.9.2    2026-09-29 [1] local (/gpfs/projects/h2lab/jxlee/genome-institute/Banksy)
+#>  Banksy               * 1.9.4    2026-09-29 [1] local (/gpfs/projects/h2lab/jxlee/genome-institute/Banksy)
 #>  beachmat               2.26.0   2025-10-29 [1] Bioconductor 3.22 (R 4.5.2)
 #>  beeswarm               0.4.0    2021-06-01 [1] CRAN (R 4.5.1)
 #>  Biobase              * 2.70.0   2025-10-29 [1] Bioconductor 3.22 (R 4.5.2)
