@@ -19,7 +19,9 @@
 # @param lambda numeric spatial weight in [0,1]
 # @param npcs integer number of PCs to compute
 # @param split_scale logical whether to scale per group
-# @param scale_max numeric max absolute z-score for clipping
+# @param scale_max numeric upper bound for scaled values. Caps the upper tail
+#   only, matching Seurat's ScaleData. Keeps the excess sparse: a zero entry
+#   scales to -mu/sd < 0 and can never exceed the cap.
 # @param pca_backend character "cpp" or "r"
 # @param verbose logical
 #
