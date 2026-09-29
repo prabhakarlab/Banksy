@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Banksy</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.2</span>
       </span>
     </div>
 
@@ -32,6 +32,9 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/banksy-matrix.html">Clustering via BANKSY matrix construction</a>
+    </li>
+    <li>
       <a href="../articles/parameter-selection.html">BANKSY parameter selection (VeraFISH Mouse Hippocampus)</a>
     </li>
     <li>
@@ -81,7 +84,16 @@
 <span>  scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  group <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  M <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  seed <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  lazy <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  pca_backend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cpp"</span>, <span class="st">"r"</span><span class="op">)</span>,</span>
+<span>  coord_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  k_geom <span class="op">=</span> <span class="fl">15L</span>,</span>
+<span>  spatial_mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kNN_median"</span>, <span class="st">"kNN_r"</span>, <span class="st">"kNN_rn"</span>, <span class="st">"kNN_rank"</span>, <span class="st">"kNN_unif"</span>, <span class="st">"rNN_gauss"</span><span class="op">)</span>,</span>
+<span>  split_scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  num_cores <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -92,12 +104,12 @@
 <dl><dt id="arg-se">se<a class="anchor" aria-label="anchor" href="#arg-se"></a></dt>
 <dd><p>A <code>SpatialExperiment</code>,
 <code>SingleCellExperiment</code> or <code>SummarizedExperiment</code>
-  object with <code>computeBanksy</code> ran.</p></dd>
+  object with <code>computeBanksy</code> ran (not required when <code>lazy=TRUE</code>).</p></dd>
 
 
 <dt id="arg-use-agf">use_agf<a class="anchor" aria-label="anchor" href="#arg-use-agf"></a></dt>
 <dd><p>A logical vector specifying whether to use the AGF for
-computing principal components.</p></dd>
+computing principal components. Ignored when <code>lazy=TRUE</code>.</p></dd>
 
 
 <dt id="arg-lambda">lambda<a class="anchor" aria-label="anchor" href="#arg-lambda"></a></dt>
@@ -119,22 +131,70 @@ to compute.</p></dd>
 
 <dt id="arg-scale">scale<a class="anchor" aria-label="anchor" href="#arg-scale"></a></dt>
 <dd><p>A logical scalar specifying whether to scale features before
-PCA. Defaults to TRUE.</p></dd>
+PCA. Defaults to TRUE. Ignored when <code>lazy=TRUE</code> (always scales).</p></dd>
 
 
 <dt id="arg-group">group<a class="anchor" aria-label="anchor" href="#arg-group"></a></dt>
 <dd><p>A string scalar specifying a grouping variable for samples in
-<code>se</code>. This is used to scale the samples in each group separately.</p></dd>
+<code>se</code>. This is used to scale the samples in each group separately.
+When <code>lazy=TRUE</code>, also used for per-group kNN computation.</p></dd>
 
 
 <dt id="arg-m">M<a class="anchor" aria-label="anchor" href="#arg-m"></a></dt>
 <dd><p>Advanced usage. An integer vector specifying the highest azimuthal
 Fourier harmonic to use. If specified, overwrites the <code>use_agf</code>
-argument.</p></dd>
+argument. Ignored when <code>lazy=TRUE</code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>Seed for PCA. If not specified, no seed is set.</p></dd>
+<dd><p>Seed for PCA. If not specified, no seed is set. Ignored when
+<code>lazy=TRUE</code>.</p></dd>
+
+
+<dt id="arg-lazy">lazy<a class="anchor" aria-label="anchor" href="#arg-lazy"></a></dt>
+<dd><p>A logical scalar. If TRUE, compute PCA directly without
+materializing the full BANKSY matrix. Default FALSE.</p></dd>
+
+
+<dt id="arg-pca-backend">pca_backend<a class="anchor" aria-label="anchor" href="#arg-pca-backend"></a></dt>
+<dd><p>A string scalar specifying the PCA backend when
+<code>lazy=TRUE</code>. <code>"cpp"</code> (default) uses C++ irlba for lower memory
+and faster runtime. <code>"r"</code> uses R's irlba package.</p></dd>
+
+
+<dt id="arg-coord-names">coord_names<a class="anchor" aria-label="anchor" href="#arg-coord-names"></a></dt>
+<dd><p>A string vector specifying the names in <code>colData</code>
+corresponding to spatial coordinates. Only used when <code>lazy=TRUE</code>.</p></dd>
+
+
+<dt id="arg-k-geom">k_geom<a class="anchor" aria-label="anchor" href="#arg-k-geom"></a></dt>
+<dd><p>An integer scalar specifying the number of neighbors to use.
+Only used when <code>lazy=TRUE</code>.</p></dd>
+
+
+<dt id="arg-spatial-mode">spatial_mode<a class="anchor" aria-label="anchor" href="#arg-spatial-mode"></a></dt>
+<dd><p>A string scalar specifying the kernel for neighborhood
+computation. Only used when <code>lazy=TRUE</code>.</p></dd>
+
+
+<dt id="arg-split-scale">split_scale<a class="anchor" aria-label="anchor" href="#arg-split-scale"></a></dt>
+<dd><p>A logical scalar specifying whether to scale features
+per group. Only used when <code>lazy=TRUE</code> and <code>group</code> is not NULL.</p></dd>
+
+
+<dt id="arg-num-cores">num_cores<a class="anchor" aria-label="anchor" href="#arg-num-cores"></a></dt>
+<dd><p>An integer scalar specifying the number of cores for
+parallel kNN via mclapply. Only used when <code>lazy=TRUE</code> and
+<code>group</code> is not NULL.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>A logical scalar specifying verbosity.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Additional arguments passed to <code>computeNeighbors</code> when
+<code>lazy=TRUE</code>.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -147,24 +207,34 @@ argument.</p></dd>
     <p>This function runs PCA on the BANKSY matrix
 (see <a href="getBanksyMatrix.html">getBanksyMatrix</a>) with features scaled to zero mean and
 unit standard deviation.</p>
+<p>When <code>lazy=TRUE</code>, PCA is computed without materializing the full BANKSY
+matrix in memory using an implicit linear operator. This enables analysis of
+very large datasets (millions of cells). The lazy path does not require
+<code><a href="computeBanksy.html">computeBanksy</a></code> to be run first — it computes the kNN graph
+internally. Currently only supported for M=0 (no AGF).</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">rings</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu"><a href="computeBanksy.html">computeBanksy</a></span><span class="op">(</span><span class="va">rings</span>, assay_name <span class="op">=</span> <span class="st">"counts"</span>, M <span class="op">=</span> <span class="fl">1</span>, k_geom <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">30</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu">runBanksyPCA</span><span class="op">(</span><span class="va">rings</span>, assay_name <span class="op">=</span> <span class="st">"counts"</span>, lambda <span class="op">=</span> <span class="fl">0.2</span>, npcs <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing neighbors...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Spatial mode is kNN_median</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Parameters: k_geom=15</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing neighbors...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Spatial mode is kNN_median</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Parameters: k_geom=30</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Centering</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Done</span>
-<span class="r-in"><span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu">runBanksyPCA</span><span class="op">(</span><span class="va">spe</span>, M <span class="op">=</span> <span class="fl">1</span>, lambda <span class="op">=</span> <span class="fl">0.2</span>, npcs <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Building sparse weight matrix</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing scaling parameters for own expression</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing clipping excess for own expression</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing scaling params and clipping for H0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> H0 genes requiring clipping: 0 / 50</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Clipping corrections: own=0 H0=0 entries</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing BANKSY PCA (20 PCs) via C++ irlba (work=27)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   iter=1  mprod=54  sv[20]=8.6718e+00  t=0s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   iter=2  mprod=68  sv[20]=1.1590e+01  t=0s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   iter=5  mprod=110  sv[20]=1.4483e+01  t=0s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   iter=8  mprod=152  sv[20]=1.4489e+01  t=0s</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Converged: iter=8, mprod=152</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Done.</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -180,7 +250,7 @@ unit standard deviation.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
       </footer></div>

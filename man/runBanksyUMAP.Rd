@@ -92,8 +92,7 @@ BANKSY matrix.
 }
 \examples{
 data(rings)
-spe <- computeBanksy(rings, assay_name = "counts", M = 1, k_geom = c(15, 30))
-spe <- runBanksyPCA(spe, M = 1, lambda = 0.2, npcs = 20)
-spe <- runBanksyUMAP(spe, M = 1, lambda = 0.2)
+spe <- runBanksyPCA(rings, assay_name = "counts", lambda = 0.2, npcs = 20)
+spe <- runBanksyUMAP(spe, lambda = 0.2)
 
 }

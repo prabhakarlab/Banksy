@@ -127,22 +127,16 @@ spe <- spe[VariableFeatures(seu),]
 
 # Running BANKSY
 
-Compute BANKSY neighborhood matrices. We use `k_geom=18` corresponding to 
-first and second-order neighbors in 10x Visium.
-
-```{r, eval=T, message=FALSE, warning=FALSE}
-compute_agf <- TRUE
-k_geom <- 18
-spe <- computeBanksy(spe, assay_name = aname, compute_agf = compute_agf, k_geom = k_geom)
-```
-
-Run PCA on the BANKSY matrix:
+We run BANKSY PCA in lazy mode (the default), which computes the neighborhood
+feature matrix and PCA directly without materializing the full BANKSY matrix.
+We use `k_geom=18` corresponding to first and second-order neighbors in 10x
+Visium.
 
 ```{r pca, eval=T, message=FALSE, warning=FALSE}
 lambda <- 0.2
+k_geom <- 18
 npcs <- 20
-use_agf <- TRUE
-spe <- runBanksyPCA(spe, use_agf = use_agf, lambda = lambda, npcs = npcs, seed = SEED)
+spe <- runBanksyPCA(spe, assay_name = aname, lambda = lambda, k_geom = k_geom, npcs = npcs, seed = SEED)
 ```
 
 # Run Harmony on BANKSY's embedding
@@ -152,7 +146,7 @@ We run Harmony on the PCs of the BANKSY matrix:
 ```{r harmony, eval=T, message=FALSE, warning=FALSE}
 set.seed(SEED)
 harmony_embedding <- harmony::RunHarmony(
-    data_mat = reducedDim(spe, "PCA_M1_lam0.2"),
+    data_mat = reducedDim(spe, "PCA_M0_lam0.2"),
     meta_data = colData(spe),
     vars_use = c("sample_id", "subject_id"),
     max_iter = 20,
@@ -164,7 +158,7 @@ reducedDim(spe, "Harmony_BANKSY") <- harmony_embedding
 Next, run UMAP on the 'raw' and Harmony corrected PCA embeddings:
 
 ```{r umap, eval=T, message=FALSE, warning=FALSE}
-spe <- runBanksyUMAP(spe, use_agf = TRUE, lambda = lambda, npcs = npcs)
+spe <- runBanksyUMAP(spe, lambda = lambda, npcs = npcs)
 spe <- runBanksyUMAP(spe, dimred = "Harmony_BANKSY")
 ```
 
@@ -172,7 +166,7 @@ Visualize the UMAPs annotated by subject ID:
 
 ```{r batch-correction-umap, eval=T, fig.height=3.5, out.width='90%', message=FALSE, warning=FALSE}
 plot_grid(
-    plotReducedDim(spe, "UMAP_M1_lam0.2", 
+    plotReducedDim(spe, "UMAP_M0_lam0.2",
                    point_size = 0.1,
                    point_alpha = 0.5,
                    color_by = "subject_id") +

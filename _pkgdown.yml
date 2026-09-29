@@ -41,6 +41,8 @@ navbar:
       href: reference/index.html
     - text: Vignettes
       menu:
+      - text: Clustering via BANKSY matrix construction
+        href: articles/banksy-matrix.html
       - text: BANKSY parameter selection (VeraFISH Mouse Hippocampus)
         href: articles/parameter-selection.html
       - text: Domain segmentation (STARmap PLUS Mouse brain)

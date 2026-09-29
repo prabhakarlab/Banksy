@@ -77,10 +77,7 @@ se <- SpatialExperiment(
 # Running BANKSY
 
 Run BANKSY in domain segmentation mode with `lambda=0.8`. This places larger
-weights on the mean neighborhood expression and azimuthal Gabor filter in 
-constructing the BANKSY matrix. We adjust the resolution to yield 23 clusters 
-based on the results from [Maher et al. (2023)](https://doi.org/10.1101/2023.06.30.547258v1) 
-(see Fig. 1, 2).  
+weights on the mean neighborhood expression in constructing the BANKSY matrix.
 
 > Note that the parameter values for domain segmentation for datasets generated using the older [Visium v1 / v2 55um technologies](https://doi.org/10.1038/s41593-020-00787-0) are `lambda = 0.2` and `k_geom = 18`. See the note in the tutorial on the main [page](https://github.com/prabhakarlab/Banksy) for more details. 
 
@@ -88,14 +85,12 @@ based on the results from [Maher et al. (2023)](https://doi.org/10.1101/2023.06.
 lambda <- 0.8
 k_geom <- 30
 npcs <- 50
-aname <- "processedExp"
-se <- Banksy::computeBanksy(se, assay_name = aname, k_geom = k_geom)
 
 set.seed(1000)
-se <- Banksy::runBanksyPCA(se, lambda = lambda, npcs = npcs)
+se <- Banksy::runBanksyPCA(se, lambda = lambda, npcs = npcs, k_geom = k_geom)
 
 set.seed(1000)
-se <- Banksy::clusterBanksy(se, lambda = lambda, npcs = npcs, resolution = 0.8)
+se <- Banksy::clusterBanksy(se, lambda = lambda, npcs = npcs, resolution = 0.6)
 ```
 
 Cluster labels are stored in the `colData` slot:

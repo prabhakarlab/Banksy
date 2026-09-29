@@ -46,13 +46,13 @@ Values \eqn{\in [15,30]} work well.}
 
 \item{spatial_mode}{A string scalar specifying the kernel for neighborhood
   computation (default: kNN_median).
-\itemize{
- \item{kNN_median: k-nearest neighbors with median-scaled Gaussian kernel}
- \item{kNN_r: k-nearest neighbors with $1/r$ kernel}
- \item{kNN_rn: k-nearest neighbors with $1/r^n$ kernel}
- \item{kNN_rank: k-nearest neighbors with rank Gaussian kernel}
- \item{kNN_unif: k-nearest neighbors wth uniform kernel}
- \item{rNN_gauss: radial nearest neighbors with Gaussian kernel}
+\describe{
+ \item{kNN_median}{k-nearest neighbors with median-scaled Gaussian kernel}
+ \item{kNN_r}{k-nearest neighbors with $1/r$ kernel}
+ \item{kNN_rn}{k-nearest neighbors with $1/r^n$ kernel}
+ \item{kNN_rank}{k-nearest neighbors with rank Gaussian kernel}
+ \item{kNN_unif}{k-nearest neighbors with uniform kernel}
+ \item{rNN_gauss}{radial nearest neighbors with Gaussian kernel}
 }}
 
 \item{n}{A numeric scalar specifying the exponent of radius (for kNN_rn).}
@@ -79,10 +79,10 @@ neighbor weights to 1.}
 \item{seed}{An integer scalar specifying seed for sampling the neighborhood.}
 
 \item{dimensions}{A character vector specifying the dimensions to use when
-  computing neighborhood.
-\itemize{
- \item{subset of colnames of cell.locs}
- \item{all}{Uses all colnames of spatialCoords to compute (default)}
+  computing neighborhood. One of:
+\describe{
+ \item{a subset of \code{spatialCoords} colnames}{use the specified dimensions}
+ \item{all}{use all \code{spatialCoords} colnames (default)}
 }}
 
 \item{center}{A logical scalar specifying whether to center higher order

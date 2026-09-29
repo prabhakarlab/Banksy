@@ -1,6 +1,6 @@
 Package: Banksy
 Title: Spatial transcriptomic clustering
-Version: 1.9.1
+Version: 1.9.2
 Authors@R: c(
     person(given = "Vipul",
            family = "Singhal",
@@ -25,6 +25,7 @@ Imports:
     BiocParallel,
     data.table,
     dbscan,
+    Rcpp,
     SpatialExperiment,
     SingleCellExperiment,
     SummarizedExperiment,
@@ -32,17 +33,20 @@ Imports:
     stats,
     Matrix,
     MatrixGenerics,
+    methods,
     mclust,
     igraph,
     irlba,
+    parallel,
     leidenAlg (>= 1.1.0),
     utils,
     uwot,
     RcppHungarian,
     GenomeInfoDb
+LinkingTo: Rcpp
 License: file LICENSE
 Encoding: UTF-8
-URL: https://github.com/prabhakarlab/Banksy
+URL: https://github.com/prabhakarlab/Banksy, https://prabhakarlab.github.io/Banksy
 BugReports: https://github.com/prabhakarlab/Banksy/issues
 RoxygenNote: 7.3.2
 Suggests: 
@@ -62,6 +66,16 @@ Suggests:
     BiocStyle
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+Collate:
+    'RcppExports.R'
+    'lazy.R'
+    'Banksy-package.R'
+    'cluster.R'
+    'computation.R'
+    'data.R'
+    'misc.R'
+    'reduction.R'
+    'zzz.R'
 biocViews:
     Clustering,
     Spatial,

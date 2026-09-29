@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Banksy</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.2</span>
       </span>
     </div>
 
@@ -32,6 +32,9 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/banksy-matrix.html">Clustering via BANKSY matrix construction</a>
+    </li>
+    <li>
       <a href="../articles/parameter-selection.html">BANKSY parameter selection (VeraFISH Mouse Hippocampus)</a>
     </li>
     <li>
@@ -66,6 +69,13 @@
       <small>Source: <a href="https://github.com/prabhakarlab/Banksy/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="1.9.2" id="version-192">Version 1.9.2<a class="anchor" aria-label="anchor" href="#version-192"></a></h2>
+<ul><li>Lazy PCA mode in runBanksyPCA (lazy=TRUE, now the default) computes PCA via an implicit linear operator without materializing the full BANKSY matrix, scaling to millions of cells with low memory usage</li>
+<li>C++ backend (pca_backend=“cpp”, default) implements irlba with OpenMP-parallelized sparse matrix-vector products and column-wise H0 scaling that computes neighborhood statistics without materializing the gene-by-cell product matrix</li>
+<li>The lazy path supports multi-sample analysis with per-group kNN, within-group scaling, optional parallel kNN via mclapply, and multiple lambda values in a single call with kNN computed once and reused.</li>
+<li>At 96% sparsity and 5k features with average group size ~400k, expected runtime / peak mem for runBanksyPCA is 1.9 min / 27 GB at 1M cells, 2.8 min / 39 GB at 2M, 8.2 min / 84 GB at 5M, and 13.0 min / 163 GB at 10M cells, scaling approximately linearly in both runtime and memory.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.99.8" id="version-0998">Version 0.99.8<a class="anchor" aria-label="anchor" href="#version-0998"></a></h2>
 <ul><li>Add feature scaling options for PCA and UMAP</li>
@@ -124,7 +134,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
       </footer></div>
