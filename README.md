@@ -284,7 +284,7 @@ plot_grid(
 Runtime for analysis
 </summary>
 
-    #> Time difference of 47.53948 secs
+    #> Time difference of 48.20301 secs
 
 </details>
 
