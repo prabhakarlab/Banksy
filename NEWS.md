@@ -4,7 +4,19 @@
 + Lazy PCA mode in runBanksyPCA (lazy=TRUE, now the default) computes PCA via an implicit linear operator without materializing the full BANKSY matrix, scaling to millions of cells with low memory usage
 + C++ backend (pca_backend="cpp", default) implements irlba with OpenMP-parallelized sparse matrix-vector products and column-wise H0 scaling that computes neighborhood statistics without materializing the gene-by-cell product matrix
 + The lazy path supports multi-sample analysis with per-group kNN, within-group scaling, optional parallel kNN via mclapply, and multiple lambda values in a single call with kNN computed once and reused. 
-+ At 96% sparsity and 5k features with average group size ~400k, expected runtime / peak mem for runBanksyPCA is 1.9 min / 27 GB at 1M cells, 2.8 min / 39 GB at 2M, 8.2 min / 84 GB at 5M, and 13.0 min / 163 GB at 10M cells, scaling approximately linearly in both runtime and memory.
++ The lazy path reads on-disk matrices (e.g. BPCells) without coercing them to memory, allowing datasets beyond R's 2^31 sparse non-zero limit
++ OpenMP regions in the C++ backend are gated on a minimum work size, so small datasets are not slowed by thread creation when the thread count exceeds the available cores. Override with `BANKSY_OMP_MIN_WORK`
++ `runBanksyPCA` with the lazy path has been benchmarked to 25 million cells. Tiled Xenium Prime 5K, `lambda=0.2`, `k_geom=30`, `npcs=50`, per-sample kNN and scaling, on 8 CPUs:
+
+| Cells | Features | Sparsity | Samples | Runtime | Peak memory |
+|---:|---:|---:|---:|---:|---:|
+| 1,221,372 | 5,101 | 96.18% | 3 | 1.6 min | 22.1 GB |
+| 2,035,620 | 5,101 | 96.18% | 5 | 2.5 min | 38.9 GB |
+| 5,292,612 | 5,101 | 96.18% | 13 | 6.6 min | 83.9 GB |
+| 10,178,100 | 5,101 | 96.18% | 25 | 12.5 min | 163.0 GB |
+| 25,241,688 | 5,101 | 96.18% | 62 | 34.6 min | 162.4 GB |
+
+Runtime scales approximately linearly in cell count (`1.3 * n^0.97` minutes, n in millions). Memory scales linearly up to 10M; the 25M run uses on-disk BPCells storage, which caps resident memory at the cost of runtime.
 
 # Version 0.99.8
 
