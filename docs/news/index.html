@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">Banksy</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.5</span>
       </span>
     </div>
 
@@ -69,6 +69,10 @@
       <small>Source: <a href="https://github.com/prabhakarlab/Banksy/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="1.9.5" id="version-195">Version 1.9.5<a class="anchor" aria-label="anchor" href="#version-195"></a></h2>
+<ul><li>Point the large-dataset documentation link at the SeuratWrappers upstream repository rather than a development fork</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.9.4" id="version-194">Version 1.9.4<a class="anchor" aria-label="anchor" href="#version-194"></a></h2>
 <ul><li>The lazy path in <code>runBanksyPCA</code> is now reproducible by default. With no <code>seed</code>, both <code>pca_backend</code> options start the iterative solver from a fixed vector, so repeated runs give identical embeddings and the caller’s RNG stream is left untouched. Supplying a <code>seed</code> draws a random starting vector instead, reproducibly, for callers who want to vary it. Previously the C++ backend called <code>set.seed(42)</code> internally, overriding the user’s <code>seed</code>, and the R backend was unseeded</li>

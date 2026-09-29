@@ -44,7 +44,7 @@ features, taking 12.5 min / 163 GB at 10 million cells and 34.6 min at
 25 million with on-disk BPCells storage; see [NEWS](NEWS.md) for the
 full table. For analysis on large datasets (\> 1 million samples), we
 recommend using BANKSY via SeuratWrappers: see [this
-vignette](https://github.com/jleechung/seurat-wrappers/blob/feat-sparse-matmul/docs/banksy.md#scaling-to-large-datasets).**
+vignette](https://github.com/satijalab/seurat-wrappers/blob/master/docs/banksy.md#scaling-to-large-datasets).**
 
 ## Installation
 
@@ -284,7 +284,7 @@ plot_grid(
 Runtime for analysis
 </summary>
 
-    #> Time difference of 46.33156 secs
+    #> Time difference of 46.63217 secs
 
 </details>
 

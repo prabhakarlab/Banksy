@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">Banksy</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.5</span>
       </span>
     </div>
 
@@ -108,7 +108,7 @@
 <li>a <a href="https://github.com/prabhakarlab/Banksy_py" class="external-link">Python version</a> of this package,</li>
 <li>a <a href="https://zenodo.org/records/10258795" class="external-link">Zenodo archive</a> containing scripts to reproduce the analyses in the paper, and the corresponding <a href="https://github.com/jleechung/banksy-zenodo" class="external-link">GitHub Pages</a> (and <a href="https://github.com/prabhakarlab/Banksy_py/tree/Banksy_manuscript" class="external-link">here</a> for analyses done in Python).</li>
 </ul>
-<p><strong>BANKSY now includes a lazy PCA mode (<code>lazy=TRUE</code> in <code>runBanksyPCA</code>) that computes PCA directly via an implicit linear operator without materializing the full BANKSY matrix. This is the default and recommended mode. It has been benchmarked to 25 million cells at 5k features, taking 12.5 min / 163 GB at 10 million cells and 34.6 min at 25 million with on-disk BPCells storage; see <a href="NEWS.html">NEWS</a> for the full table. For analysis on large datasets (&gt; 1 million samples), we recommend using BANKSY via SeuratWrappers: see <a href="https://github.com/jleechung/seurat-wrappers/blob/feat-sparse-matmul/docs/banksy.md#scaling-to-large-datasets" class="external-link">this vignette</a>.</strong></p>
+<p><strong>BANKSY now includes a lazy PCA mode (<code>lazy=TRUE</code> in <code>runBanksyPCA</code>) that computes PCA directly via an implicit linear operator without materializing the full BANKSY matrix. This is the default and recommended mode. It has been benchmarked to 25 million cells at 5k features, taking 12.5 min / 163 GB at 10 million cells and 34.6 min at 25 million with on-disk BPCells storage; see <a href="NEWS.html">NEWS</a> for the full table. For analysis on large datasets (&gt; 1 million samples), we recommend using BANKSY via SeuratWrappers: see <a href="https://github.com/satijalab/seurat-wrappers/blob/master/docs/banksy.md#scaling-to-large-datasets" class="external-link">this vignette</a>.</strong></p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -257,7 +257,7 @@
 <p><img src="reference/figures/README-unnamed-chunk-15-1.png" alt="" width="100%"></p>
 <details><summary>
 Runtime for analysis
-</summary><div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co">#&gt; Time difference of 46.33156 secs</span></span></code></pre></div>
+</summary><div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co">#&gt; Time difference of 46.63217 secs</span></span></code></pre></div>
 </details><details><summary>
 Session information
 </summary><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
