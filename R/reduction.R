@@ -225,7 +225,7 @@ runBanksyPCA <- function(se,
 # Argument checks for runBanksyPCA
 checkBanksyPCA <- function(params) {
     stopifnot("use_agf should be a logical vector" = 
-                  is.logical(as.logical(params$compute_agf)))
+                  is.logical(as.logical(params$use_agf)))
     stopifnot("lambda should be a numeric vector with each entry in [0,1]" = 
                   is.numeric(params$lambda) & 
                   max(params$lambda) <= 1 & 
@@ -374,7 +374,7 @@ runBanksyUMAP <- function(se,
 # Argument checks for runBanksyUMAP
 checkBanksyUMAP <- function(params) {
     stopifnot("use_agf should be a logical vector" = 
-                  is.logical(as.logical(params$compute_agf)))
+                  is.logical(as.logical(params$use_agf)))
     stopifnot("lambda should be a numeric vector with each entry in [0,1]" = 
                   is.numeric(params$lambda) & 
                   max(params$lambda) <= 1 & 
