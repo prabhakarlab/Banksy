@@ -39,9 +39,11 @@ datasets. For more details, check out:
 **BANKSY now includes a lazy PCA mode (`lazy=TRUE` in `runBanksyPCA`)
 that computes PCA directly via an implicit linear operator without
 materializing the full BANKSY matrix. This is the default and
-recommended mode, scaling to millions of cells with low memory usage.
-For analysis on large datasets (\> 1 million samples), we recommend
-using BANKSY via SeuratWrappers: see [this
+recommended mode. It has been benchmarked to 25 million cells at 5k
+features, taking 12.5 min / 163 GB at 10 million cells and 34.6 min at
+25 million with on-disk BPCells storage; see [NEWS](NEWS.md) for the
+full table. For analysis on large datasets (\> 1 million samples), we
+recommend using BANKSY via SeuratWrappers: see [this
 vignette](https://github.com/jleechung/seurat-wrappers/blob/feat-sparse-matmul/docs/banksy.md#scaling-to-large-datasets).**
 
 ## Installation
@@ -182,9 +184,9 @@ se <- Banksy::runBanksyPCA(se, assay_name = aname, lambda = lambda, k_geom = 15)
 #> Computing BANKSY PCA (20 PCs) via C++ irlba (work=27)
 #>   iter=1  mprod=54  sv[20]=7.9454e+01  t=0s
 #>   iter=2  mprod=68  sv[20]=9.5131e+01  t=0s
-#>   iter=5  mprod=110  sv[20]=1.0435e+02  t=1s
-#>   iter=10  mprod=180  sv[20]=1.0568e+02  t=1s
-#>   iter=11  mprod=194  sv[20]=1.0568e+02  t=1s
+#>   iter=5  mprod=110  sv[20]=1.0435e+02  t=0s
+#>   iter=10  mprod=180  sv[20]=1.0568e+02  t=0s
+#>   iter=11  mprod=194  sv[20]=1.0568e+02  t=0s
 #>   Converged: iter=11, mprod=194
 #> --- lambda = 0.2 ---
 #> Building sparse weight matrix
@@ -196,8 +198,8 @@ se <- Banksy::runBanksyPCA(se, assay_name = aname, lambda = lambda, k_geom = 15)
 #> Computing BANKSY PCA (20 PCs) via C++ irlba (work=27)
 #>   iter=1  mprod=54  sv[20]=6.2079e+01  t=0s
 #>   iter=2  mprod=68  sv[20]=8.2518e+01  t=0s
-#>   iter=5  mprod=110  sv[20]=9.5141e+01  t=1s
-#>   iter=9  mprod=166  sv[20]=9.6004e+01  t=1s
+#>   iter=5  mprod=110  sv[20]=9.5141e+01  t=0s
+#>   iter=9  mprod=166  sv[20]=9.6004e+01  t=0s
 #>   Converged: iter=9, mprod=166
 #> Done.
 ```
@@ -239,7 +241,7 @@ plot_bank <- plotColData(se,
 plot_grid(plot_nsp + coord_equal(), plot_bank + coord_equal(), ncol = 2)
 ```
 
-<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-13-1.png" alt="" width="100%" />
 
 For clarity, we can visualise each of the clusters separately:
 
@@ -251,7 +253,7 @@ plot_grid(
 )
 ```
 
-<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-14-1.png" alt="" width="100%" />
 
 Visualize UMAPs of the non-spatial and BANKSY embedding:
 
@@ -273,77 +275,133 @@ plot_grid(
 )
 ```
 
-<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-15-1.png" alt="" width="100%" />
 
 <details>
+
 <summary>
+
 Runtime for analysis
 </summary>
 
-    #> Time difference of 35.0907 secs
+    #> Time difference of 47.53948 secs
 
 </details>
+
 <details>
+
 <summary>
+
 Session information
 </summary>
 
 ``` r
-sessionInfo()
-#> R version 4.5.1 (2025-06-13)
-#> Platform: aarch64-apple-darwin20
-#> Running under: macOS Sonoma 14.6.1
+options(width = 120)
+sessioninfo::session_info()
+#> ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────
+#>  setting  value
+#>  version  R version 4.5.1 (2025-06-13)
+#>  os       Rocky Linux 9.8 (Blue Onyx)
+#>  system   x86_64, linux-gnu
+#>  ui       X11
+#>  language (EN)
+#>  collate  C.UTF-8
+#>  ctype    C.UTF-8
+#>  tz       America/Los_Angeles
+#>  date     2026-09-29
+#>  pandoc   3.11 @ /gpfs/scrubbed/jxlee/conda/envs/banksy-bench-2/bin/ (via rmarkdown)
+#>  quarto   NA
 #> 
-#> Matrix products: default
-#> BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
-#> LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+#> ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
+#>  package              * version  date (UTC) lib source
+#>  abind                  1.4-8    2024-09-12 [1] CRAN (R 4.5.1)
+#>  aricode                1.1.0    2026-05-13 [1] CRAN (R 4.5.3)
+#>  Banksy               * 1.9.2    2026-09-29 [1] local (/gpfs/projects/h2lab/jxlee/genome-institute/Banksy)
+#>  beachmat               2.26.0   2025-10-29 [1] Bioconductor 3.22 (R 4.5.2)
+#>  beeswarm               0.4.0    2021-06-01 [1] CRAN (R 4.5.1)
+#>  Biobase              * 2.70.0   2025-10-29 [1] Bioconductor 3.22 (R 4.5.2)
+#>  BiocGenerics         * 0.56.0   2025-10-29 [1] Bioconductor 3.22 (R 4.5.2)
+#>  BiocNeighbors          2.4.0    2025-10-29 [1] Bioconductor 3.22 (R 4.5.2)
+#>  BiocParallel           1.44.0   2025-10-29 [1] Bioconductor 3.22 (R 4.5.2)
+#>  BiocSingular           1.26.1   2025-11-17 [1] Bioconductor 3.22 (R 4.5.2)
+#>  cli                    3.6.6    2026-04-09 [1] CRAN (R 4.5.3)
+#>  codetools              0.2-20   2024-03-31 [1] CRAN (R 4.5.1)
+#>  cowplot              * 1.2.0    2025-07-07 [1] CRAN (R 4.5.1)
+#>  data.table             1.18.6.1 2026-08-24 [1] CRAN (R 4.5.3)
+#>  dbscan                 1.2.6    2026-08-25 [1] CRAN (R 4.5.3)
+#>  DelayedArray           0.36.1   2026-03-31 [1] Bioconductor 3.22 (R 4.5.3)
+#>  dichromat              2.0-1    2026-07-22 [1] CRAN (R 4.5.3)
+#>  digest                 0.6.39   2025-11-19 [1] CRAN (R 4.5.2)
+#>  dplyr                  1.2.1    2026-04-03 [1] CRAN (R 4.5.3)
+#>  evaluate               1.0.5    2025-08-27 [1] CRAN (R 4.5.1)
+#>  farver                 2.1.2    2024-05-13 [1] CRAN (R 4.5.1)
+#>  fastmap                1.2.0    2024-05-15 [1] CRAN (R 4.5.1)
+#>  generics             * 0.1.4    2025-05-09 [1] CRAN (R 4.5.1)
+#>  GenomicRanges        * 1.62.1   2025-12-08 [1] Bioconductor 3.22 (R 4.5.2)
+#>  ggbeeswarm             0.7.3    2025-11-29 [1] CRAN (R 4.5.2)
+#>  ggplot2              * 4.0.3    2026-04-22 [1] CRAN (R 4.5.3)
+#>  ggrepel                0.9.8    2026-03-17 [1] CRAN (R 4.5.3)
+#>  glue                   1.8.1    2026-04-17 [1] CRAN (R 4.5.3)
+#>  gridExtra              2.3.1    2026-06-25 [1] CRAN (R 4.5.3)
+#>  gtable                 0.3.6    2024-10-25 [1] CRAN (R 4.5.1)
+#>  htmltools              0.5.9    2025-12-04 [1] CRAN (R 4.5.2)
+#>  igraph                 2.3.3    2026-06-26 [1] CRAN (R 4.5.3)
+#>  IRanges              * 2.44.0   2025-10-29 [1] Bioconductor 3.22 (R 4.5.2)
+#>  irlba                  2.3.7    2026-01-30 [1] CRAN (R 4.5.2)
+#>  knitr                  1.52     2026-09-06 [1] CRAN (R 4.5.3)
+#>  labeling               0.4.3    2023-08-29 [1] CRAN (R 4.5.1)
+#>  lattice                0.23-1   2026-08-12 [1] CRAN (R 4.5.3)
+#>  leidenAlg              1.1.8    2026-05-31 [1] CRAN (R 4.5.3)
+#>  lifecycle              1.0.5    2026-01-08 [1] CRAN (R 4.5.2)
+#>  magick                 2.9.1    2026-02-28 [1] CRAN (R 4.5.2)
+#>  magrittr               2.0.5    2026-04-04 [1] CRAN (R 4.5.3)
+#>  Matrix                 1.7-6    2026-07-25 [1] CRAN (R 4.5.3)
+#>  MatrixGenerics       * 1.22.0   2025-10-29 [1] Bioconductor 3.22 (R 4.5.2)
+#>  matrixStats          * 1.5.0    2025-01-07 [1] CRAN (R 4.5.1)
+#>  mclust                 6.1.3    2026-07-05 [1] CRAN (R 4.5.3)
+#>  otel                   0.2.0    2025-08-29 [1] CRAN (R 4.5.1)
+#>  pillar                 1.11.1   2025-09-17 [1] CRAN (R 4.5.1)
+#>  pkgconfig              2.0.3    2019-09-22 [1] CRAN (R 4.5.1)
+#>  R6                     2.6.1    2025-02-15 [1] CRAN (R 4.5.1)
+#>  RColorBrewer           1.1-3    2022-04-03 [1] CRAN (R 4.5.1)
+#>  Rcpp                   1.1.2    2026-07-05 [1] CRAN (R 4.5.3)
+#>  RcppAnnoy              0.0.23   2026-01-12 [1] CRAN (R 4.5.2)
+#>  RcppHungarian          0.3      2023-09-05 [1] CRAN (R 4.5.3)
+#>  rjson                  0.2.23   2024-09-16 [1] CRAN (R 4.5.1)
+#>  rlang                  1.3.0    2026-07-05 [1] CRAN (R 4.5.3)
+#>  rmarkdown              2.32     2026-09-01 [1] CRAN (R 4.5.3)
+#>  RSpectra               0.16-2   2024-07-18 [1] CRAN (R 4.5.1)
+#>  rsvd                   1.0.5    2021-04-16 [1] CRAN (R 4.5.1)
+#>  S4Arrays               1.10.1   2025-12-01 [1] Bioconductor 3.22 (R 4.5.2)
+#>  S4Vectors            * 0.48.1   2026-04-05 [1] Bioconductor 3.22 (R 4.5.3)
+#>  S7                     0.2.2    2026-04-22 [1] CRAN (R 4.5.3)
+#>  ScaledMatrix           1.18.0   2025-10-29 [1] Bioconductor 3.22 (R 4.5.2)
+#>  scales                 1.4.0    2025-04-24 [1] CRAN (R 4.5.1)
+#>  scater               * 1.38.1   2026-03-20 [1] Bioconductor 3.22 (R 4.5.3)
+#>  sccore                 1.0.7    2026-04-06 [1] CRAN (R 4.5.3)
+#>  scuttle              * 1.20.0   2025-10-30 [1] Bioconductor 3.22 (R 4.5.2)
+#>  Seqinfo              * 1.0.0    2025-10-29 [1] Bioconductor 3.22 (R 4.5.2)
+#>  sessioninfo            1.2.4    2026-06-04 [1] CRAN (R 4.5.3)
+#>  SingleCellExperiment * 1.32.0   2025-10-29 [1] Bioconductor 3.22 (R 4.5.2)
+#>  SparseArray            1.10.10  2026-03-30 [1] Bioconductor 3.22 (R 4.5.3)
+#>  SpatialExperiment    * 1.20.0   2025-10-29 [1] Bioconductor 3.22 (R 4.5.2)
+#>  SummarizedExperiment * 1.40.0   2025-10-29 [1] Bioconductor 3.22 (R 4.5.2)
+#>  tibble                 3.3.1    2026-01-11 [1] CRAN (R 4.5.2)
+#>  tidyselect             1.2.1    2024-03-11 [1] CRAN (R 4.5.1)
+#>  uwot                   0.2.5    2026-08-29 [1] CRAN (R 4.5.3)
+#>  vctrs                  0.7.3    2026-04-11 [1] CRAN (R 4.5.3)
+#>  vipor                  0.4.7    2023-12-18 [1] CRAN (R 4.5.1)
+#>  viridis                0.6.5    2024-01-29 [1] CRAN (R 4.5.1)
+#>  viridisLite            0.4.3    2026-02-04 [1] CRAN (R 4.5.2)
+#>  withr                  3.0.3    2026-06-19 [1] CRAN (R 4.5.3)
+#>  xfun                   0.60     2026-07-09 [1] CRAN (R 4.5.3)
+#>  XVector                0.50.0   2025-10-29 [1] Bioconductor 3.22 (R 4.5.2)
+#>  yaml                   2.3.12   2025-12-10 [1] CRAN (R 4.5.2)
 #> 
-#> locale:
-#> [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+#>  [1] /gpfs/scrubbed/jxlee/conda/envs/banksy-bench-2/lib/R/library
+#>  * ── Packages attached to the search path.
 #> 
-#> time zone: America/Los_Angeles
-#> tzcode source: internal
-#> 
-#> attached base packages:
-#> [1] stats4    stats     graphics  grDevices utils     datasets  methods  
-#> [8] base     
-#> 
-#> other attached packages:
-#>  [1] cowplot_1.2.0               scater_1.37.0              
-#>  [3] ggplot2_3.5.2               scuttle_1.19.0             
-#>  [5] SpatialExperiment_1.18.1    SingleCellExperiment_1.30.1
-#>  [7] SummarizedExperiment_1.39.1 Biobase_2.69.0             
-#>  [9] GenomicRanges_1.61.1        Seqinfo_0.99.1             
-#> [11] IRanges_2.43.0              S4Vectors_0.47.0           
-#> [13] BiocGenerics_0.55.0         generics_0.1.4             
-#> [15] MatrixGenerics_1.21.0       matrixStats_1.5.0          
-#> [17] Banksy_1.9.2               
-#> 
-#> loaded via a namespace (and not attached):
-#>  [1] beeswarm_0.4.0      gtable_0.3.6        rjson_0.2.23       
-#>  [4] xfun_0.52           ggrepel_0.9.6       lattice_0.22-7     
-#>  [7] vctrs_0.6.5         tools_4.5.1         parallel_4.5.1     
-#> [10] tibble_3.3.0        sccore_1.0.6        pkgconfig_2.0.3    
-#> [13] BiocNeighbors_2.3.1 Matrix_1.7-3        data.table_1.17.6  
-#> [16] RColorBrewer_1.1-3  lifecycle_1.0.4     compiler_4.5.1     
-#> [19] farver_2.1.2        aricode_1.0.3       codetools_0.2-20   
-#> [22] vipor_0.4.7         GenomeInfoDb_1.45.7 htmltools_0.5.8.1  
-#> [25] yaml_2.3.10         pillar_1.11.0       crayon_1.5.3       
-#> [28] BiocParallel_1.43.4 uwot_0.2.3          DelayedArray_0.35.2
-#> [31] dbscan_1.2.2        viridis_0.6.5       magick_2.8.7       
-#> [34] abind_1.4-8         mclust_6.1.1        rsvd_1.0.5         
-#> [37] tidyselect_1.2.1    digest_0.6.37       BiocSingular_1.24.0
-#> [40] dplyr_1.1.4         labeling_0.4.3      fastmap_1.2.0      
-#> [43] grid_4.5.1          cli_3.6.5           SparseArray_1.9.0  
-#> [46] magrittr_2.0.3      leidenAlg_1.1.5     S4Arrays_1.9.1     
-#> [49] dichromat_2.0-0.1   withr_3.0.2         scales_1.4.0       
-#> [52] UCSC.utils_1.5.0    ggbeeswarm_0.7.2    rmarkdown_2.29     
-#> [55] XVector_0.49.0      httr_1.4.7          igraph_2.1.4       
-#> [58] gridExtra_2.3       ScaledMatrix_1.16.0 beachmat_2.25.1    
-#> [61] evaluate_1.0.4      RcppHungarian_0.3   knitr_1.50         
-#> [64] RcppAnnoy_0.0.22    viridisLite_0.4.2   irlba_2.3.5.1      
-#> [67] rlang_1.1.6         Rcpp_1.1.0          glue_1.8.0         
-#> [70] jsonlite_2.0.0      R6_2.6.1
+#> ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
 </details>
