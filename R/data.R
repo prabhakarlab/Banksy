@@ -21,7 +21,7 @@
 #' An unrealistic simulation of spatially-resolved omics data.
 #'
 #' This dataset comprises gene expression and spatial coordinates for 50 genes
-#' and 308 cells from 4 clusters (\code{rings$clusters}). See \code{system.file('scripts/rings.R', package='Banksy')} on how this dataset was generated. 
+#' and 308 cells from 4 clusters (\code{rings$cluster}). See \code{system.file('scripts/rings.R', package='Banksy')} on how this dataset was generated.
 #'
 #' @format A SpatialExperiment object.
 #'
