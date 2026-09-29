@@ -8,57 +8,22 @@
 #endif
 #include <cstring>
 #include <vector>
+#include <cstdlib>
 
 using namespace Rcpp;
 
-// ── Helper: CSC column-subset matmul ────────────────────────────────────────
-// Compute result[nrow x k] += mat[, col_idx] %*% rhs[n_cols x k]
-// Accumulates into pre-zeroed result buffer. No allocation.
-static void csc_matmul_accum(const int* mi, const int* mp, const double* mx,
-                             int nrow, const int* cidx, int n_cols,
-                             const double* rhs, int k,
-                             double* result) {
-    #pragma omp parallel
-    {
-        std::vector<double> local(nrow * k, 0.0);
-        #pragma omp for schedule(dynamic, 64)
-        for (int c = 0; c < n_cols; c++) {
-            int j = cidx[c] - 1;
-            int p_start = mp[j];
-            int p_end = mp[j + 1];
-            for (int p = p_start; p < p_end; p++) {
-                int row = mi[p];
-                double val = mx[p];
-                for (int kk = 0; kk < k; kk++) {
-                    local[row + kk * nrow] += val * rhs[c + kk * n_cols];
-                }
-            }
-        }
-        #pragma omp critical
-        for (int i = 0; i < nrow * k; i++) result[i] += local[i];
-    }
-}
-
-// ── Helper: CSC column-subset crossprod ─────────────────────────────────────
-// Compute result[n_cols x k] = t(mat[, col_idx]) %*% lhs[nrow x k]
-// Each output row is independent — no race condition.
-static void csc_crossprod_accum(const int* mi, const int* mp, const double* mx,
-                                int nrow, const int* cidx, int n_cols,
-                                const double* lhs, int k,
-                                double* result) {
-    #pragma omp parallel for schedule(dynamic, 64)
-    for (int c = 0; c < n_cols; c++) {
-        int j = cidx[c] - 1;
-        int p_start = mp[j];
-        int p_end = mp[j + 1];
-        for (int p = p_start; p < p_end; p++) {
-            int row = mi[p];
-            double val = mx[p];
-            for (int kk = 0; kk < k; kk++) {
-                result[c + kk * n_cols] += val * lhs[row + kk * nrow];
-            }
-        }
-    }
+// ── OpenMP work threshold ───────────────────────────────────────────────────
+// Team creation costs more than a small region saves, and the solver issues
+// many tiny regions (lanczos_reorth opens 4*ncols per call). Regions below
+// this iteration count run serially; above it they parallelize as before.
+// Override with BANKSY_OMP_MIN_WORK; 0 disables the guard.
+static long long omp_min_work() {
+    static const long long v = [] {
+        const char* e = std::getenv("BANKSY_OMP_MIN_WORK");
+        if (e == nullptr || *e == '\0') return 50000LL;
+        return std::atoll(e);
+    }();
+    return v;
 }
 
 // ── Helper: full-matrix CSC matmul (no column subset) ───────────────────────
@@ -67,7 +32,7 @@ static void csc_full_matmul_accum(const int* mi, const int* mp, const double* mx
                                   int nrow, int ncol,
                                   const double* rhs, int k,
                                   double* result) {
-    #pragma omp parallel
+    #pragma omp parallel if ((long long)ncol * k >= omp_min_work())
     {
         std::vector<double> local(nrow * k, 0.0);
         #pragma omp for schedule(dynamic, 64)
@@ -325,7 +290,8 @@ NumericMatrix banksy_adjoint_cpp(
         std::memset(ht_raw.data(), 0, n_g * k * sizeof(double));
 
         // Fused crossprod: direct per-group column access
-        #pragma omp parallel for schedule(dynamic, 64)
+        #pragma omp parallel for schedule(dynamic, 64) \
+            if ((long long)n_g * k >= omp_min_work())
         for (int c = 0; c < n_g; c++) {
             int p_start = gmp[c];
             int p_end = gmp[c + 1];
@@ -343,7 +309,8 @@ NumericMatrix banksy_adjoint_cpp(
 
         // ht = t(W_gr) %*% ht_raw - adj_h
         std::memset(ht.data(), 0, n_g * k * sizeof(double));
-        #pragma omp parallel for schedule(dynamic, 64)
+        #pragma omp parallel for schedule(dynamic, 64) \
+            if ((long long)w_ncol * k >= omp_min_work())
         for (int c = 0; c < w_ncol; c++) {
             int p_start = wp[c];
             int p_end = wp[c + 1];
@@ -410,7 +377,7 @@ List h0_group_stats_cpp(
         double* ss_gr = &ss_out[gr * n_genes];
         double* mx_gr = &max_out[gr * n_genes];
 
-        #pragma omp parallel
+        #pragma omp parallel if ((long long)n_g * n_genes >= omp_min_work())
         {
             std::vector<double> col_buf(n_genes, 0.0);
             std::vector<double> lmu(n_genes, 0.0);
@@ -501,7 +468,7 @@ List h0_group_excess_cpp(
         const double* mu_ptr = split_scale ? &mu_mat[gr * n_genes] : &mu_mat[0];
         const double* sd_ptr = split_scale ? &sd_mat[gr * n_genes] : &sd_mat[0];
 
-        #pragma omp parallel
+        #pragma omp parallel if ((long long)n_g * n_genes >= omp_min_work())
         {
             std::vector<double> col_buf(n_genes, 0.0);
             std::vector<int> local_i, local_j;
@@ -648,10 +615,11 @@ NumericVector lanczos_reorth(NumericVector Q, int ncols, NumericVector v, int n)
         for (int c = 0; c < ncols; c++) {
             const double* qc = &Q[c * (long long)n];
             double dot = 0.0;
-            #pragma omp parallel for reduction(+:dot) schedule(static)
+            #pragma omp parallel for reduction(+:dot) schedule(static) \
+                if (n >= omp_min_work())
             for (int i = 0; i < n; i++)
                 dot += qc[i] * v[i];
-            #pragma omp parallel for schedule(static)
+            #pragma omp parallel for schedule(static) if (n >= omp_min_work())
             for (int i = 0; i < n; i++)
                 v[i] -= dot * qc[i];
         }
@@ -663,7 +631,8 @@ NumericVector lanczos_reorth(NumericVector Q, int ncols, NumericVector v, int n)
 double lanczos_norm(NumericVector v) {
     double s = 0.0;
     int n = v.size();
-    #pragma omp parallel for reduction(+:s) schedule(static)
+    #pragma omp parallel for reduction(+:s) schedule(static) \
+        if (n >= omp_min_work())
     for (int i = 0; i < n; i++)
         s += v[i] * v[i];
     return std::sqrt(s);
@@ -674,7 +643,8 @@ NumericMatrix lanczos_extract(NumericVector Q, NumericMatrix vectors,
                               int n, int work, int npcs) {
     // V[n x npcs] = Q[n x work] %*% vectors[work x npcs]
     NumericMatrix V(n, npcs);
-    #pragma omp parallel for schedule(static)
+    #pragma omp parallel for schedule(static) \
+        if ((long long)n * npcs >= omp_min_work())
     for (int i = 0; i < n; i++) {
         for (int col = 0; col < npcs; col++) {
             double sum = 0.0;
