@@ -71,7 +71,7 @@
 
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.9.4" id="version-194">Version 1.9.4<a class="anchor" aria-label="anchor" href="#version-194"></a></h2>
-<ul><li>The lazy path in <code>runBanksyPCA</code> is now deterministic. Both <code>pca_backend</code> options start the iterative solver from a fixed vector instead of a random one, so repeated runs give identical embeddings and the caller’s RNG stream is left untouched. Previously the C++ backend called <code>set.seed(42)</code> internally, overriding the user’s <code>seed</code>, and the R backend was unseeded</li>
+<ul><li>The lazy path in <code>runBanksyPCA</code> is now reproducible by default. With no <code>seed</code>, both <code>pca_backend</code> options start the iterative solver from a fixed vector, so repeated runs give identical embeddings and the caller’s RNG stream is left untouched. Supplying a <code>seed</code> draws a random starting vector instead, reproducibly, for callers who want to vary it. Previously the C++ backend called <code>set.seed(42)</code> internally, overriding the user’s <code>seed</code>, and the R backend was unseeded</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.9.2" id="version-192">Version 1.9.2<a class="anchor" aria-label="anchor" href="#version-192"></a></h2>

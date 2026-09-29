@@ -147,8 +147,9 @@ argument. Ignored when <code>lazy=TRUE</code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>Seed for PCA. If not specified, no seed is set. Not used when
-<code>lazy=TRUE</code>, which is deterministic.</p></dd>
+<dd><p>Seed for PCA. If not specified, no seed is set; when
+<code>lazy=TRUE</code> the solver then starts from a fixed vector and is
+reproducible. Supply a seed to vary that starting vector instead.</p></dd>
 
 
 <dt id="arg-lazy">lazy<a class="anchor" aria-label="anchor" href="#arg-lazy"></a></dt>
