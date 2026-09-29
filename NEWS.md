@@ -1,4 +1,8 @@
 
+# Version 1.9.5
+
++ Point the large-dataset documentation link at the SeuratWrappers upstream repository rather than a development fork
+
 # Version 1.9.4
 
 + The lazy path in `runBanksyPCA` is now reproducible by default. With no `seed`, both `pca_backend` options start the iterative solver from a fixed vector, so repeated runs give identical embeddings and the caller's RNG stream is left untouched. Supplying a `seed` draws a random starting vector instead, reproducibly, for callers who want to vary it. Previously the C++ backend called `set.seed(42)` internally, overriding the user's `seed`, and the R backend was unseeded
