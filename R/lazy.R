@@ -18,6 +18,8 @@
 # @param group_idx list of integer vectors mapping group -> cell indices
 # @param lambda numeric spatial weight in [0,1]
 # @param npcs integer number of PCs to compute
+# @param seed integer seed. NULL uses a fixed deterministic starting vector;
+#   supplying a seed draws a random one instead, reproducibly
 # @param split_scale logical whether to scale per group
 # @param scale_max numeric upper bound for scaled values. Caps the upper tail
 #   only, matching Seurat's ScaleData. Keeps the excess sparse: a zero entry
@@ -34,6 +36,7 @@
                                    npcs = 50L,
                                    split_scale = FALSE,
                                    scale_max = 10,
+                                   seed = NULL,
                                    pca_backend = c("cpp", "r"),
                                    verbose = TRUE) {
 
@@ -154,8 +157,9 @@
     # Reclaim memory before iterative solve
     gc(verbose = FALSE)
 
-    # SVD solve. Both backends start from a fixed vector, so the lazy path is
-    # deterministic and needs no seed.
+    # SVD solve. Without a seed both backends start from a fixed vector, so the
+    # lazy path is deterministic.
+    verbose.seed(seed)
     pca_backend <- match.arg(pca_backend, c("cpp", "r"))
     if (pca_backend == "cpp") {
         # irlba algorithm with C++ Q buffer management.
@@ -183,7 +187,7 @@
         F_vec <- numeric(n)
         B <- NULL
 
-        q1 <- .lazy_start_vector(n)
+        q1 <- .lazy_start_vector(n, seed = seed)
         lanczos_set_col(V_buf, 0L, q1, n)
         rm(q1)
 
@@ -216,7 +220,7 @@
 
             S <- sqrt(sum(W_mat[, j]^2))
             if (S < eps23) {
-                W_mat[, j] <- .lazy_start_vector(m, j + 1L)
+                W_mat[, j] <- .lazy_start_vector(m, j + 1L, seed)
                 if (j > 1L) W_mat[, j] <- W_mat[, j] - as.numeric(
                     W_mat[, 1:(j-1), drop=FALSE] %*%
                     crossprod(W_mat[, 1:(j-1), drop=FALSE], W_mat[, j]))
@@ -238,7 +242,7 @@
                 if (j + 1L <= work) {
                     R <- lanczos_norm(F_vec)
                     if (R < eps23) {
-                        F_vec <- .lazy_start_vector(n, j + 1L)
+                        F_vec <- .lazy_start_vector(n, j + 1L, seed)
                         F_vec <- lanczos_reorth(V_buf, j, F_vec, n)
                         lanczos_set_col(V_buf, j,
                             F_vec / lanczos_norm(F_vec), n)
@@ -268,7 +272,7 @@
                             crossprod(W_mat[, 1:j, drop=FALSE], W_mat[, j + 1L]))
                     S <- sqrt(sum(W_mat[, j + 1L]^2))
                     if (S < eps23) {
-                        W_mat[, j + 1L] <- .lazy_start_vector(m, j + 2L)
+                        W_mat[, j + 1L] <- .lazy_start_vector(m, j + 2L, seed)
                         if (j > 0L) W_mat[, j + 1L] <- W_mat[, j + 1L] - as.numeric(
                             W_mat[, 1:j, drop=FALSE] %*%
                             crossprod(W_mat[, 1:j, drop=FALSE], W_mat[, j + 1L]))
@@ -365,7 +369,7 @@
             .banksy_lazy_mult(A, x, transpose)
         }
         pca <- irlba::irlba(banksy_op, nv = npcs, mult = .instrumented_mult,
-                            v = .lazy_start_vector(n_cells))
+                            v = .lazy_start_vector(n_cells, seed = seed))
     }
 
     # Cell embeddings: V * D
@@ -812,16 +816,19 @@
 #' @param x A BanksyLazy object
 #' @return Integer vector of length 2: c(2*n_genes, n_cells)
 #' @importFrom methods as is slot
+#' @importFrom stats rnorm
 #' @keywords internal
 #' @export
 dim.BanksyLazy <- function(x) c(x$n_genes * 2L, x$n_cells)
 
-# Deterministic starting vector for the iterative solvers. sin() of an integer
-# sequence is dense and aperiodic, so it is not orthogonal to the leading
-# singular subspace, and it avoids touching the caller's RNG stream. `k` varies
-# the phase so each breakdown restart gets a distinct vector.
-.lazy_start_vector <- function(n, k = 1L) {
-    v <- sin(seq_len(n) * k)
+# Starting vector for the iterative solvers. With seed = NULL this is a fixed
+# vector, so the lazy path is reproducible without touching the caller's RNG:
+# sin() of an integer sequence is dense and aperiodic, hence not orthogonal to
+# the leading singular subspace. A seed instead draws a random start, which
+# lets callers vary it reproducibly. `k` varies the phase so each breakdown
+# restart gets a distinct vector.
+.lazy_start_vector <- function(n, k = 1L, seed = NULL) {
+    v <- if (is.null(seed)) sin(seq_len(n) * k) else rnorm(n)
     v / sqrt(sum(v^2))
 }
 

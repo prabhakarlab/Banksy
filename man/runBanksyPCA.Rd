@@ -55,8 +55,9 @@ When \code{lazy=TRUE}, also used for per-group kNN computation.}
 Fourier harmonic to use. If specified, overwrites the \code{use_agf}
 argument. Ignored when \code{lazy=TRUE}.}
 
-\item{seed}{Seed for PCA. If not specified, no seed is set. Not used when
-\code{lazy=TRUE}, which is deterministic.}
+\item{seed}{Seed for PCA. If not specified, no seed is set; when
+\code{lazy=TRUE} the solver then starts from a fixed vector and is
+reproducible. Supply a seed to vary that starting vector instead.}
 
 \item{lazy}{A logical scalar. If TRUE, compute PCA directly without
 materializing the full BANKSY matrix. Default FALSE.}

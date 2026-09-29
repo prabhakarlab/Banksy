@@ -32,8 +32,9 @@
 #' @param M Advanced usage. An integer vector specifying the highest azimuthal
 #'   Fourier harmonic to use. If specified, overwrites the \code{use_agf}
 #'   argument. Ignored when \code{lazy=TRUE}.
-#' @param seed Seed for PCA. If not specified, no seed is set. Not used when
-#'   \code{lazy=TRUE}, which is deterministic.
+#' @param seed Seed for PCA. If not specified, no seed is set; when
+#'   \code{lazy=TRUE} the solver then starts from a fixed vector and is
+#'   reproducible. Supply a seed to vary that starting vector instead.
 #' @param lazy A logical scalar. If TRUE, compute PCA directly without
 #'   materializing the full BANKSY matrix. Default FALSE.
 #' @param pca_backend A string scalar specifying the PCA backend when
@@ -166,7 +167,7 @@ runBanksyPCA <- function(se,
                 group_knn = group_knn, group_idx = group_idx,
                 lambda = lam, npcs = npcs,
                 split_scale = do_split_scale,
-                scale_max = Inf,
+                scale_max = Inf, seed = seed,
                 pca_backend = pca_backend, verbose = verbose)
 
             pca_x <- result$embeddings

@@ -117,6 +117,19 @@ test_that("lazy PCA is deterministic", {
     expect_identical(before, .Random.seed)
 })
 
+test_that("lazy PCA seed varies the start reproducibly", {
+    plain <- reducedDim(lazy_pca(spe, k_geom = k_geom), pca_name)
+    s1 <- reducedDim(lazy_pca(spe, k_geom = k_geom, seed = 1000), pca_name)
+    s2 <- reducedDim(lazy_pca(spe, k_geom = k_geom, seed = 1000), pca_name)
+    s3 <- reducedDim(lazy_pca(spe, k_geom = k_geom, seed = 2000), pca_name)
+    expect_identical(s1, s2)
+    expect_false(identical(s1, s3))
+    expect_false(identical(plain, s1))
+    # a different start, but the same dominant subspace
+    expect_gt(subspace_overlap(plain, s1), 0.99)
+    expect_gt(subspace_overlap(s1, s3), 0.99)
+})
+
 test_that("lazy PCA rejects the AGF", {
     expect_error(lazy_pca(spe, use_agf = TRUE, k_geom = k_geom))
     expect_error(lazy_pca(spe, M = 1, k_geom = k_geom))
