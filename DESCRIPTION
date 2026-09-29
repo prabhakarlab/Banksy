@@ -52,6 +52,7 @@ RoxygenNote: 7.3.2
 Suggests: 
     knitr,
     rmarkdown,
+    sessioninfo,
     pals,
     scuttle,
     scater,

@@ -47,8 +47,10 @@ details, check out:
 
 **BANKSY now includes a lazy PCA mode (`lazy=TRUE` in `runBanksyPCA`) that
 computes PCA directly via an implicit linear operator without materializing
-the full BANKSY matrix. This is the default and recommended mode, scaling to
-millions of cells with low memory usage. For analysis on large datasets 
+the full BANKSY matrix. This is the default and recommended mode. It has been
+benchmarked to 25 million cells at 5k features, taking 12.5 min / 163 GB at 10
+million cells and 34.6 min at 25 million with on-disk BPCells storage; see
+[NEWS](NEWS.md) for the full table. For analysis on large datasets
 (> 1 million samples), we recommend using BANKSY via SeuratWrappers: see [this vignette](https://github.com/jleechung/seurat-wrappers/blob/feat-sparse-matmul/docs/banksy.md#scaling-to-large-datasets).**
 
 ## Installation
@@ -226,7 +228,8 @@ Sys.time() - start.time
     <summary>Session information</summary>
 
 ```{r, sess}
-sessionInfo()
+options(width = 120)
+sessioninfo::session_info()
 ```
 
 </details>

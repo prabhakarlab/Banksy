@@ -227,7 +227,8 @@ Sys.time() - start.time
 <details>
 
 ```{r, sess}
-sessionInfo()
+options(width = 120)
+sessioninfo::session_info()
 ```
 
 </details>

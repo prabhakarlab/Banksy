@@ -136,7 +136,8 @@ dim(banksy_matrix)
     <summary>Session information</summary>
 
 ```{r, sess}
-sessionInfo()
+options(width = 120)
+sessioninfo::session_info()
 ```
 
 </details>
