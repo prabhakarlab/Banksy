@@ -106,7 +106,7 @@
             x = lapply(gcm_list, slot, 'x'))
         rm(gcm_list, data_own); gc(verbose = FALSE)
 
-        banksy_op <- structure(list(
+        banksy_op <- new('BanksyLazy', list(
             gcm_slots = gcm_slots,
             W_list = W_list, w_slots = w_slots,
             mu = list(own_result$mu, h0_result$mu),
@@ -118,7 +118,7 @@
             split_scale = split_scale,
             group_idx = group_idx,
             n_genes = n_genes, n_cells = n_cells
-        ), class = 'BanksyLazy')
+        ))
         rm(own_result, h0_result)
     } else {
         # Single-matrix path
@@ -139,7 +139,7 @@
                     ' H0=', n_h0_clip, ' entries')
         }
 
-        banksy_op <- structure(list(
+        banksy_op <- new('BanksyLazy', list(
             gcm = data_own, W = W,
             mu = list(own_result$mu, h0_result$mu),
             sd = list(own_result$sd, h0_result$sd),
@@ -150,7 +150,7 @@
             split_scale = split_scale,
             group_idx = group_idx,
             n_genes = n_genes, n_cells = n_cells
-        ), class = 'BanksyLazy')
+        ))
         rm(own_result, h0_result)
     }
 
@@ -351,24 +351,11 @@
     } else {
         if (verbose) message('Computing BANKSY PCA (', npcs, ' PCs) via irlba')
 
-        .irlba_iter <- 0L
-        .irlba_t0 <- proc.time()["elapsed"]
-        .instrumented_mult <- function(A, x, transpose = FALSE) {
-            .irlba_iter <<- .irlba_iter + 1L
-            if (.irlba_iter %% 20 == 0) gc(verbose = FALSE)
-            if (.irlba_iter %% 20 == 1) {
-                rss <- tryCatch({
-                    l <- readLines("/proc/self/status", warn = FALSE)
-                    v <- grep("^VmRSS:", l, value = TRUE)
-                    as.numeric(gsub("[^0-9]", "", v)) / 1024^2
-                }, error = function(e) NA)
-                elapsed <- proc.time()["elapsed"] - .irlba_t0
-                message(sprintf("  irlba iter=%d  t=%.0fs  RSS=%.1fGB",
-                                .irlba_iter, elapsed, rss))
-            }
-            .banksy_lazy_mult(A, x, transpose)
-        }
-        pca <- irlba::irlba(banksy_op, nv = npcs, mult = .instrumented_mult,
+        .lazy_mult_count$n <- 0L
+        # fastpath is a C routine that needs a real matrix, and irlba only
+        # skips it while mult is supplied. Dropping mult without this would
+        # trade one failure for another.
+        pca <- irlba::irlba(banksy_op, nv = npcs, fastpath = FALSE,
                             v = .lazy_start_vector(n_cells, seed = seed))
     }
 
@@ -811,15 +798,51 @@
     list(mu = mu, sd = sd, valid = valid, excess = excess)
 }
 
-# Lazy operator multiply (forward + adjoint)
-#' S3 dim method for BanksyLazy operator
+# The operator, as a class irlba can multiply.
+#
+# irlba's mult argument is deprecated and will be removed; its replacement is
+# a matrix class carrying its own %*%. S4 is required, not S3 with
+# setOldClass: %*% is a primitive whose S4 dispatch only fires when isS4() is
+# TRUE, so an S3 list reaches base %*% and errors with "requires
+# numeric/complex matrix/vector arguments" regardless of any method
+# registered against it.
+#
+# contains = 'list' keeps every A$field access in this file working unchanged.
+#' @importFrom methods setClass setMethod signature new as is slot
+#' @importFrom stats rnorm
+#' @exportClass BanksyLazy
+methods::setClass("BanksyLazy", contains = "list")
+
 #' @param x A BanksyLazy object
 #' @return Integer vector of length 2: c(2*n_genes, n_cells)
-#' @importFrom methods as is slot
-#' @importFrom stats rnorm
 #' @keywords internal
-#' @export
-dim.BanksyLazy <- function(x) c(x$n_genes * 2L, x$n_cells)
+#' @exportMethod dim
+methods::setMethod("dim", "BanksyLazy",
+                   function(x) c(x$n_genes * 2L, x$n_cells))
+
+# irlba grows its Krylov basis across iterations and never collects; without
+# this the r backend's peak climbs with the iteration count. Carried over from
+# the mult hook these methods replace. Only the r backend reaches here -- the
+# cpp solver calls .banksy_lazy_mult directly and manages its own buffers.
+.lazy_mult_count <- new.env(parent = emptyenv())
+.lazy_mult_count$n <- 0L
+
+.banksy_lazy_mult_gc <- function(A, x) {
+    .lazy_mult_count$n <- .lazy_mult_count$n + 1L
+    if (.lazy_mult_count$n %% 20L == 0L) gc(verbose = FALSE)
+    .banksy_lazy_mult(A, x)
+}
+
+# Both argument orders: irlba calls mult(A, V) and mult(V, A). Each defers to
+# .banksy_lazy_mult, which reads the operand order itself and sets the adjoint
+# flag -- the same call the mult hook made.
+#' @exportMethod %*%
+methods::setMethod("%*%", methods::signature(x = "BanksyLazy", y = "ANY"),
+                   function(x, y) .banksy_lazy_mult_gc(x, y))
+
+#' @exportMethod %*%
+methods::setMethod("%*%", methods::signature(x = "ANY", y = "BanksyLazy"),
+                   function(x, y) .banksy_lazy_mult_gc(x, y))
 
 # Starting vector for the iterative solvers. With seed = NULL this is a fixed
 # vector, so the lazy path is reproducible without touching the caller's RNG:

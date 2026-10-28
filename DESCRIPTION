@@ -22,7 +22,6 @@ Depends:
      R (>= 4.4.0)
 Imports:
     aricode,
-    BiocParallel,
     data.table,
     dbscan,
     Rcpp,
@@ -41,8 +40,7 @@ Imports:
     leidenAlg (>= 1.1.0),
     utils,
     uwot,
-    RcppHungarian,
-    GenomeInfoDb
+    RcppHungarian
 LinkingTo: Rcpp
 License: file LICENSE
 Encoding: UTF-8
